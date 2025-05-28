@@ -1,0 +1,53 @@
+Type: Package
+Package: invasimapr
+Title: Workflow to visualise trait dispersion and assess invasibility
+Version: 0.1.0
+Authors@R: 
+  person("Sandra", "MacFadyen", email = "macfadyen@sun.ac.za", role = c("aut", "cre"))
+Description: Tools to visualise trait dispersion and assess invasibility.
+License: MIT + file LICENSE
+URL: https://github.com/macSands/invasimapr, https://macsands.github.io/invasimapr/
+BugReports: https://github.com/macSands/invasimapr/issues
+Suggests:
+    devtools,
+    knitr,
+    pkgdown,
+    remotes,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Imports:
+    caret,
+    cluster,
+    clValid,
+    corrplot,
+    data.table,
+    dplyr,
+    entropy,
+    factoextra,
+    fields,
+    future,
+    geosphere,
+    ggplot2,
+    httr,
+    mclust,
+    NbClust,
+    patchwork,
+    pbapply,
+    purrr,
+    rcmdcheck,
+    rlang,
+    reshape2,
+    sf,
+    terra,
+    tidyr,
+    vegan,
+    viridis,
+    zoo,
+    zetadiv
+VignetteBuilder: 
+    knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2

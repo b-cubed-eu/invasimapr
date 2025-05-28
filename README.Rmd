@@ -1,0 +1,612 @@
+---
+output:
+  github_document:
+    toc: true
+    toc_depth: 2
+  html_document:
+    toc: true
+    theme: cerulean     # or bootstrap, etc.
+    mathjax: default
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%",
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE
+)
+```
+
+<!-- badges: start -->
+
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nithecs-biomath/RBasicPack/master?urlpath=rstudio) [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) [![test-coverage](https://github.com/macSands/**`invasimapr`**/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/macSands/**`invasimapr`**/actions/workflows/test-coverage.yaml) [![Codecov test coverage](https://codecov.io/gh/macSands/**`invasimapr`**/graph/badge.svg)](https://app.codecov.io/gh/macSands/**`invasimapr`**) [![R-CMD-check](https://github.com/macSands/**`invasimapr`**/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/macSands/**`invasimapr`**/actions/workflows/R-CMD-check.yaml)
+
+<!-- badges: end -->
+
+------------------------------------------------------------------------
+
+# `**`invasimapr`**`
+
+## A Novel Framework to visualise trait dispersion and ability to assess invasibility
+
+------------------------------------------------------------------------
+
+**`invasimapr`** is an R package in development for quantifying and mapping community–level invasion fitness and site-specific invasibility.  It links three data streams—species occurrences, functional traits, and (in a later module) curated invasive-alien-species lists—to generate spatial grids, extract and harmonise environmental and trait information, visualise community trait profiles, and compute invasion metrics such as interaction-strength matrices, invasion hotspots, and maximum-invasiveness traits (MITs).  By explicitly modelling how trait–environment–competition relationships shape establishment success, **`invasimapr`** delivers biologically informed predictions that support evidence-based biodiversity management and policy planning.
+
+
+------------------------------------------------------------------------
+
+## 1.	Introduction
+Biological invasions—the establishment and spread of species outside their native ranges—have become a leading driver of biodiversity loss, ecosystem disruption, and economic damage worldwide. Whether an alien species succeeds in a new habitat depends on a web of factors that includes propagule pressure, species-specific traits, resident community structure, and environmental conditions. Contemporary invasion theory therefore emphasises trait-mediated ecological networks and invasion fitness: alien species gain a foothold when their functional traits confer competitive or facilitative advantages within the local interaction web and environmental context (Hui et al., 2016; 2021; 2023).
+
+**`invasimapr`** is being developed to turn this theory into a reproducible analytic workflow. The R package couples species-occurrence records and functional-trait databases with optional invasive-species lists to build spatial grids, quantify trait centrality and dispersion, estimate interaction-strength matrices, and calculate site-level invasibility and maximum-invasiveness traits. Its outputs—maps of invasion hotspots, trait-specific risk factors, and community openness—provide biologically informed predictions of where invasions are most likely to occur and which traits drive them. By integrating traits, propagule pressure, and environmental context in a single pipeline, **`invasimapr`** aims to equip researchers and policy-makers with a transparent, scalable tool for anticipating and managing biological invasions.
+
+
+------------------------------------------------------------------------
+
+### 1.1.	Invasion Fitness and Invasibility
+Invasion fitness and invasibility are key concepts in invasion ecology. Invasion fitness captures an species’ ability to establish, persist, and spread within a new community, while invasibility is a property of the receiving community that indicates how “open” it is to new colonizers. Both concepts are interconnected and can be explored through trait-mediated interactions within ecological networks (Hui et al., 2016). Invasion fitness has been defined as a dynamic, density-dependent demographic performance measure, while invasibility reflects the availability of opportunity niches within a community's trait space (Hui et al., 2021). These definitions highlight the eco-evolutionary feedbacks that modulate invasion dynamics. The workflow described in this milestone integrates several data-driven elements to quantify and visualize invasion fitness and invasibility:
+
+•	Species Occurrence Data: Provides a spatial snapshot of where different species—both native and alien—are present, serving as a baseline for estimating community composition and distribution.
+•	Species Traits: Links species' functional characteristics to their ecological interactions. By calculating trait-based interaction strengths, we can infer competitive dynamics and resource use.
+•	Community Trait Profile: Visualizes the range of trait values within a community, identifying unoccupied or heavily populated trait regions that influence invasion success.
+•	Interaction Strength Matrices: Reflect how trait similarity modulates competition between alien and resident species, revealing the combinations of traits that enhance or hinder invasiveness.
+
+By leveraging these elements, the workflow produces regional maps of invasibility that pinpoint areas most susceptible to invasion pressure. These insights, grounded in trait-based ecological frameworks, provide a robust theoretical foundation for prioritizing management interventions to mitigate invasion risks (Hui et al., 2023).
+
+------------------------------------------------------------------------
+
+### 1.2.	Overview of the **`invasimapr`** R package
+**`invasimapr`** is an R package under development that consolidates the above workflow steps into a cohesive, reproducible toolkit. The package is designed with flexibility in mind, allowing users to integrate local or global data sources, adapt trait-based models to diverse taxonomic groups, and scale computational analyses from small study regions to continental extents.
+
+Key Deliverables
+•	Interaction Strength Matrices: Quantitative depiction of how resident species compete with potential invaders, derived from trait similarities and dissimilarities.
+•	Community Trait Profiles: Graphical summaries of a community’s functional structure, helping users quickly identify potential ecological “gaps” that might be exploited by invaders.
+•	Invasion Fitness Surface: Spatial predictions showing variation in invasion success across a landscape, identifying hotspots of potential impact on ecosystem services and biodiversity.
+•	Regional Invasibility Maps: Spatial outlines of communities most prone to successful invasion, illuminating the links between species’ functional traits and local environmental conditions.
+
+Ultimately, **`invasimapr`** aims to empower researchers, practitioners, and policymakers by providing actionable insights on how specific trait-environment interactions drive invasion risks. Whether used to forecast future invasion scenarios or to validate ongoing control measures, the package will offer an evidence-based platform that enhances decision-making for biodiversity protection.
+
+------------------------------------------------------------------------
+
+## 2.	Workflow and Step-by-Step Tutorial
+Below we present **`invasimapr`**, an R-based workflow designed to streamline the mapping and analysis of invasion processes. This step-by-step pipeline integrates species occurrence records, environmental variables, and trait information to quantify invasibility and identify key drivers of biological invasions. By combining data preparation, distance-based analyses, dimension reduction, and trait–environment modelling, **`invasimapr`** provides a reproducible framework for researchers aiming to better understand how species traits interact with environmental conditions to shape invasion outcomes.
+
+------------------------------------------------------------------------
+
+### 2.1. Install and load `**`invasimapr`**`
+
+Install and load the `**`invasimapr`**` package from GitHub, ensuring all functions are available for use in the analysis workflow.
+
+```{r install-**`invasimapr`**, eval=FALSE, include=TRUE}
+# install remotes if needed
+# install.packages("remotes")
+# remotes::install_github("macSands/invasimapr")
+```
+
+```{r load-**`invasimapr`**, include=TRUE}
+# Ensure the package is loaded when knitting
+library(invasimapr)
+
+# Make sure all the functions are loaded
+devtools::load_all()
+```
+
+------------------------------------------------------------------------
+
+### 2.2.	Install and load libraries
+To begin, ensure that all necessary libraries are installed and loaded.
+
+```{r load-libraries}
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(sf)
+library(terra)
+library(mvabund)
+library(cluster)
+library(vegan)
+library(funspace)
+library(parallel)
+library(future.apply)
+```
+
+------------------------------------------------------------------------
+
+### 2.3.	Setup environment and load functions
+Setup your environment by optimizing memory usage, setting up your working directory, and loading essential functions from the **`invasimapr`** package for retrieving and formatting occurrence and environmental data, generating spatial grids, and performing subsequent distance-based or trait–environment analyses (e.g., get_occurrence_data, format_df, process_site_sp_trait). In this way, the workflow can seamlessly integrate data preparation, trait analysis, and invasion modelling.
+
+```{r setup-enviro}
+# Run garbage collection (gc) to free unused R memory 
+gc(reset = TRUE)
+
+# Set working directory
+# setwd('X:/Your/Path')
+
+# Load the following 10 functions
+```
+
+------------------------------------------------------------------------
+
+### 2.4.	Data Access and Preparation
+This section focuses on automating the retrieval and pre-processing of core data, including species occurrence, species traits and environmental variables. Functions described below, automate access and prepare species, trait and environment data to support downstream invasibility assessments.
+
+#### 2.4.1.	Species Occurrence Data with get_occurrence_data
+Use get_occurrence_data to automates the retrieval and preprocessing of species occurrence data from multiple sources, including:
+
+i)  local databases,
+ii) the Global Biodiversity Information Facility (GBIF), and
+iii) species occurrence cubes from B3 (specification) [*work in progress].
+
+The function assembles data on species distributions across specified taxonomic groups and regions, producing presence-absence or abundance matrices that quantify species co-occurrence within locations. 
+
+```{r run-get_occurrence_data}
+# Imports species occurrence data from local files, data frames, or GBIF sources
+fab_data = get_occurrence_data(data = '/data/gbif_fabaceae_0038785-241126133.csv',
+                                source_type = 'local_csv',
+                         # options: 'local_csv', 'data_frame', 'gbif')
+                                sep = '\t', # Default: ','
+                                gbif_zip_url = NULL, # e.g. 'https://api.gbif.org/v1/occurrence/download/request/0038969-240906103802322.zip'
+                                download_dir = tempdir())
+
+# Check column names of `fab_data` data.frame
+names(fab_data)
+```
+------------------------------------------------------------------------
+
+#### 2.4.2.	Data formatting with format_df
+To analyse biodiversity data effectively, it is necessary to standardize and reshape datasets into specific formats, each serving a distinct purpose. 
+
+•	site_xy: Holds spatial coordinates of sampled sites (Table 1).
+•	site_sp: Site-by-species matrix for biodiversity assessments (Table 2).
+•	sp_trait: Species-specific trait data essential for understanding how species traits influence interactions (Table 3).
+•	site_env: Site-specific environmental data provides contextual information about the conditions at each study location (Table 4).
+
+First use format_df to standardise and reshape biodiversity data into long or wide formats. It automatically identifies key columns (e.g., coordinates, species, and values), assigns missing site IDs, and reformats the data for analysis. Outputs include a cleaned dataset and species-site matrices for further processing.
+
+```{r run-format_df}
+# Run `format_df` to format data.frame
+fab_format = format_df(data = fab_data,
+                       species_col = 'verbatimScientificName',
+                       value_col = 'pa',
+                       format = 'long')
+
+# Check results – list structure
+str(fab_format, max.level = 1)
+
+# Check results – first few lines of ‘site_obs’ data.frame
+head(fab_format$site_obs)
+
+# Check results – first few lines and columns of ‘site_sp’ data.frame
+head(fab_format$site_sp[,1:6])
+```
+
+------------------------------------------------------------------------
+
+#### 2.4.3.	Generate Spatial Grids with generate_grid
+Then use generate_grid to divide the study area, derived from the geographic extent of the occurrence data above, into grids of user-defined resolution, creating a spatial grid over a specified geographic extent. It assigns unique grid IDs to points and summarizes selected data columns within each grid cell. The function outputs a raster grid, grid polygons for visualization, and a data frame summarizing the contents of each grid cell, including totals and centroids. It is particularly useful for aggregating spatial data, such as biodiversity observations, into predefined spatial units for further analysis. 
+
+```{r run-generate_grid}
+# Now run `generate_grid` to group observations by specific grid
+# *For now only geographic projection (EPSG:4326) works
+grid_list = generate_grid(data = fab_format$site_sp,
+                          x_col = "x",       # Column for x-coordinates
+                          y_col = "y",       # Column for y-coordinates
+                          grid_size = 0.25,    # Grid size in degrees
+                          sum_col_range = 4:ncol(data),  # Columns to summarize
+                          crs_epsg = 4326) # Set projection*  
+
+# Optional: Make separate data objects from returned list
+grid_sf = grid_list$grid_sf # Grid polygons
+grid_sp = grid_list$grid_sp # Summarised data.frame by new ‘grid_id’
+
+# Check first few rows ‘grid_sp’ data.frame
+head(grid_sp[,1:10])
+
+# Plot results as grid centroids weighted by total observation counts
+ggplot() +
+  # Add 0.25° grid layer
+  geom_sf(data = grid_sf, fill = NA, color = "darkgrey", alpha = 0.5) +
+  # Add grid centroids as points, size and colour by sqrt of observation counts
+  geom_point(data=grid_sp, aes(x=x,y=y,size=sqrt(obs_sum),color=sqrt(obs_sum))) +
+  scale_size_continuous(range = c(0.5, 5)) +  
+  # Option: Use ‘turbo’ colour range
+  scale_color_viridis_c(option = "turbo") + 
+  # Add South African provincial boundary layer
+  geom_sf(data = rsa, fill = NA, color = "black", alpha = 1) +
+  # Set axis labels and plot title
+  labs(
+    title = "0.25° Grid Cells with GBIF Fabaceae Observation Counts",
+    x = "Longitude",
+    y = "Latitude") +
+  theme_minimal()
+```
+ 
+------------------------------------------------------------------------
+
+#### 2.4.4.	Environmental data with get_enviro_data
+Use get_enviro_data to retrieve environmental data for spatial points derived from get_occurrence_data (actual observation coordinates) and/or generate_grid (grid centroids), by either downloading it from sources like WorldClim or SoilGrids via the geodata package (https://ouicodedata.com/posts/worldclim-with-r/), or provide path to local raster data. The function generates an area of interest (AOI) around the input points, adds a pre-defined buffer area, and extracts the selected environmental variables for these locations. If no data (NA) values are returned for some outlier points, the function will interpolate these missing values using the average of surrounding non-NA records. The output includes a cropped raster of the environmental data, spatial points as an sf object, and a combined data frame of the input data with extracted environmental variables, enabling spatial analyses of environmental conditions. Future data source options plan to include i) CHELSA via climenv (https://chelsa-climate.org/), ii) Google Earth Engine via rgee (https://r-spatial.github.io/rgee/), and iii) additional biodiversity data via mapme (https://mapme-initiative.github.io/mapme. biodiversity/index.html).
+
+```{r run-get_enviro_data}
+# First set output directory
+output_path = 'inst/extdata'
+
+# Run `get_enviro_data` to download and extract environmental variables
+# Current ‘source’ options include 'geodata' and 'local'
+# For 'geodata' source, variables 'var' include: bioclim - 'bio', elevation - 'elev', human development footprint - 'footprint', population numbers - 'population', world soil classification - 'soil_world'
+# Resolution 'res' is needed for 'worldclim_global','elev', 'population'
+enviro_list = get_enviro_data(data = grid_sp,
+                            buffer_km = 1,
+                            source = "geodata",
+                            var = "bio", 
+                            res = 2.5, 
+                            path = output_path)
+
+# Check results – Returns list of 3 objects
+str(enviro_list, max.level = 1)
+
+# Check results – SpatRaster with layers for each environmental variable
+enviro_list$env_rast
+
+# Check results – Simple feature collection of grid centroids  
+enviro_list$sites_sf
+
+
+# Check results – data.frame with unique ‘grid_id’ and columns for each environmental variable
+head(enviro_list$env_df[,1:8])
+```
+------------------------------------------------------------------------
+
+#### 2.4.5.	Species Traits Data with process_site_sp_trait
+This function integrates trait data from the TRY database (Kattge et al. 2020), a global collaborative initiative that consolidates and standardizes plant trait data from multiple sources, with site-level species observations, returning a concise set of data structures for further ecological analyses. First, it imports and checks the provided TRY data (either from a file path or an existing data frame). It then uses fuzzy string matching to reconcile species names in the site-by-observations table with those in the TRY dataset. Next, trait values are extracted, cleaned (e.g., converting character values to numeric), and pivoted into a “wide” format. Finally, the function filters out unmatched species, retrieves spatial coordinates, and returns a list containing merged traits, filtered site-by-species data, and site coordinates. Optional outputs (via appendix = TRUE) include additional intermediate objects like the raw species-by-trait matrix, trait name lookups, and the species mapping table.
+process_site_sp_trait unites external trait data (from the TRY database) with site-level species observations to produce a dataset ready for downstream ecological analyses. The steps are as follows:
+1.	Import and Validate: Uses rtry::rtry_import to read in TRY data (either from a file path or data frame) and ensures required columns are present.
+2.	Fuzzy Match Species: Uses fuzzyjoin::stringdist_inner_join to reconcile species names between the site observations (grid_obs) and the TRY dataset.
+3.	Pivot Trait Data: Cleans numeric values, groups them by species and trait, and transforms data into a “wide” matrix of species by traits.
+4.	Filter by Site: Matches only those species listed in grid_sp (via sp_cols) and obtains an updated site-by-species matrix along with corresponding spatial coordinates.
+5.	Return Outputs: Provides a concise list containing:
+o	sp_traits: The final species-by-traits data.
+o	site_sp: A filtered site-by-species matrix.
+o	site_xy: Spatial coordinates for these sites.
+o	Optional components (if appendix = TRUE) include the raw species-by-trait matrix, trait name lookups, and the species mapping table.
+
+```{r run-process_site_sp_trait}
+# First use `data.table::fread` to read in traits tables from TRYS database
+species_trait = fread("inst/extdata/try_data_37981.txt", sep = "\t", quote="")
+
+# Check first few rows of `species_trait` data.frame
+head(species_trait[,7:11])
+
+# Run `process_site_sp_trait` to get `species_traits` and other data.frames
+spp_traits_list = process_site_sp_trait(
+                          # Full TRY traits table
+  				try_data = species_trait, 
+                          # Unfiltered site-by-observations table (long format)
+  				grid_obs = grid_list$grid_obs, 
+                          # Unfiltered site-by-species table
+  				grid_sp = grid_list$grid_sp, 
+                          # Species column range unfiltered site-by-species table
+  				sp_cols = 5:ncol(grid_list$grid_sp), 
+  				appendix = FALSE
+)
+
+# Check results – structure of ‘spp_traits_list’
+str(spp_traits_list)
+
+# Check results – dimensions of ‘sp_traits’, ‘site_sp’ and ‘site_xy’
+dim(spp_traits_list$sp_traits)
+dim(spp_traits_list$site_sp)
+dim(spp_traits_list$site_xy)
+```
+
+------------------------------------------------------------------------
+
+### 2.5.	Functional Dissimilarity and Community Trait Profiles with cluster::daisy; funspace::funspace; stats::princomp and vegan::metaMDS
+In this step, the functional structure of species communities is defined. Using the Gower distance metric, dissimilarity matrices are calculated to assess trait-based differences between species:
+
+Dissimilarity Matrix Calculation (Gower): A Gower distance matrix is computed using species traits. This matrix captures the dissimilarity in species traits, which is later used to quantify species interaction strength. A PCA-based trait space is then used to summarise the main axes of variation among species.
+
+```{r run-daisy}
+# Dissimilarity Matrix Calculation (Gower)
+# Calculates pairwise dissimilarity between species based on traits (sbt) 
+# Uses Gower distance >> handles mixed data types 
+# (continuous, ordinal, categorical).
+sbt_gower = as.matrix(cluster::daisy(sbt, metric = "gower", stand = FALSE))
+
+# Performs Principal Component Analysis (PCA) on the Gower distance matrix. 
+# By setting cor = TRUE, standardizes variables internally for PCA calculation
+sbt_daisy_pca = princomp(sbt_gower, cor = TRUE)
+```
+
+Community Trait Profiles (CTP): CTPs are visualised using funspace::funspace, which indicates how species traits are distributed in the reduced space.
+
+```{r run-funspace}
+# Applies `funspace` to the PCA result to create a functional trait space. 
+# Threshold = 0.95 ensures the first two principal components explain at 
+# least 95% of trait variation.
+sbt_daisy_pca_space = funspace::funspace(x = sbt_daisy_pca, PCs = c(1, 2), threshold = 0.95)
+summary(sbt_daisy_pca_space)
+
+# Global TPD (Trait Probability Distribution): 
+# Displays overall trait distribution looks in first 2 principal components
+plot(x = sbt_daisy_pca_space,
+     type = 'global',
+     quant.plot = TRUE, # Adds Quantile lines >> spread of trait densities
+     arrows = FALSE, # Control the loading vectors (PCA arrows)
+     arrows.length = 0.9)
+```
+
+Non-Metric Multidimensional Scaling (NMDS): NMDS is applied to visualise the trait space in two or three dimensions, providing a visual representation of the trait profiles within the community. The NMDS ordination shows a low-dimensional arrangement of species or sites based on trait distances. The stress value indicates how well the NMDS solution preserves distances and the returned density-surface NMDS plot illustrates clustering patterns among species/sites in the trait space.
+
+```{r run-metaMDS}
+# Non-Metric Multidimensional Scaling (NMDS)
+# Uses `vegan::metaMDS` to perform Non-Metric Multidimensional Scaling on 
+# Gower distance matrix.
+sbt_daisy_nmds = vegan::metaMDS(sbt_gower)
+sbt_daisy_nmds$stress # lower stress indicates a better fit
+sbt_daisy_nmds$converged # if converged to a stable solution
+
+# Extracts site (or species) scores (coordinates) from the NMDS ordination for plotting.
+nmds_scores_sites = as.data.frame(scores(sbt_daisy_nmds, display = "sites"))
+
+ggplot(nmds_scores_sites, aes(x = NMDS1, y = NMDS2)) +
+  geom_point(alpha = 0.7, size = 2) +
+  stat_density_2d(aes(fill = after_stat(level)), geom = "polygon", 
+		       alpha = 0.5, n = 200, h = c(0.15, 0.15)) +
+  scale_fill_viridis_c() +
+  theme_minimal() +
+  labs(x = "NMDS1", y = "NMDS2", fill = "Density") +
+  ggtitle("NMDS Plot with Density Surface")
+```
+ 
+------------------------------------------------------------------------
+
+### 2.6.	Interaction Strength with r() and alpha()
+Here, the workflow calculates the interaction strength matrix based on trait-mediated competition. The strength of interactions is derived from a Gaussian-like kernel function that models the effect of trait distances on competitive interactions:
+Interaction Kernel: The Gaussian-like kernel function is used to compute pairwise interaction strengths based on trait distances, where smaller trait distances lead to stronger interactions: r(): Growth rates for alien species in various environments. alpha(): A matrix of interaction strengths, with higher values indicating stronger competitive effects when species’ traits are similar.
+r(alien_x, enviro) is a placeholder function returning a constant growth rate (here fixed at 1). In practice, this would be replaced by a more complex function capturing how an alien species’ intrinsic growth rate depends on both its traits (alien_x) and the environment (enviro).
+
+```{r fun-r}
+# ‘r’ Function: Trait mediated growth as a function of the environment
+r = function(alien_x, enviro){
+  1 
+}
+```
+
+alpha(sbt, alien_x, sig): Calculates the pairwise trait distances between an alien species (alien_x) and each resident species in sbt using Gower distance. It then applies a Gaussian-like kernel (exponential decay of squared distance) to represent trait-mediated competition. sig defines the kernel width (sigma); larger sigma implies a broader range of competitive effects.
+
+```{r fun-alpha}
+# ‘Alpha’ Function: Pairwise dissimilarities (distances) between traits
+alpha = function(sbt, alien_x, sig=sigV){
+  yy = as.matrix(cluster::daisy(rbind(sbt, alien_x), metric = "gower"))
+  td = yy[s_spp+1, 1:s_spp] # alien-resident trait distance
+  exp(-td^2/(2*sig^2)) # trait mediated interaction kernel 
+}
+```
+------------------------------------------------------------------------
+
+### 2.7.	Invasiveness with inv()
+Invasiveness Calculation: A function is implemented to compute the trait-mediated invasiveness of alien species based on their interaction strength with the community. A numeric value (or vector) is returned for each site indicating the alien species’ ability to invade (i.e., whether it can grow in the presence of established competitors and local environmental conditions). By reshuffling traits, we can create a new species-trait matrix (xx) by randomly permuting the rows of sbt. This mimics creating “alien” trait profiles from existing trait data. Using future_lapply, the invasibility calculations can be run in parallel across multiple species, essentially looping over each newly “constructed” alien species (species_index). Invasibility is then computed for each alien species across all sites. A matrix of invasibility values is returned, where rows correspond to alien species and columns correspond to sites i.e. a sspp×nsites matrix of invasibility scores for each reshuffled species at each site
+
+```{r fun-inv}
+# Invasiveness calculation 
+inv = function(alien_x, enviro, sbt, ab){
+  r(alien_x, enviro) - alpha(sbt, alien_x) %*% t(ab)
+}
+```
+
+inv() computes the invasiveness of an alien species: 
+Invasiveness = r(alienx, enviro) − α(sbt, alienx) × abT
+where ab represents the abundance vector of resident species, and α (alpha) is the trait-mediated competition kernel. A positive result indicates a higher growth potential relative to competitive suppression, while a negative result suggests the alien is outcompeted by resident species.
+
+------------------------------------------------------------------------
+
+#### 2.7.1.	Parallel computation with compute_invasibility_noLoop
+Next compute invasibility using parallel processing, with the function for Parallel Computation below:
+
+```{r fun-compute_invasibility}
+# Function for parallel computation 
+compute_invasibility_noLoop = function(i, sbt, env, sbs, inv) {
+  # Generate possible aliens by reshuffling sbt (factors are kept intact)
+  xx = as.data.frame(lapply(sbt, sample))
+  
+  # Parallel processing using future_lapply to compute results each species
+  reshuffle_results = future_lapply(1:s_spp, function(species_index) {
+    # Extract reshuffled species data 
+    x = xx[species_index, ]      
+    # For each species, compute invasibility for each site in parallel
+    inv_results = sapply(1:n_site, function(site_index) {
+      inv(x, env[site_index, ], sbt, sbs[site_index, ])
+    })
+    return(inv_results)
+  }, future.seed = TRUE)
+  
+  # Combine the list of results into a matrix
+  reshuffle_results = do.call(rbind, reshuffle_results)
+  return(reshuffle_results)
+}
+```
+
+Returns a 3D array (inb_all) with dimensions: [sub, s_spp, n_site], containing invasibility values for each reshuffle, species, and site. A substantial speedup in computations compared to a single-threaded approach, especially for large data.
+
+```{r run-compute_invasibility}
+# Run in parallel
+# Pre-allocates a 3D array to store invasibility results for multiple 
+# reshuffles (sub times), across all species and sites.
+inb_all = array(NA, dim = c(sub, s_spp, n_site))
+
+# Cluster Initialization
+num_cores = detectCores() – 1 # keeps one system core free
+cl = makeCluster(num_cores) # creates the parallel backend
+
+# Sends the required objects/functions to each node
+clusterExport(cl, varlist = c("sbt", "env", "sbs", 
+                           "inv", "r", "alpha", 
+                           "s_spp", "n_site", "sigV"))
+start_time = Sys.time()
+
+# Parallel Computation
+# `parLapply` runs the `compute_invasibility_noLoop` function in parallel 
+# for each reshuffle iteration (1 through sub).
+inb_all_parallel = parLapply(cl, 1:sub, 
+                             compute_invasibility_noLoop,
+                             sbt, env, sbs, inv)
+stopCluster(cl)
+
+end_time = Sys.time()
+
+# Times the parallel run, printing total runtime in minutes
+execution_time = difftime(end_time, start_time, units = "mins")
+print(paste("Execution time: ", round(execution_time, 2), "minutes"))
+
+# >> WORK-IN-PROGRESS TO SPEEDUP COMPUTATION <<
+
+# Fills the `inb_all` array with the results from each parallel iteration
+for (i in 1:sub) {
+	inb_all[i, , ] = inb_all_parallel[[i]]
+}
+
+str(inb_all)
+```
+
+------------------------------------------------------------------------
+
+#### 2.7.2.	Convert into long format and calculate Invasion Percent
+Converting into long format, each row will correspond to a single combination of reshuffle iteration, species, and site, making it easier to summarize, group, and plot. A tidy data frame with columns for reshuffle iteration, species index, site index, and invasiveness values is returned.
+
+```{r run-melt}
+# Convert to long format
+# Reshapes the 3D invasibility array into a “long” data frame
+inb_all_long = reshape2::melt(inb_all, 
+			varnames = c("Reshuffle", "Species", "Site"),
+			value.name = "Invasiness")
+			
+inb_all_long <- inb_all %>%                       # wide → long
+  pivot_longer(names_to  = c("Reshuffle", "Species", "Site"),                      # new column with names
+    values_to = "Invasiness"                         # new column with values
+  ) %>% 
+  group_by(site, x, y, species) %>%             # collapse duplicates
+  summarise(Invasiness = sum(Invasiness), .groups = "drop")
+
+# Confirm that the data has been successfully restructured
+head(inb_all_long)
+str(inb_all_long)
+summary(inb_all_long)
+```
+
+Calculates Invasion Proportion and Percent where, Invasi_Prop is the proportion of positive invasiveness values across all reshuffles and species (i.e., fraction of times an alien can invade). Invasi_Percent is the same proportion multiplied by 100. A raster-style map is returned, showing how invasibility percent varies across sites, highlighting hotspots (dark blue) and colder spots (yellow) of potential alien establishment. Species richness is overlaid to help interpret invasibility in context of existing community diversity.
+
+```{r get-invasi_spp_site}
+# Invasibility Percent Raster Plot
+# Matches site indices to their x and y coordinates (site_xy)
+inb_all_long$x = site_xy$x[match(inb_all_long$Site, site_xy$grid_id)]
+inb_all_long$y = site_xy$y[match(inb_all_long$Site, site_xy$grid_id)]
+
+# Summarise by xyz
+invasibility_spp_site = inb_all_long %>%
+  group_by(Site, x, y) %>%
+  summarise(Invasi_Prop = sum(Invasiness > 0) / (sub * s_spp),
+            Invasi_Percent = Invasi_Prop * 100)
+
+# Add number of species per site back to results (species richness)
+invasibility_spp_site$nSpp = spp_rich$nSpp[match(invasibility_spp_site$Site,
+                             spp_rich$site)]
+
+# Check results
+head(invasibility_spp_site)
+
+# Invasibility Percent Raster Plot
+ggplot() +
+  # Creates a spatial heatmap of invasibility percent
+  geom_tile(invasibility_spp_site, aes(x=x, y=y, fill=Invasi_Percent)) + 
+  # Overlays the species richness value at each site
+  geom_text(invasibility_spp_site, aes(x=x, y=y, label=nSpp), color="darkgrey") +
+  # Uses `viridis` colours in reverse order
+  scale_fill_viridis(colors=viridis(8), direction =-1) + 
+  # Add South African boundary layer
+  geom_sf(data = rsa, fill = NA, color = "forestgreen", alpha = 0.5) +
+  # Add Title, Axis and Legend labels
+  labs(title = "Invasibility Percent Raster Plot",
+       x = "Longitude",
+       y = "Latitude",
+       fill = "Invasibility %") +
+  theme_minimal()
+``` 
+
+The map above displays the variation in invasibility percent across sites, reflecting the relative openness of communities to potential alien species establishment, as described by Hui et al. (2016). Dark blue areas represent hotspots of high invasibility, indicating regions more susceptible to colonization, while yellow areas signify lower invasibility or "colder spots." The map overlays species richness data, providing context for understanding invasibility in relation to existing community diversity. Regions with high invasibility and low species richness may represent opportunities for alien species to establish, whereas high diversity areas with lower invasibility suggest more stable or resistant communities.
+
+------------------------------------------------------------------------
+
+### 2.8.	Trait-Environment Relationship with mvabund::traitglm
+A trait–environment analysis can be conducted using mvabund to relate species traits to environmental variables (Wang et al 2012):
+
+Trait-Environment Model: A trait–environment model is fitted to quantify the relationship between species traits and environmental conditions. This approach helps identify which environmental variables promote invasibility by interacting with specific species traits. The fitted model captures how particular traits interact with specific environmental factors to influence species distributions or abundances. By examining the trait–environment interaction coefficients, one can interpret which traits matter most under different conditions.
+
+>> WORK-IN-PROGRESS <<
+>> OUTPUT PENDING FOR 2 DAYS. NEED TO SPEED-UP COMPUTATION
+```{r run-traitglm}
+# Trait–Environment Model 
+# Fits a Trait–Environment model that links species abundance (sbs) to both 
+# environment (env) and species traits (sbt), using “manyglm” method.
+ft = mvabund::traitglm(sbs[,1:41], env, sbt, method = "manyglm")
+
+# Inspect the model structure at the top level
+str(ft, max.level = 1)
+# >> OUTPUT PENDING
+
+# Show estimated trait–environment interaction coefficients
+# How traits mediate effect of enviro. variables on species abundance
+ft$fourth
+```
+>> OUTPUT PENDING
+
+Visualisation of Trait–Environment Interaction Coefficients: The coefficients from the trait–environment model can be visualized in a heatmap, highlighting how traits and environmental factors interact to influence species abundances. This reveals which pairs of (trait × environment) have the strongest positive or negative effects, providing insight into how environmental conditions modify trait–based responses.
+
+>> WORK-IN-PROGRESS <<
+```{r plot-traitglm}
+# Visualization of Trait–Environment Interaction Coefficients
+# Extracts the absolute maximum value ‘a’ among the interaction coefficients  
+# i.e. used or symmetric colour scaling
+a = max(abs(ft$fourth.corner))
+
+# Defines a gradient from negative (blue) to positive (red)
+pcols = colorRampPalette(c("blue","white","red"))
+
+# Provides a heatmap of trait–environment interaction strengths
+plot.4th = levelplot(t(as.matrix(ft$fourth.corner)), 
+			xlab="Enviro Variables", ylab="Species traits", 
+			col.regions=pcols(100), at=seq(-a, a, length=100),
+			scales = list(x = list(rot = 45)))
+plot.4th
+```
+>> OUTPUT PENDING
+
+------------------------------------------------------------------------
+
+### 2.9.	Predictive Modelling with mvabund::predict.traitglm
+Uses the predict method for the mvabund::traitglm model (ft) to estimate species abundance or other response metrics under new (or existing) environmental conditions. If new environmental data are supplied, it predicts how the species–trait–environment relationships translate to abundance or occurrence in novel conditions. Returns the predicted abundances or response (depending on the specification) of species based on the fitted trait–environment relationships. This provides an opportunity to test scenarios or forecast how changes in the environment could shift community composition.
+
+>> WORK-IN-PROGRESS <<
+```{r run-predict}
+# Use `predict` method for class 'traitglm'
+# predict(object, newR=NULL, newQ=NULL, newL=NULL, type="response", ...)
+# newR: Data frame of enviro variables for each site/time to be predicted
+# newQ: New species traits, can be used to predict how new trait 
+# combinations might respond to the environment
+predict(ft, newR = env)
+```
+>> OUTPUT PENDING
+
+------------------------------------------------------------------------
+
+## 3.	Conclusion
+**`invasimapr`**'s developing workflow demonstrates a modular pipeline that links standardized occurrence and environmental data with functional traits to quantify community-level invasion risk. By merging trait-derived Gower distances, trait–environment GLMs, and parallelised reshuffling of species–trait profiles, the package can estimate interaction strengths, identify trait combinations that foster establishment, and map site-specific invasibility at fine spatial resolution. Its adaptable data-access and preprocessing functions, coupled with scalable simulation routines, make the framework suitable for plant, invertebrate, and vertebrate systems. Continued expansion of trait coverage, refinement of growth models, and improved spatial interpolation will consolidate **`invasimapr`** into a robust, fully documented tool for assessing and managing biological invasions by mid-2025.
