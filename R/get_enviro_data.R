@@ -7,7 +7,7 @@
 #' @param data A data frame containing spatial points with x and y coordinates.
 #' @param buffer_km Numeric. Buffer distance around the input points in kilometers (default: 10).
 #' @param var Character. Variable to retrieve (e.g., "bio" for bioclimatic variables, "elev" for elevation).
-#' @param res Numeric. Resolution of the environmental data in arc-minutes (default: 2.5).
+#' @param res Numeric. Resolution of the environmental data in arc-minutes (default: 5).
 #' @param path Character. Directory path to store downloaded data or to load local rasters (default: "data/").
 #' @param source Character. Data source: "geodata" for downloading or "local" for local rasters (default: "geodata").
 #' @param year Numeric. Year for temporal data (e.g., for population or footprint datasets; required for specific datasets).
@@ -40,7 +40,7 @@ get_enviro_data <- function(data,
                             buffer_km = 10,
                             source = "geodata", # Options: 'local'
                             var = "bio", # Options: c('bio','elev','footprint','population','soil_world')
-                            res = 2.5, # Resolution needed for 'worldclim_global','elev', 'population'
+                            res = 5, # Resolution needed for 'worldclim_global','elev', 'population'
                             path = "data/",
                             year = NULL, # Needed for 'footprint' and 'population' data
                             depth = NULL, # Needed for 'soil_world'

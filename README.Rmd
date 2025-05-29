@@ -87,13 +87,13 @@ Below we present **`invasimapr`**, an R-based workflow designed to streamline th
 
 Install and load the `**`invasimapr`**` package from GitHub, ensuring all functions are available for use in the analysis workflow.
 
-```{r install-**`invasimapr`**, eval=FALSE, include=TRUE}
+```{r install-invasimapr, eval=FALSE, include=TRUE}
 # install remotes if needed
 # install.packages("remotes")
 # remotes::install_github("macSands/invasimapr")
 ```
 
-```{r load-**`invasimapr`**, include=TRUE}
+```{r load-invasimapr, include=TRUE}
 # Ensure the package is loaded when knitting
 library(invasimapr)
 
@@ -123,7 +123,7 @@ library(future.apply)
 ------------------------------------------------------------------------
 
 ### 2.3.	Setup environment and load functions
-Setup your environment by optimizing memory usage, setting up your working directory, and loading essential functions from the **`invasimapr`** package for retrieving and formatting occurrence and environmental data, generating spatial grids, and performing subsequent distance-based or trait–environment analyses (e.g., get_occurrence_data, format_df, process_site_sp_trait). In this way, the workflow can seamlessly integrate data preparation, trait analysis, and invasion modelling.
+Setup your environment by optimizing memory usage, setting up your working directory, and loading essential functions from the **`invasimapr`** package for retrieving and formatting occurrence and environmental data, generating spatial grids, and performing subsequent distance-based or trait–environment analyses (e.g., `get_occurrence_data`, `format_df`, `process_site_sp_trait`). In this way, the workflow can seamlessly integrate data preparation, trait analysis, and invasion modelling.
 
 ```{r setup-enviro}
 # Run garbage collection (gc) to free unused R memory 
@@ -137,46 +137,73 @@ gc(reset = TRUE)
 
 ------------------------------------------------------------------------
 
+### User-defined area of interest and grid resolution
+
+Load the spatial boundary data for South Africa to serve as the geographic reference for all subsequent biodiversity analyses and visualizations.
+
+```{r aoi}
+# Read RSA shape file
+rsa = sf::st_read('inst/extdata/rsa.shp')
+
+# Define your resolution and create mask to use later
+res = 0.5 # 0.5 degrees is roughly 55km
+
+# Convert to a terra vector
+rsa_vect = vect(rsa)
+
+# Create an empty raster over RSA at your desired resolution
+grid = rast(rsa_vect, resolution = res, crs = crs(rsa_vect))
+values(grid) = 1   # fill with dummy values
+
+# Mask everything outside the RSA boundary
+grid_masked = mask(grid, rsa_vect)
+```
+
+------------------------------------------------------------------------
+
 ### 2.4.	Data Access and Preparation
 This section focuses on automating the retrieval and pre-processing of core data, including species occurrence, species traits and environmental variables. Functions described below, automate access and prepare species, trait and environment data to support downstream invasibility assessments.
 
-#### 2.4.1.	Species Occurrence Data with get_occurrence_data
+#### 2.4.1.	Species Occurrence Data with `get_occurrence_data`
 Use get_occurrence_data to automates the retrieval and preprocessing of species occurrence data from multiple sources, including:
 
 i)  local databases,
 ii) the Global Biodiversity Information Facility (GBIF), and
-iii) species occurrence cubes from B3 (specification) [*work in progress].
+iii) species occurrence cubes from B3 (specification) [*work in progress*].
 
 The function assembles data on species distributions across specified taxonomic groups and regions, producing presence-absence or abundance matrices that quantify species co-occurrence within locations. 
 
 ```{r run-get_occurrence_data}
 # Imports species occurrence data from local files, data frames, or GBIF sources
-fab_data = get_occurrence_data(data = '/data/gbif_fabaceae_0038785-241126133.csv',
+fab_data = get_occurrence_data(data = 'inst/extdata/gbif_fabaceae_0038785-241126133413365.csv', # gbif_fabaceae_0038785-241126133.csv
                                 source_type = 'local_csv',
-                         # options: 'local_csv', 'data_frame', 'gbif')
                                 sep = '\t', # Default: ','
-                                gbif_zip_url = NULL, # e.g. 'https://api.gbif.org/v1/occurrence/download/request/0038969-240906103802322.zip'
                                 download_dir = tempdir())
+
+# fab_data = get_occurrence_data(data = 'inst/extdata/site_sp_pa_long.csv',
+#                                 source_type = 'local_csv',
+#                                 download_dir = tempdir())
 
 # Check column names of `fab_data` data.frame
 names(fab_data)
+head(fab_data)
 ```
 ------------------------------------------------------------------------
 
-#### 2.4.2.	Data formatting with format_df
+#### 2.4.2.	Data formatting with `format_df`
 To analyse biodiversity data effectively, it is necessary to standardize and reshape datasets into specific formats, each serving a distinct purpose. 
 
-•	site_xy: Holds spatial coordinates of sampled sites (Table 1).
-•	site_sp: Site-by-species matrix for biodiversity assessments (Table 2).
-•	sp_trait: Species-specific trait data essential for understanding how species traits influence interactions (Table 3).
-•	site_env: Site-specific environmental data provides contextual information about the conditions at each study location (Table 4).
+•	`site_xy`: Holds spatial coordinates of sampled sites.
+•	`site_sp`: Site-by-species matrix for biodiversity assessments.
+•	`sp_trait`: Species-specific trait data essential for understanding how species traits influence interactions.
+•	`site_env`: Site-specific environmental data provides contextual information about the conditions at each study location.
 
-First use format_df to standardise and reshape biodiversity data into long or wide formats. It automatically identifies key columns (e.g., coordinates, species, and values), assigns missing site IDs, and reformats the data for analysis. Outputs include a cleaned dataset and species-site matrices for further processing.
+First use `format_df` to standardise and reshape biodiversity data into long or wide formats. It automatically identifies key columns (e.g., coordinates, species, and values), assigns missing site IDs, and reformats the data for analysis. Outputs include a cleaned dataset and species-site matrices for further processing.
 
 ```{r run-format_df}
 # Run `format_df` to format data.frame
 fab_format = format_df(data = fab_data,
-                       species_col = 'verbatimScientificName',
+                       species_col = 'verbatimScientificName',#sp_name
                        value_col = 'pa',
                        format = 'long')
 
@@ -192,7 +219,7 @@ head(fab_format$site_sp[,1:6])
 
 ------------------------------------------------------------------------
 
-#### 2.4.3.	Generate Spatial Grids with generate_grid
+#### 2.4.3.	Generate Spatial Grids with `generate_grid`
 Then use generate_grid to divide the study area, derived from the geographic extent of the occurrence data above, into grids of user-defined resolution, creating a spatial grid over a specified geographic extent. It assigns unique grid IDs to points and summarizes selected data columns within each grid cell. The function outputs a raster grid, grid polygons for visualization, and a data frame summarizing the contents of each grid cell, including totals and centroids. It is particularly useful for aggregating spatial data, such as biodiversity observations, into predefined spatial units for further analysis. 
 
 ```{r run-generate_grid}
@@ -201,8 +228,8 @@ Then use generate_grid to divide the study area, derived from the geographic ext
 grid_list = generate_grid(data = fab_format$site_sp,
                           x_col = "x",       # Column for x-coordinates
                           y_col = "y",       # Column for y-coordinates
-                          grid_size = 0.25,    # Grid size in degrees
-                          sum_col_range = 4:ncol(data),  # Columns to summarize
+                          grid_size = 1,    # Grid size in degrees
+                          sum_col_range = 4:ncol(fab_format$site_sp),  # Columns to summarize
                           crs_epsg = 4326) # Set projection*  
 
 # Optional: Make separate data objects from returned list
@@ -233,8 +260,8 @@ ggplot() +
  
 ------------------------------------------------------------------------
 
-#### 2.4.4.	Environmental data with get_enviro_data
-Use get_enviro_data to retrieve environmental data for spatial points derived from get_occurrence_data (actual observation coordinates) and/or generate_grid (grid centroids), by either downloading it from sources like WorldClim or SoilGrids via the geodata package (https://ouicodedata.com/posts/worldclim-with-r/), or provide path to local raster data. The function generates an area of interest (AOI) around the input points, adds a pre-defined buffer area, and extracts the selected environmental variables for these locations. If no data (NA) values are returned for some outlier points, the function will interpolate these missing values using the average of surrounding non-NA records. The output includes a cropped raster of the environmental data, spatial points as an sf object, and a combined data frame of the input data with extracted environmental variables, enabling spatial analyses of environmental conditions. Future data source options plan to include i) CHELSA via climenv (https://chelsa-climate.org/), ii) Google Earth Engine via rgee (https://r-spatial.github.io/rgee/), and iii) additional biodiversity data via mapme (https://mapme-initiative.github.io/mapme. biodiversity/index.html).
+#### 2.4.4.	Environmental data with `get_enviro_data`
+Use `get_enviro_data` to retrieve environmental data for spatial points derived from get_occurrence_data (actual observation coordinates) and/or `generate_grid` (grid centroids), by either downloading it from sources like `WorldClim` or `SoilGrids` via the [`geodata`](https://ouicodedata.com/posts/worldclim-with-r/) package, or provide path to local raster data. The function generates an area of interest (AOI) around the input points, adds a pre-defined buffer area, and extracts the selected environmental variables for these locations. If no data (NA) values are returned for some outlier points, the function will interpolate these missing values using the average of surrounding non-NA records. The output includes a cropped raster of the environmental data, spatial points as an `sf` object, and a combined data frame of the input data with extracted environmental variables, enabling spatial analyses of environmental conditions. Future data source options plan to include i) CHELSA via [`climenv`](https://chelsa-climate.org/), ii) Google Earth Engine via [`rgee`](https://r-spatial.github.io/rgee/), and iii) additional biodiversity data via [`mapme`](https://mapme-initiative.github.io/mapme. biodiversity/index.html).
 
 ```{r run-get_enviro_data}
 # First set output directory
@@ -254,6 +281,15 @@ enviro_list = get_enviro_data(data = grid_sp,
 # Check results – Returns list of 3 objects
 str(enviro_list, max.level = 1)
 
+# Optional: Rename the columns to something more descriptive
+names_env = c("temp_mean", "mdr", "iso", "temp_sea", "temp_max",
+                    "temp_min", "temp_rang","temp_wetQ","temp_dryQ", "temp_warmQ",
+                    "temp_coldQ", "rain_mean","rain_wet", "rain_dry", "rain_sea",
+                    "rain_wetQ", "rain_dryQ","rain_warmQ", "rain_coldQ")
+
+names(enviro_list$env_df) = c('grid_id','x','y','ID',names_env)
+names(enviro_list$env_rast) = names_env
+
 # Check results – SpatRaster with layers for each environmental variable
 enviro_list$env_rast
 
@@ -266,17 +302,17 @@ head(enviro_list$env_df[,1:8])
 ```
 ------------------------------------------------------------------------
 
-#### 2.4.5.	Species Traits Data with process_site_sp_trait
-This function integrates trait data from the TRY database (Kattge et al. 2020), a global collaborative initiative that consolidates and standardizes plant trait data from multiple sources, with site-level species observations, returning a concise set of data structures for further ecological analyses. First, it imports and checks the provided TRY data (either from a file path or an existing data frame). It then uses fuzzy string matching to reconcile species names in the site-by-observations table with those in the TRY dataset. Next, trait values are extracted, cleaned (e.g., converting character values to numeric), and pivoted into a “wide” format. Finally, the function filters out unmatched species, retrieves spatial coordinates, and returns a list containing merged traits, filtered site-by-species data, and site coordinates. Optional outputs (via appendix = TRUE) include additional intermediate objects like the raw species-by-trait matrix, trait name lookups, and the species mapping table.
-process_site_sp_trait unites external trait data (from the TRY database) with site-level species observations to produce a dataset ready for downstream ecological analyses. The steps are as follows:
-1.	Import and Validate: Uses rtry::rtry_import to read in TRY data (either from a file path or data frame) and ensures required columns are present.
-2.	Fuzzy Match Species: Uses fuzzyjoin::stringdist_inner_join to reconcile species names between the site observations (grid_obs) and the TRY dataset.
+#### 2.4.5.	Species Traits Data with `process_site_sp_trait`
+This function integrates trait data from the [TRY](https://www.try-db.org/TryWeb/Home.php) database (Kattge et al. 2020), a global collaborative initiative that consolidates and standardizes plant trait data from multiple sources, with site-level species observations, returning a concise set of data structures for further ecological analyses. First, it imports and checks the provided TRY data (either from a file path or an existing data frame). It then uses fuzzy string matching to reconcile species names in the site-by-observations table with those in the TRY dataset. Next, trait values are extracted, cleaned (e.g., converting character values to numeric), and pivoted into a “wide” format. Finally, the function filters out unmatched species, retrieves spatial coordinates, and returns a list containing merged traits, filtered site-by-species data, and site coordinates. Optional outputs (via appendix = TRUE) include additional intermediate objects like the raw species-by-trait matrix, trait name lookups, and the species mapping table.
+`process_site_sp_trait` unites external trait data (from the TRY database) with site-level species observations to produce a dataset ready for downstream ecological analyses. The steps are as follows:
+1.	Import and Validate: Uses `rtry::rtry_import` to read in TRY data (either from a file path or data frame) and ensures required columns are present.
+2.	Fuzzy Match Species: Uses `fuzzyjoin::stringdist_inner_join` to reconcile species names between the site observations (grid_obs) and the TRY dataset.
 3.	Pivot Trait Data: Cleans numeric values, groups them by species and trait, and transforms data into a “wide” matrix of species by traits.
 4.	Filter by Site: Matches only those species listed in grid_sp (via sp_cols) and obtains an updated site-by-species matrix along with corresponding spatial coordinates.
 5.	Return Outputs: Provides a concise list containing:
-o	sp_traits: The final species-by-traits data.
-o	site_sp: A filtered site-by-species matrix.
-o	site_xy: Spatial coordinates for these sites.
+o	`sp_traits`: The final species-by-traits data.
+o	`site_sp`: A filtered site-by-species matrix.
+o	`site_xy`: Spatial coordinates for these sites.
 o	Optional components (if appendix = TRUE) include the raw species-by-trait matrix, trait name lookups, and the species mapping table.
 
 ```{r run-process_site_sp_trait}
@@ -310,7 +346,7 @@ dim(spp_traits_list$site_xy)
 
 ------------------------------------------------------------------------
 
-### 2.5.	Functional Dissimilarity and Community Trait Profiles with cluster::daisy; funspace::funspace; stats::princomp and vegan::metaMDS
+### 2.5.	Functional Dissimilarity and Community Trait Profiles with `cluster::daisy`; `funspace::funspace`; `stats::princomp` and `vegan::metaMDS`
 In this step, the functional structure of species communities is defined. Using the Gower distance metric, dissimilarity matrices are calculated to assess trait-based differences between species:
 
 Dissimilarity Matrix Calculation (Gower): A Gower distance matrix is computed using species traits. This matrix captures the dissimilarity in species traits, which is later used to quantify species interaction strength. A PCA-based trait space is then used to summarise the main axes of variation among species.
@@ -320,6 +356,8 @@ Dissimilarity Matrix Calculation (Gower): A Gower distance matrix is computed us
 # Calculates pairwise dissimilarity between species based on traits (sbt) 
 # Uses Gower distance >> handles mixed data types 
 # (continuous, ordinal, categorical).
+sbt = spp_traits_list$sp_traits
+sbt$species = as.factor(sbt$species)
 sbt_gower = as.matrix(cluster::daisy(sbt, metric = "gower", stand = FALSE))
 
 # Performs Principal Component Analysis (PCA) on the Gower distance matrix. 
@@ -370,11 +408,55 @@ ggplot(nmds_scores_sites, aes(x = NMDS1, y = NMDS2)) +
  
 ------------------------------------------------------------------------
 
-### 2.6.	Interaction Strength with r() and alpha()
-Here, the workflow calculates the interaction strength matrix based on trait-mediated competition. The strength of interactions is derived from a Gaussian-like kernel function that models the effect of trait distances on competitive interactions:
-Interaction Kernel: The Gaussian-like kernel function is used to compute pairwise interaction strengths based on trait distances, where smaller trait distances lead to stronger interactions: r(): Growth rates for alien species in various environments. alpha(): A matrix of interaction strengths, with higher values indicating stronger competitive effects when species’ traits are similar.
-r(alien_x, enviro) is a placeholder function returning a constant growth rate (here fixed at 1). In practice, this would be replaced by a more complex function capturing how an alien species’ intrinsic growth rate depends on both its traits (alien_x) and the environment (enviro).
+### Check species and sites are filtered by `sbt` and set parameters for models   
+Align the three core data sets required by **`invasimapr`**. After dropping an unneeded geometry column, `env` holds per-site environmental predictors, while `sbs` is the raw site-by-species table. The vector `keep_spp` is the intersection of species columns present in `sbs` and those listed in the trait table `sbt`, guaranteeing that only taxa with trait information are analysed. `sbs_fil` retains the four metadata columns (grid_id, coordinates, etc.) plus these matched species and then discards any site that now contains no occurrences of them, preventing empty rows in later computations. `env_fil` is created with semi_join, keeping only the environmental rows whose grid_id is represented in `sbs_fil`, so the environmental and biological matrices are perfectly co-registered.
 
+```{r filter-spp}
+## Prepare data.frames  -----------------------------------------
+env = enviro_list$env_df[,-4]
+sbs = grid_sp
+
+## species to retain  ------------------------------------------------------
+keep_spp <- intersect(
+  colnames(sbs)[-(1:4)],      # species columns in the site-by-species table
+  as.character(sbt$species)      # those present in the trait table
+)
+
+## filter the site-by-species table  ---------------------------------------
+sbs_fil <- sbs %>%
+  # keep the first four metadata columns plus the selected species
+  select(1:4, all_of(keep_spp)) %>%
+  # drop sites with no occurrences of any retained species
+  filter(if_any(all_of(keep_spp), ~ .x > 0))
+
+## filter the environmental table  -----------------------------------------
+env_fil <- env %>%
+  semi_join(sbs_fil, by = "grid_id")   # keeps only matching grid_id rows
+```
+
+Extract the analysis matrices and key constants. `sbsF` is the pure species matrix (*sites × species*), `sbtF` is the trait matrix (*species × traits*), and `envF` is the environmental matrix (*sites × environment*) with the same site order as `sbsF`. The scalar assignments record the dimensions of these matrices (n_site, s_spp, t_trt), the competition‐kernel width `sigV`, and the number of null reshuffles `sub`, which are passed directly to downstream **`invasimapr`** functions such as `alpha()` and the Monte-Carlo routines.
+
+```{r set-parameters}
+sbsF = sbs_fil[,-(1:4)]
+sbtF = sbt[,-1]
+envF = sbs_fil[,-(1:3)]
+(n_site = dim(sbsF)[1]) # number of sites
+(s_spp = dim(sbtF)[1]) # number of species
+(t_trt = dim(sbtF[,-1])[2]) # number of traits
+(sigV = 0.02175691) # sigma value in alpha function: Width of bell i.e. wide bell = stronger competition in general
+(sub = 10) # number of reshuffles
+```
+
+------------------------------------------------------------------------
+
+### 2.6.	Interaction Strength with `r()` and `alpha()`
+Here, the workflow calculates the interaction strength matrix based on trait-mediated competition. The strength of interactions is derived from a Gaussian-like kernel function that models the effect of trait distances on competitive interactions.
+The Gaussian-like Interaction Kernel function is used to compute pairwise interaction strengths based on trait distances, where smaller trait distances lead to stronger interactions:   
+o	`r()`: Growth rates for alien species in various environments.   
+o	`alpha()`: A matrix of interaction strengths, with higher values indicating stronger competitive effects when species’ traits are similar.   
+o	`r(alien_x, enviro)`: a placeholder function returning a constant growth rate (here fixed at 1). In practice, this would be replaced by a more complex function capturing how an alien species’ intrinsic growth rate depends on both its traits (alien_x) and the environment (enviro).
+
+`r()`: Growth rates for alien species in various environments.
 ```{r fun-r}
 # ‘r’ Function: Trait mediated growth as a function of the environment
 r = function(alien_x, enviro){
@@ -382,9 +464,9 @@ r = function(alien_x, enviro){
 }
 ```
 
-alpha(sbt, alien_x, sig): Calculates the pairwise trait distances between an alien species (alien_x) and each resident species in sbt using Gower distance. It then applies a Gaussian-like kernel (exponential decay of squared distance) to represent trait-mediated competition. sig defines the kernel width (sigma); larger sigma implies a broader range of competitive effects.
+`alpha(sbt, alien_x, sig)`: Calculates the pairwise trait distances between an alien species (alien_x) and each resident species in `sbt` using Gower distance. It then applies a Gaussian-like kernel (exponential decay of squared distance) to represent trait-mediated competition. `sig` defines the kernel width (sigma); larger sigma implies a broader range of competitive effects.
 
-```{r fun-alpha}
+```{r fun-alpha, tidy = FALSE, prompt = TRUE}
 # ‘Alpha’ Function: Pairwise dissimilarities (distances) between traits
 alpha = function(sbt, alien_x, sig=sigV){
   yy = as.matrix(cluster::daisy(rbind(sbt, alien_x), metric = "gower"))
@@ -395,7 +477,11 @@ alpha = function(sbt, alien_x, sig=sigV){
 ------------------------------------------------------------------------
 
 ### 2.7.	Invasiveness with inv()
-Invasiveness Calculation: A function is implemented to compute the trait-mediated invasiveness of alien species based on their interaction strength with the community. A numeric value (or vector) is returned for each site indicating the alien species’ ability to invade (i.e., whether it can grow in the presence of established competitors and local environmental conditions). By reshuffling traits, we can create a new species-trait matrix (xx) by randomly permuting the rows of sbt. This mimics creating “alien” trait profiles from existing trait data. Using future_lapply, the invasibility calculations can be run in parallel across multiple species, essentially looping over each newly “constructed” alien species (species_index). Invasibility is then computed for each alien species across all sites. A matrix of invasibility values is returned, where rows correspond to alien species and columns correspond to sites i.e. a sspp×nsites matrix of invasibility scores for each reshuffled species at each site
+Invasiveness Calculation: A function is implemented to compute the trait-mediated invasiveness of alien species based on their interaction strength with the community. A numeric value (or vector) is returned for each site indicating the alien species’ ability to invade (i.e., whether it can grow in the presence of established competitors and local environmental conditions). By reshuffling traits, we can create a new species-trait matrix (xx) by randomly permuting the rows of `sbt`. This mimics creating “alien” trait profiles from existing trait data. Using `future_apply::future_lapply`, the invasibility calculations can be run in parallel across multiple species, essentially looping over each newly “constructed” alien species (species_index). Invasibility is then computed for each alien species across all sites. A matrix of invasibility values is returned, where rows correspond to alien species and columns correspond to sites i.e. a *sspp × nsites* matrix of invasibility scores for each reshuffled species at each site.   
+
+`inv()` computes the invasiveness of an alien species: 
+Invasiveness = `r(alienx, enviro) − α(sbt, alienx) × abT`
+where `ab` represents the abundance vector of resident species, and `α` (`alpha`) is the trait-mediated competition kernel. A positive result indicates a higher growth potential relative to competitive suppression, while a negative result suggests the alien is outcompeted by resident species.
 
 ```{r fun-inv}
 # Invasiveness calculation 
@@ -404,13 +490,9 @@ inv = function(alien_x, enviro, sbt, ab){
 }
 ```
 
-inv() computes the invasiveness of an alien species: 
-Invasiveness = r(alienx, enviro) − α(sbt, alienx) × abT
-where ab represents the abundance vector of resident species, and α (alpha) is the trait-mediated competition kernel. A positive result indicates a higher growth potential relative to competitive suppression, while a negative result suggests the alien is outcompeted by resident species.
-
 ------------------------------------------------------------------------
 
-#### 2.7.1.	Parallel computation with compute_invasibility_noLoop
+#### 2.7.1.	Parallel computation with `compute_invasibility_noLoop`
 Next compute invasibility using parallel processing, with the function for Parallel Computation below:
 
 ```{r fun-compute_invasibility}
@@ -420,7 +502,7 @@ compute_invasibility_noLoop = function(i, sbt, env, sbs, inv) {
   xx = as.data.frame(lapply(sbt, sample))
   
   # Parallel processing using future_lapply to compute results each species
-  reshuffle_results = future_lapply(1:s_spp, function(species_index) {
+  reshuffle_results = future.apply::future_lapply(1:s_spp, function(species_index) {
     # Extract reshuffled species data 
     x = xx[species_index, ]      
     # For each species, compute invasibility for each site in parallel
@@ -436,175 +518,175 @@ compute_invasibility_noLoop = function(i, sbt, env, sbs, inv) {
 }
 ```
 
-Returns a 3D array (inb_all) with dimensions: [sub, s_spp, n_site], containing invasibility values for each reshuffle, species, and site. A substantial speedup in computations compared to a single-threaded approach, especially for large data.
+Returns a 3D array (`inb_all`) with dimensions: [sub, s_spp, n_site], containing invasibility values for each reshuffle, species, and site. A substantial speedup in computations compared to a single-threaded approach, especially for large data.
 
 ```{r run-compute_invasibility}
-# Run in parallel
-# Pre-allocates a 3D array to store invasibility results for multiple 
-# reshuffles (sub times), across all species and sites.
-inb_all = array(NA, dim = c(sub, s_spp, n_site))
-
-# Cluster Initialization
-num_cores = detectCores() – 1 # keeps one system core free
-cl = makeCluster(num_cores) # creates the parallel backend
-
-# Sends the required objects/functions to each node
-clusterExport(cl, varlist = c("sbt", "env", "sbs", 
-                           "inv", "r", "alpha", 
-                           "s_spp", "n_site", "sigV"))
-start_time = Sys.time()
-
-# Parallel Computation
-# `parLapply` runs the `compute_invasibility_noLoop` function in parallel 
-# for each reshuffle iteration (1 through sub).
-inb_all_parallel = parLapply(cl, 1:sub, 
-                             compute_invasibility_noLoop,
-                             sbt, env, sbs, inv)
-stopCluster(cl)
-
-end_time = Sys.time()
-
-# Times the parallel run, printing total runtime in minutes
-execution_time = difftime(end_time, start_time, units = "mins")
-print(paste("Execution time: ", round(execution_time, 2), "minutes"))
-
-# >> WORK-IN-PROGRESS TO SPEEDUP COMPUTATION <<
-
-# Fills the `inb_all` array with the results from each parallel iteration
-for (i in 1:sub) {
-	inb_all[i, , ] = inb_all_parallel[[i]]
-}
-
-str(inb_all)
+# # Run in parallel
+# # Pre-allocates a 3D array to store invasibility results for multiple 
+# # reshuffles (sub times), across all species and sites.
+# inb_all = array(NA, dim = c(sub, s_spp, n_site))
+# 
+# # Cluster Initialization
+# num_cores = detectCores() - 2 # keeps one system core free
+# cl = makeCluster(num_cores) # creates the parallel backend
+# 
+# # Sends the required objects/functions to each node
+# clusterExport(cl, varlist = c("sbt", "env", "sbs", 
+#                            "inv", "r", "alpha", 
+#                            "s_spp", "n_site", "sigV"))
+# start_time = Sys.time()
+# 
+# # Parallel Computation
+# # `parLapply` runs the `compute_invasibility_noLoop` function in parallel 
+# # for each reshuffle iteration (1 through sub).
+# inb_all_parallel = parLapply(cl, 1:sub, 
+#                              compute_invasibility_noLoop,
+#                              sbtF, envF, sbsF, inv)
+# stopCluster(cl)
+# 
+# end_time = Sys.time()
+# 
+# # Times the parallel run, printing total runtime in minutes
+# execution_time = difftime(end_time, start_time, units = "mins")
+# print(paste("Execution time: ", round(execution_time, 2), "minutes"))
+# 
+# # >> WORK-IN-PROGRESS TO SPEEDUP COMPUTATION <<
+# 
+# # Fills the `inb_all` array with the results from each parallel iteration
+# for (i in 1:sub) {
+# 	inb_all[i, , ] = inb_all_parallel[[i]]
+# }
+# 
+# str(inb_all)
 ```
 
 ------------------------------------------------------------------------
 
-#### 2.7.2.	Convert into long format and calculate Invasion Percent
+#### 2.7.2.	Convert into long format and calculate **Invasion Percent**
 Converting into long format, each row will correspond to a single combination of reshuffle iteration, species, and site, making it easier to summarize, group, and plot. A tidy data frame with columns for reshuffle iteration, species index, site index, and invasiveness values is returned.
 
 ```{r run-melt}
-# Convert to long format
-# Reshapes the 3D invasibility array into a “long” data frame
-inb_all_long = reshape2::melt(inb_all, 
-			varnames = c("Reshuffle", "Species", "Site"),
-			value.name = "Invasiness")
-			
-inb_all_long <- inb_all %>%                       # wide → long
-  pivot_longer(names_to  = c("Reshuffle", "Species", "Site"),                      # new column with names
-    values_to = "Invasiness"                         # new column with values
-  ) %>% 
-  group_by(site, x, y, species) %>%             # collapse duplicates
-  summarise(Invasiness = sum(Invasiness), .groups = "drop")
-
-# Confirm that the data has been successfully restructured
-head(inb_all_long)
-str(inb_all_long)
-summary(inb_all_long)
+# # Convert to long format
+# # Reshapes the 3D invasibility array into a “long” data frame
+# inb_all_long = reshape2::melt(inb_all, 
+# 			varnames = c("Reshuffle", "Species", "Site"),
+# 			value.name = "Invasiness")
+# 			
+# inb_all_long <- inb_all %>%                       # wide → long
+#   pivot_longer(names_to  = c("Reshuffle", "Species", "Site"),                      # new column with names
+#     values_to = "Invasiness"                         # new column with values
+#   ) %>% 
+#   group_by(site, x, y, species) %>%             # collapse duplicates
+#   summarise(Invasiness = sum(Invasiness), .groups = "drop")
+# 
+# # Confirm that the data has been successfully restructured
+# head(inb_all_long)
+# str(inb_all_long)
+# summary(inb_all_long)
 ```
 
-Calculates Invasion Proportion and Percent where, Invasi_Prop is the proportion of positive invasiveness values across all reshuffles and species (i.e., fraction of times an alien can invade). Invasi_Percent is the same proportion multiplied by 100. A raster-style map is returned, showing how invasibility percent varies across sites, highlighting hotspots (dark blue) and colder spots (yellow) of potential alien establishment. Species richness is overlaid to help interpret invasibility in context of existing community diversity.
+Calculates **Invasion Proportion and Percent** where, `Invasi_Prop` is the proportion of positive invasiveness values across all reshuffles and species (i.e., fraction of times an alien can invade). `Invasi_Percent` is the same proportion multiplied by 100. A raster-style map is returned, showing how invasibility percent varies across sites, highlighting hotspots (dark blue) and colder spots (yellow) of potential alien establishment. Species richness is overlaid to help interpret invasibility in context of existing community diversity.
 
 ```{r get-invasi_spp_site}
-# Invasibility Percent Raster Plot
-# Matches site indices to their x and y coordinates (site_xy)
-inb_all_long$x = site_xy$x[match(inb_all_long$Site, site_xy$grid_id)]
-inb_all_long$y = site_xy$y[match(inb_all_long$Site, site_xy$grid_id)]
-
-# Summarise by xyz
-invasibility_spp_site = inb_all_long %>%
-  group_by(Site, x, y) %>%
-  summarise(Invasi_Prop = sum(Invasiness > 0) / (sub * s_spp),
-            Invasi_Percent = Invasi_Prop * 100)
-
-# Add number of species per site back to results (species richness)
-invasibility_spp_site$nSpp = spp_rich$nSpp[match(invasibility_spp_site$Site,
-                             spp_rich$site)]
-
-# Check results
-head(invasibility_spp_site)
-
-# Invasibility Percent Raster Plot
-ggplot() +
-  # Creates a spatial heatmap of invasibility percent
-  geom_tile(invasibility_spp_site, aes(x=x, y=y, fill=Invasi_Percent)) + 
-  # Overlays the species richness value at each site
-  geom_text(invasibility_spp_site, aes(x=x, y=y, label=nSpp), color="darkgrey") +
-  # Uses `viridis` colours in reverse order
-  scale_fill_viridis(colors=viridis(8), direction =-1) + 
-  # Add South African boundary layer
-  geom_sf(data = rsa, fill = NA, color = "forestgreen", alpha = 0.5) +
-  # Add Title, Axis and Legend labels
-  labs(title = "Invasibility Percent Raster Plot",
-       x = "Longitude",
-       y = "Latitude",
-       fill = "Invasibility %") +
-  theme_minimal()
+# # Invasibility Percent Raster Plot
+# # Matches site indices to their x and y coordinates (site_xy)
+# inb_all_long$x = site_xy$x[match(inb_all_long$Site, site_xy$grid_id)]
+# inb_all_long$y = site_xy$y[match(inb_all_long$Site, site_xy$grid_id)]
+# 
+# # Summarise by xyz
+# invasibility_spp_site = inb_all_long %>%
+#   group_by(Site, x, y) %>%
+#   summarise(Invasi_Prop = sum(Invasiness > 0) / (sub * s_spp),
+#             Invasi_Percent = Invasi_Prop * 100)
+# 
+# # Add number of species per site back to results (species richness)
+# invasibility_spp_site$nSpp = spp_rich$nSpp[match(invasibility_spp_site$Site,
+#                              spp_rich$site)]
+# 
+# # Check results
+# head(invasibility_spp_site)
+# 
+# # Invasibility Percent Raster Plot
+# ggplot() +
+#   # Creates a spatial heatmap of invasibility percent
+#   geom_tile(invasibility_spp_site, aes(x=x, y=y, fill=Invasi_Percent)) + 
+#   # Overlays the species richness value at each site
+#   geom_text(invasibility_spp_site, aes(x=x, y=y, label=nSpp), color="darkgrey") +
+#   # Uses `viridis` colours in reverse order
+#   scale_fill_viridis(colors=viridis(8), direction =-1) + 
+#   # Add South African boundary layer
+#   geom_sf(data = rsa, fill = NA, color = "forestgreen", alpha = 0.5) +
+#   # Add Title, Axis and Legend labels
+#   labs(title = "Invasibility Percent Raster Plot",
+#        x = "Longitude",
+#        y = "Latitude",
+#        fill = "Invasibility %") +
+#   theme_minimal()
 ``` 
 
-The map above displays the variation in invasibility percent across sites, reflecting the relative openness of communities to potential alien species establishment, as described by Hui et al. (2016). Dark blue areas represent hotspots of high invasibility, indicating regions more susceptible to colonization, while yellow areas signify lower invasibility or "colder spots." The map overlays species richness data, providing context for understanding invasibility in relation to existing community diversity. Regions with high invasibility and low species richness may represent opportunities for alien species to establish, whereas high diversity areas with lower invasibility suggest more stable or resistant communities.
+The map above displays the variation in **invasibility percent** across sites, reflecting the relative openness of communities to potential alien species establishment, as described by Hui et al. (2016). Dark blue areas represent hotspots of high invasibility, indicating regions more susceptible to colonization, while yellow areas signify lower invasibility or "colder spots." The map overlays species richness data, providing context for understanding invasibility in relation to existing community diversity. Regions with high invasibility and low species richness may represent opportunities for alien species to establish, whereas high diversity areas with lower invasibility suggest more stable or resistant communities.
 
 ------------------------------------------------------------------------
 
-### 2.8.	Trait-Environment Relationship with mvabund::traitglm
-A trait–environment analysis can be conducted using mvabund to relate species traits to environmental variables (Wang et al 2012):
+### 2.8.	Trait-Environment Relationship with `mvabund::traitglm`
+A trait–environment analysis can be conducted using `mvabund` to relate species traits to environmental variables (Wang et al 2012):
 
-Trait-Environment Model: A trait–environment model is fitted to quantify the relationship between species traits and environmental conditions. This approach helps identify which environmental variables promote invasibility by interacting with specific species traits. The fitted model captures how particular traits interact with specific environmental factors to influence species distributions or abundances. By examining the trait–environment interaction coefficients, one can interpret which traits matter most under different conditions.
+**Trait-Environment Model**: A trait–environment model is fitted to quantify the relationship between species traits and environmental conditions. This approach helps identify which environmental variables promote invasibility by interacting with specific species traits. The fitted model captures how particular traits interact with specific environmental factors to influence species distributions or abundances. By examining the trait–environment interaction coefficients, one can interpret which traits matter most under different conditions.
 
->> WORK-IN-PROGRESS <<
->> OUTPUT PENDING FOR 2 DAYS. NEED TO SPEED-UP COMPUTATION
+*WORK-IN-PROGRESS*
+*OUTPUT PENDING FOR 2 DAYS. NEED TO SPEED-UP COMPUTATION*
 ```{r run-traitglm}
-# Trait–Environment Model 
-# Fits a Trait–Environment model that links species abundance (sbs) to both 
-# environment (env) and species traits (sbt), using “manyglm” method.
-ft = mvabund::traitglm(sbs[,1:41], env, sbt, method = "manyglm")
-
-# Inspect the model structure at the top level
-str(ft, max.level = 1)
-# >> OUTPUT PENDING
-
-# Show estimated trait–environment interaction coefficients
-# How traits mediate effect of enviro. variables on species abundance
-ft$fourth
+# # Trait–Environment Model 
+# # Fits a Trait–Environment model that links species abundance (sbs) to both 
+# # environment (env) and species traits (sbt), using “manyglm” method.
+# ft = mvabund::traitglm(sbs[,1:41], env, sbt, method = "manyglm")
+# 
+# # Inspect the model structure at the top level
+# str(ft, max.level = 1)
+# # >> OUTPUT PENDING
+# 
+# # Show estimated trait–environment interaction coefficients
+# # How traits mediate effect of enviro. variables on species abundance
+# ft$fourth
 ```
->> OUTPUT PENDING
+*OUTPUT PENDING*
 
-Visualisation of Trait–Environment Interaction Coefficients: The coefficients from the trait–environment model can be visualized in a heatmap, highlighting how traits and environmental factors interact to influence species abundances. This reveals which pairs of (trait × environment) have the strongest positive or negative effects, providing insight into how environmental conditions modify trait–based responses.
+Visualisation of **Trait–Environment Interaction Coefficients**: The coefficients from the trait–environment model can be visualized in a heatmap, highlighting how traits and environmental factors interact to influence species abundances. This reveals which pairs of (*trait × environment*) have the strongest positive or negative effects, providing insight into how environmental conditions modify **trait–based responses**.
 
->> WORK-IN-PROGRESS <<
+*WORK-IN-PROGRESS*
 ```{r plot-traitglm}
-# Visualization of Trait–Environment Interaction Coefficients
-# Extracts the absolute maximum value ‘a’ among the interaction coefficients  
-# i.e. used or symmetric colour scaling
-a = max(abs(ft$fourth.corner))
-
-# Defines a gradient from negative (blue) to positive (red)
-pcols = colorRampPalette(c("blue","white","red"))
-
-# Provides a heatmap of trait–environment interaction strengths
-plot.4th = levelplot(t(as.matrix(ft$fourth.corner)), 
-			xlab="Enviro Variables", ylab="Species traits", 
-			col.regions=pcols(100), at=seq(-a, a, length=100),
-			scales = list(x = list(rot = 45)))
-plot.4th
+# # Visualization of Trait–Environment Interaction Coefficients
+# # Extracts the absolute maximum value ‘a’ among the interaction coefficients  
+# # i.e. used or symmetric colour scaling
+# a = max(abs(ft$fourth.corner))
+# 
+# # Defines a gradient from negative (blue) to positive (red)
+# pcols = colorRampPalette(c("blue","white","red"))
+# 
+# # Provides a heatmap of trait–environment interaction strengths
+# plot.4th = levelplot(t(as.matrix(ft$fourth.corner)), 
+# 			xlab="Enviro Variables", ylab="Species traits", 
+# 			col.regions=pcols(100), at=seq(-a, a, length=100),
+# 			scales = list(x = list(rot = 45)))
+# plot.4th
 ```
->> OUTPUT PENDING
+*OUTPUT PENDING*
 
 ------------------------------------------------------------------------
 
-### 2.9.	Predictive Modelling with mvabund::predict.traitglm
-Uses the predict method for the mvabund::traitglm model (ft) to estimate species abundance or other response metrics under new (or existing) environmental conditions. If new environmental data are supplied, it predicts how the species–trait–environment relationships translate to abundance or occurrence in novel conditions. Returns the predicted abundances or response (depending on the specification) of species based on the fitted trait–environment relationships. This provides an opportunity to test scenarios or forecast how changes in the environment could shift community composition.
+### 2.9.	Predictive Modelling with `mvabund::predict.traitglm`
+Uses the predict method for the `mvabund::traitglm` model (ft) to estimate species abundance or other response metrics under new (or existing) environmental conditions. If new environmental data are supplied, it predicts how the *species–trait–environment* relationships translate to abundance or occurrence in novel conditions. Returns the predicted abundances or response (depending on the specification) of species based on the fitted trait–environment relationships. This provides an opportunity to test scenarios or forecast how changes in the environment could shift community composition.
 
->> WORK-IN-PROGRESS <<
+*WORK-IN-PROGRESS*
 ```{r run-predict}
 # Use `predict` method for class 'traitglm'
 # predict(object, newR=NULL, newQ=NULL, newL=NULL, type="response", ...)
 # newR: Data frame of enviro variables for each site/time to be predicted
 # newQ: New species traits, can be used to predict how new trait 
 # combinations might respond to the environment
-predict(ft, newR = env)
+# predict(ft, newR = env)
 ```
->> OUTPUT PENDING
+*OUTPUT PENDING*
 
 ------------------------------------------------------------------------
 
