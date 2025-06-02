@@ -83,9 +83,9 @@ Below we present **`invasimapr`**, an R-based workflow designed to streamline th
 
 ------------------------------------------------------------------------
 
-### 2.1. Install and load `**`invasimapr`**`
+### 2.1. Install and load **`invasimapr`**
 
-Install and load the `**`invasimapr`**` package from GitHub, ensuring all functions are available for use in the analysis workflow.
+Install and load the **`invasimapr`** package from GitHub, ensuring all functions are available for use in the analysis workflow.
 
 ```{r install-invasimapr, eval=FALSE, include=TRUE}
 # install remotes if needed
@@ -346,10 +346,10 @@ dim(spp_traits_list$site_xy)
 
 ------------------------------------------------------------------------
 
-### 2.5.	Functional Dissimilarity and Community Trait Profiles with `cluster::daisy`; `funspace::funspace`; `stats::princomp` and `vegan::metaMDS`
-In this step, the functional structure of species communities is defined. Using the Gower distance metric, dissimilarity matrices are calculated to assess trait-based differences between species:
+### 2.5.	Functional Dissimilarity and Community Trait Profiles
+In this step, the functional structure of species communities is defined using the following libraies and functions: with `cluster::daisy`; `funspace::funspace`; `stats::princomp` and `vegan::metaMDS`. 
 
-Dissimilarity Matrix Calculation (Gower): A Gower distance matrix is computed using species traits. This matrix captures the dissimilarity in species traits, which is later used to quantify species interaction strength. A PCA-based trait space is then used to summarise the main axes of variation among species.
+Below the Gower distance metric and dissimilarity matrices are calculated to assess trait-based differences between species. Dissimilarity Matrix Calculation (Gower): A Gower distance matrix is computed using species traits. This matrix captures the dissimilarity in species traits, which is later used to quantify species interaction strength. A PCA-based trait space is then used to summarise the main axes of variation among species.
 
 ```{r run-daisy}
 # Dissimilarity Matrix Calculation (Gower)
@@ -476,7 +476,7 @@ alpha = function(sbt, alien_x, sig=sigV){
 ```
 ------------------------------------------------------------------------
 
-### 2.7.	Invasiveness with inv()
+### 2.7.	Invasiveness with `inv()`
 Invasiveness Calculation: A function is implemented to compute the trait-mediated invasiveness of alien species based on their interaction strength with the community. A numeric value (or vector) is returned for each site indicating the alien species’ ability to invade (i.e., whether it can grow in the presence of established competitors and local environmental conditions). By reshuffling traits, we can create a new species-trait matrix (xx) by randomly permuting the rows of `sbt`. This mimics creating “alien” trait profiles from existing trait data. Using `future_apply::future_lapply`, the invasibility calculations can be run in parallel across multiple species, essentially looping over each newly “constructed” alien species (species_index). Invasibility is then computed for each alien species across all sites. A matrix of invasibility values is returned, where rows correspond to alien species and columns correspond to sites i.e. a *sspp × nsites* matrix of invasibility scores for each reshuffled species at each site.   
 
 `inv()` computes the invasiveness of an alien species: 
