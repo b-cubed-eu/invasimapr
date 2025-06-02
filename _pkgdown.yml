@@ -1,5 +1,7 @@
 url: https://macsands.github.io/invasimapr/
 template:
+  logo: "man/figures/logo.png"   # path to your file
+  favicon: "favicon.ico"         # will be auto-created in step 3
   bootstrap: 5
   bslib:
     bg: '#ffffff'

@@ -372,7 +372,7 @@ Community Trait Profiles (CTP): CTPs are visualised using funspace::funspace, wh
 # Threshold = 0.95 ensures the first two principal components explain at 
 # least 95% of trait variation.
 sbt_daisy_pca_space = funspace::funspace(x = sbt_daisy_pca, PCs = c(1, 2), threshold = 0.95)
-summary(sbt_daisy_pca_space)
+# summary(sbt_daisy_pca_space)
 
 # Global TPD (Trait Probability Distribution): 
 # Displays overall trait distribution looks in first 2 principal components
@@ -444,7 +444,7 @@ envF = sbs_fil[,-(1:3)]
 (s_spp = dim(sbtF)[1]) # number of species
 (t_trt = dim(sbtF[,-1])[2]) # number of traits
 (sigV = 0.02175691) # sigma value in alpha function: Width of bell i.e. wide bell = stronger competition in general
-(sub = 10) # number of reshuffles
+(sub = 4) # number of reshuffles
 ```
 
 ------------------------------------------------------------------------
@@ -639,7 +639,7 @@ A trait–environment analysis can be conducted using `mvabund` to relate specie
 # Trait–Environment Model 
 # Fits a Trait–Environment model that links species abundance (sbs) to both 
 # environment (env) and species traits (sbt), using “manyglm” method.
-ft = mvabund::traitglm(sbs[,1:41], env, sbt, method = "manyglm")
+ft = mvabund::traitglm(sbsF[,1:41], envF, sbtF, method = "manyglm")
 
 # Inspect the model structure at the top level
 str(ft, max.level = 1)
@@ -684,7 +684,7 @@ Uses the predict method for the `mvabund::traitglm` model (ft) to estimate speci
 # newR: Data frame of enviro variables for each site/time to be predicted
 # newQ: New species traits, can be used to predict how new trait 
 # combinations might respond to the environment
-predict(ft, newR = env)
+predict(ft, newR = envF)
 ```
 *OUTPUT PENDING*
 
