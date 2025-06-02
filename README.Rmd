@@ -34,7 +34,7 @@ knitr::opts_chunk$set(
 
 ------------------------------------------------------------------------
 
-# `**`invasimapr`**`
+# **`invasimapr`**
 
 ## A Novel Framework to visualise trait dispersion and ability to assess invasibility
 
@@ -521,43 +521,43 @@ compute_invasibility_noLoop = function(i, sbt, env, sbs, inv) {
 Returns a 3D array (`inb_all`) with dimensions: [sub, s_spp, n_site], containing invasibility values for each reshuffle, species, and site. A substantial speedup in computations compared to a single-threaded approach, especially for large data.
 
 ```{r run-compute_invasibility}
-# # Run in parallel
-# # Pre-allocates a 3D array to store invasibility results for multiple 
-# # reshuffles (sub times), across all species and sites.
-# inb_all = array(NA, dim = c(sub, s_spp, n_site))
-# 
-# # Cluster Initialization
-# num_cores = detectCores() - 2 # keeps one system core free
-# cl = makeCluster(num_cores) # creates the parallel backend
-# 
-# # Sends the required objects/functions to each node
-# clusterExport(cl, varlist = c("sbt", "env", "sbs", 
-#                            "inv", "r", "alpha", 
-#                            "s_spp", "n_site", "sigV"))
-# start_time = Sys.time()
-# 
-# # Parallel Computation
-# # `parLapply` runs the `compute_invasibility_noLoop` function in parallel 
-# # for each reshuffle iteration (1 through sub).
-# inb_all_parallel = parLapply(cl, 1:sub, 
-#                              compute_invasibility_noLoop,
-#                              sbtF, envF, sbsF, inv)
-# stopCluster(cl)
-# 
-# end_time = Sys.time()
-# 
-# # Times the parallel run, printing total runtime in minutes
-# execution_time = difftime(end_time, start_time, units = "mins")
-# print(paste("Execution time: ", round(execution_time, 2), "minutes"))
-# 
-# # >> WORK-IN-PROGRESS TO SPEEDUP COMPUTATION <<
-# 
-# # Fills the `inb_all` array with the results from each parallel iteration
-# for (i in 1:sub) {
-# 	inb_all[i, , ] = inb_all_parallel[[i]]
-# }
-# 
-# str(inb_all)
+# Run in parallel
+# Pre-allocates a 3D array to store invasibility results for multiple 
+# reshuffles (sub times), across all species and sites.
+inb_all = array(NA, dim = c(sub, s_spp, n_site))
+
+# Cluster Initialization
+num_cores = detectCores() - 2 # keeps one system core free
+cl = makeCluster(num_cores) # creates the parallel backend
+
+# Sends the required objects/functions to each node
+clusterExport(cl, varlist = c("sbt", "env", "sbs", 
+                           "inv", "r", "alpha", 
+                           "s_spp", "n_site", "sigV"))
+start_time = Sys.time()
+
+# Parallel Computation
+# `parLapply` runs the `compute_invasibility_noLoop` function in parallel 
+# for each reshuffle iteration (1 through sub).
+inb_all_parallel = parLapply(cl, 1:sub, 
+                             compute_invasibility_noLoop,
+                             sbtF, envF, sbsF, inv)
+stopCluster(cl)
+
+end_time = Sys.time()
+
+# Times the parallel run, printing total runtime in minutes
+execution_time = difftime(end_time, start_time, units = "mins")
+print(paste("Execution time: ", round(execution_time, 2), "minutes"))
+
+# >> WORK-IN-PROGRESS TO SPEEDUP COMPUTATION <<
+
+# Fills the `inb_all` array with the results from each parallel iteration
+for (i in 1:sub) {
+	inb_all[i, , ] = inb_all_parallel[[i]]
+}
+
+str(inb_all)
 ```
 
 ------------------------------------------------------------------------
@@ -566,62 +566,62 @@ Returns a 3D array (`inb_all`) with dimensions: [sub, s_spp, n_site], containing
 Converting into long format, each row will correspond to a single combination of reshuffle iteration, species, and site, making it easier to summarize, group, and plot. A tidy data frame with columns for reshuffle iteration, species index, site index, and invasiveness values is returned.
 
 ```{r run-melt}
-# # Convert to long format
-# # Reshapes the 3D invasibility array into a “long” data frame
-# inb_all_long = reshape2::melt(inb_all, 
-# 			varnames = c("Reshuffle", "Species", "Site"),
-# 			value.name = "Invasiness")
-# 			
-# inb_all_long <- inb_all %>%                       # wide → long
-#   pivot_longer(names_to  = c("Reshuffle", "Species", "Site"),                      # new column with names
-#     values_to = "Invasiness"                         # new column with values
-#   ) %>% 
-#   group_by(site, x, y, species) %>%             # collapse duplicates
-#   summarise(Invasiness = sum(Invasiness), .groups = "drop")
-# 
-# # Confirm that the data has been successfully restructured
-# head(inb_all_long)
-# str(inb_all_long)
-# summary(inb_all_long)
+# Convert to long format
+# Reshapes the 3D invasibility array into a “long” data frame
+inb_all_long = reshape2::melt(inb_all, 
+			varnames = c("Reshuffle", "Species", "Site"),
+			value.name = "Invasiness")
+			
+inb_all_long <- inb_all %>%                       # wide → long
+  pivot_longer(names_to  = c("Reshuffle", "Species", "Site"),                      # new column with names
+    values_to = "Invasiness"                         # new column with values
+  ) %>% 
+  group_by(site, x, y, species) %>%             # collapse duplicates
+  summarise(Invasiness = sum(Invasiness), .groups = "drop")
+
+# Confirm that the data has been successfully restructured
+head(inb_all_long)
+str(inb_all_long)
+summary(inb_all_long)
 ```
 
 Calculates **Invasion Proportion and Percent** where, `Invasi_Prop` is the proportion of positive invasiveness values across all reshuffles and species (i.e., fraction of times an alien can invade). `Invasi_Percent` is the same proportion multiplied by 100. A raster-style map is returned, showing how invasibility percent varies across sites, highlighting hotspots (dark blue) and colder spots (yellow) of potential alien establishment. Species richness is overlaid to help interpret invasibility in context of existing community diversity.
 
 ```{r get-invasi_spp_site}
-# # Invasibility Percent Raster Plot
-# # Matches site indices to their x and y coordinates (site_xy)
-# inb_all_long$x = site_xy$x[match(inb_all_long$Site, site_xy$grid_id)]
-# inb_all_long$y = site_xy$y[match(inb_all_long$Site, site_xy$grid_id)]
-# 
-# # Summarise by xyz
-# invasibility_spp_site = inb_all_long %>%
-#   group_by(Site, x, y) %>%
-#   summarise(Invasi_Prop = sum(Invasiness > 0) / (sub * s_spp),
-#             Invasi_Percent = Invasi_Prop * 100)
-# 
-# # Add number of species per site back to results (species richness)
-# invasibility_spp_site$nSpp = spp_rich$nSpp[match(invasibility_spp_site$Site,
-#                              spp_rich$site)]
-# 
-# # Check results
-# head(invasibility_spp_site)
-# 
-# # Invasibility Percent Raster Plot
-# ggplot() +
-#   # Creates a spatial heatmap of invasibility percent
-#   geom_tile(invasibility_spp_site, aes(x=x, y=y, fill=Invasi_Percent)) + 
-#   # Overlays the species richness value at each site
-#   geom_text(invasibility_spp_site, aes(x=x, y=y, label=nSpp), color="darkgrey") +
-#   # Uses `viridis` colours in reverse order
-#   scale_fill_viridis(colors=viridis(8), direction =-1) + 
-#   # Add South African boundary layer
-#   geom_sf(data = rsa, fill = NA, color = "forestgreen", alpha = 0.5) +
-#   # Add Title, Axis and Legend labels
-#   labs(title = "Invasibility Percent Raster Plot",
-#        x = "Longitude",
-#        y = "Latitude",
-#        fill = "Invasibility %") +
-#   theme_minimal()
+# Invasibility Percent Raster Plot
+# Matches site indices to their x and y coordinates (site_xy)
+inb_all_long$x = site_xy$x[match(inb_all_long$Site, site_xy$grid_id)]
+inb_all_long$y = site_xy$y[match(inb_all_long$Site, site_xy$grid_id)]
+
+# Summarise by xyz
+invasibility_spp_site = inb_all_long %>%
+  group_by(Site, x, y) %>%
+  summarise(Invasi_Prop = sum(Invasiness > 0) / (sub * s_spp),
+            Invasi_Percent = Invasi_Prop * 100)
+
+# Add number of species per site back to results (species richness)
+invasibility_spp_site$nSpp = spp_rich$nSpp[match(invasibility_spp_site$Site,
+                             spp_rich$site)]
+
+# Check results
+head(invasibility_spp_site)
+
+# Invasibility Percent Raster Plot
+ggplot() +
+  # Creates a spatial heatmap of invasibility percent
+  geom_tile(invasibility_spp_site, aes(x=x, y=y, fill=Invasi_Percent)) + 
+  # Overlays the species richness value at each site
+  geom_text(invasibility_spp_site, aes(x=x, y=y, label=nSpp), color="darkgrey") +
+  # Uses `viridis` colours in reverse order
+  scale_fill_viridis(colors=viridis(8), direction =-1) + 
+  # Add South African boundary layer
+  geom_sf(data = rsa, fill = NA, color = "forestgreen", alpha = 0.5) +
+  # Add Title, Axis and Legend labels
+  labs(title = "Invasibility Percent Raster Plot",
+       x = "Longitude",
+       y = "Latitude",
+       fill = "Invasibility %") +
+  theme_minimal()
 ``` 
 
 The map above displays the variation in **invasibility percent** across sites, reflecting the relative openness of communities to potential alien species establishment, as described by Hui et al. (2016). Dark blue areas represent hotspots of high invasibility, indicating regions more susceptible to colonization, while yellow areas signify lower invasibility or "colder spots." The map overlays species richness data, providing context for understanding invasibility in relation to existing community diversity. Regions with high invasibility and low species richness may represent opportunities for alien species to establish, whereas high diversity areas with lower invasibility suggest more stable or resistant communities.
@@ -636,18 +636,18 @@ A trait–environment analysis can be conducted using `mvabund` to relate specie
 *WORK-IN-PROGRESS*
 *OUTPUT PENDING FOR 2 DAYS. NEED TO SPEED-UP COMPUTATION*
 ```{r run-traitglm}
-# # Trait–Environment Model 
-# # Fits a Trait–Environment model that links species abundance (sbs) to both 
-# # environment (env) and species traits (sbt), using “manyglm” method.
-# ft = mvabund::traitglm(sbs[,1:41], env, sbt, method = "manyglm")
-# 
-# # Inspect the model structure at the top level
-# str(ft, max.level = 1)
-# # >> OUTPUT PENDING
-# 
-# # Show estimated trait–environment interaction coefficients
-# # How traits mediate effect of enviro. variables on species abundance
-# ft$fourth
+# Trait–Environment Model 
+# Fits a Trait–Environment model that links species abundance (sbs) to both 
+# environment (env) and species traits (sbt), using “manyglm” method.
+ft = mvabund::traitglm(sbs[,1:41], env, sbt, method = "manyglm")
+
+# Inspect the model structure at the top level
+str(ft, max.level = 1)
+# >> OUTPUT PENDING
+
+# Show estimated trait–environment interaction coefficients
+# How traits mediate effect of enviro. variables on species abundance
+ft$fourth
 ```
 *OUTPUT PENDING*
 
@@ -655,20 +655,20 @@ Visualisation of **Trait–Environment Interaction Coefficients**: The coefficie
 
 *WORK-IN-PROGRESS*
 ```{r plot-traitglm}
-# # Visualization of Trait–Environment Interaction Coefficients
-# # Extracts the absolute maximum value ‘a’ among the interaction coefficients  
-# # i.e. used or symmetric colour scaling
-# a = max(abs(ft$fourth.corner))
-# 
-# # Defines a gradient from negative (blue) to positive (red)
-# pcols = colorRampPalette(c("blue","white","red"))
-# 
-# # Provides a heatmap of trait–environment interaction strengths
-# plot.4th = levelplot(t(as.matrix(ft$fourth.corner)), 
-# 			xlab="Enviro Variables", ylab="Species traits", 
-# 			col.regions=pcols(100), at=seq(-a, a, length=100),
-# 			scales = list(x = list(rot = 45)))
-# plot.4th
+# Visualization of Trait–Environment Interaction Coefficients
+# Extracts the absolute maximum value ‘a’ among the interaction coefficients  
+# i.e. used or symmetric colour scaling
+a = max(abs(ft$fourth.corner))
+
+# Defines a gradient from negative (blue) to positive (red)
+pcols = colorRampPalette(c("blue","white","red"))
+
+# Provides a heatmap of trait–environment interaction strengths
+plot.4th = levelplot(t(as.matrix(ft$fourth.corner)), 
+			xlab="Enviro Variables", ylab="Species traits", 
+			col.regions=pcols(100), at=seq(-a, a, length=100),
+			scales = list(x = list(rot = 45)))
+plot.4th
 ```
 *OUTPUT PENDING*
 
@@ -684,7 +684,7 @@ Uses the predict method for the `mvabund::traitglm` model (ft) to estimate speci
 # newR: Data frame of enviro variables for each site/time to be predicted
 # newQ: New species traits, can be used to predict how new trait 
 # combinations might respond to the environment
-# predict(ft, newR = env)
+predict(ft, newR = env)
 ```
 *OUTPUT PENDING*
 

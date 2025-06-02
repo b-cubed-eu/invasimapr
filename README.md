@@ -23,7 +23,7 @@ coverage](https://codecov.io/gh/macSands/**%60invasimapr%60**/graph/badge.svg)](
 
 ------------------------------------------------------------------------
 
-# `**`invasimapr`**`
+# **`invasimapr`**
 
 ## A Novel Framework to visualise trait dispersion and ability to assess invasibility
 
