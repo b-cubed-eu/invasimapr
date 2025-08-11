@@ -1,15 +1,12 @@
 ---
+title: "Quantifying Invasion Fitness: A trait-based, site-specific workflow"
+author: "Sandra MacFadyen"
+date: "2025-08-08"
 output:
   github_document:
+    html_preview: false
     toc: true
     toc_depth: 2
-  html_document:
-    toc: true
-    theme: cerulean     # or bootstrap, etc.
-    mathjax: default
-editor_options: 
-  markdown: 
-    wrap: sentence
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -18,677 +15,1958 @@ editor_options:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
-  out.width = "100%",
+  dev = "ragg_png", 
+  dpi = 200, 
+  fig.retina = 2,# OR dev = "png"         # avoid PDF devices entirely
+  fig.width = 12, 
+  fig.height = 6,
+  out.width = "100%", 
+  fig.align = "center",
+  fig.path = "man/figures/README-", 
+  fig.crop = FALSE,
   echo = TRUE,
   message = FALSE,
   warning = FALSE
 )
+
+if (requireNamespace("devtools", quietly = TRUE)) {
+  devtools::load_all(quiet = TRUE)
+}
 ```
 
 <!-- badges: start -->
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nithecs-biomath/RBasicPack/master?urlpath=rstudio) [![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) [![test-coverage](https://github.com/macSands/**`invasimapr`**/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/macSands/**`invasimapr`**/actions/workflows/test-coverage.yaml) [![Codecov test coverage](https://codecov.io/gh/macSands/**`invasimapr`**/graph/badge.svg)](https://app.codecov.io/gh/macSands/**`invasimapr`**) [![R-CMD-check](https://github.com/macSands/**`invasimapr`**/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/macSands/**`invasimapr`**/actions/workflows/R-CMD-check.yaml)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nithecs-biomath/RBasicPack/master?urlpath=rstudio) 
+[![Lifecycle: stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable) [![test-coverage](https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml) 
+[![Codecov test coverage](https://codecov.io/gh/macSands/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/macSands/invasimapr) [![R-CMD-check](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml)
 
 <!-- badges: end -->
 
-------------------------------------------------------------------------
+---
 
-# **`invasimapr`**
+# `invasimapr`
 
-## A Novel Framework to visualise trait dispersion and ability to assess invasibility
+## A Novel Framework to visualise trait dispersion and assess invasiness and invasibility
 
-------------------------------------------------------------------------
+---
 
-**`invasimapr`** is an R package in development for quantifying and mapping community–level invasion fitness and site-specific invasibility.  It links three data streams—species occurrences, functional traits, and (in a later module) curated invasive-alien-species lists—to generate spatial grids, extract and harmonise environmental and trait information, visualise community trait profiles, and compute invasion metrics such as interaction-strength matrices, invasion hotspots, and maximum-invasiveness traits (MITs).  By explicitly modelling how trait–environment–competition relationships shape establishment success, **`invasimapr`** delivers biologically informed predictions that support evidence-based biodiversity management and policy planning.
+## 1. Introduction
+
+Biological invasions pose a major threat to global biodiversity, with invasive alien species (IAS) often capable of rapidly expanding and transforming the ecosystems they enter. Given the complex drivers underlying invasion dynamics, ranging from species interactions and traits to environmental gradients, rigorous and reproducible workflows are essential to diagnose how certain species establish and spread in new habitats. Recent advances in ecological theory, such as trait-mediated ecological networks and the concept of invasion fitness, have provided new frameworks for understanding invasions in both ecological and evolutionary contexts (Hui et al., 2021; Hui et al., 2016). These approaches highlight the interplay between species traits, propagule pressure, and ecological networks in shaping invasion outcomes.
+
+The primary goal of this research milestone is to develop a workflow that quantifies and visualises invasion fitness, leveraging species occurrence data and functional trait information. By calculating trait centrality, visualizing trait dispersion, estimating interaction strength, and assessing site-level invasibility, we can derive outputs such as interaction strength matrices, trait-specific invasion risk factors, and community openness to new invasions. These elements align with the three-pronged framework proposed by Hui et al. (2023), which integrates traits, propagule pressure, and environmental context into a comprehensive invasion model.
+
+---
+
+# 2. Workflow and Step-by-Step Tutorial
+
+This workflow demonstrates a comprehensive workflow for quantifying and visualizing invasion fitness, operationalizing the concepts of **trait centrality**, **trait dispersion**, **interaction strength**, **invasibility**, and **invasion fitness** using simulated site-level species occurrence, abundance, and trait data. Analyses include calculation of trait-based distances, clustering, trait-space mapping, generalized linear mixed modeling of abundance, and explicit estimation of invasion fitness for hypothetical invaders across a landscape.
+
+---
+
+## 3. Setup `invasimapr`
+### 3.1. Overview of the `invasimapr` R package (incl. Functions)
 
 
-------------------------------------------------------------------------
+### 3.2. Install and load `invasimapr`
+Install and load the `invasimapr` package from GitHub, ensuring all functions are available for use in the workflow.
 
-## 1.	Introduction
-Biological invasions—the establishment and spread of species outside their native ranges—have become a leading driver of biodiversity loss, ecosystem disruption, and economic damage worldwide. Whether an alien species succeeds in a new habitat depends on a web of factors that includes propagule pressure, species-specific traits, resident community structure, and environmental conditions. Contemporary invasion theory therefore emphasises trait-mediated ecological networks and invasion fitness: alien species gain a foothold when their functional traits confer competitive or facilitative advantages within the local interaction web and environmental context (Hui et al., 2016; 2021; 2023).
-
-**`invasimapr`** is being developed to turn this theory into a reproducible analytic workflow. The R package couples species-occurrence records and functional-trait databases with optional invasive-species lists to build spatial grids, quantify trait centrality and dispersion, estimate interaction-strength matrices, and calculate site-level invasibility and maximum-invasiveness traits. Its outputs—maps of invasion hotspots, trait-specific risk factors, and community openness—provide biologically informed predictions of where invasions are most likely to occur and which traits drive them. By integrating traits, propagule pressure, and environmental context in a single pipeline, **`invasimapr`** aims to equip researchers and policy-makers with a transparent, scalable tool for anticipating and managing biological invasions.
-
-
-------------------------------------------------------------------------
-
-### 1.1.	Invasion Fitness and Invasibility
-Invasion fitness and invasibility are key concepts in invasion ecology. Invasion fitness captures an species’ ability to establish, persist, and spread within a new community, while invasibility is a property of the receiving community that indicates how “open” it is to new colonizers. Both concepts are interconnected and can be explored through trait-mediated interactions within ecological networks (Hui et al., 2016). Invasion fitness has been defined as a dynamic, density-dependent demographic performance measure, while invasibility reflects the availability of opportunity niches within a community's trait space (Hui et al., 2021). These definitions highlight the eco-evolutionary feedbacks that modulate invasion dynamics. The workflow described in this milestone integrates several data-driven elements to quantify and visualize invasion fitness and invasibility:
-
-•	Species Occurrence Data: Provides a spatial snapshot of where different species—both native and alien—are present, serving as a baseline for estimating community composition and distribution.
-•	Species Traits: Links species' functional characteristics to their ecological interactions. By calculating trait-based interaction strengths, we can infer competitive dynamics and resource use.
-•	Community Trait Profile: Visualizes the range of trait values within a community, identifying unoccupied or heavily populated trait regions that influence invasion success.
-•	Interaction Strength Matrices: Reflect how trait similarity modulates competition between alien and resident species, revealing the combinations of traits that enhance or hinder invasiveness.
-
-By leveraging these elements, the workflow produces regional maps of invasibility that pinpoint areas most susceptible to invasion pressure. These insights, grounded in trait-based ecological frameworks, provide a robust theoretical foundation for prioritizing management interventions to mitigate invasion risks (Hui et al., 2023).
-
-------------------------------------------------------------------------
-
-### 1.2.	Overview of the **`invasimapr`** R package
-**`invasimapr`** is an R package under development that consolidates the above workflow steps into a cohesive, reproducible toolkit. The package is designed with flexibility in mind, allowing users to integrate local or global data sources, adapt trait-based models to diverse taxonomic groups, and scale computational analyses from small study regions to continental extents.
-
-Key Deliverables
-•	Interaction Strength Matrices: Quantitative depiction of how resident species compete with potential invaders, derived from trait similarities and dissimilarities.
-•	Community Trait Profiles: Graphical summaries of a community’s functional structure, helping users quickly identify potential ecological “gaps” that might be exploited by invaders.
-•	Invasion Fitness Surface: Spatial predictions showing variation in invasion success across a landscape, identifying hotspots of potential impact on ecosystem services and biodiversity.
-•	Regional Invasibility Maps: Spatial outlines of communities most prone to successful invasion, illuminating the links between species’ functional traits and local environmental conditions.
-
-Ultimately, **`invasimapr`** aims to empower researchers, practitioners, and policymakers by providing actionable insights on how specific trait-environment interactions drive invasion risks. Whether used to forecast future invasion scenarios or to validate ongoing control measures, the package will offer an evidence-based platform that enhances decision-making for biodiversity protection.
-
-------------------------------------------------------------------------
-
-## 2.	Workflow and Step-by-Step Tutorial
-Below we present **`invasimapr`**, an R-based workflow designed to streamline the mapping and analysis of invasion processes. This step-by-step pipeline integrates species occurrence records, environmental variables, and trait information to quantify invasibility and identify key drivers of biological invasions. By combining data preparation, distance-based analyses, dimension reduction, and trait–environment modelling, **`invasimapr`** provides a reproducible framework for researchers aiming to better understand how species traits interact with environmental conditions to shape invasion outcomes.
-
-------------------------------------------------------------------------
-
-### 2.1. Install and load **`invasimapr`**
-
-Install and load the **`invasimapr`** package from GitHub, ensuring all functions are available for use in the analysis workflow.
-
-```{r install-invasimapr, eval=FALSE, include=TRUE}
-# install remotes if needed
+```{r install, eval=FALSE, include=TRUE}
+# # install remotes if needed
 # install.packages("remotes")
 # remotes::install_github("macSands/invasimapr")
-```
 
-```{r load-invasimapr, include=TRUE}
 # Ensure the package is loaded when knitting
 library(invasimapr)
+sessionInfo()$otherPkgs$invasimapr$Version
 
 # Make sure all the functions are loaded
-devtools::load_all()
+# devtools::load_all() # alternative during local development
 ```
 
-------------------------------------------------------------------------
+### 3.3. Load other R libraries
+Load core libraries for spatial processing, biodiversity modelling, and visualization required across the `invasimapr` analysis pipeline.
 
-### 2.2.	Install and load libraries
-To begin, ensure that all necessary libraries are installed and loaded.
+```{r libraries}
+# Load essential packages
+# library(tidyverse)
+# --- Data Wrangling and Manipulation ---
+library(dplyr)       # Tidy data manipulation verbs (mutate, select, filter, etc.)
+library(tidyr)       # Reshape data (wide ↔ long, pivot functions)
+library(tibble)      # Modern lightweight data frames (tibble objects)
+library(purrr)       # Functional iteration (map(), etc.)
 
-```{r load-libraries}
-library(ggplot2)
-library(dplyr)
-library(reshape2)
-library(sf)
-library(terra)
-library(mvabund)
-library(cluster)
-library(vegan)
-library(funspace)
-library(parallel)
-library(future.apply)
+# --- String and Factor Utilities ---
+library(stringr)     # String pattern matching and manipulation (str_detect, etc.)
+library(fastDummies) # Quickly create dummy/one-hot variables for factors
+
+# --- Data Visualization ---
+library(ggplot2)     # Grammar-of-graphics plotting
+library(viridis)     # Colorblind-friendly palettes for ggplot2
+library(lattice)     # Trellis (multi-panel) graphics
+library(factoextra)  # Visualize clustering and multivariate analyses
+
+# --- Spatial Data ---
+library(sf)          # Handling and plotting spatial vector data (simple features)
+library(terra)       # Raster and spatial data operations
+
+# --- Statistical and Ecological Modelling ---
+library(glmmTMB)     # Fit GLMMs (Generalized Linear Mixed Models), e.g., Tweedie, NB, Poisson
+library(MASS)        # Statistical functions and kernel density estimation (kde2d, etc.)
+library(cluster)     # Clustering algorithms, Gower distance, diagnostics
+library(vegan)       # Community ecology, ordination (PCoA, diversity metrics)
+library(geometry)    # Convex hulls, volumes, and related geometry calculations
+
+# --- Model Performance and Diagnostics ---
+library(performance) # Model checking, diagnostics, and performance metrics
+# options(warn = -1)
 ```
 
-------------------------------------------------------------------------
+---
 
-### 2.3.	Setup environment and load functions
-Setup your environment by optimizing memory usage, setting up your working directory, and loading essential functions from the **`invasimapr`** package for retrieving and formatting occurrence and environmental data, generating spatial grids, and performing subsequent distance-based or trait–environment analyses (e.g., `get_occurrence_data`, `format_df`, `process_site_sp_trait`). In this way, the workflow can seamlessly integrate data preparation, trait analysis, and invasion modelling.
+## 4. Data access and preparation using `dissmapr`
+### 4.1. Install `dissmapr`
+To acquire and prepare species occurrence data for biodiversity modelling using the `dissmapr` package, a series of modular functions streamline the workflow from raw observations to spatially aligned environmental predictors.  
 
-```{r setup-enviro}
-# Run garbage collection (gc) to free unused R memory 
-gc(reset = TRUE)
+```{r dissmapr}
+# # install remotes if needed
+# install.packages("remotes")
+# remotes::install_github("macSands/dissmapr")
 
-# Set working directory
-# setwd('X:/Your/Path')
-
-# Load the following 10 functions
+# Ensure the package is loaded
+library(dissmapr)
 ```
 
-------------------------------------------------------------------------
+### 4.2. Import and harmonise biodiversity-occurrence data
+The process begins with [`get_occurrence_data()`](https://macsands.github.io/dissmapr/reference/get_occurrence_data.html), which imports biodiversity records, such as a GBIF butterfly dataset for South Africa, and harmonizes them into standardised formats. Input sources can include local CSV files, URLs, or zipped GBIF downloads. The function filters data by taxon and region, returning both raw records and site-by-species matrices in presence–absence or abundance form.
 
-### User-defined area of interest and grid resolution
-
-Load the spatial boundary data for South Africa to serve as the geographic reference for all subsequent biodiversity analyses and visualizations.
-
-```{r aoi}
-# Read RSA shape file
-rsa = sf::st_read('inst/extdata/rsa.shp')
-
-# Define your resolution and create mask to use later
-res = 0.5 # 0.5 degrees is roughly 55km
-
-# Convert to a terra vector
-rsa_vect = vect(rsa)
-
-# Create an empty raster over RSA at your desired resolution
-grid = rast(rsa_vect, resolution = res, crs = crs(rsa_vect))
-values(grid) = 1   # fill with dummy values
-
-# Mask everything outside the RSA boundary
-grid_masked = mask(grid, rsa_vect)
-```
-
-------------------------------------------------------------------------
-
-### 2.4.	Data Access and Preparation
-This section focuses on automating the retrieval and pre-processing of core data, including species occurrence, species traits and environmental variables. Functions described below, automate access and prepare species, trait and environment data to support downstream invasibility assessments.
-
-#### 2.4.1.	Species Occurrence Data with `get_occurrence_data`
-Use get_occurrence_data to automates the retrieval and preprocessing of species occurrence data from multiple sources, including:
-
-i)  local databases,
-ii) the Global Biodiversity Information Facility (GBIF), and
-iii) species occurrence cubes from B3 (specification) [*work in progress*].
-
-The function assembles data on species distributions across specified taxonomic groups and regions, producing presence-absence or abundance matrices that quantify species co-occurrence within locations. 
-
-```{r run-get_occurrence_data}
-# Imports species occurrence data from local files, data frames, or GBIF sources
-fab_data = get_occurrence_data(data = 'inst/extdata/gbif_fabaceae_0038785-241126133413365.csv', # gbif_fabaceae_0038785-241126133.csv
-                                source_type = 'local_csv',
-                                sep = '\t', # Default: ','
-                                download_dir = tempdir())
-
-# fab_data = get_occurrence_data(data = 'inst/extdata/site_sp_pa_long.csv',
-#                                 source_type = 'local_csv',
-#                                 download_dir = tempdir())
-
-# Check column names of `fab_data` data.frame
-names(fab_data)
-head(fab_data)
-```
-------------------------------------------------------------------------
-
-#### 2.4.2.	Data formatting with `format_df`
-To analyse biodiversity data effectively, it is necessary to standardize and reshape datasets into specific formats, each serving a distinct purpose. 
-
-•	`site_xy`: Holds spatial coordinates of sampled sites.
-•	`site_sp`: Site-by-species matrix for biodiversity assessments.
-•	`sp_trait`: Species-specific trait data essential for understanding how species traits influence interactions.
-•	`site_env`: Site-specific environmental data provides contextual information about the conditions at each study location.
-
-First use `format_df` to standardise and reshape biodiversity data into long or wide formats. It automatically identifies key columns (e.g., coordinates, species, and values), assigns missing site IDs, and reformats the data for analysis. Outputs include a cleaned dataset and species-site matrices for further processing.
-
-```{r run-format_df}
-# Run `format_df` to format data.frame
-fab_format = format_df(data = fab_data,
-                       species_col = 'verbatimScientificName',#sp_name
-                       value_col = 'pa',
-                       format = 'long')
-
-# Check results – list structure
-str(fab_format, max.level = 1)
-
-# Check results – first few lines of ‘site_obs’ data.frame
-head(fab_format$site_obs)
-
-# Check results – first few lines and columns of ‘site_sp’ data.frame
-head(fab_format$site_sp[,1:6])
-```
-
-------------------------------------------------------------------------
-
-#### 2.4.3.	Generate Spatial Grids with `generate_grid`
-Then use generate_grid to divide the study area, derived from the geographic extent of the occurrence data above, into grids of user-defined resolution, creating a spatial grid over a specified geographic extent. It assigns unique grid IDs to points and summarizes selected data columns within each grid cell. The function outputs a raster grid, grid polygons for visualization, and a data frame summarizing the contents of each grid cell, including totals and centroids. It is particularly useful for aggregating spatial data, such as biodiversity observations, into predefined spatial units for further analysis. 
-
-```{r run-generate_grid}
-# Now run `generate_grid` to group observations by specific grid
-# *For now only geographic projection (EPSG:4326) works
-grid_list = generate_grid(data = fab_format$site_sp,
-                          x_col = "x",       # Column for x-coordinates
-                          y_col = "y",       # Column for y-coordinates
-                          grid_size = 1,    # Grid size in degrees
-                          sum_col_range = 4:ncol(fab_format$site_sp),  # Columns to summarize
-                          crs_epsg = 4326) # Set projection*  
-
-# Optional: Make separate data objects from returned list
-grid_sf = grid_list$grid_sf # Grid polygons
-grid_sp = grid_list$grid_sp # Summarised data.frame by new ‘grid_id’
-
-# Check first few rows ‘grid_sp’ data.frame
-head(grid_sp[,1:10])
-
-# Plot results as grid centroids weighted by total observation counts
-ggplot() +
-  # Add 0.25° grid layer
-  geom_sf(data = grid_sf, fill = NA, color = "darkgrey", alpha = 0.5) +
-  # Add grid centroids as points, size and colour by sqrt of observation counts
-  geom_point(data=grid_sp, aes(x=x,y=y,size=sqrt(obs_sum),color=sqrt(obs_sum))) +
-  scale_size_continuous(range = c(0.5, 5)) +  
-  # Option: Use ‘turbo’ colour range
-  scale_color_viridis_c(option = "turbo") + 
-  # Add South African provincial boundary layer
-  geom_sf(data = rsa, fill = NA, color = "black", alpha = 1) +
-  # Set axis labels and plot title
-  labs(
-    title = "0.25° Grid Cells with GBIF Fabaceae Observation Counts",
-    x = "Longitude",
-    y = "Latitude") +
-  theme_minimal()
-```
- 
-------------------------------------------------------------------------
-
-#### 2.4.4.	Environmental data with `get_enviro_data`
-Use `get_enviro_data` to retrieve environmental data for spatial points derived from get_occurrence_data (actual observation coordinates) and/or `generate_grid` (grid centroids), by either downloading it from sources like `WorldClim` or `SoilGrids` via the [`geodata`](https://ouicodedata.com/posts/worldclim-with-r/) package, or provide path to local raster data. The function generates an area of interest (AOI) around the input points, adds a pre-defined buffer area, and extracts the selected environmental variables for these locations. If no data (NA) values are returned for some outlier points, the function will interpolate these missing values using the average of surrounding non-NA records. The output includes a cropped raster of the environmental data, spatial points as an `sf` object, and a combined data frame of the input data with extracted environmental variables, enabling spatial analyses of environmental conditions. Future data source options plan to include i) CHELSA via [`climenv`](https://chelsa-climate.org/), ii) Google Earth Engine via [`rgee`](https://r-spatial.github.io/rgee/), and iii) additional biodiversity data via [`mapme`](https://mapme-initiative.github.io/mapme. biodiversity/index.html).
-
-```{r run-get_enviro_data}
-# First set output directory
-output_path = 'inst/extdata'
-
-# Run `get_enviro_data` to download and extract environmental variables
-# Current ‘source’ options include 'geodata' and 'local'
-# For 'geodata' source, variables 'var' include: bioclim - 'bio', elevation - 'elev', human development footprint - 'footprint', population numbers - 'population', world soil classification - 'soil_world'
-# Resolution 'res' is needed for 'worldclim_global','elev', 'population'
-enviro_list = get_enviro_data(data = grid_sp,
-                            buffer_km = 1,
-                            source = "geodata",
-                            var = "bio", 
-                            res = 2.5, 
-                            path = output_path)
-
-# Check results – Returns list of 3 objects
-str(enviro_list, max.level = 1)
-
-# Optional: Rename the columns to something more descriptive
-names_env = c("temp_mean", "mdr", "iso", "temp_sea", "temp_max",
-                    "temp_min", "temp_rang","temp_wetQ","temp_dryQ", "temp_warmQ",
-                    "temp_coldQ", "rain_mean","rain_wet", "rain_dry", "rain_sea",
-                    "rain_wetQ", "rain_dryQ","rain_warmQ", "rain_coldQ")
-
-names(enviro_list$env_df) = c('grid_id','x','y','ID',names_env)
-names(enviro_list$env_rast) = names_env
-
-# Check results – SpatRaster with layers for each environmental variable
-enviro_list$env_rast
-
-# Check results – Simple feature collection of grid centroids  
-enviro_list$sites_sf
-
-
-# Check results – data.frame with unique ‘grid_id’ and columns for each environmental variable
-head(enviro_list$env_df[,1:8])
-```
-------------------------------------------------------------------------
-
-#### 2.4.5.	Species Traits Data with `process_site_sp_trait`
-This function integrates trait data from the [TRY](https://www.try-db.org/TryWeb/Home.php) database (Kattge et al. 2020), a global collaborative initiative that consolidates and standardizes plant trait data from multiple sources, with site-level species observations, returning a concise set of data structures for further ecological analyses. First, it imports and checks the provided TRY data (either from a file path or an existing data frame). It then uses fuzzy string matching to reconcile species names in the site-by-observations table with those in the TRY dataset. Next, trait values are extracted, cleaned (e.g., converting character values to numeric), and pivoted into a “wide” format. Finally, the function filters out unmatched species, retrieves spatial coordinates, and returns a list containing merged traits, filtered site-by-species data, and site coordinates. Optional outputs (via appendix = TRUE) include additional intermediate objects like the raw species-by-trait matrix, trait name lookups, and the species mapping table.
-`process_site_sp_trait` unites external trait data (from the TRY database) with site-level species observations to produce a dataset ready for downstream ecological analyses. The steps are as follows:
-1.	Import and Validate: Uses `rtry::rtry_import` to read in TRY data (either from a file path or data frame) and ensures required columns are present.
-2.	Fuzzy Match Species: Uses `fuzzyjoin::stringdist_inner_join` to reconcile species names between the site observations (grid_obs) and the TRY dataset.
-3.	Pivot Trait Data: Cleans numeric values, groups them by species and trait, and transforms data into a “wide” matrix of species by traits.
-4.	Filter by Site: Matches only those species listed in grid_sp (via sp_cols) and obtains an updated site-by-species matrix along with corresponding spatial coordinates.
-5.	Return Outputs: Provides a concise list containing:
-o	`sp_traits`: The final species-by-traits data.
-o	`site_sp`: A filtered site-by-species matrix.
-o	`site_xy`: Spatial coordinates for these sites.
-o	Optional components (if appendix = TRUE) include the raw species-by-trait matrix, trait name lookups, and the species mapping table.
-
-```{r run-process_site_sp_trait}
-# First use `data.table::fread` to read in traits tables from TRYS database
-species_trait = fread("inst/extdata/try_data_37981.txt", sep = "\t", quote="")
-
-# Check first few rows of `species_trait` data.frame
-head(species_trait[,7:11])
-
-# Run `process_site_sp_trait` to get `species_traits` and other data.frames
-spp_traits_list = process_site_sp_trait(
-                          # Full TRY traits table
-  				try_data = species_trait, 
-                          # Unfiltered site-by-observations table (long format)
-  				grid_obs = grid_list$grid_obs, 
-                          # Unfiltered site-by-species table
-  				grid_sp = grid_list$grid_sp, 
-                          # Species column range unfiltered site-by-species table
-  				sp_cols = 5:ncol(grid_list$grid_sp), 
-  				appendix = FALSE
+```{r get-occurrence}
+# Use local GBIF data
+bfly_data = get_occurrence_data(
+  data = system.file("extdata", "gbif_butterflies.csv", package = "dissmapr"),
+  source_type = 'local_csv',
+  sep = '\t'
 )
 
-# Check results – structure of ‘spp_traits_list’
-str(spp_traits_list)
+# Check results but only a subset of columns to fit in console
+dim(bfly_data)
+# str(bfly_data[,c(51,52,22,23,1,14,16,17,30)]) 
+head(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
 
-# Check results – dimensions of ‘sp_traits’, ‘site_sp’ and ‘site_xy’
-dim(spp_traits_list$sp_traits)
-dim(spp_traits_list$site_sp)
-dim(spp_traits_list$site_xy)
-```
+# Use local data adpated from GBIF
+# local_df = read.csv('D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata/site_species.csv')
+# head(local_df)
 
-------------------------------------------------------------------------
-
-### 2.5.	Functional Dissimilarity and Community Trait Profiles
-In this step, the functional structure of species communities is defined using the following libraies and functions: with `cluster::daisy`; `funspace::funspace`; `stats::princomp` and `vegan::metaMDS`. 
-
-Below the Gower distance metric and dissimilarity matrices are calculated to assess trait-based differences between species. Dissimilarity Matrix Calculation (Gower): A Gower distance matrix is computed using species traits. This matrix captures the dissimilarity in species traits, which is later used to quantify species interaction strength. A PCA-based trait space is then used to summarise the main axes of variation among species.
-
-```{r run-daisy}
-# Dissimilarity Matrix Calculation (Gower)
-# Calculates pairwise dissimilarity between species based on traits (sbt) 
-# Uses Gower distance >> handles mixed data types 
-# (continuous, ordinal, categorical).
-sbt = spp_traits_list$sp_traits
-sbt$species = as.factor(sbt$species)
-sbt_gower = as.matrix(cluster::daisy(sbt, metric = "gower", stand = FALSE))
-
-# Performs Principal Component Analysis (PCA) on the Gower distance matrix. 
-# By setting cor = TRUE, standardizes variables internally for PCA calculation
-sbt_daisy_pca = princomp(sbt_gower, cor = TRUE)
-```
-
-Community Trait Profiles (CTP): CTPs are visualised using funspace::funspace, which indicates how species traits are distributed in the reduced space.
-
-```{r run-funspace}
-# Applies `funspace` to the PCA result to create a functional trait space. 
-# Threshold = 0.95 ensures the first two principal components explain at 
-# least 95% of trait variation.
-sbt_daisy_pca_space = funspace::funspace(x = sbt_daisy_pca, PCs = c(1, 2), threshold = 0.95)
-# summary(sbt_daisy_pca_space)
-
-# Global TPD (Trait Probability Distribution): 
-# Displays overall trait distribution looks in first 2 principal components
-plot(x = sbt_daisy_pca_space,
-     type = 'global',
-     quant.plot = TRUE, # Adds Quantile lines >> spread of trait densities
-     arrows = FALSE, # Control the loading vectors (PCA arrows)
-     arrows.length = 0.9)
-```
-
-Non-Metric Multidimensional Scaling (NMDS): NMDS is applied to visualise the trait space in two or three dimensions, providing a visual representation of the trait profiles within the community. The NMDS ordination shows a low-dimensional arrangement of species or sites based on trait distances. The stress value indicates how well the NMDS solution preserves distances and the returned density-surface NMDS plot illustrates clustering patterns among species/sites in the trait space.
-
-```{r run-metaMDS}
-# Non-Metric Multidimensional Scaling (NMDS)
-# Uses `vegan::metaMDS` to perform Non-Metric Multidimensional Scaling on 
-# Gower distance matrix.
-sbt_daisy_nmds = vegan::metaMDS(sbt_gower)
-sbt_daisy_nmds$stress # lower stress indicates a better fit
-sbt_daisy_nmds$converged # if converged to a stable solution
-
-# Extracts site (or species) scores (coordinates) from the NMDS ordination for plotting.
-nmds_scores_sites = as.data.frame(scores(sbt_daisy_nmds, display = "sites"))
-
-ggplot(nmds_scores_sites, aes(x = NMDS1, y = NMDS2)) +
-  geom_point(alpha = 0.7, size = 2) +
-  stat_density_2d(aes(fill = after_stat(level)), geom = "polygon", 
-		       alpha = 0.5, n = 200, h = c(0.15, 0.15)) +
-  scale_fill_viridis_c() +
-  theme_minimal() +
-  labs(x = "NMDS1", y = "NMDS2", fill = "Density") +
-  ggtitle("NMDS Plot with Density Surface")
-```
- 
-------------------------------------------------------------------------
-
-### Check species and sites are filtered by `sbt` and set parameters for models   
-Align the three core data sets required by **`invasimapr`**. After dropping an unneeded geometry column, `env` holds per-site environmental predictors, while `sbs` is the raw site-by-species table. The vector `keep_spp` is the intersection of species columns present in `sbs` and those listed in the trait table `sbt`, guaranteeing that only taxa with trait information are analysed. `sbs_fil` retains the four metadata columns (grid_id, coordinates, etc.) plus these matched species and then discards any site that now contains no occurrences of them, preventing empty rows in later computations. `env_fil` is created with semi_join, keeping only the environmental rows whose grid_id is represented in `sbs_fil`, so the environmental and biological matrices are perfectly co-registered.
-
-```{r filter-spp}
-## Prepare data.frames  -----------------------------------------
-env = enviro_list$env_df[,-4]
-sbs = grid_sp
-
-## species to retain  ------------------------------------------------------
-keep_spp <- intersect(
-  colnames(sbs)[-(1:4)],      # species columns in the site-by-species table
-  as.character(sbt$species)      # those present in the trait table
+bfly_data = get_occurrence_data(
+  data = system.file("extdata", "site_species.csv", package = "invasimapr"),
+  source_type = 'local_csv'
 )
 
-## filter the site-by-species table  ---------------------------------------
-sbs_fil <- sbs %>%
-  # keep the first four metadata columns plus the selected species
-  select(1:4, all_of(keep_spp)) %>%
-  # drop sites with no occurrences of any retained species
-  filter(if_any(all_of(keep_spp), ~ .x > 0))
-
-## filter the environmental table  -----------------------------------------
-env_fil <- env %>%
-  semi_join(sbs_fil, by = "grid_id")   # keeps only matching grid_id rows
+# Check results but only a subset of columns to fit in console
+dim(bfly_data)
+str(bfly_data) 
+head(bfly_data)
 ```
 
-Extract the analysis matrices and key constants. `sbsF` is the pure species matrix (*sites × species*), `sbtF` is the trait matrix (*species × traits*), and `envF` is the environmental matrix (*sites × environment*) with the same site order as `sbsF`. The scalar assignments record the dimensions of these matrices (n_site, s_spp, t_trt), the competition‐kernel width `sigV`, and the number of null reshuffles `sub`, which are passed directly to downstream **`invasimapr`** functions such as `alpha()` and the Monte-Carlo routines.
+### 4.3. Format Biodiversity Records to Long / Wide   
+Next, [`format_df()`](https://macsands.github.io/dissmapr/reference/format_df.html) restructures the raw records into tidy long and wide formats. This assigns unique site IDs, extracts key fields (coordinates, species names, observation values), and prepares two main outputs: `site_obs` (long format for mapping) and `site_spp` (wide format for species-level analysis).
 
-```{r set-parameters}
-sbsF = sbs_fil[,-(1:4)]
-sbtF = sbt[,-1]
-envF = sbs_fil[,-(1:3)]
-(n_site = dim(sbsF)[1]) # number of sites
-(s_spp = dim(sbtF)[1]) # number of species
-(t_trt = dim(sbtF[,-1])[2]) # number of traits
-(sigV = 0.02175691) # sigma value in alpha function: Width of bell i.e. wide bell = stronger competition in general
-(sub = 4) # number of reshuffles
-```
+```{r format-df}
+# bfly_result = format_df(
+#   data        = bfly_data, # A `data.frame` of biodiversity records
+#   species_col = 'verbatimScientificName', # Name of species column (required for `"long"`)
+#   value_col   = 'pa', # Name of value column (e.g. presence/abundance; for `"long"`)
+#   extra_cols  = NULL, # Character vector of other columns to keep
+#   format      = 'long' # Either`"long"` or `"wide"`. If `NULL`, inferred from `species_col` & `value_col`
+# )
 
-------------------------------------------------------------------------
+bfly_result = format_df(
+  data        = bfly_data, # A `data.frame` of biodiversity records
+  species_col = 'sp_name', # Name of species column (required for `"long"`)
+  value_col   = 'count' # Name of value column (e.g. presence/abundance; for `"long"`)
+  )
 
-### 2.6.	Interaction Strength with `r()` and `alpha()`
-Here, the workflow calculates the interaction strength matrix based on trait-mediated competition. The strength of interactions is derived from a Gaussian-like kernel function that models the effect of trait distances on competitive interactions.
-The Gaussian-like Interaction Kernel function is used to compute pairwise interaction strengths based on trait distances, where smaller trait distances lead to stronger interactions:   
-o	`r()`: Growth rates for alien species in various environments.   
-o	`alpha()`: A matrix of interaction strengths, with higher values indicating stronger competitive effects when species’ traits are similar.   
-o	`r(alien_x, enviro)`: a placeholder function returning a constant growth rate (here fixed at 1). In practice, this would be replaced by a more complex function capturing how an alien species’ intrinsic growth rate depends on both its traits (alien_x) and the environment (enviro).
+# Check `bfly_result` structure
+str(bfly_result, max.level = 1)
 
-`r()`: Growth rates for alien species in various environments.
-```{r fun-r}
-# ‘r’ Function: Trait mediated growth as a function of the environment
-r = function(alien_x, enviro){
-  1 
-}
-```
-
-`alpha(sbt, alien_x, sig)`: Calculates the pairwise trait distances between an alien species (alien_x) and each resident species in `sbt` using Gower distance. It then applies a Gaussian-like kernel (exponential decay of squared distance) to represent trait-mediated competition. `sig` defines the kernel width (sigma); larger sigma implies a broader range of competitive effects.
-
-```{r fun-alpha, tidy = FALSE, prompt = TRUE}
-# ‘Alpha’ Function: Pairwise dissimilarities (distances) between traits
-alpha = function(sbt, alien_x, sig=sigV){
-  yy = as.matrix(cluster::daisy(rbind(sbt, alien_x), metric = "gower"))
-  td = yy[s_spp+1, 1:s_spp] # alien-resident trait distance
-  exp(-td^2/(2*sig^2)) # trait mediated interaction kernel 
-}
-```
-------------------------------------------------------------------------
-
-### 2.7.	Invasiveness with `inv()`
-Invasiveness Calculation: A function is implemented to compute the trait-mediated invasiveness of alien species based on their interaction strength with the community. A numeric value (or vector) is returned for each site indicating the alien species’ ability to invade (i.e., whether it can grow in the presence of established competitors and local environmental conditions). By reshuffling traits, we can create a new species-trait matrix (xx) by randomly permuting the rows of `sbt`. This mimics creating “alien” trait profiles from existing trait data. Using `future_apply::future_lapply`, the invasibility calculations can be run in parallel across multiple species, essentially looping over each newly “constructed” alien species (species_index). Invasibility is then computed for each alien species across all sites. A matrix of invasibility values is returned, where rows correspond to alien species and columns correspond to sites i.e. a *sspp × nsites* matrix of invasibility scores for each reshuffled species at each site.   
-
-`inv()` computes the invasiveness of an alien species: 
-Invasiveness = `r(alienx, enviro) − α(sbt, alienx) × abT`
-where `ab` represents the abundance vector of resident species, and `α` (`alpha`) is the trait-mediated competition kernel. A positive result indicates a higher growth potential relative to competitive suppression, while a negative result suggests the alien is outcompeted by resident species.
-
-```{r fun-inv}
-# Invasiveness calculation 
-inv = function(alien_x, enviro, sbt, ab){
-  r(alien_x, enviro) - alpha(sbt, alien_x) %*% t(ab)
-}
-```
-
-------------------------------------------------------------------------
-
-#### 2.7.1.	Parallel computation with `compute_invasibility_noLoop`
-Next compute invasibility using parallel processing, with the function for Parallel Computation below:
-
-```{r fun-compute_invasibility}
-# Function for parallel computation 
-compute_invasibility_noLoop = function(i, sbt, env, sbs, inv) {
-  # Generate possible aliens by reshuffling sbt (factors are kept intact)
-  xx = as.data.frame(lapply(sbt, sample))
-  
-  # Parallel processing using future_lapply to compute results each species
-  reshuffle_results = future.apply::future_lapply(1:s_spp, function(species_index) {
-    # Extract reshuffled species data 
-    x = xx[species_index, ]      
-    # For each species, compute invasibility for each site in parallel
-    inv_results = sapply(1:n_site, function(site_index) {
-      inv(x, env[site_index, ], sbt, sbs[site_index, ])
-    })
-    return(inv_results)
-  }, future.seed = TRUE)
-  
-  # Combine the list of results into a matrix
-  reshuffle_results = do.call(rbind, reshuffle_results)
-  return(reshuffle_results)
-}
-```
-
-Returns a 3D array (`inb_all`) with dimensions: [sub, s_spp, n_site], containing invasibility values for each reshuffle, species, and site. A substantial speedup in computations compared to a single-threaded approach, especially for large data.
-
-```{r run-compute_invasibility}
-# Run in parallel
-# Pre-allocates a 3D array to store invasibility results for multiple 
-# reshuffles (sub times), across all species and sites.
-inb_all = array(NA, dim = c(sub, s_spp, n_site))
-
-# Cluster Initialization
-num_cores = detectCores() - 2 # keeps one system core free
-cl = makeCluster(num_cores) # creates the parallel backend
-
-# Sends the required objects/functions to each node
-clusterExport(cl, varlist = c("sbt", "env", "sbs", 
-                           "inv", "r", "alpha", 
-                           "s_spp", "n_site", "sigV"))
-start_time = Sys.time()
-
-# Parallel Computation
-# `parLapply` runs the `compute_invasibility_noLoop` function in parallel 
-# for each reshuffle iteration (1 through sub).
-inb_all_parallel = parLapply(cl, 1:sub, 
-                             compute_invasibility_noLoop,
-                             sbtF, envF, sbsF, inv)
-stopCluster(cl)
-
-end_time = Sys.time()
-
-# Times the parallel run, printing total runtime in minutes
-execution_time = difftime(end_time, start_time, units = "mins")
-print(paste("Execution time: ", round(execution_time, 2), "minutes"))
-
-# >> WORK-IN-PROGRESS TO SPEEDUP COMPUTATION <<
-
-# Fills the `inb_all` array with the results from each parallel iteration
-for (i in 1:sub) {
-	inb_all[i, , ] = inb_all_parallel[[i]]
-}
-
-str(inb_all)
-```
-
-------------------------------------------------------------------------
-
-#### 2.7.2.	Convert into long format and calculate **Invasion Percent**
-Converting into long format, each row will correspond to a single combination of reshuffle iteration, species, and site, making it easier to summarize, group, and plot. A tidy data frame with columns for reshuffle iteration, species index, site index, and invasiveness values is returned.
-
-```{r run-melt}
-# Convert to long format
-# Reshapes the 3D invasibility array into a “long” data frame
-inb_all_long = reshape2::melt(inb_all, 
-			varnames = c("Reshuffle", "Species", "Site"),
-			value.name = "Invasiness")
-			
-inb_all_long <- inb_all %>%                       # wide → long
-  pivot_longer(names_to  = c("Reshuffle", "Species", "Site"),                      # new column with names
-    values_to = "Invasiness"                         # new column with values
-  ) %>% 
-  group_by(site, x, y, species) %>%             # collapse duplicates
-  summarise(Invasiness = sum(Invasiness), .groups = "drop")
-
-# Confirm that the data has been successfully restructured
-head(inb_all_long)
-str(inb_all_long)
-summary(inb_all_long)
-```
-
-Calculates **Invasion Proportion and Percent** where, `Invasi_Prop` is the proportion of positive invasiveness values across all reshuffles and species (i.e., fraction of times an alien can invade). `Invasi_Percent` is the same proportion multiplied by 100. A raster-style map is returned, showing how invasibility percent varies across sites, highlighting hotspots (dark blue) and colder spots (yellow) of potential alien establishment. Species richness is overlaid to help interpret invasibility in context of existing community diversity.
-
-```{r get-invasi_spp_site}
-# Invasibility Percent Raster Plot
-# Matches site indices to their x and y coordinates (site_xy)
-inb_all_long$x = site_xy$x[match(inb_all_long$Site, site_xy$grid_id)]
-inb_all_long$y = site_xy$y[match(inb_all_long$Site, site_xy$grid_id)]
-
-# Summarise by xyz
-invasibility_spp_site = inb_all_long %>%
-  group_by(Site, x, y) %>%
-  summarise(Invasi_Prop = sum(Invasiness > 0) / (sub * s_spp),
-            Invasi_Percent = Invasi_Prop * 100)
-
-# Add number of species per site back to results (species richness)
-invasibility_spp_site$nSpp = spp_rich$nSpp[match(invasibility_spp_site$Site,
-                             spp_rich$site)]
+# Optional: Create new objects from list items
+site_obs = bfly_result$site_obs
+site_spp = bfly_result$site_spp
 
 # Check results
-head(invasibility_spp_site)
+dim(site_obs)
+head(site_obs)
 
-# Invasibility Percent Raster Plot
-ggplot() +
-  # Creates a spatial heatmap of invasibility percent
-  geom_tile(invasibility_spp_site, aes(x=x, y=y, fill=Invasi_Percent)) + 
-  # Overlays the species richness value at each site
-  geom_text(invasibility_spp_site, aes(x=x, y=y, label=nSpp), color="darkgrey") +
-  # Uses `viridis` colours in reverse order
-  scale_fill_viridis(colors=viridis(8), direction =-1) + 
-  # Add South African boundary layer
-  geom_sf(data = rsa, fill = NA, color = "forestgreen", alpha = 0.5) +
-  # Add Title, Axis and Legend labels
-  labs(title = "Invasibility Percent Raster Plot",
+dim(site_spp)
+head(site_spp[,1:6])
+
+#### Get parameters from processed data to use later
+# Number of species
+(n_sp = dim(site_spp)[2] - 3)
+
+# Species names
+sp_cols = names(site_spp)[-c(1:3)]
+sp_cols[1:10]
+```
+
+### 4.4. Generate Spatial Grid and Gridded Summaries
+To integrate the data spatially, [`generate_grid()`](https://macsands.github.io/dissmapr/reference/generate_grid.html) overlays a user-defined spatial lattice (e.g. 0.5° grid), aggregates biodiversity observations per grid cell, and computes standardised metrics such as species richness and observation effort. Outputs include gridded species matrices (`grid_spp`, `grid_spp_pa`), a spatial polygon (`grid_sf`), and raster layers (`grid_r`), enabling downstream spatial modelling.
+
+```{r grid}
+# 1. Load the national boundary 
+rsa = sf::st_read(system.file("extdata", "rsa.shp", package = "invasimapr"))
+
+# 2. Choose a working resolution 
+res = 0.5   # decimal degrees° (≈ 55 km at the equator)
+
+# 3. Convert the AoI to a 'terra' vector 
+rsa_vect = terra::vect(rsa)
+
+# 4. Initialise a blank raster template 
+grid = terra::rast(rsa_vect, resolution = res, crs = terra::crs(rsa_vect))
+
+# 5. Populate the raster with placeholder values 
+terra::values(grid) = 1
+
+# 6. Clip the raster to the AoI 
+grid_masked = terra::mask(grid, rsa_vect)
+
+# 7. Generate a 0.5° grid summary for the point dataset `site_spp`
+grid_list = generate_grid(
+  data          = site_spp,           # point data with x/y + species columns
+  x_col         = "x",                # longitude column
+  y_col         = "y",                # latitude  column
+  grid_size     = 0.5,                # cell size in degrees
+  sum_cols      = 4:ncol(site_spp),   # columns to aggregate * could also use `names(site_spp)[4:ncol(site_spp)]`
+  crs_epsg      = 4326                # WGS84
+)
+
+# Inspect the returned list 
+str(grid_list, max.level = 1)
+
+# (Optional) Promote list items to named objects 
+grid_r = grid_list$grid_r$grid_id    # raster
+grid_sf = grid_list$grid_sf   # polygons for mapping or joins
+grid_spp = grid_list$grid_spp # tabular summary per cell
+grid_spp_pa = grid_list$grid_spp_pa # presence/absence summary
+
+# Quick checks 
+dim(grid_sf) #; head(grid_sf)
+dim(grid_spp) #; head(grid_spp[, 1:8])
+dim(grid_spp_pa) #; head(grid_spp_pa[, 1:8])
+
+# 1. Extract & stretch the layers 
+effRich_r = sqrt(grid_list$grid_r[[c("obs_sum", "spp_rich")]])
+
+# 2. Open a 1×2 layout and plot each layer + outline 
+old_par = par(mfrow = c(1, 2), # multi‐figure by row: 1 row and 2 columns 
+              mar = c(1, 1, 1, 2))  # margins sizes: bottom (1 lines)|left (1)|top (1)|right (2)
+
+for (i in 1:2) {
+  plot(effRich_r[[i]],
+       col   = viridisLite::turbo(100),
+       colNA = NA,
+       axes  = FALSE,
+       main  = c("Sampling effort (√obs count)",
+                 "Species richness (√unique count)")[i],
+       cex.main = 0.8)          # ← smaller title)
+  plot(terra::vect(rsa), add = TRUE, border = "black", lwd = 0.4)
+}
+
+par(old_par)  # reset plotting parameters
+```
+
+### 4.5. Retrieve, crop, resample, and link environmental rasters to sampling sites
+Environmental predictors are appended using [`get_enviro_data()`](https://macsands.github.io/dissmapr/reference/get_enviro_data.html), which buffers the grid, downloads raster data (e.g. WorldClim bioclimatic variables), resamples it, and links values to grid-cell centroids. This produces both a site-by-environment data frame (`env_df`) and a SpatRaster object (`env_r`), aligning biological and environmental data.
+
+```{r get-enviro}
+# Retrieve 19 bioclim layers (≈10-km, WorldClim v2.1) for all grid centroids
+data_path = "inst/extdata"               # cache folder for rasters
+enviro_list = get_enviro_data(
+  data       = grid_spp,                  # centroids + obs_sum + spp_rich
+  buffer_km  = 10,                        # pad the AOI slightly
+  source     = "geodata",                 # WorldClim/SoilGrids interface
+  var        = "bio",                     # bioclim variable set
+  res        = 5,                         # 5-arc-min ≈ 10 km
+  grid_r     = grid_r,                      # To set resampling resolution, if necessary
+  path       = data_path,
+  sp_cols    = 7:ncol(grid_spp),          # ignore species columns
+  ext_cols   = c("obs_sum", "spp_rich")   # carry effort & richness through
+)
+
+# Quick checks 
+str(enviro_list, max.level = 1)
+
+# (Optional) Assign concise layer names for readability
+# Find names here https://www.worldclim.org/data/bioclim.html
+names_env = c("temp_mean","mdr","iso","temp_sea","temp_max","temp_min",
+              "temp_range","temp_wetQ","temp_dryQ","temp_warmQ",
+              "temp_coldQ","rain_mean","rain_wet","rain_dry",
+              "rain_sea","rain_wetQ","rain_dryQ","rain_warmQ","rain_coldQ")
+names(enviro_list$env_rast) = names_env
+
+# (Optional) Promote frequently-used objects
+env_r = enviro_list$env_rast    # cropped climate stack
+env_df = enviro_list$env_df      # site × environment data-frame
+
+# Quick checks 
+env_r; dim(env_df); head(env_df)
+
+# Build the final site × environment table
+grid_env = env_df %>%
+  dplyr::select(grid_id, centroid_lon, centroid_lat,
+                obs_sum, spp_rich, dplyr::everything())
+
+str(grid_env, max.level = 1)
+head(grid_env)
+```
+
+
+### 4.6. Remove Highly Correlated Predictors (optional)
+Finally, [`rm_correlated()`](https://macsands.github.io/dissmapr/reference/rm_correlated.html) optionally reduces multicollinearity by filtering out highly correlated predictors based on a threshold (e.g. r > 0.70), improving model stability and interpretability. Together, these functions provide a reproducible and scalable pipeline for preparing ecological datasets for spatial analysis.
+
+```{r remove-corr, message = FALSE}
+# # (Optional) Rename BIO
+# names(env_df) = c("grid_id", "centroid_lon", "centroid_lat", names_env, "obs_sum", "spp_rich")
+#   
+# # Run the filter and compare dimensions
+# # Filter environmental predictors for |r| > 0.70
+# env_vars_reduced = rm_correlated(
+#   data       = env_df[, 4:23],  # drop ID + coord columns
+#   cols       = NULL,                  # infer all numeric cols
+#   threshold  = 0.70,
+#   plot       = TRUE                   # show heat-map of retained vars
+# )
+# 
+# # Before vs after
+# c(original = ncol(env_df[, c(4, 6:24)]),
+#   reduced  = ncol(env_vars_reduced))
+```
+
+---
+
+## 5. Data access and preparation using `invasimapr`
+
+### 5.1. Reshape and Clean Site-by-Species Observation Matrix
+This step converts the wide site-by-species abundance matrix into a long-format data frame, suitable for downstream ecological modeling and trait linkage. The process includes:
+
+- **Dropping unnecessary metadata** (e.g., mapsheet columns)
+- **Pivoting to long format** so each row represents a unique site-species observation
+- **Filtering out missing species** and absent (zero count) records
+- **Optionally filtering** for sufficiently abundant species or high-confidence observations
+
+These actions ensure your analysis is based on well-sampled taxa and avoids downstream issues related to sparse or missing data.
+
+
+```{r spp-filter}
+# Reshape site-by-species matrix to long format and clean
+grid_obs = grid_spp %>% 
+  dplyr::select(-mapsheet) %>%                         # Drop mapsheet metadata
+  pivot_longer(
+    cols = -c(grid_id, centroid_lon, centroid_lat,     # Keep core metadata columns only
+              obs_sum, spp_rich),
+    names_to  = "species",
+    values_to = "count",
+    values_drop_na = TRUE ) %>%                        # Drop missing values
+  filter(count > 0) %>%                                # Remove zero-count (absent) records
+  relocate(grid_id, centroid_lon, centroid_lat,
+           obs_sum, spp_rich, species, count)
+
+# # Only keep observations where species have >500 observations
+# site_spp_obs = site_spp_obs %>%
+#   # select only the columns you care about
+#   dplyr::select(10, 13, 14, 16:17, 19, 22:23, 30:33) %>%
+#   # drop rows where species is NA
+#   filter(!is.na(species)) %>%
+#   # add a count column called "n_obs"
+#   add_count(species, name = "n_obs") %>%
+#   # keep only species with >100 observations
+#   filter(n_obs > 500) %>%
+#   # (optional) sort by descending count
+#   arrange(desc(n_obs))
+
+# # Further filter: retain only observations with count > 10 and non-missing species
+# grid_obs = grid_obs %>%
+#   filter(!is.na(species)) %>%
+#   filter(count > 10) %>%
+#   arrange(desc(count))                                 # Optionally, sort by descending count
+
+# Final data check
+# Examine structure and summary statistics before further filtering
+str(grid_obs)
+dim(grid_obs)
+length(unique(grid_obs$species))
+summary(grid_obs$count)
+
+```
+
+### 5.2. Retrieve and Link Trait and Metadata for Each Species
+This utility provides an automated pipeline for extracting and joining both biological trait data and rich metadata for any focal species. The function integrates several steps:
+
+1. **Trait Table Lookup**: Retrieves species’ trait data from a local trait table (CSV) or a [TRY](https://www.try-db.org/TryWeb/Home.php)-style database, using fuzzy matching to ensure robust linkage even when there are minor naming inconsistencies.
+2. **Wikipedia Metadata Scraping**: Optionally augments each species entry with a taxonomic summary, higher taxonomy, and representative images scraped directly from [Wikipedia](https://www.wikipedia.org/).
+3. **Image-based Color Palette Extraction**: If enabled, downloads and processes public domain images to extract the most frequent colors, optionally removing green/white backgrounds to focus on diagnostic features.
+4. **Flexible Output**: Returns a single-row tibble with the species name, trait data, taxonomic metadata, image URL, and color palette - all harmonized for downstream analyses or visualization.
+
+This function greatly simplifies the assembly of a unified species-trait-metadata table, which is essential for trait-based community ecology, macroecology, and biodiversity informatics projects.
+
+```{r get-traits}
+# # Local trait data.frame version 1
+# btfly_traits1 = read.csv("D:/Data/Traits/Butterflies/Middleton_etal_2020/Middleton_etal_2020_traits.csv") # adjust path
+# btfly_traits1 = read.csv(system.file("extdata", "Middleton_etal_2020_traits.csv", package = "invasimapr"))
+# str(btfly_traits1)
+# length(unique(btfly_traits1$Species))
+# 
+# # Github trait data.frame
+# git_url = "https://raw.githubusercontent.com/RiesLabGU/LepTraits/main/consensus/consensus.csv"
+# # Make sure inst/extdata exists then define destination
+# dir.create("inst/extdata", recursive = TRUE, showWarnings = FALSE)
+# destfile = file.path("inst", "extdata", "consensus.csv")
+# 
+# # Download the raw CSV
+# download.file(
+#   url = git_url,
+#   destfile = destfile,
+#   mode = "wb"    # important on Windows
+# )
+# 
+# # 4. Read it from disk
+# btfly_traits2 = read.csv(destfile, stringsAsFactors = FALSE)
+# str(btfly_traits2)
+# length(unique(btfly_traits2$Species))
+# 
+# # Retrieve and join trait/metadata for all species in the observation set
+# spp_traits = purrr::map_dfr(
+#   unique(grid_obs$species),
+#   ~get_trait_data(
+#     species = .x,
+#     remove_bg = FALSE,
+#     n_palette = 5,
+#     preview = FALSE,
+#     save_folder = NULL,
+#     do_summary = TRUE,
+#     do_taxonomy = TRUE,
+#     do_image = TRUE,
+#     do_palette = TRUE,
+#     use_try = FALSE,
+#     try_data = NULL,
+#     # local_trait_df = btfly_traits1,
+#     local_trait_df = btfly_traits2,
+#     local_species_col = 'Species',
+#     # github_url = git_url,
+#     max_dist = 1
+#   )
+# )
+
+# Local trait data.frame version 2
+# btfly_traits3 = read.csv("D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata/species_traits.csv") # adjust path
+btfly_traits3 = read.csv(system.file("extdata", "species_traits.csv", package = "invasimapr"))
+str(btfly_traits3)
+# length(unique(btfly_traits3$species))
+
+# Retrieve and join trait/metadata for all species in the observation set
+spp_traits = purrr::map_dfr(
+  unique(grid_obs$species),
+  ~get_trait_data(
+    species = .x,
+    n_palette = 5,
+    preview = FALSE,
+    do_summary = TRUE,
+    do_taxonomy = TRUE,
+    do_image = TRUE,
+    do_palette = TRUE,
+    local_trait_df = btfly_traits3,
+    local_species_col = 'species',
+    max_dist = 1
+  )
+)
+# The final output combines trait data, taxonomic info, Wikipedia summary, images, and color palette for each species.
+# This integrated dataset supports multi-faceted biodiversity, trait, and visualization analyses.
+
+str(spp_traits)
+head(spp_traits)
+
+# Count how many non‐NA IDs
+length(unique(btfly_traits3$species))
+length(unique(grid_obs$species))
+sum(!is.na(spp_traits$species))
+```
+
+
+### 5.3. Load local combined site, environment, and trait data
+
+```{r data-import}
+# Optional - Set working directory
+# setwd('D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata')
+
+# Read primary data (one row per site–species combination)
+# site_env_spp = read.csv('site_env_spp_simulated.csv')
+site_env_spp = read.csv(system.file("extdata", "site_env_spp_simulated.csv", package = "invasimapr"))
+dim(site_env_spp)
+str(site_env_spp)
+
+# # Format 'dissmapr' output to be the same
+# grid_obs = grid_obs %>%
+#   rename(
+#     site_id = grid_id,    # Change 'grid_id' to 'site_id'
+#     x = centroid_lon,     # Change 'centroid_lon' to 'x'
+#     y = centroid_lat      # Change 'centroid_lat' to 'y'
+#   )
+
+# grid_env = grid_env %>%
+#   rename(
+#     site_id = grid_id,      # Change 'grid_id' to 'site_id'
+#     x = centroid_lon,     # Change 'centroid_lon' to 'x'
+#     y = centroid_lat      # Change 'centroid_lat' to 'y'
+#   )
+
+# Check the results
+names(grid_obs)
+# names(grid_env)
+```
+
+---
+
+## 6. Model inputs
+First shape your data so every row is “one species at one site,” with that species’ traits and that site’s environment.  
+
+### 6.1. Extract **site-locations**
+This section isolates the unique spatial coordinates for each sampling site. The resulting table (`site_xy`) will be used for spatial mapping, distance calculations, and for merging environmental and biodiversity metrics with precise locations.
+
+```{r data-sites}
+# Create site coordinate table i.e. # Unique site coordinates
+site_xy = site_env_spp %>%
+  dplyr::select(site_id, x, y) %>%
+  distinct() %>%
+  mutate(.site_id_rn = site_id) %>%
+  column_to_rownames(var = ".site_id_rn")
+head(site_xy)
+```
+
+### 6.2. Extract **site-environment** variables
+Here, we extract a site-by-environment matrix containing the values of all measured environmental covariates at each sampling site. This matrix (`site_env`) enables analyses of environmental gradients, spatial drivers of community composition, and covariate modeling.
+
+```{r data-env}
+# Site-by-environment matrix
+site_env = site_env_spp %>%
+  dplyr::select(site_id, x, y,
+                env1:env10) %>%
+  mutate(site_id = as.character(site_id)) %>%  # ensure character
+  distinct() %>%
+  mutate(.site_id_rn = site_id) %>%
+  column_to_rownames(var = ".site_id_rn")
+dim(site_env)
+head(site_env[1:6,1:6])
+
+# site_env = grid_env %>%
+#   dplyr::select(site_id, x, y, 
+#                 obs_sum, spp_rich, 
+#                 bio01:bio19) %>%
+#   distinct() %>%
+#   mutate(.site_id_rn = site_id) %>%
+#   column_to_rownames(var = ".site_id_rn")
+
+dim(site_env)
+head(site_env[1:6,1:6])
+```
+
+### 6.3. Extract **site-species** abundances and presence-absence
+This section generates two site-by-species matrices: one containing abundances (`site_spp_ab`), and one indicating presence-absence (`site_spp_pa`). These matrices are fundamental for calculating community diversity, richness, and for modeling occupancy and abundance patterns.
+
+```{r data-spp}
+# Site-by-species abundance matrix (wide format)
+# site_spp_ab = grid_obs %>%
+site_spp_ab = site_env_spp %>% # 
+  dplyr::select(site_id, x, y, species, count) %>%
+  pivot_wider(
+    names_from  = species,
+    values_from = count,
+    values_fill = list(count = 0)
+  ) %>%
+  mutate(.site_id_rn = site_id) %>%
+  column_to_rownames(var = ".site_id_rn")
+dim(site_spp_ab)
+head(site_spp_ab[1:6,1:6])
+
+# Site-by-species presence/absence matrix (wide format)
+# site_spp_pa = grid_obs %>%
+site_spp_pa = site_env_spp %>% 
+  mutate(pa = as.integer(count > 0)) %>%
+  dplyr::select(site_id, x, y, species, pa) %>%
+  pivot_wider(
+    names_from  = species,
+    values_from = pa,
+    values_fill = list(pa = 0)
+  ) %>%
+  mutate(.site_id_rn = site_id) %>%
+  column_to_rownames(var = ".site_id_rn")
+dim(site_spp_pa)
+head(site_spp_pa[1:6,1:6])
+```
+
+### 6.4. Extract **species-trait** values
+Here we build the species-by-trait matrix (`spp_trait`), including all measured continuous, categorical, and ordinal traits for each species. This structure is central for trait-based analyses of community assembly, functional diversity, and invasion processes.
+
+```{r data-trait}
+# Species-by-trait matrix (wide)
+# Extract and process continuous, categorical, and ordinal trait data
+spp_trait = spp_traits %>% # site_env_spp
+  dplyr::select(species, trait_cont1:trait_cont10, 
+                trait_cat11:trait_cat15, 
+                trait_ord16:trait_ord20) %>%
+  distinct() %>%
+  mutate(.species_rn = species) %>%
+  column_to_rownames(var = ".species_rn") %>%
+  mutate(across(where(is.character), as.factor))
+
+dim(spp_trait)
+head(spp_trait[1:6,1:6])
+```
+
+---
+
+## 3. Summarize Site-Level Diversity
+This section quantifies and visualizes site-level biodiversity, focusing on local species richness and abundance. Calculating these metrics is essential for mapping alpha diversity, assessing community structure, and identifying spatial patterns of biodiversity hotspots and low-diversity areas across the study landscape.
+
+- **Species richness** (spp_rich<sub>k</sub>): the number of species present (non-zero counts) at site k.
+- **Total abundance** (obs_sum<sub>k</sub>): the sum of all individual counts across species at site k (a proxy for sampling effort).
+- **Mean abundance per species** (obs_mean<sub>k</sub>): total abundance at the site divided by the number of species columns (S); effectively the average count per species regardless of whether it is present.
+
+
+```{r site-richness}
+# Calculate site-level diversity metrics from the species-by-abundance matrix:
+spp_rich_obs = site_spp_ab %>%
+  mutate(
+    spp_rich = rowSums(dplyr::select(., -site_id, -x, -y) > 0), # Species richness: number of species present
+    obs_sum = rowSums(dplyr::select(., -site_id, -x, -y)), # Total abundance: sum of all individuals
+    obs_mean = rowMeans(dplyr::select(., -site_id, -x, -y)) # Mean abundance per species
+  ) %>%
+  # Keep summary metrics and site coordinates
+  dplyr::select(site_id, x, y, spp_rich, obs_sum, obs_mean) %>%
+    mutate(site_id = as.character(site_id))  # Ensure site_id` is a
+head(spp_rich_obs)
+
+# Define a custom color palette for richness mapping (blue = low, dark red = high)
+col_pal = colorRampPalette(c("blue", "green", "yellow", "orange", "red", "darkred"))
+
+# Visualize spatial distribution of site-level species richness
+ggplot(spp_rich_obs, aes(x = x, y = y, fill = sqrt(spp_rich))) +
+  geom_tile() +
+  # Use custom color gradient, reversed so high richness is warm/dark, low is cool/blue
+  scale_fill_gradientn(colors = rev(col_pal(10)), name = "√(Richness)") +
+  geom_text(aes(label = spp_rich), color = "grey80", size = 2) + # Overlay actual richness values
+  geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.4) +  # Plot boundary
+  labs(
+    x = "Longitude",
+    y = "Latitude",
+    title = "Spatial Distribution of Species Richness"
+  ) +
+  theme(panel.grid = element_blank())
+```
+
+---
+
+## 4. Similarity, Functional Trait Space and Diversity Analysis
+
+### 4.1. Basic Trait Similarity
+To diagnose which functional dimensions are more conserved versus variable across the metacommunity, we compute **trait-level similarity** for each trait across all species. This allows identification of traits that might constrain or facilitate invasion and coexistence (e.g., highly conserved traits might reflect strong filtering, while highly variable traits may be axes of ecological opportunity).
+
+We use the `compute_trait_similarity()` function, which calculates similarity as follows:
+
+- **Numeric traits**: Scaled to [0,1], pairwise Euclidean distances are computed, and similarity is 1 - mean(distance). If all values are identical or only one value is present, similarity is 100%.
+- **Categorical traits**: Similarity is the proportion of all possible species pairs that share the same category (level).
+
+The output is a table of percent similarity for each trait, allowing direct comparison of conservation vs. lability across traits.
+
+```{r trait-sim-barplot, fig.cap="Trait-level functional similarity across species."}
+# Compute Trait Similarity for Numeric and Categorical Variables
+df_traits = compute_trait_similarity(spp_trait[,-1])
+head(df_traits)
+
+# Barplot: trait-level similarity (percent identity or scaled distance)
+ggplot(df_traits, aes(x = reorder(Trait, Similarity), y = Similarity, fill = Trait)) +
+  geom_col(show.legend = FALSE) +
+  # ylim(0,100) +
+  labs(
+    title = "Average Trait Similarity (%)",
+    y = "Similarity (%)",
+    x = NULL
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+### 4.2 Gower Distance and Hierarchical Clustering
+Trait-based approaches require robust dissimilarity measures for mixed data types (continuous, categorical, ordinal). Here, we compute **pairwise Gower distances** among species, which accommodates all variable types, and use hierarchical clustering to visualize functional similarity structure within the community.
+
+```{r gower-dendro, fig.cap="Species clustering by functional traits (Gower distance, hierarchical clustering)."}
+# Compute Gower dissimilarity matrix (excluding species column)
+sbt_gower = cluster::daisy(spp_trait[,-1], metric = "gower")
+trait_dist = as.matrix(sbt_gower)
+
+# Hierarchical clustering and dendrogram visualization of functional similarity
+# Hierarchical clustering
+gower_hc = hclust(as.dist(sbt_gower))
+# Dendrogram
+fviz_dend(
+  gower_hc,
+  k = 4,
+  cex = 0.5,
+  k_colors = viridis(4, option = "D"), # k_colors = c("red","blue","green","purple"),
+  color_labels_by_k = TRUE,
+  rect = TRUE,
+  rect_border = "grey40",
+  main = "Gower Cluster Dendrogram") + 
+  guides(scale = "none")
+```
+
+### 4.3. Trait Space Mapping via Principal Coordinates Analysis (PCoA)
+Principal Coordinates Analysis (PCoA) enables **ordination** of species in a reduced, low-dimensional trait space, preserving pairwise dissimilarities. This is used to visualize the overall structure of the functional trait space and examine density and clustering patterns.
+
+```{r pcoa-traitspace, fig.cap="Kernel density in trait space (PCoA axes 1–2)."}
+# PCoA ordination
+pcoa = cmdscale(sbt_gower, eig = TRUE)
+scores_species = as.data.frame(pcoa$points)[,1:2]
+colnames(scores_species) = c("PCoA1", "PCoA2")
+
+# Visualize trait space density using kernel density estimation
+xlims = range(scores_species$PCoA1) + c(-1, 1) * 0.1 * diff(range(scores_species$PCoA1))
+ylims = range(scores_species$PCoA2) + c(-1, 1) * 0.1 * diff(range(scores_species$PCoA2))
+grid_density = MASS::kde2d(scores_species$PCoA1, 
+                           scores_species$PCoA2, 
+                           n = 100, 
+                           lims = c(xlims, ylims))
+filled.contour(
+  grid_density,
+  color.palette = viridis,
+  xlim = xlims, ylim = ylims,
+  plot.title = title(
+    main = "Trait Space Density Contours",
+    xlab = "PCoA1",
+    ylab = "PCoA2"
+  ),
+  plot.axes = {
+    axis(1); axis(2)
+    points(scores_species, pch = 19, cex = 0.5)
+    # Draw all contours (thin)
+    contour(
+      x = grid_density$x, y = grid_density$y, z = grid_density$z,
+      add = TRUE, drawlabels = FALSE, lwd = 0.7, col = "grey60"
+    )
+    # Highlight the major contour (e.g. highest density level)
+    contour(
+      x = grid_density$x, y = grid_density$y, z = grid_density$z,
+      add = TRUE, drawlabels = FALSE,
+      levels = max(grid_density$z) * 0.5,  # 50% of max density
+      lwd = 2, col = "black"
+    )
+  },
+  key.title = title(main = "Density")
+)
+```
+
+### 4.4. Trait Centrality
+Trait **centrality** quantifies how close each species is to the “core” of the community’s trait space. Peripheral species may be ecologically distinct and potentially more likely to become invaders or to escape biotic resistance.
+
+```{r trait-centrality, fig.cap="Distribution of trait centrality (distance to centroid) among species."}
+# Calculate the community trait centroid in reduced trait-space (PCoA axes)
+centroid = colMeans(scores_species)
+
+# Compute each species' Euclidean distance to the centroid (trait centrality)
+scores_species$centrality = sqrt(rowSums((scores_species - centroid)^2))
+
+# Add centrality to the main trait data frame for further analysis/plotting
+spp_trt_cent = spp_trait
+spp_trt_cent$centrality = scores_species$centrality
+
+# Histogram of distribution of trait centrality (core vs peripheral species)
+ggplot(spp_trt_cent, aes(x = centrality)) +
+  geom_histogram(bins = 20, fill = "steelblue", color = "white") +
+  theme_bw() +
+  labs(x = "Distance to community-centroid", y = "Number of species",
+       title = "Trait Centrality (Community Edge vs Core)")
+
+# # OPTIONAL
+# # Scatterplot of trait-space (PCoA1 vs PCoA2), coloured by trait centrality
+# ggplot(scores_species, aes(x = PCoA1, y = PCoA2, colour = centrality)) +
+#   geom_point(size = 3) +
+#   scale_colour_viridis_c(option = "magma") +
+#   labs(colour = "Centrality",
+#        title = "Species Position in Trait Space (PCoA axes 1–2)")
+```
+> This histogram shows how far each species is from the **center** of the community’s trait space.
+> 
+> * The **x-axis** is *distance to the centroid* (central trait combination of the community).
+> * The **y-axis** is the number of species at each distance.
+> 
+> **Interpretation:**
+> 
+> * Most species are clustered at **intermediate distances** (\~0.18–0.22), meaning their traits are moderately similar to the community average.
+> * A few species are **very close** to the centroid (low distances) - these are “core” species with typical trait values.   
+> * Others lie **further out** (higher distances) - these are “peripheral” species with more unusual trait combinations, which might indicate unique ecological roles or specialisations.
+> 
+> **Summary**: the community is centred around a typical trait set, but also includes a handful of species that are either very similar or quite distinct from that average.
+
+
+### 4.5. Community-Level Trait Dispersion
+We calculate key functional diversity metrics at the community scale:
+
+- **FDis**: functional **dispersion** (average distance to centroid)
+- **FRic**: functional richness (trait-space convex hull volume)
+- **RaoQ**: Rao’s quadratic entropy (total abundance-weighted trait dissimilarity)
+
+These summarize the functional structure and ecological breadth of the community.
+
+```{r dispersion-metrics, fig.cap="Community-level functional diversity metrics."}
+# FDis: Functional dispersion (mean distance to centroid in trait space)
+FDis = mean(scores_species$centrality)
+
+# FRic: Functional richness (convex hull volume in PCoA space)
+hull = convhulln(scores_species, options = "FA")
+FRic = hull$vol
+
+# Rao's Q: Rao's quadratic entropy (abundance-weighted pairwise trait diversity)
+n = nrow(scores_species)
+dmat = as.matrix(dist(scores_species))
+p = rep(1/n, n)
+RaoQ = 0.5 * sum(outer(p, p) * dmat)
+
+# Assemble all community-level trait dispersion metrics for comparison
+dispersion_df = data.frame(
+  Metric = c("FDis", "FRic", "RaoQ"),
+  Value = c(FDis, FRic, RaoQ)
+)
+
+# Bar plot: community-level trait dispersion metrics
+ggplot(dispersion_df, aes(x = Metric, y = Value)) +
+  geom_col(width = 0.6, fill = "firebrick") +
+  theme_classic() +
+  labs(title = "Community-Level Trait Dispersion", y = "Metric value")
+```
+> This bar chart summarises three ways of describing the community’s overall functional diversity:
+> 
+> * **FDis (Functional Dispersion)** - Highest value here (~0.20).
+Shows that, on average, species are moderately spread out from the community’s trait centroid, meaning there is a fair amount of variation in trait combinations.
+> 
+> * **FRic (Functional Richness)** - Very low value (~0.02).
+Indicates that the total “volume” of trait space occupied by the community is quite small — species collectively use only a limited portion of the possible trait combinations.
+> 
+> * **RaoQ (Rao’s Quadratic Entropy)** - Intermediate value (~0.14).
+> Measures total abundance-weighted trait dissimilarity. A moderate value here means that, while traits >> differ between species, much of the community’s abundance is concentrated in species that are not >> extremely dissimilar.
+> 
+> **Summary**: The community has **moderate spread** of traits (FDis), **low coverage** of the potential trait space (FRic), and **moderate abundance-weighted diversity** (RaoQ). This suggests that while individual species differ, the community as a whole is functionally constrained. 
+
+
+### 4.6. Combined Functional Workflow
+Trait-based community analyses often require multiple sequential steps: computing per-trait similarity, calculating trait dissimilarities across species, ordination, mapping trait space, quantifying species centrality, and summarising community-level diversity metrics.  
+The `compute_trait_space()` function unifies these steps into a single call, producing **both** per-trait similarity summaries and community-level dispersion outputs. When run, `compute_trait_space()` returns:
+
+- **`out$similarity`** — *Per-Trait Similarity Table*:  
+  Percentage similarity (0–100) for each trait column, computed as:
+  
+  - **Numeric traits** — scaled mean pairwise similarity.
+  - **Categorical traits** — proportion of identical pairs.
+
+- **`out$dispersion$plots$dend`** — *Gower Distance & Hierarchical Clustering* [4.2]:  
+  Computes pairwise Gower distances across all trait types, then applies hierarchical clustering to reveal functional similarity structure.
+
+- **`out$dispersion$plots$density_gg`** — *Trait Space Mapping (PCoA)* [4.3]:  
+  Uses PCoA ordination to position species in reduced trait space; kernel density contours highlight clustering and gaps.
+
+- **`out$dispersion$plots$centrality_hist`** — *Trait Centrality* [4.4]:  
+  Shows the Euclidean distance of each species from the community centroid in PCoA space. Smaller distances indicate “core” species; larger distances indicate more peripheral, functionally distinct species.
+
+- **`out$dispersion$plots$metrics_bar`** — *Community-Level Trait Dispersion* [4.5]:  
+  Summarises three functional diversity metrics:
+  - **FDis** — mean distance to centroid (functional dispersion)
+  - **FRic** — convex hull volume/area (functional richness)
+  - **RaoQ** — abundance-weighted trait dissimilarity (Rao’s quadratic entropy)
+
+- **`out$dispersion$metrics_df`** — *Metrics Table*:  
+  A tidy table of all metric values for reporting or further analysis.
+
+
+```{r func-test, fig.width=7, fig.height=10}
+# res = compute_trait_dispersion(spp_trait,
+#                                species_col = 1,
+#                                k = 4,
+#                                pcoa_dims = 2,
+#                                abundance = rep(1, nrow(spp_trait)),  # equal weights
+#                                kde_n = 100,
+#                                viridis_option = "D",
+#                                show_plots = TRUE,                    # combined patchwork output
+#                                show_density_plot = FALSE,
+#                                seed = NULL)
+# 
+# str(res, max.level=1)
+
+res = compute_trait_space(
+  trait_df = spp_trait,
+  species_col = "species", 
+  abundance = NULL,
+  k = 4, 
+  pcoa_dims = 2, 
+  show_density_plot = FALSE,
+  show_plots = TRUE
+)
+
+str(res, max.level=1)
+
+head(res$similarity)
+str(res$dispersion, max.level=1)
+```
+
+
+**Summary**: By pairing `compute_trait_similarity()` (per-trait conservation/lability) with `compute_trait_dispersion()` (whole-community functional structure), you get a complete, repeatable workflow for trait-based invasion and coexistence studies. All plots are stored in `res$plots` for flexible reuse, while `res$metrics_df` provides ready-to-use numerical summaries for statistical modelling.
+
+You can also rearrange or customise the plots in `res$plots` using patchwork or other layout tools.
+For example, the code below recreates the combined layout used when `show_plot = TRUE`, but omits the base `filled.contour()` plot for simplicity.
+
+```{r func-plot, fig.width=7, fig.height=10}
+str(res$dispersion, max.level=1)
+
+# # Custom combined layout without base filled.contour
+# combined = res$dispersion$plots$dend /
+#   (res$dispersion$plots$centrality_hist | res$dispersion$plots$metrics_bar) /
+#   res$dispersion$plots$density_gg +
+#   patchwork::plot_layout(heights = c(1, 2, 1))
+# 
+# print(combined)  # display in console
+```
+
+This flexibility means you can:
+
+- Change the order or arrangement of panels
+- Replace individual plots with customised versions (e.g., change themes or colours)
+- Combine them with other figures in your workflow
+
+---
+
+## 5. Model Abundance as a Function of Traits and Environment
+To evaluate how **species functional traits, environmental conditions**, and their **interactions** influence species abundances, we use a **Generalized Linear Mixed Model (GLMM)**.
+This framework:
+
+- Quantifies the separate and combined effects of traits and environment.
+- Controls for repeated observations of the same species and sites via **random intercepts**, accounting for non-independence and spatial structure.
+- Is flexible enough to predict how hypothetical (invader) species might perform in new environments.
+
+We use the **Tweedie** error distribution, which is well-suited to ecological count data because it handles **overdispersion** and **many zeros**.
+
+
+### 5.1. Prepare the long-format dataset
+We first create a long-format table, where each row is a single species-at-site observation, with all associated predictors attached:
+
+- **Site metadata**: `site_id`, spatial coordinates (`x`, `y`)
+- **Species ID and count/abundance**
+- **Environmental predictors**: e.g., `env1`-`env10`
+- **Species traits**: continuous (`trait_cont1`-`trait_cont10`), categorical (`trait_cat11`-`trait_cat15`), and ordinal (`trait_ord16`-`trait_ord20`)
+
+Finally, we convert all character variables to factors so they’re correctly handled by the model.
+
+```{r fit-data, cache=TRUE}
+# Prepare long-format data
+longDF = site_env_spp %>%
+  dplyr::select(
+    site_id, x, y, species, count,           # Metadata + response
+    env1:env10,                              # Environment variables
+    trait_cont1:trait_cont10,                # Continuous traits
+    trait_cat11:trait_cat15,                 # Categorical traits
+    trait_ord16:trait_ord20                  # Ordinal traits
+  ) %>%
+  mutate(across(where(is.character), as.factor))
+
+head(longDF)
+
+# # Use `grid_obs` from `dissmapr` imports instead
+# longDF = grid_obs %>%
+#   mutate(site_id = as.character(site_id)) %>%
+#   left_join(site_env %>% dplyr::select(-x, -y) %>% 
+#               mutate(site_id = as.character(site_id)), by = "site_id") %>%
+#   left_join(spp_trait %>% 
+#               mutate(species = as.character(species)), by = "species") %>%
+#   mutate(across(where(is.character), as.factor))  # Ensure all character fields are treated as factors
+# # head(longDF)
+```
+
+### 5.2. Build the model formula
+We use `build_glmm_formula()` to **automatically detect** trait and environmental predictor columns based on naming conventions (prefixes like "`trait_`" or "`env_`") or by excluding known metadata columns (`site_id`, `x`, `y`, `species`, `count`).
+
+The function then:
+
+- **Generates main effect terms** for all detected traits and all detected environment variables.
+- **Optionally expands** these into **all pairwise trait × environment interactions** (e.g., `trait_cont1:env3`), capturing environment-dependent trait effects.
+- **Appends random intercepts** for the grouping variables specified in `random_effects` (default: "`(1 | species)`" and "`(1 | site_id)`").
+- **Returns a valid R formula object** ready for model fitting.
+
+This automatic approach ensures that the model always reflects the full trait–environment structure without hard-coding variable names.
+
+```{r fit-formula}
+# Automatically build the GLMM formula
+fml = build_glmm_formula(
+  data                 = longDF,
+  response             = "count",            # Response variable
+  species_col          = "species",          # Random effect grouping
+  site_col             = "site_id",          # Random effect grouping
+  include_interactions = TRUE,               # Add all trait × environment terms
+  random_effects       = c("(1 | species)", "(1 | site_id)")
+)
+
+fml
+# Example output:
+# count ~ trait_cont1 + trait_cont2 + ... + env1 + env2 + ... +
+#         (trait_cont1 + ... + trait_cat15):(env1 + ... + env10) +
+#         (1 | species) + (1 | site_id)
+```
+
+
+### 5.3. Fit the GLMM
+
+We fit the model using `glmmTMB::glmmTMB()`, which supports a wide range of distributions and correlation structures.
+
+In this case:
+
+- **Family**: `tweedie(link = "log")`
+  - Handles overdispersed count data and zero-inflation without requiring a separate zero-inflated component.
+  - The **log link** models multiplicative effects of predictors on expected abundance.
+
+- **Data**: The prepared long-format table (`longDF`).
+- **Formula**: The formula, automatically generated `fml` from `build_glmm_formula()` or user customised.
+
+The model is fit via maximum likelihood, estimating both fixed-effect coefficients (for traits, environments, and their interactions) and variance components for the random effects.
+
+```{r fit-glmmTMB}
+# Fit Tweedie GLMM
+set.seed(123)
+mod = glmmTMB::glmmTMB(
+  formula = fml,
+  data    = longDF,
+  family  = glmmTMB::tweedie(link = "log")
+)
+
+summary(mod)
+```
+
+
+This model forms the core of the invasion fitness workflow, allowing us to predict how novel trait-environment combinations are likely to perform (abundance-wise) in different sites, and enables robust estimation of both direct and interactive drivers of community assembly.
+
+---
+
+## 6. Simulating and Predicting Invader Performance
+
+This section demonstrates how to **simulate trait profiles for hypothetical invaders** and then use the fitted abundance model to **predict their expected performance across all sites**. This forms a crucial part of modern invasion biology workflows: moving from theory-driven invader trait generation to data-driven, site-level predictions of establishment and performance.
+
+### 6.1. Simulate Hypothetical Invaders
+To evaluate how potential invaders might perform, we generate novel species by resampling trait values from the empirical distribution of the resident pool using the `simulate_invaders()` function. This approach allows you to:
+
+- **Preserve realism** by keeping trait ranges and levels identical to those observed in the resident community.
+- **Explore unobserved combinations** (when using column-wise sampling) or maintain natural trait correlations (when using row-wise sampling).
+- Control how numeric traits are drawn — bootstrap from observed values, draw from a truncated normal distribution, or sample from a uniform distribution within observed bounds.
+
+By default, traits are sampled **independently by column** (`mode = "columnwise"`), which generates novel combinations. Alternatively, setting `mode = "rowwise"` samples entire resident profiles, preserving observed cross-trait covariance.
+
+```{r invader-sim}
+# Example: simulate 10 invaders from the resident trait table
+set.seed(42)
+inv_traits = simulate_invaders(
+  resident_traits = spp_trait,  # your resident species traits table
+  n_inv           = 10,         # number of invaders to create
+  species_col     = "species",  # ID column for species
+  mode            = "columnwise",   # or "rowwise"
+  numeric_method  = "bootstrap",    # or "normal", "uniform"
+  seed            = 42
+)
+
+head(inv_traits)
+```
+
+- Use `mode = "rowwise"` when you want to preserve realistic trait correlations.
+- Use `mode = "columnwise"` when exploring hypothetical trait combinations beyond those observed.
+
+### 6.2. Predict Abundances Across All Sites 
+With simulated invaders in hand, we use the `predict_invader_response()` function to generate expected abundances (our performance proxy) for every **species-site** combination.  
+
+This function:  
+- Takes a fitted model (e.g., from **glmmTMB**, **lme4**, **glm**, or **gam**)  
+- Crosses the **species traits table** (residents + simulated invaders) with the **site environment table**  
+- Harmonizes factor levels with the model’s training data  
+- Calls the model’s native `predict()` method to return:  
+  1. The full prediction grid (`newdata`)  
+  2. A long table of predictions (`predictions`)  
+  3. A wide **site × species** prediction matrix (`prediction_matrix`)  
+
+#### Why population-level (fixed-effects) predictions?  
+For novel invaders, random-effect levels (e.g., species or site intercepts) are unknown.  
+By default, `predict_invader_response()` sets these random effects to zero, giving **population-level** predictions driven only by traits, environments, and their interactions — the appropriate scale for invasion screening and risk ranking.  
+
+Set `include_random = TRUE` only if you intentionally want conditional predictions that incorporate existing random-effect levels (and allow new levels where supported).  
+
+
+```{r predict-inv}
+# Combine residents and invaders into a single trait table
+all_traits = bind_rows(
+  spp_trait,      # Resident species traits (must include 'species' column)
+  inv_traits      # Output from simulate_invaders()
+) 
+head(all_traits)
+tail(all_traits)
+
+# Predict across all sites × all species using predict_invader_response()
+pred = predict_invader_response(
+  model          = mod,
+  species_traits = all_traits,   # residents + invaders (traits)
+  site_env       = site_env,     # base site predictors
+  species_col    = "species",
+  site_col       = "site_id",
+  response_type  = "response",
+  include_random = FALSE,
+  site_aug       = dplyr::select(spp_rich_obs, site_id, obs_sum, spp_rich)
+)
+
+# Inspect outputs
+str(pred, max.level = 1)
+names(pred$newdata)      # long table: site_id, species, pred
+head(pred$predictions)      # long table: site_id, species, pred
+dim(pred$prediction_matrix) # sites × species matrix (for fitness/impact/risk calcs)
+
+```
+
+---
+
+## 7. Quantifying Biotic and Abiotic Constraints on Invasion
+Understanding how **trait similarity** (biotic constraint) and **environmental matching** (abiotic constraint) shape invasion outcomes requires explicit, quantitative representations of both processes. This section details three linked steps:
+
+1. Constructing the general **trait-based interaction strength** matrix  
+2. Deriving a **competition coefficient** matrix from these interactions  
+3. Quantifying **environmental matching** via **species’ optima**  
+
+
+### 7.1. Trait-based Interaction Strength
+The trait-based interaction strength matrix, `g_all`, captures the potential biotic effects (competitive, facilitative, or neutral) between any two species. Here we compute it using **Gower distances** in trait space, which are ideal for our mixed continuous, ordinal, and categorical trait data because they:
+
+- Treat all trait types consistently without pre-scaling.
+- Return bounded values in [0,1], which makes them interpretable and comparable across datasets.
+
+Alongside `g_all`, we also calculate `Nstar`: the **site × resident abundance matrix**, derived from model-predicted abundances for resident species. `Nstar` is critical in the invasion modelling steps that follow because:
+
+- It provides the baseline **biotic context** into which invaders arrive i.e., the realised community structure per site.
+- Many dynamic invasion models require both **interaction strengths** (`g_all`) and **resident abundances** (`Nstar`) to predict establishment, competitive exclusion, or facilitation outcomes.
+
+We use the function `compute_interaction_strength()` to:
+1. Compute the trait-based interaction matrix (`g_all`) from resident and invader traits.
+2. Optionally transform it into a **similarity** or **Gaussian kernel** for methods that require positive-definite interaction weights.
+3. Optionally standardise or sparsify the matrix for numerical stability or graph-based modelling.
+4. Extract `Nstar` directly from predicted abundance data (`pred$predictions`).
+
+
+```{r interact-test}
+# Identify all resident species (excluding invaders)
+residents = rownames(spp_trait)
+
+# Compute interaction strengths and resident abundance matrix
+cis = compute_interaction_strength(
+  traits      = all_traits,        # residents + invaders
+  predDF      = pred$predictions,  # predictions from predict_invader_response()
+  method      = "gower",           # mixed traits
+  kernel      = "distance",        # keep as dissimilarity
+  standardise = FALSE,             # Gower is already [0,1]
+  sparsify_k  = NULL               # no sparsification for now
+)
+
+# site × resident abundance matrix
+# - Nstar is built from predictions and restricted to resident species.
+Nstar  = cis$Nstar
+head(Nstar)
+
+# trait-based distances (interaction strengths)
+# - g_all[i, j] is the trait dissimilarity between species i and j.
+g_all  = cis$g_all
+head(g_all)
+```
+
+*The matrix `g_all` provides a quantitative framework for trait-based interaction strength among all species pairs.*
+
+### 7.2. Trait-based Competition
+Trait-based competition is a specific case of negative biotic interaction arising from **ecological similarity**. `compute_competition_kernel()` converts trait distances into **competition coefficients** using a **Gaussian kernel**, which controls how rapidly competition decays with trait difference.
+
+**Key outputs:**
+- **\(d_{ij}\)** — the **pairwise trait distance** between invader \(i\) and resident \(j\).  
+  Extracted as the invader-resident block from the general trait distance matrix `g_all`.
+
+- **\(\sigma_t\)** — the **trait bandwidth** (kernel width).  
+  Sets the **scale of decay**: small \(\sigma_t\) ⇒ competition drops quickly with trait difference (strong niche partitioning); large \(\sigma_t\) ⇒ broader overlap (competition persists across larger trait gaps).  
+  By default, we estimate \(\sigma_t\) from **resident–resident** distances so it reflects the realised functional dispersion of the resident pool.
+
+- **\(a_{ij}\)** — the **competition coefficient** from resident \(j\) onto invader \(i\):  
+  \[
+    a_{ij} \;=\; \exp\!\left(- \frac{d_{ij}^2}{2\sigma_t^2}\right).
+  \]  
+  This yields values in \((0,1]\), with \(a_{ij}\approx 1\) for near-identical traits and \(a_{ij}\to 0\) as traits diverge.
+
+This parameterisation fits naturally within the **Framework to visualise trait dispersion and assess invasiveness/invasibility**:
+
+- The **dispersion** captured by `g_all` (e.g., from Gower) tells us how species are arranged in trait space.
+- **Invasiveness** can be explored by combining invaders’ trait positions with \(a_{ij}\): invaders sitting **inside dense resident regions** (small \(d_{ij}\), large \(a_{ij}\)) are predicted to experience **stronger competitive pressure**.
+- **Invasibility** at a site additionally depends on **resident abundance context** \(N^\*\) (from Section 7.1). High \(N^\*\) for residents with large \(a_{ij}\) implies **strong biotic resistance** against a given invader.
+
+```{r competition}
+# --- Competition coefficients from trait distances ---
+residents = spp_trait$species
+comp = compute_competition_kernel(
+  g_all     = g_all,            # trait distance matrix (e.g., Gower)
+  residents = residents,        # resident IDs
+  # invaders = paste0("inv", 1:n_inv),  # optional; default = non-residents
+  # sigma_t  = NULL,             # optional; auto from resident–resident distances
+  sigma_method = "sd"           # or "median", "iqr"
+)
+
+sigma_t = comp$sigma_t        # bandwidth used
+d_ij = comp$d_ij   # invader-resident distances
+a_ij = comp$a_ij   # Gaussian competition coefficients
+
+sigma_t
+head(d_ij[1:4,1:4])
+head(a_ij[1:4,1:4])
+
+# Example use with N* (from Section 7.1):
+# For invader i at site s, total expected competitive pressure (scalar) could be:
+#   pressure_{i,s} = sum_j a_{ij} * N*_j,s
+# which combines trait overlap (a_ij) with resident context (N*).
+```
+
+- **High trait similarity** (low $d_{ij}$) → **Stronger competition** (high $a_{ij}$)
+- **High trait difference** (high $d_{ij}$) → **Weaker competition** (low $a_{ij}$)
+
+*This step specialises the general interaction matrix to focus on competition, a key process structuring community assembly and invasion.*
+
+
+> **Notes & tips:**
+> - If you want stronger attenuation (sharper niche separation), decrease \(\sigma_t\) (or choose `sigma_method = "median"`/`"iqr"`).  
+> - For sensitivity analysis, scan a grid of \(\sigma_t\) values and report how rankings of invasiveness/invasibility change.  
+> - Ensure `g_all` is a **distance** matrix (not similarity) before calling this function. If you kernelised earlier (e.g., Gaussian), use the original distance matrix to compute \(d_{ij}\).
+
+
+### 7.3. Environmental Optimum and Distance
+`compute_environment_kernel()` quantifies how well each species matches local abiotic
+conditions. We estimate each species’ **environmental optimum** as the abundance-weighted
+mean of the site-level covariates, and then measure the **mismatch** between every
+site and every species’ optimum using **Gower distance** (or another metric).
+
+- **`env_opt` (species × env)** - abundance-weighted mean environment for each species.
+- **`env_dist` (sites × species)** - distance between a site’s environment and each species’ optimum.
+- **`K_env` (sites × species, optional)** - similarity kernel from `env_dist`
+  (e.g., Gaussian), controlled by **\(\sigma_e\)**, the environmental bandwidth.
+
+Why this matters for invasiveness/invasibility:
+- `env_opt` summarises the **abiotic niche** realised by each species.
+- `env_dist` indicates **site-level suitability**; large distances imply poor match.
+- A Gaussian `K_env` translates mismatch into **probabilistic suitability** with
+  interpretable decay governed by \(\sigma_e\). Smaller \(\sigma_e\) implies
+  narrow niche breadth; larger \(\sigma_e\) implies broader tolerance.
+
+```{r env-optima}
+# Build environmental kernel and distances
+ek = compute_environment_kernel(
+  site_env    = site_env,            # site_id, x, y, env1:env10, ...
+  predictions = pred$predictions,    # species, site_id, pred (from predict_invader_response)
+  site_col    = "site_id",
+  method      = "gower",
+  kernel      = "gaussian",          # "distance" or "similarity" also supported
+  sigma_method= "sd"                 # or "median", "iqr"
+)
+
+sigma_e = ek$sigma_e     # bandwidth used for Gaussian kernel
+env_opt  = ek$env_opt    # species × env (optima)
+env_dist = ek$env_dist   # sites × species (distance)
+g_env    = ek$K_env      # sites × species (Gaussian similarity), if requested
+
+sigma_e
+head(env_opt[1:4,1:4])
+head(env_dist[1:4,1:4])
+head(g_env[1:4,1:4])
+```
+*This environmental kernel enables assessment of site-level invasibility and species establishment potential in relation to abiotic suitability.*
+
+**Interpretation**: `env_dist`/`g_env` captures abiotic matching; combined with
+the biotic context (`a_ij` from Section 7.2 and `N*` from Section 7.1), it supports
+a novel framework to visualise trait dispersion and jointly assess invasiveness
+(trait/abiotic position of invaders) and invasibility (site-level susceptibility
+given environment and resident community structure).
+
+> **Summary**:  
+> - `g_all` = general trait-based interaction strength matrix  
+> - `a_ij` = trait-based competition coefficient matrix (from Gaussian kernel)  
+> - `g_env`/`env_dist` = environmental kernel for abiotic matching  
+
+
+---
+
+## 8. Invasion Fitness Calculation
+The invasion fitness of each hypothetical invader in each site is determined by combining predicted growth potential, the summed effect of trait-based competition, and the degree of environmental matching. This section integrates all modeled kernels and predicted abundances into explicit invasion fitness matrices, providing a synthetic measure of establishment success under joint biotic and abiotic constraints.
+
+
+### 8.1. Assemble Site- and Species-Specific Competition/Impact Matrices
+We compute the **per-site competitive pressure** experienced by each invader by combining:
+1) **Relative abundances** (invaders and residents),
+2) **Trait-based competition coefficients** \(a_{ij}\) (Section 7.2), and
+3) **Environmental matching** between sites and residents (Section 7.3).
+
+For site \(s\), invader \(i\), resident \(j\):
+\[
+I_{i j s} \;=\; r_{i s}\; r_{j s}\; a_{ij}\; K^{(env)}_{j s},
+\]
+where \(r_{is}\) and \(r_{js}\) are expected abundances, \(a_{ij}\) encodes trait-based
+competition (Gaussian kernel of trait distance), and \(K^{(env)}_{js}\) measures abiotic match.
+
+Use `assemble_matrices()` to construct the full 3D **impact tensor** and site-wise totals:
+
+```{r fitness-matrices}
+am = assemble_matrices(
+  a_ij            = comp$a_ij,          # invader × resident competition coefficients
+  Nstar           = cis$Nstar,          # resident abundances (residents × sites)
+  predictions     = pred$predictions,   # provides invader r_is (sites × invaders) if needed
+  K_env           = ek$K_env            # environmental kernel (sites × residents), or env_dist + sigma_e
+  # env_dist        = ek$env_dist,      # OR Pass distances and σ to compute the Gaussian kernel internally
+  # sigma_e         = ek$sigma_e
+)
+
+# Check results
+str(am, max.level=1)
+
+# 3D impact tensor: [invader, resident, site]
+dim(am$I_raw)
+
+# Total competitive pressure per invader × site (sum over residents)
+pressure = am$pressure_inv_site
+dim(pressure)         # invaders × sites
+```
+
+> **Summary**:   
+> - **𝐼**preserves **which residents** drives pressure on **which invader**, at **which site**.   
+> - `pressure_inv_site` collapses to a practical per-invader/per-site **pressure index** for mapping and ranking.   
+> - You can aggregate by sites, invaders, or regions, and relate pressure to observed establishment to evaluate **invasiveness** (invader traits/overlap) and **invasibility** (site context).
+
+
+### 8.2. Summarise Competition and Compute Invasion Fitness
+We use `compute_invasion_fitness()` to summarise the 3D impact tensor (`I_raw`) into a **total competitive penalty** per invader-site and then compute multiple versions of **invasion fitness** by subtracting these penalties from predicted growth. Importantly, this step integrates biotic and abiotic constraints into a single quantitative measure of establishment potential for each invader-site combination. It links the mechanistic competition–environment kernels to a performance metric that can be directly compared across species and sites.
+
+**Key outputs:**
+
+- **C_raw**: `sum_j I_ijs` — total competition from all residents on invader *i* at site *s*.  
+- **r_mat**: predicted invader growth (*invader × site*), constructed from `pred$predictions` if not supplied.
+
+**Fitness variants** (choose based on your ecological assumptions):
+
+- **λ_raw** = \( r - C_{\text{raw}} \) → direct penalty; use when you want unscaled total competition.
+- **λ_scaled** = \( r - \frac{C_{\text{raw}}}{J} \) &nbsp;*(\(J\) = number of residents)* → penalty scaled by resident richness; useful if competition dilutes with more species present.
+- **λ_rel** = `A %*% N_rel` applied as a penalty to \( r \), i.e. \( r - A\,N_{\text{rel}} \) → weights by relative abundances; relevant if dominant residents exert disproportionate pressure.
+  - Uses competition matrix `A = [a_ij]` and site-wise normalised residents `N_rel`.  
+- **λ_logis** = \( r - \text{inv\_logit}\!\left(k\,[\,C_{\text{target}} - x_0\,]\right) \) → bounded penalty; appropriate if competition saturates beyond a threshold.
+  - `C_target` is either `"raw"` or `"rel"` depending on `logistic_on`.  
+  - \(\mathrm{inv\_logit}(x) = \frac{1}{1+\exp(-x)}\).
+
+The diagram below shows the information flow from raw interaction strengths to final invasion fitness.
+
+**Conceptual flow**
+
+```{r text}
+cat("```text\n",
+"I_raw  (invader x resident x site)\n",
+"   │  Sum over residents (j)\n",
+"   ▼\n",
+"C_raw  (invader x site)\n",
+"   │  Subtract from predicted growth r_mat\n",
+"   ▼\n",
+"λ (invasion fitness) variants\n",
+"   │\n",
+"   ├── λ_raw       = r - C_raw\n",
+"   ├── λ_scaled    = r - (C_raw / J)\n",
+"   ├── λ_rel       = r - (A %*% N_rel)\n",
+"   └── λ_logis     = r - inv_logit( k * (C_target - x0) )\n")
+```
+
+
+```{r fitness-sum}
+# Compute invasion fitness (uses am$I_raw from assemble_matrices and pred$predictions)
+fitness = compute_invasion_fitness(
+  I_raw        = am$I_raw,          # or pressure_inv_site = am$pressure_inv_site
+  predictions  = pred$predictions,  # builds r_mat internally
+  a_ij         = comp$a_ij,         # needed for lambda_rel / logistic_on = "rel"
+  Nstar        = cis$Nstar,
+  logistic_on  = "rel",             # cap the A %*% N_rel penalty
+  k            = 1,
+  x0           = NULL,              # auto: median penalty
+  prefer       = "logis"            # returned as $lambda
+)
+
+# Check results
+str(fitness, max.level=1)
+
+# Key outputs
+C_raw  = fitness$C_raw                    # invader × site penalty
+lambda_mat = fitness$lambda                   # final invasion fitness (invader × site)
+
+# Inspect invasion fitness matrix
+dim(lambda_mat)   # invaders × sites
+```
+
+> **Summary**:   
+> - `I_raw`: Three-dimensional array (invader × resident × site), integrating predicted abundance, trait-based competition, and environmental matching.   
+> - `C_raw`: Total competitive penalty (summed over all residents) for each invader-site pair.   
+> - `lambda_mat`: Final invasion fitness matrix. Higher values indicate greater expected establishment potential for a given invader at a given site, incorporating both biotic and abiotic constraints.  
+
+
+---
+
+## 9. Visualisation and Site/Invader Ranking
+This section provides a comprehensive visual summary of invasion fitness outcomes. These plots are intended to help diagnose which invaders and which locations present the highest risk of establishment, how risk is distributed across the study region, and to support both hypothesis generation and management prioritization.
+
+### 9.1. Invasion Fitness Matrix (Invader × Site)
+We visualise the **invasion fitness matrix** `λ_mat` as a heatmap, where each cell,  
+\[
+\lambda_{i,k},
+\]  
+represents the predicted fitness of invader *i* in site *k*, after integrating both **trait-based competition** and **environmental filtering** via `compute_invasion_fitness()`.
+
+This matrix is central to the invasion framework because it enables:  
+- **Direct comparison** of all simulated invaders across all sites.  
+- Identification of **susceptible sites** (rows/columns with consistently high λ).  
+- Detection of **broadly adapted invaders** versus specialists.  
+
+Ecologically:  
+- **Higher** λ values (lighter colors) = conditions and biotic milieu favour establishment.  
+- **Lower** λ values (darker colors) = strong competitive exclusion and/or poor environmental match.  
+
+
+```{r plot-fitness}
+# Convert the invasion fitness matrix to long format for ggplot and attach spatial coordinates
+lambda_df = as_tibble(lambda_mat, rownames = "invader") %>%
+  # Reshape from wide (invader × site) to long (invader, site, fitness value)
+  pivot_longer(-invader, names_to = "site_id", values_to = "lambda") %>%
+  # Add spatial coordinates for each site, matched by site_id
+  mutate(
+    x = site_xy$x[match(site_id, site_xy$site_id)],  # Longitude/Easting
+    y = site_xy$y[match(site_id, site_xy$site_id)]   # Latitude/Northing
+  )
+
+# # Visualize the full invader × site invasion fitness matrix as a heatmap
+# ggplot(lambda_df, aes(x = site_id, y = invader, fill = lambda)) +
+#   geom_tile(color = "grey90") +  # Draw grid with light borders for readability
+#   scale_fill_viridis_c(option = "magma", # Use perceptually uniform color palette (magma)
+#     direction = -1, # Reverse so high = bright/light
+#     name = expression("Invasion fitness" ~ lambda[i*k])) +
+#   labs(title = "Invasion Fitness Matrix: Invaders Across Sites",  # Plot title
+#        x = "Site",                                                # X-axis: sites
+#        y = "Invader") +                                           # Y-axis: invaders
+#   theme_minimal(base_size = 12) +
+#   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, size = 8),  # Vertical site labels
+#         axis.text.y = element_text(size = 8),                           # Compact invader labels
+#         panel.grid = element_blank()                                    # Remove grid lines for clarity
+#   )
+
+# Orders: sites by space; invaders by mean lambda
+site_order = site_xy$site_id[order(site_xy$x, site_xy$y)]
+inv_order  = lambda_df |>
+  group_by(invader) |>
+  summarise(mu = mean(lambda, na.rm = TRUE), .groups = "drop") |>
+  arrange(desc(mu)) |>
+  pull(invader)
+
+lambda_df = lambda_df |>
+  mutate(
+    site_id = factor(site_id, levels = site_order),
+    invader = factor(invader, levels = inv_order)
+  )
+
+# 2) Color scaling: winsorize high tail (or set trans = "sqrt")
+cap = quantile(lambda_df$lambda, 0.99, na.rm = TRUE)
+
+# library(scales)
+ggplot(lambda_df, aes(x = site_id, y = invader, fill = pmin(lambda, cap))) +
+  geom_raster() +  # faster, cleaner than geom_tile with borders
+  scale_fill_viridis_c(
+    option = "magma", direction = -1,
+    limits = c(0, cap), oob = scales::squish,
+    name = expression("Invasion fitness" ~ lambda[i*k])
+  ) +
+  labs(title = "Invasion Fitness Matrix: Invaders Across Sites",
+       x = "Site", y = "Invader") +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.y = element_text(size = 8),
+    axis.text.x = element_text(angle = 90, vjust = 0.5, size = 6)
+  ) +
+  # 3) show every Nth site label to avoid overlap
+  scale_x_discrete(
+    breaks = function(x) x[seq(1, length(x), by = 10)]
+  ) +
+  guides(fill = guide_colorbar(title.position = "top",
+                               barheight = unit(40, "mm"),
+                               barwidth  = unit(4, "mm")))
+```
+  
+This figure serves as a diagnostic map of invasibility and invader performance, feeding into later steps like risk ranking, vulnerability hotspot mapping, or scenario testing.
+
+### 9.2. Species-level invasivess i.e. invader ranking 
+We use the invasion fitness matrix to derive a **species-level invasiveness score**, calculated as the total invasion fitness (Σ λ\_{i,k}) for each invader across all sites.  
+This metric integrates biotic resistance and environmental filtering over the full landscape, providing a single quantitative measure of establishment potential.
+
+Ranking invaders by this score reveals:  
+
+- **High-risk “super-invaders”** — species with high and geographically broad fitness, posing widespread establishment potential.  
+- **Low-risk invaders** — species predicted to be strongly excluded in most or all sites.  
+
+Such rankings are valuable for **risk prioritisation** in management and surveillance, focusing attention on species most likely to succeed under current community and environmental conditions.
+
+Bar height represents cumulative invasion fitness (summed over sites). Ordering from left to right shows highest to lowest invasiveness risk.
+
+```{r invader-rank}
+# Sum invasion fitness across sites for each invader and order from highest to lowest
+rank_df = lambda_df %>%
+  group_by(invader) %>%
+  summarise(total_lambda = sum(lambda, na.rm = TRUE)) %>%
+  arrange(desc(total_lambda)) %>%
+  mutate(invader = factor(invader, levels = invader))
+
+# Bar plot of total invasion fitness by invader
+ggplot(rank_df, 
+       aes(x = invader, y = sqrt(total_lambda), fill = sqrt(total_lambda))) +
+  geom_col(width = 0.7, color = "grey50") +
+  scale_fill_viridis_c(option = "inferno", 
+                       name = expression("Total fitness"~sum(lambda[i]))) +
+  labs(title = "Invader Ranking by Total Growth Potential",
+       x = "Invader",
+       y = expression("Total invasion fitness " * sum(lambda[i*k]))) +
+  theme_minimal(base_size = 12) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+        panel.grid.major.x = element_blank(),
+        legend.position = "top"
+  )
+```
+
+### 9.3. Site-level Invasibility
+We summarise the invasion fitness matrix across invaders to quantify **site-level invasibility** — the openness of each community to potential establishment.  
+For each site, we calculate:  
+
+- **Proportion of invaders with positive fitness** (`prop_pos`) — the fraction of simulated invaders predicted to establish successfully.  
+- **Count of successful invaders** (`cnt_pos`) — number of invaders with λ\_{i,k} > 0.  
+- **Mean invasion fitness** (`mean_l`) — average λ\_{i,k} across invaders, indicating general establishment potential.  
+
+Mapping these metrics spatially reveals:  
+
+- **Hotspots** — sites with high `prop_pos`, indicating low biotic resistance and/or favourable abiotic conditions.  
+- **Potential refugia** — sites with low `prop_pos`, where community structure or environmental conditions limit establishment.  
+
+Labels inside tiles show `cnt_pos`, aiding interpretation of proportional risk in terms of absolute invader counts.
+
+```{r site-invasibility}
+# Summarize invasion fitness at each site:
+site_sum = lambda_df %>%
+  group_by(site_id, x, y) %>%
+  summarize(
+    mean_l   = mean(lambda),             # Mean invasion fitness across invaders
+    prop_pos = mean(lambda > 0),         # Proportion of invaders with positive fitness
+    cnt_pos  = sum(lambda > 0),          # Number of successful invaders
+    cnt_neg  = sum(lambda < 0)           # Number of unsuccessful invaders
+  ) %>%
+  ungroup()
+
+# Map proportion of successful invaders at each site
+ggplot(site_sum, aes(x = x, y = y, fill = prop_pos)) +
+  geom_tile(color = NA) +
+  geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.5) +
+  scale_fill_viridis_c(option = "rocket", 
+                       labels = scales::percent_format(accuracy = 1),
+                       name = "% Invaders with\nPositive Fitness") +
+  geom_text(aes(label = cnt_pos), color = "white", size = 2.5) + 
+  coord_sf() +
+  labs(title = "Site-level Invasibility (Proportion of Successful Invaders)", 
+       x = "Longitude", y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank())
+```
+
+### 9.4. Mean species invasivess by Site
+We map the **mean invasion fitness** of all simulated invaders at each site to produce a continuous measure of **community openness**.  
+This index reflects the *average* predicted establishment potential across invaders:  
+
+- **High mean values** — communities that, on average, offer favourable conditions and/or low competitive resistance to a broad range of potential invaders.  
+- **Low mean values** — communities that are generally resistant to establishment, either due to environmental mismatch, strong resident competition, or both.  
+
+This metric complements the proportion-based invasibility map (Section 9.3) by highlighting *magnitude* of fitness rather than just binary success. Sites with moderately high mean values but low proportions may be susceptible to a few highly adapted invaders — a pattern worth monitoring.  
+
+
+```{r spp-invasiness}
+# Map the mean invasion fitness of all invaders at each site
+ggplot(site_sum, aes(x = x, y = y, fill = mean_l)) +
+  geom_tile(color = NA) +
+  geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.5) +
+  scale_fill_viridis_c(option = "turbo", name = "Mean invasion\nfitness") +
+  # Optional: annotate with number of successful invaders
+  # geom_text(aes(label = cnt_pos), color = "white", size = 1.5) +
+  coord_sf() +
+  labs(title = "Mean Species Invasivess by Site (All Invaders)", 
        x = "Longitude",
-       y = "Latitude",
-       fill = "Invasibility %") +
-  theme_minimal()
-``` 
-
-The map above displays the variation in **invasibility percent** across sites, reflecting the relative openness of communities to potential alien species establishment, as described by Hui et al. (2016). Dark blue areas represent hotspots of high invasibility, indicating regions more susceptible to colonization, while yellow areas signify lower invasibility or "colder spots." The map overlays species richness data, providing context for understanding invasibility in relation to existing community diversity. Regions with high invasibility and low species richness may represent opportunities for alien species to establish, whereas high diversity areas with lower invasibility suggest more stable or resistant communities.
-
-------------------------------------------------------------------------
-
-### 2.8.	Trait-Environment Relationship with `mvabund::traitglm`
-A trait–environment analysis can be conducted using `mvabund` to relate species traits to environmental variables (Wang et al 2012):
-
-**Trait-Environment Model**: A trait–environment model is fitted to quantify the relationship between species traits and environmental conditions. This approach helps identify which environmental variables promote invasibility by interacting with specific species traits. The fitted model captures how particular traits interact with specific environmental factors to influence species distributions or abundances. By examining the trait–environment interaction coefficients, one can interpret which traits matter most under different conditions.
-
-*WORK-IN-PROGRESS*
-*OUTPUT PENDING FOR 2 DAYS. NEED TO SPEED-UP COMPUTATION*
-```{r run-traitglm}
-# Trait–Environment Model 
-# Fits a Trait–Environment model that links species abundance (sbs) to both 
-# environment (env) and species traits (sbt), using “manyglm” method.
-ft = mvabund::traitglm(sbsF[,1:41], envF, sbtF, method = "manyglm")
-
-# Inspect the model structure at the top level
-str(ft, max.level = 1)
-# >> OUTPUT PENDING
-
-# Show estimated trait–environment interaction coefficients
-# How traits mediate effect of enviro. variables on species abundance
-ft$fourth
+       y = "Latitude") +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank())
 ```
-*OUTPUT PENDING*
 
-Visualisation of **Trait–Environment Interaction Coefficients**: The coefficients from the trait–environment model can be visualized in a heatmap, highlighting how traits and environmental factors interact to influence species abundances. This reveals which pairs of (*trait × environment*) have the strongest positive or negative effects, providing insight into how environmental conditions modify **trait–based responses**.
+---
 
-*WORK-IN-PROGRESS*
-```{r plot-traitglm}
-# Visualization of Trait–Environment Interaction Coefficients
-# Extracts the absolute maximum value ‘a’ among the interaction coefficients  
-# i.e. used or symmetric colour scaling
-a = max(abs(ft$fourth.corner))
+## 10. Clusters of Invasibility and Invasiness 
+This section identifies **groups (“clusters”) of sites and invaders** that share similar patterns of invasion risk and opportunity, based on hierarchical clustering of the invasion fitness matrix. These analyses enable detection of ecological syndromes i.e., types of sites most at risk, or types of invaders most threatening, facilitating targeted monitoring and management.
 
-# Defines a gradient from negative (blue) to positive (red)
-pcols = colorRampPalette(c("blue","white","red"))
+### 10.1. Hierarchical clustering of invasion fitness
+We use hierarchical clustering to group both sites and invaders according to their invasion fitness profiles, i.e., the patterns of predicted establishment success across the landscape. The heatmap visually summarizes these relationships:
 
-# Provides a heatmap of trait–environment interaction strengths
-plot.4th = levelplot(t(as.matrix(ft$fourth.corner)), 
-			xlab="Enviro Variables", ylab="Species traits", 
-			col.regions=pcols(100), at=seq(-a, a, length=100),
-			scales = list(x = list(rot = 45)))
-plot.4th
+- **Rows** = invaders, **columns** = sites  
+- **Cells** = invasion fitness ($\lambda_{i,k}$)  
+- **Dendrograms** = hierarchical clusters (similarity in invasion profile)
+
+
+This highlights both “types” of invaders (e.g., those that succeed broadly, or only in a few sites) and “types” of sites (e.g., open to many invaders vs. resistant). Clustering also underpins categorical risk labeling in subsequent sections.
+
+```{r fitness-cluster}
+library(pheatmap)
+
+# Remove invaders (rows) and sites (columns) with all NA values (if present)
+# This ensures only meaningful data are visualized and clustered
+lambda_mat_noNA = lambda_mat[rowSums(is.na(lambda_mat)) < ncol(lambda_mat),
+                             colSums(is.na(lambda_mat)) < nrow(lambda_mat)]
+
+# Clustered heatmap of invasion fitness matrix (invader × site)
+# - Each cell shows the invasion fitness (lambda) for a given invader-site pair
+# - Hierarchical clustering groups similar invaders and similar sites
+pheatmap(lambda_mat_noNA,
+         color = rev(viridis::viridis(100, option = "viridis")),
+         clustering_distance_rows = "euclidean",
+         clustering_distance_cols = "euclidean",
+         clustering_method = "complete",
+         fontsize_row = 8, fontsize_col = 8,
+         main = "Clustered Invasion Fitness Matrix (Invader × Site)",
+         angle_col = 45)
+
+# Assign invaders and sites to discrete clusters (syndromes) for downstream visualization
+# Sites: cluster by invasion fitness profile (columns)
+site_dist = dist(t(lambda_mat_noNA))                    # Compute pairwise distances between sites
+site_clust = hclust(site_dist, method = "ward.D2")      # Hierarchical clustering
+site_groups = cutree(site_clust, k = 5)                 # Assign each site to one of 5 clusters
+
+# Invaders: cluster by fitness profile across sites (rows)
+invader_dist = dist(lambda_mat_noNA)                    # Compute pairwise distances between invaders
+invader_clust = hclust(invader_dist, method = "ward.D2")
+invader_groups = cutree(invader_clust, k = 5)           # Assign each invader to one of 5 clusters
+
+# Attach cluster labels to site and invader summary dataframes
+# Add site cluster group to site summary dataframe (site_sum)
+# site_id must match the column names of lambda_mat_noNA
+site_sum$site_cluster = factor(site_groups[site_sum$site_id])
+
+# Add invader cluster group to long-form fitness dataframe (lambda_df)
+# invader must match the row names of lambda_mat_noNA
+lambda_df$invader_cluster = factor(invader_groups[lambda_df$invader])
+
+# These cluster assignments can be used for:
+# - Color-coding sites and invaders in subsequent plots
+# - Group-based analyses or statistical comparisons
+# - Mapping spatial patterns of invasion risk by ecological “syndrome”
 ```
-*OUTPUT PENDING*
 
-------------------------------------------------------------------------
+### 10.2. Map Site Invasion Risk
+We next summarize and map site-level risk based on cluster assignments, providing a spatial overview of invasibility “syndromes”:
 
-### 2.9.	Predictive Modelling with `mvabund::predict.traitglm`
-Uses the predict method for the `mvabund::traitglm` model (ft) to estimate species abundance or other response metrics under new (or existing) environmental conditions. If new environmental data are supplied, it predicts how the *species–trait–environment* relationships translate to abundance or occurrence in novel conditions. Returns the predicted abundances or response (depending on the specification) of species based on the fitted trait–environment relationships. This provides an opportunity to test scenarios or forecast how changes in the environment could shift community composition.
+- **High-risk categories** indicate site clusters that are generally open to invasion by a broad range of invaders.
+- **Low-risk categories** correspond to more robust, invasion-resistant communities.
 
-*WORK-IN-PROGRESS*
-```{r run-predict}
-# Use `predict` method for class 'traitglm'
-# predict(object, newR=NULL, newQ=NULL, newL=NULL, type="response", ...)
-# newR: Data frame of enviro variables for each site/time to be predicted
-# newQ: New species traits, can be used to predict how new trait 
-# combinations might respond to the environment
-predict(ft, newR = envF)
+
+Descriptive category labels (“very-high” to “very-low”) provide an interpretable mapping of site clusters to ecological risk.
+
+```{r map-risk}
+# Summarize mean invasion fitness for each invader, grouped by their cluster assignment
+invader_summary = lambda_df %>%
+  group_by(invader, invader_cluster) %>%
+  summarise(mean_lambda = mean(lambda, na.rm = TRUE), .groups = "drop")
+
+# Compute overall mean invasion fitness for each invader cluster (highest to lowest)
+cluster_means = invader_summary %>%
+  group_by(invader_cluster) %>%
+  summarise(cluster_mean = mean(mean_lambda, na.rm = TRUE)) %>%
+  arrange(desc(cluster_mean))  # Order clusters from highest to lowest mean fitness
+
+# Define category labels in descending order of risk/friendly invasion fitness
+category_labels = c("very-high", "high", "medium", "low", "very-low")[1:nrow(cluster_means)]
+
+# Create a named vector to recode numeric cluster assignments to descriptive categories
+cluster_map = setNames(category_labels, cluster_means$invader_cluster)
+
+# Map invader clusters to descriptive categories, preserving order for plotting
+invader_summary = invader_summary %>%
+  mutate(invader_category = factor(cluster_map[as.character(invader_cluster)],
+                                   levels = category_labels))
+
+# Assign each invader to a descriptive invasion risk category based on its cluster,
+# ensuring categories are ordered for consistent plotting and analysis
+lambda_df = lambda_df %>%
+  mutate(invader_category = factor(cluster_map[as.character(invader_cluster)],
+                                   levels = category_labels))
+
+# (Optional) Plot: Distribution of mean invasion fitness by descriptive invader category
+# ggplot(invader_summary, aes(x = invader_category, y = mean_lambda, fill = invader_category)) +
+#   geom_boxplot() +
+#   scale_fill_brewer(palette = "RdYlBu", direction = 1, guide = "none") +
+#   labs(
+#     title = "Mean Invasion Fitness by Invader Category",
+#     x = "Invader Category",
+#     y = "Mean Invasion Fitness"
+#   ) +
+#   theme_minimal(base_size = 12)
+
+
+# Repeat for site clusters: mean invasion fitness for each site cluster
+# Calculate mean invasion fitness for each site cluster and order
+site_category_df = site_sum %>%
+  group_by(site_cluster) %>%
+  summarise(mean_fitness = mean(mean_l, na.rm = TRUE)) %>%
+  arrange(desc(mean_fitness))
+
+# Assign descriptive category labels to site clusters
+site_labels = c("very-high", "high", "medium", "low", "very-low")[1:nrow(site_category_df)]
+site_map = setNames(site_labels, site_category_df$site_cluster)
+
+site_sum = site_sum %>%
+  mutate(site_category = factor(site_map[as.character(site_cluster)], levels = site_labels))
+
+# Map: spatial pattern of site risk categories
+ggplot(site_sum, aes(x = x, y = y, fill = site_category)) +
+  geom_tile(color = NA) +
+  geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.5) +
+  scale_fill_brewer(
+    palette = "RdYlBu",
+    direction = 1,
+    name = "Site Invasibility"
+  ) +
+  coord_sf() +
+  labs(
+    title = "Spatial Invasion Risk (Very-high to Very-low)",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank())
 ```
-*OUTPUT PENDING*
 
-------------------------------------------------------------------------
+## 11. Analytical Summaries
+These concise summaries complement spatial and cluster analyses, providing direct insight into the most and least vulnerable sites, and the most and least successful invaders, according to the modeled invasion fitness landscape.
 
-## 3.	Conclusion
-**`invasimapr`**'s developing workflow demonstrates a modular pipeline that links standardized occurrence and environmental data with functional traits to quantify community-level invasion risk. By merging trait-derived Gower distances, trait–environment GLMs, and parallelised reshuffling of species–trait profiles, the package can estimate interaction strengths, identify trait combinations that foster establishment, and map site-specific invasibility at fine spatial resolution. Its adaptable data-access and preprocessing functions, coupled with scalable simulation routines, make the framework suitable for plant, invertebrate, and vertebrate systems. Continued expansion of trait coverage, refinement of growth models, and improved spatial interpolation will consolidate **`invasimapr`** into a robust, fully documented tool for assessing and managing biological invasions by mid-2025.
+### 11.1. Distribution of invasion fitness values
+This histogram shows the overall distribution of invasion fitness ($\lambda_{i,k}$) values for all invader-site pairs, indicating the general “openness” of the community matrix and identifying the prevalence of high-risk outcomes.
+
+```{r fitness-dist}
+# Plot the distribution of invasion fitness values (lambda) across all invader-site combinations,
+# using a histogram colored by lambda value for visual emphasis on fitness extremes
+ggplot(lambda_df, aes(x = lambda, fill = ..x..)) +
+  geom_histogram(bins = 40, color = "grey30") +
+  scale_fill_viridis_c(option = "magma", guide = "none") +
+  labs(
+    title = "Distribution of Invasion Fitness Values (All Invader × Site)",
+    x = expression("Invasion Fitness"~lambda[i*k]),
+    y = "Frequency"
+  ) +
+  theme_minimal(base_size = 12)
+```
+
+### 11.2. Top/bottom sites and invaders by mean invasion fitness
+This section reports the **top 3** and **bottom 3** invaders and sites by mean invasion fitness, as plain-text console output. This is useful for tabular reporting and rapid identification of outlier risks.
+
+```{r top-bottom, echo=FALSE}
+# echo=FALSE, results='asis'
+# Top 3 and bottom 3 invaders
+invader_means = lambda_df %>%
+  group_by(invader) %>%
+  summarise(mean_lambda = mean(lambda, na.rm = TRUE)) %>%
+  arrange(desc(mean_lambda))
+top3_inv = head(invader_means, 3)
+bottom3_inv = tail(invader_means, 3)
+
+# Top 3 and bottom 3 sites
+site_means = lambda_df %>%
+  group_by(site_id) %>%
+  summarise(mean_lambda = mean(lambda, na.rm = TRUE)) %>%
+  arrange(desc(mean_lambda))
+top3_site = head(site_means, 3)
+bottom3_site = tail(site_means, 3)
+
+# format top 3 and bottom 3 invaders and sites for console output:
+cat(
+  paste0(
+    "==== Top 3 Invaders by Mean Invasion Fitness ====\n",
+    paste0(
+      seq_len(nrow(top3_inv)), ". ",
+      top3_inv$invader, ": ",
+      round(top3_inv$mean_lambda, 3),
+      collapse = "\n"
+    ),
+    "\n\n"
+  )
+)
+
+cat(
+  paste0(
+    "==== Bottom 3 Invaders by Mean Invasion Fitness ====\n",
+    paste0(
+      seq_len(nrow(bottom3_inv)), ". ",
+      bottom3_inv$invader, ": ",
+      round(bottom3_inv$mean_lambda, 3),
+      collapse = "\n"
+    ),
+    "\n\n"
+  )
+)
+
+cat(
+  paste0(
+    "==== Top 3 Sites by Mean Invasion Fitness ====\n",
+    paste0(
+      seq_len(nrow(top3_site)), ". ",
+      top3_site$site_id, ": ",
+      round(top3_site$mean_lambda, 3),
+      collapse = "\n"
+    ),
+    "\n\n"
+  )
+)
+
+cat(
+  paste0(
+    "==== Bottom 3 Sites by Mean Invasion Fitness ====\n",
+    paste0(
+      seq_len(nrow(bottom3_site)), ". ",
+      bottom3_site$site_id, ": ",
+      round(bottom3_site$mean_lambda, 3),
+      collapse = "\n"
+    ),
+    "\n"
+  )
+)
+```
+
+### 11.3. Trait Rankings by Mean Invasion Fitness
+To identify trait syndromes associated with invasion success or failure, we aggregated invasion fitness scores (λ) by trait and calculated the mean for each. The three traits with the highest mean λ values are interpreted as those most strongly linked to successful invasion (i.e., "invasive" traits), while the three with the lowest means are linked to reduced invasion performance. This ranking provides an ecologically interpretable, trait-based metric for prioritizing further functional or mechanistic investigation.
+
+```{r top-traits, echo=FALSE}
+# 1. Correlation of continuous traits with mean invasion fitness
+cont_cols = names(inv_traits)[grepl("^trait_cont", names(inv_traits))]
+cat_cols  = names(inv_traits)[grepl("^trait_cat", names(inv_traits))]
+trait_cols = c(cont_cols, cat_cols)
+
+# 1) Mean invasion fitness per invader across sites
+inv_mean = lambda_df %>%
+  dplyr::group_by(invader) %>%
+  dplyr::summarise(mean_lambda = mean(lambda, na.rm = TRUE), .groups = "drop") %>%
+  dplyr::rename(species = invader)
+
+# 2) Join traits + mean fitness  →  inv_trait_lambda
+inv_trait_lambda = inv_traits %>%
+  dplyr::semi_join(inv_mean, by = "species") %>%   # keep only invaders present in lambda_df
+  dplyr::left_join(inv_mean, by = "species")
+
+# 3) (Optional) quick checks before correlation/summaries
+stopifnot("mean_lambda" %in% names(inv_trait_lambda))
+# Ensure categorical traits are factors; continuous traits are numeric
+# (adjust prefixes to your naming convention)
+inv_trait_lambda = inv_trait_lambda %>%
+  dplyr::mutate(
+    dplyr::across(dplyr::matches("^trait_cat"), ~as.factor(.)),
+    dplyr::across(dplyr::matches("^trait_cont"), ~as.numeric(.))
+  )
+
+# Compute correlation (Pearson) for continuous traits
+trait_cor = sapply(cont_cols, function(tr)
+  cor(inv_trait_lambda[[tr]], inv_trait_lambda$mean_lambda, use = "pairwise.complete.obs"))
+trait_cor = sort(trait_cor, decreasing = TRUE)
+
+cat("==== Top 3 Continuous Traits by Correlation with Mean Invasion Fitness ====\n")
+for (i in seq_along(head(trait_cor, 3))) {
+  cat(sprintf("%d. %s: %.3f\n", i, names(trait_cor)[i], head(trait_cor, 3)[i]))
+}
+cat("\n==== Bottom 3 Continuous Traits by Correlation with Mean Invasion Fitness ====\n")
+tc = tail(trait_cor, 3)
+for (i in seq_along(tc)) {
+  cat(sprintf("%d. %s: %.3f\n", i, names(tc)[i], tc[i]))
+}
+cat("\n")
+
+# 2. Categorical traits: mean fitness by level
+trait_cat_means = lapply(cat_cols, function(tr) {
+  tapply(inv_trait_lambda$mean_lambda, inv_trait_lambda[[tr]], mean)
+})
+names(trait_cat_means) = cat_cols
+
+cat("==== Categorical Traits: Top Value per Trait by Mean Invasion Fitness ====\n")
+for(tr in cat_cols) {
+  val = names(trait_cat_means[[tr]])[which.max(trait_cat_means[[tr]])]
+  mu  = max(trait_cat_means[[tr]])
+  cat(sprintf("%s: %s (%.2f)\n", tr, val, mu))
+}
+cat("\n")
+
+# # 3. (Optional, for a table) Bin continuous traits and summarise
+# inv_trait_binned = inv_trait_lambda %>%
+#   mutate(across(all_of(cont_cols), ~cut(., breaks = 3, labels = c("low","mid","high"))))
+# 
+# trait_lambda_long = inv_trait_binned %>%
+#   pivot_longer(cols = all_of(trait_cols), names_to = "trait", values_to = "trait_value") %>%
+#   group_by(trait, trait_value) %>%
+#   summarise(mean_lambda = mean(mean_lambda, na.rm = TRUE), n = n(), .groups = "drop") %>%
+#   arrange(desc(mean_lambda))
+# 
+# # Print a summary table (top 6, for example)
+# print(head(trait_lambda_long, 6))
+```
+
+
+### 11.4. Faceted site maps for key invaders
+Finally, this faceted map visualizes **spatial patterns of invasion fitness** for the top 3 and bottom 3 invaders, enabling side-by-side comparison of their establishment potential across the study region. This helps identify both “super-invader” strategies and site-specific vulnerabilities or strengths.
+
+```{r key-invaders}
+# Identify the top 3 and bottom 3 invaders by mean fitness
+key_invaders = c(top3_inv$invader, bottom3_inv$invader) # select 3 best/worst
+
+# Filter df amd ensure facet order matches ranking (top first, then bottom)
+lambda_key = lambda_df %>%
+  filter(invader %in% key_invaders) %>%
+  mutate(invader = factor(invader, levels = key_invaders)) # enforce desired order
+
+# Faceted map
+# Spatial invasion fitness for each of the top/bottom invaders, enabling direct visual comparison
+ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
+  geom_tile() +
+  geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.5) +
+  facet_wrap(~invader, ncol = 3) +
+  scale_fill_viridis_c(option = "viridis", direction = -1) +
+  labs(
+    title = "Spatial Summaries of Invasion Fitness\nfor Top-3 and Bottom-3 Invaders",
+    x = "Longitude", y = "Latitude"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid = element_blank())
+```
+
+
+> **Summary:**
+> 
+> - **Clustered heatmaps** and **facet maps** reveal structure in invader/site response and vulnerability.
+> - **Analytical summaries** allow targeting of monitoring or management to high-risk invaders/sites.
+> - **Clustering** identifies ecological "syndromes" (groups of invaders/sites with similar invasion dynamics).
+
+---
+
+# References
+- Hui C, Richardson DM (2017). Invasion Dynamics. Oxford University Press.
+- Hui C, Richardson DM, Landi P. et al. (2016). Defining invasiveness and invasibility in ecological networks. Biological Invasions.
+- Hui C et al. (2021). Trait-mediated ecological networks: mechanisms and consequences of invasion. Trends in Ecology & Evolution.
+- *Hui C et al. (2023). [Title of relevant work, update as needed.]*
+
+
+This RMarkdown document implements a reproducible, extensible workflow for trait-based invasion ecology, integrating best practices for data wrangling, statistical modeling, and scientific visualization. Please cite the original data and framework sources as appropriate.
+

@@ -1,5 +1,33 @@
-^_pkgdown\.yml$
+# websites / CI
 ^docs$
 ^pkgdown$
+^_pkgdown\.yml$
+^\.github$
+
+# vignettes outputs & caches (keep only .Rmd/.qmd)
+^vignettes/(cache|figure)/
+^vignettes/.*\.(html|pdf|docx)$
+
+# large dev assets
+^data-raw$
+^notebooks?/
+^reports?/
+^outputs?/
+^tmp/
+^sandbox/
+
+# dependency managers
+^renv$
+^renv\.lock$
+^packrat$
+
+# big geospatial / binary formats (if not strictly needed as source)
+^.*\.(tif|tiff|grd|nc|gpkg|shp|dbf|shx|zip)$
+^.*\.(rds|RDS|qs|fst|parquet|feather)$
+
+# images (keep only small ones needed for Rd; otherwise move to vignettes/)
+^man/figures/.+\.(png|jpg|jpeg|pdf)$
+
+# R code
 ^.*\.Rproj$
 ^\.Rproj\.user$

@@ -1,0 +1,999 @@
+ID,Family,Taxon,Species,OvS,OvL,PuL,Vol_min,Vol_max,AnA,WIn,WiV,HPS,TrC,HSI,HPT,HPG,HPP,HPA,LEv,HPSi,ELT,ELL,ELA,FMo_Min,FMo_Max,FMo_Average,FFM,LFM,ADF,ADR,MLT,MLL,BaT,BaS
+1,Papilionidae,Iphiclides_podalirius,Iphiclides podalirius,P,SbTr,Sl,1,3,N,0.118,0.076,1,3,0.105,Wp,SbTr,Le,Ol,GlFl,NA,Se,Sb,NA,4,8,6,3,10,HfSfAn,ThSbTcExHnHf,PtLe,ShThSbNsHt,Da,BeThSb
+2,Papilionidae,Iphiclides_feisthamelii,Iphiclides feisthamelii,P,SbTr,NA,3,3,N,0.120,0.045,1,3,0.408,Wp,SbTr,NA,NA,Sl,NA,Se,Sb,NA,7,8,7.5,3,10,Hf,ThSbTcExHnHf,Pa,ShThSbNsHs,Da,BeShThSb
+3,Papilionidae,Papilio_alexanor,Papilio alexanor,P,Su,Gl,1,1,N,0.083,-0.073,8,3,0.118,BiAnHp,ShTh,FlBu,Ol,Fl,NA,NA,ShTh,NA,4,4,4,4,7,Hf,GrThSbExHnHf,Pa,RcBeThNsHs,Da,BeGrThSb
+4,Papilionidae,Papilio_machaon,Papilio machaon,P,SuSsTs,GlFl,1,3,N,0.116,0.070,12,4,0.053,BiAnHpWp,ShThSb,FlLeBuSt,Ol,Fl,MpSs,Se,ShTh,Li,4,9,6.5,2,10,HfSf,ThSbExHf,Pa,ThSbNsHs,Da,ThSb
+5,Papilionidae,Papilio_hospiton,Papilio hospiton,P,SsTs,GlFl,1,1.5,N,0.102,-0.035,4,1,0.177,BiHp,ShTh,LeSt,SiOl,GlFl,NA,Se,Th,PsSh,3,3,3,5,7,Hf,NA,PaPtLe,RcThHt,Da,BeShTh
+6,Papilionidae,Papilio_saharae,Papilio saharae,P,SsTs,GlFl,1,2,N,0.088,0.062,4,3,0.289,BiHp,ShTh,FlLeBuSt,SiOl,Fl,NA,Se,ShTh,PsSh,9,9,9,2,10,Hf,NA,PtLe,RcThHt,Da,BeShGrTh
+7,Papilionidae,Parnassius_mnemosyne,Parnassius mnemosyne,E,SsTs,BuGl,1,1,N,0.068,0.074,1,2,0.354,BiAnHp,Sh,Le,NA,Gl,NA,Se,Sh,NA,3,5,3,4,8,Hf,GrHf,Pa,ThSbNsHs,Da,GrTh
+8,Papilionidae,Parnassius_phoebus,Parnassius phoebus,EL,Su,GlFl,1,1,N,0.086,0.035,2,4,0.158,Hp,Sh,Le,SiOl,GlFl,NA,Se,ShTh,NA,3,3,3,6,8,Hf,BgStShExHf,Pa,RcBeShGrThHs,Da,BeSh
+9,Papilionidae,Parnassius_apollo,Parnassius apollo,EL,BuSu,BuGl,1,1,N,0.117,0.123,3,3,0.204,BiAnHp,Sh,LeBu,SiOl,Gl,NA,SeSb,Sh,NA,4,5,4.5,5,9,Hf,BgShThSbExHf,Pa,RcThNsHs,Da,BeThSb
+10,Papilionidae,Archon_apollinus,Archon apollinus,P,Bu,Bu,1,1,N,0.056,-0.054,1,2,0.577,Hp,Sh,NA,NA,Fl,NA,Sb,NA,NA,2,5,3.5,2,6,Hf,BgGrShHf,NA,NA,Da,BeShGr
+11,Papilionidae,Zerynthia_cerisy,Zerynthia cerisy,P,NA,NA,1,1,N,0.057,-0.031,1,2,0.354,Hp,ShLi,NA,NA,Fl,NA,Sb,ShThLi,NA,5,5,5,3,7,Hf,NA,NA,NA,Da,Be
+12,Papilionidae,Zerynthia_cretica,Zerynthia cretica,P,SsTs,GlFl,1,1,N,0.043,0.018,1,2,0.707,Hp,ShLi,FlLeBu,SiOl,Fl,NA,SeSb,Th,NA,4,5,4.5,2,6,Hf,NA,NA,NA,Da,BeShThSb
+13,Papilionidae,Zerynthia_caucasica,Zerynthia caucasica,P,SbTr,SlCl,1,1,N,0.057,-0.056,1,2,NA,NA,NA,Le,NA,GlFl,NA,SeSb,NA,NA,4,4,4,3,6,Hf,TcHf,Pa,ThSbPsLs,Da,Be
+14,Papilionidae,Zerynthia_rumina,Zerynthia rumina,P,SuSsTs,BuGl,1,1.5,N,0.025,-0.019,1,2,0.577,Hp,ShLi,Le,Ol,GlFl,NA,SeSb,ShThLi,NA,3,10,5,2,11,Hf,NA,Pa,BeShGr,Da,Be
+15,Papilionidae,Zerynthia_polyxena,Zerynthia polyxena,P,BuSuSsTs,BuGlFl,1,1,N,0.031,0.001,1,2,0.500,Hp,ShLi,NA,NA,Fl,NA,SeSb,ShThLi,NA,4,4,4,3,6,Hf,ShExHf,Pa,BeShGr,Da,BeShGr
+16,Papilionidae,Zerynthia_cassandra,Zerynthia cassandra,P,NA,NA,1,1,N,0.026,-0.012,1,2,0.577,Hp,ShLi,Le,NA,Fl,NA,SeSb,ShTh,LiPs,4,4,4,3,6,Hf,NA,Pa,Sh,Da,Gr
+17,Hesperiidae,Heteropterus_morpheus,Heteropterus morpheus,L,SsTs,Fl,1,1,N,-0.025,-0.011,4,3,0.250,Hp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,2,4,3,5,8,Hf,NA,NA,NA,Da,ShGrTh
+18,Hesperiidae,Carterocephalus_silvicola,Carterocephalus silvicola,L,SsTs,Fl,1,1,N,-0.055,0.069,5,3,0.200,Hp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,2,4,2.5,5,8,Hf,NA,NA,NA,Da,ShGrThSb
+19,Hesperiidae,Carterocephalus_palaemon,Carterocephalus palaemon,L,Ts,GlFl,1,1,N,-0.044,-0.030,7,3,0.126,Hp,ShTh,Le,SiOl,Fl,LpMp,Se,Sh,LiPs,2,4,2.5,4,7,Hf,GrExHnHf,PnPt,ThPs,Da,BeShGr
+20,Hesperiidae,Pelopidas_thrax,Pelopidas thrax,LP,SsTs,GlFl,3,3,N,-0.023,-0.059,2,3,0.218,AnHp,Th,Le,SiOl,Fl,NA,Se,ShTh,NA,8,12,10,1,12,Hf,NA,NA,NA,NA,ShGr
+21,Hesperiidae,Borbo_borbonica,Borbo borbonica,L,SsTs,Fl,1.5,3,N,-0.035,-0.049,2,3,0.333,Hp,ShTh,Le,SiOl,GlFl,NA,Se,Sh,NA,4,6,4.5,6,11,Hf,NA,NA,NA,NA,NA
+22,Hesperiidae,Gegenes_pumilio,Gegenes pumilio,L,SsTs,Fl,3,3,N,-0.037,-0.067,5,3,0.354,AnHp,Sh,Le,SiOl,Fl,NA,Se,Sh,NA,9,9,9,3,11,Hf,NA,Pt,ShGr,NA,BeShGr
+23,Hesperiidae,Gegenes_nostrodamus,Gegenes nostrodamus,ELPA,SsTs,Fl,3,3,N,-0.031,-0.051,4,3,0.289,AnHp,ShTh,Le,SiOl,Fl,NA,Se,Sh,NA,9,12,9,1,12,HfMi,NA,Pt,RcBeShGr,Da,ShGr
+24,Hesperiidae,Ochlodes_sylvanus,Ochlodes sylvanus,L,Ts,Fl,1,2,N,-0.035,0.020,14,4,0.083,Hp,ShTh,Le,Ol,Fl,LpMp,Se,Th,Li,4,4,4,5,8,HfAnMi,GrThSbExHnHf,PaPnPt,ShGrThNsHsPs,Da,BeShGrThSb
+25,Hesperiidae,Hesperia_comma,Hesperia comma,EL,SuSs,Gl,1,1,N,-0.036,0.024,4,3,0.333,Hp,Sh,Le,SiOl,GlFl,LpMp,Se,BgSh,Li,2,5,3.5,6,10,Hf,GrSbExHf,PaPnPt,ShNsPs,Da,BeShGr
+26,Hesperiidae,Thymelicus_christi,Thymelicus christi,L,NA,Fl,2,3,N,-0.056,-0.036,NA,NA,NA,NA,NA,Le,NA,Fl,NA,NA,NA,NA,9,9,9,2,10,NA,NA,NA,NA,NA,NA
+27,Hesperiidae,Thymelicus_acteon,Thymelicus acteon,L,SsTs,Gl,1,2,N,-0.056,0.018,4,3,0.118,AnHp,ShTh,Le,Ol,Fl,LpMp,Sb,Th,Li,3,6,4.5,4,9,Hf,GrThExHnHf,PnPt,ShThNsPs,Da,GrTh
+28,Hesperiidae,Thymelicus_hamza,Thymelicus hamza,NA,NA,NA,1,1,N,-0.057,-0.053,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,5,7,NA,NA,NA,NA,NA,NA
+29,Hesperiidae,Thymelicus_hyrax,Thymelicus hyrax,NA,NA,NA,1,1,N,-0.031,-0.063,1,4,0.102,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,5,7,Hf,NA,NA,NA,NA,NA
+30,Hesperiidae,Thymelicus_sylvestris,Thymelicus sylvestris,L,SsTs,Gl,1,1,N,-0.045,0.032,6,3,0.101,Hp,ShTh,LeSt,Ol,Fl,LpMp,Sb,Th,Li,3,6,4.5,4,9,HfMi,GrThExHnHf,PnPt,ShThNsPs,Da,ShGrTh
+31,Hesperiidae,Thymelicus_lineola,Thymelicus lineola,E,SsTs,Gl,1,1,N,-0.052,0.078,14,4,0.067,Hp,ShTh,Le,NA,Fl,NA,SbLb,ShTh,Li,2,5,3.5,5,9,HfMi,GrThHnHf,PnPt,ShThNsPs,Da,BeGrTh
+32,Hesperiidae,Spialia_phlomidis,Spialia phlomidis,L,NA,NA,1,1,N,-0.039,-0.028,1,1,0.500,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,4,4,4,6,9,NA,NA,NA,NA,NA,NA
+33,Hesperiidae,Spialia_sertorius,Spialia sertorius,L,Ss,Fl,1,3,N,-0.059,0.052,3,2,1.000,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,5,9,7,2,10,Hf,NA,Pt,RcBeSh,Da,BeSh
+34,Hesperiidae,Spialia_therapne,Spialia therapne,NA,NA,Fl,2,2,N,-0.061,0.033,1,1,1.000,NA,NA,NA,NA,GlFl,NA,Se,Sh,NA,5,6,5,4,9,NA,NA,Pt,BeShGrTh,NA,NA
+35,Hesperiidae,Spialia_rosae,Spialia rosae,NA,NA,NA,1,2,N,-0.058,0.000,1,2,NA,Hp,Sh,NA,NA,NA,NA,Se,Sb,NA,4,7,5.5,4,10,Hf,NA,NA,NA,NA,NA
+36,Hesperiidae,Spialia_orbifer,Spialia orbifer,L,NA,NA,1,2,N,-0.054,0.018,1,3,0.224,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,4,7,5.5,4,10,Hf,NA,NA,NA,NA,NA
+37,Hesperiidae,Carcharodus_tripolinus,Carcharodus tripolinus,L,SuSs,Fl,3,3,N,-0.036,0.066,1,1,1.000,BiHp,Th,Le,Ol,Fl,NA,Se,ShTh,NA,7,7,7,3,9,Hf,NA,NA,NA,Da,NA
+38,Hesperiidae,Carcharodus_alceae,Carcharodus alceae,L,SsTs,Fl,2,3,N,-0.041,0.059,2,4,0.167,BiAnHp,ShTh,Le,NA,Fl,NA,Se,ShTh,Li,6,10,8,2,11,Hf,NA,Pt,NA,Da,BeSh
+39,Hesperiidae,Muschampia_cribrellum,Muschampia cribrellum,L,NA,NA,1,1,N,-0.038,0.011,1,4,0.289,BiAnHpWp,ShThSb,NA,NA,NA,NA,NA,NA,NA,3,3,3,5,7,HfMiHc,NA,NA,NA,NA,NA
+40,Hesperiidae,Muschampia_proto,Muschampia proto,E,Ss,Fl,1,1,N,-0.033,0.050,1,2,0.577,HpWp,ShThSb,FlLeBu,Ol,GlFl,LpMpSs,Se,ShThSb,Li,3,5,4,5,9,HfMi,StGrThSb,NA,NA,Da,BeSh
+41,Hesperiidae,Muschampia_tessellum,Muschampia tessellum,NA,NA,NA,1,1,N,-0.016,0.003,2,2,0.500,Hp,ShTh,NA,NA,NA,NA,NA,NA,NA,4,5,4.5,4,8,Hf,NA,NA,NA,NA,NA
+42,Hesperiidae,Muschampia_mohammed,Muschampia mohammed,NA,NA,NA,2,3,N,-0.034,0.009,1,2,0.577,Wp,Sb,NA,NA,NA,NA,NA,NA,NA,6,8,7,3,10,NA,NA,NA,NA,NA,NA
+43,Hesperiidae,Carcharodus_lavatherae,Carcharodus lavatherae,L,Ss,Fl,1,1,N,-0.032,0.013,2,4,0.408,Hp,ShTh,FlLeBu,NA,GlFl,NA,Se,Sh,NA,3,5,4,5,9,HfMi,NA,Pt,RcSh,Da,ShTh
+44,Hesperiidae,Carcharodus_orientalis,Carcharodus orientalis,NA,NA,NA,2,3,N,-0.038,-0.042,3,2,0.577,AnHpWp,ShSb,NA,NA,NA,NA,NA,NA,NA,4,4,4.5,5,8,NA,NA,NA,NA,NA,NA
+45,Hesperiidae,Carcharodus_floccifera,Carcharodus floccifera,L,Ss,Fl,2,2,N,-0.035,-0.010,1,4,0.174,AnHp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,4,5,4.5,4,8,HfMi,NA,Pt,RcSh,Da,BeShGr
+46,Hesperiidae,Carcharodus_stauderi,Carcharodus stauderi,NA,NA,NA,3,3,N,-0.043,0.027,3,1,0.289,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,8,8,8,3,10,NA,NA,NA,NA,NA,NA
+47,Hesperiidae,Carcharodus_baeticus,Carcharodus baeticus,L,Ss,Fl,2,3,N,-0.043,-0.009,2,3,0.408,Hp,ShTh,Le,Ol,GlFl,LpMpSs,Se,Sh,Li,2,6,4,5,10,HfMi,NA,NA,NA,Da,BeSh
+48,Hesperiidae,Erynnis_tages,Erynnis tages,L,Ss,GlFl,1,2,N,-0.042,-0.033,3,4,0.129,AnHp,Sh,Le,SiOl,Fl,MpSs,Se,Sh,Li,2,6,4,4,9,HfHc,StGrThHf,PnPt,ShThPs,Da,BeShGrTh
+49,Hesperiidae,Erynnis_marloyi,Erynnis marloyi,L,NA,NA,1,3,N,-0.035,0.007,2,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,4,8,6,3,10,Hf,NA,NA,NA,NA,NA
+50,Hesperiidae,Pyrgus_malvoides,Pyrgus malvoides,P,Ss,Gl,1,2,N,-0.061,0.039,4,3,NA,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,2,5,3.5,4,8,HfMi,NA,NA,NA,NA,NA
+51,Hesperiidae,Pyrgus_malvae,Pyrgus malvae,P,Ss,GlFl,1,2,N,-0.058,0.000,4,3,0.192,Hp,Sh,Le,SiOl,Fl,MpSs,Se,Sh,Li,3,7,5,3,9,HfHc,GrShThSbHf,PnPt,ShGrSbPs,Da,BeShGr
+52,Hesperiidae,Pyrgus_carthami,Pyrgus carthami,L,NA,Fl,1,1,N,-0.031,0.006,1,4,0.218,AnHp,ShTh,Le,NA,GlFl,NA,SeSb,Sh,NA,5,5,5,5,9,HfMi,NA,NA,NA,Da,BeSh
+53,Hesperiidae,Pyrgus_sidae,Pyrgus sidae,L,Su,Gl,1,1,N,-0.028,0.014,1,4,0.316,AnHp,Sh,FlLeBu,Ol,Fl,MpSs,Se,ShTh,Li,3,5,4,4,8,HfMi,NA,Pa,ShThSbHs,Da,BeShGrThSb
+54,Hesperiidae,Pyrgus_centaureae,Pyrgus centaureae,L,NA,NA,1,1,N,-0.043,0.002,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,Sh,NA,2,3,2.5,6,8,Hf,NA,NA,NA,Da,BeSh
+55,Hesperiidae,Pyrgus_cacaliae,Pyrgus cacaliae,L,NA,NA,1,1,N,-0.039,-0.028,2,2,0.577,Hp,Sh,FlLe,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,Hf,NA,NA,NA,NA,NA
+56,Hesperiidae,Pyrgus_andromedae,Pyrgus andromedae,L,NA,NA,1,1,N,-0.037,-0.016,3,3,0.289,HpWp,ShSb,NA,NA,NA,NA,NA,NA,NA,2,4,3,5,8,Hf,NA,NA,NA,NA,NA
+57,Hesperiidae,Pyrgus_serratulae,Pyrgus serratulae,L,Ss,Fl,1,1,N,-0.045,0.029,1,2,0.316,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,2,4,3,5,8,Hf,NA,NA,NA,Da,BeSh
+58,Hesperiidae,Pyrgus_armoricanus,Pyrgus armoricanus,L,SsSb,BuGl,1,2,N,-0.049,-0.005,4,4,0.183,HpWp,ShSb,Le,NA,FlSl,NA,Se,ShSb,NA,3,8,5.5,3,10,HfMi,NA,NA,NA,Da,BeShTh
+59,Hesperiidae,Pyrgus_alveus,Pyrgus alveus,L,SuTs,FlSl,1,1,N,-0.038,0.052,1,4,0.354,Wp,ShSb,Le,NA,Fl,NA,Se,ShSb,NA,2,5,3.5,5,9,Hf,NA,NA,NA,Da,BeSh
+60,Hesperiidae,Pyrgus_warrenensis,Pyrgus warrenensis,L,NA,NA,1,1,N,-0.056,-0.034,1,2,0.577,Wp,Sb,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,NA,NA,NA,NA,NA,NA
+61,Hesperiidae,Pyrgus_foulquieri,Pyrgus foulquieri,L,NA,NA,1,1,N,-0.037,-0.069,2,2,0.500,Wp,Sb,NA,NA,NA,NA,NA,NA,NA,2,4,3,6,9,Hf,NA,NA,NA,NA,NA
+62,Hesperiidae,Pyrgus_onopordi,Pyrgus onopordi,L,Ss,Fl,2,3,N,-0.052,0.039,2,2,0.577,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,7,7,7,4,10,HfMiHc,NA,Pt,RcSh,Da,BeShGr
+63,Hesperiidae,Pyrgus_carlinae,Pyrgus carlinae,L,Ss,NA,1,1,N,-0.044,-0.034,1,2,0.500,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,Hf,NA,PnPt,NA,Da,NA
+64,Hesperiidae,Pyrgus_cirsii,Pyrgus cirsii,EL,SuSs,Gl,1,1,N,-0.045,-0.042,1,2,0.408,NA,NA,Le,Si,GlFl,NA,Se,BgSh,NA,2,4,3,5,8,HfMiHc,NA,NA,NA,Da,BeShGr
+65,Hesperiidae,Pyrgus_cinarae,Pyrgus cinarae,L,NA,NA,1,1,N,-0.036,-0.072,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,3,5,4,5,9,Hf,NA,NA,NA,NA,NA
+66,Pieridae,Leptidea_duponcheli,Leptidea duponcheli,P,Ts,GlFl,2,2,N,-0.008,0.016,3,3,0.408,AnHp,Sh,Le,SiOl,GlFl,NA,Se,ShTh,NA,5,5,5,4,8,Hf,GrThExHnHf,Pa,ShGrThHs,La,BeShGrTh
+67,Pieridae,Leptidea_morsei,Leptidea morsei,P,Ts,Fl,2,2,N,0.010,0.021,1,2,0.577,Hp,ShTh,LeBu,Ol,Fl,NA,Se,Th,NA,5,5,5,4,8,HfMi,GrShThSbExHnHf,Pa,ThHsLs,La,ShGrTh
+68,Pieridae,Leptidea_juvernica,Leptidea juvernica,P,SsTs,Fl,1,1,N,0.008,-0.081,3,3,NA,NA,NA,LeSt,NA,Fl,NA,Se,ShTh,Sh,3,3,3,4,6,HfSfHc,GrShThExHf,Pa,NA,La,NA
+69,Pieridae,Leptidea_sinapis,Leptidea sinapis,P,Ts,Fl,1,3,N,-0.003,0.076,4,3,0.144,BiAnHp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,4,8,6,3,10,HfMiHc,ThExHnHf,Pa,ShGrThNsHsPs,La,GrTh
+70,Pieridae,Leptidea_reali,Leptidea reali,P,Ts,NA,1,3,N,0.000,0.041,2,1,1.000,Hp,Sh,Le,NA,NA,NA,NA,NA,NA,4,8,6,3,10,NA,NA,NA,NA,NA,NA
+71,Pieridae,Gonepteryx_rhamni,Gonepteryx rhamni,A,SbTrLi,FlSl,1,1,N,0.063,0.028,2,3,0.218,Wp,SbTr,Le,NA,Sl,NA,Se,Sb,NA,7,9,8,1,9,HfSf,TtSbTcHnHf,Pa,ShSbNsHsPs,La,BeShGrThSb
+72,Pieridae,Gonepteryx_cleobule,Gonepteryx cleobule,ELPA,SbTr,SlCl,3,3,N,0.080,-0.027,1,2,0.577,Wp,Tr,Le,Ol,SlCl,NA,Se,SbCa,NA,2,12,4,1,12,Hf,TtSbTcHnHf,Pa,SbTc,La,ShSb
+73,Pieridae,Gonepteryx_cleopatra,Gonepteryx cleopatra,A,SbTr,Sl,1,3,N,0.061,0.061,1,2,0.577,Wp,SbTr,Le,NA,Sl,NA,Se,Sb,NA,6,8,7.5,2,9,Hf,NA,Pa,SbNsHsPs,La,NA
+74,Pieridae,Gonepteryx_maderensis,Gonepteryx maderensis,A,NA,NA,3,3,N,0.067,0.025,1,1,1.000,Wp,Tr,NA,NA,NA,NA,NA,NA,NA,6,12,9,1,12,Sf,NA,NA,NA,NA,NA
+75,Pieridae,Gonepteryx_farinosa,Gonepteryx farinosa,A,SbTr,Sl,1,1,N,0.063,-0.001,2,2,0.577,Wp,Sb,Le,Ol,Sl,NA,Se,Sb,NA,11,11,11,1,11,Hf,SbTcHnHf,Pa,SbTc,La,Sb
+76,Pieridae,Catopsilia_florella,Catopsilia florella,ELPA,NA,SlCl,3,3,N,0.055,-0.001,1,2,NA,NA,NA,Le,NA,SlCl,NA,SeSb,SbCa,NA,10,12,11,1,12,NA,NA,NA,NA,NA,NA
+77,Pieridae,Colias_hyale,Colias hyale,LP,Ss,Fl,2,3,N,0.017,0.036,6,3,0.204,BiAnHpWp,ShThSb,Le,Si,GlFl,NA,Se,ShTh,NA,6,7,6.5,4,10,Hf,GrShThExHnHf,Pa,ShThNsHs,La,ShGr
+78,Pieridae,Colias_alfacariensis,Colias alfacariensis,L,SuSs,Gl,2,3,N,0.021,-0.002,3,3,0.167,Hp,ShTh,Le,Si,GlFl,NA,Se,ShTh,NA,6,7,6.5,4,10,HfHc,NA,Pa,ShThNsHs,La,BeShGr
+79,Pieridae,Colias_phicomone,Colias phicomone,L,NA,Gl,1,1.5,N,0.015,0.018,3,3,0.169,AnHp,Sh,Le,SiOl,Gl,NA,Se,Sh,NA,3,4,3.5,5,8,Hf,StGrShThSb,Pa,ThSb,La,BeShGr
+80,Pieridae,Colias_aurorina,Colias aurorina,L,NA,Sl,1,1,N,0.056,-0.049,2,2,0.577,Hp,Sh,Le,Ol,Fl,NA,Se,Sb,NA,5,5,5,4,8,SfHc,NA,Pa,RcShGrThNsHs,La,Sh
+81,Pieridae,Colias_chrysotheme,Colias chrysotheme,L,Ss,Gl,2,3,N,0.012,0.008,2,3,0.408,AnHp,ShTh,Le,Ol,GlFl,NA,Se,ShTh,NA,7,7,7,4,10,Hf,NA,Pa,ShNsHs,La,Sh
+82,Pieridae,Colias_erate,Colias erate,LP,NA,NA,2,3,N,0.028,-0.021,1,3,0.113,BiAnHpWp,ShThSb,Le,Si,NA,NA,Se,ShTh,NA,4,5,4.5,5,9,NA,NA,NA,NA,NA,NA
+83,Pieridae,Colias_crocea,Colias crocea,LP,SuSs,Fl,3,3,N,0.025,0.065,15,3,0.041,BiAnHpWp,ShThSb,Le,NA,Fl,NA,Se,ShTh,NA,5,9,7,3,11,HfMi,StGrThSbHnHf,Pa,ShNsHs,La,BeSh
+84,Pieridae,Colias_myrmidone,Colias myrmidone,L,BuSu,FlSl,2,3,N,0.024,-0.028,1,3,0.316,Wp,Sb,NA,NA,Fl,NA,Se,Th,NA,5,6,5.5,4,9,Hf,NA,Pa,ShGrThSbNsHs,La,ShGrTh
+85,Pieridae,Colias_caucasica,Colias caucasica,L,Su,Fl,1,1,N,0.050,-0.038,1,2,0.707,Wp,Sb,Le,Ol,Fl,NA,Se,ShTh,NA,3,3,3,6,8,Hf,NA,Pa,ShThHs,La,ShTh
+86,Pieridae,Colias_palaeno,Colias palaeno,EL,BuSu,Fl,1,1,N,0.029,0.002,1,2,0.707,Wp,Sb,Le,SiOl,GlFl,NA,Se,Sh,NA,3,3,3,6,8,HfSf,GrShExHf,Pa,ShNsHs,La,Sh
+87,Pieridae,Colias_tyche,Colias tyche,L,SsTs,Gl,1,1,N,0.027,0.002,1,3,0.289,HpWp,ShSbTr,Le,SiOl,Gl,NA,Se,Sh,NA,3,3,3,5,7,HfHc,BgStCoHf,Pa,RcShNsHs,La,BeSh
+88,Pieridae,Colias_hecla,Colias hecla,LP,SuSs,Gl,1,1,N,0.009,-0.014,2,3,0.177,AnHpWp,ShSbTr,Le,SiOl,Gl,NA,SeSb,Sh,NA,3,3,3,6,8,Hf,StShThSbHf,Pa,ShNsHs,La,BeSh
+89,Pieridae,Colotis_evagore,Colotis evagore,P,Ts,FlSl,3,3,N,-0.025,0.027,1,2,0.707,Wp,Sb,LeBu,Si,Fl,NA,Se,ShTh,NA,9,9,9,2,10,HfSfHc,ShThSbHnHf,Pa,ThSbHs,Da,BeTh
+90,Pieridae,Aporia_crataegi,Aporia crataegi,L,Sb,Fl,1,1,N,0.076,0.018,5,3,0.082,Wp,SbTr,Le,Ol,FlSl,MpSs,Lb,Sb,Li,3,5,3.5,4,8,HfErHdMi,ThCoHf,Pa,ThNs,Da,Th
+91,Pieridae,Pontia_chloridice,Pontia chloridice,P,BuSu,BuGl,2,3,N,-0.001,-0.051,4,4,0.236,AnHp,Sh,NA,Si,Fl,NA,Se,ShTh,NA,4,8,6,4,11,NA,NA,Pa,RcBeShHs,NA,Be
+92,Pieridae,Pontia_callidice,Pontia callidice,P,BuSu,BuGl,1,2,N,0.018,0.023,4,4,0.102,BiAnHpWp,ShThSb,NA,NA,Gl,NA,Se,Sh,NA,4,4,4,5,8,HfHc,NA,NA,NA,NA,NA
+93,Pieridae,Pontia_edusa,Pontia edusa,P,NA,NA,3,3,N,0.011,-0.006,4,4,0.102,BiAnHpWp,ShThSb,Le,NA,Gl,NA,Se,ShTh,NA,4,7,5.5,4,10,Hf,NA,NA,NA,Da,BeSh
+94,Pieridae,Pontia_glauconome,Pontia glauconome,P,NA,NA,3,3,N,-0.005,-0.013,6,4,0.056,NA,NA,NA,NA,NA,NA,NA,NA,NA,11,12,11.5,1,12,NA,NA,NA,NA,NA,NA
+95,Pieridae,Pontia_daplidice,Pontia daplidice,P,SuSsTs,Fl,3,3,N,0.007,0.044,15,4,0.061,BiAnHpWp,ShThSb,FlSt,Ol,Fl,NA,SeSb,ShTh,NA,4,7,5.5,4,10,Hf,StGrShThSbExHf,Pa,RcBeShNsHs,Da,BeShGrTh
+96,Pieridae,Pieris_krueperi,Pieris krueperi,P,Su,Gl,3,3,N,0.017,-0.003,1,2,0.707,Hp,Sh,Fl,SiOl,Fl,NA,Se,ShTh,NA,8,8,8,3,10,Hf,ShExHf,NA,RcShPs,Dr,BeSh
+97,Pieridae,Pieris_brassicae,Pieris brassicae,P,SuTsSb,FlSl,2,3,N,0.067,0.013,17,3,0.115,BiAnHpWp,ShThSb,Le,Ol,GlFl,NA,SbLb,ShTh,NA,4,10,7,2,11,HfSfHc,ThSbExHnHf,Pa,ThNsHs,Dr,ShThSb
+98,Pieridae,Pieris_wollastoni,Pieris wollastoni,NA,NA,NA,3,3,N,0.059,0.016,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,7,7,7,5,11,NA,NA,NA,NA,NA,NA
+99,Pieridae,Pieris_cheiranthi,Pieris cheiranthi,ELPA,NA,FlSl,3,3,N,0.077,-0.063,2,3,0.289,AnHp,Sh,Le,Ol,GlFlSl,NA,SbLb,Th,NA,12,12,12,1,12,HfHc,ThSbExHnHf,Pa,ThSbNsHs,Dr,ShThSb
+100,Pieridae,Pieris_rapae,Pieris rapae,P,SsTsSb,Fl,1,3,N,0.020,0.063,10,4,0.118,BiAnHpWp,ShThSbLi,Le,NA,GlFl,NA,Sb,ShTh,NA,9,10,9.5,2,11,HfMiHc,ThSbExHnHf,Pa,BeShThSbNsHs,Dr,BeShGrThSb
+101,Pieridae,Pieris_mannii,Pieris mannii,P,SsTsSb,Gl,3,3,N,0.018,0.003,2,3,0.408,HpWp,ShSb,Le,Ol,GlFl,NA,Se,ShTh,PsSh,5,10,7.5,2,11,Hf,ShThSbExHnHf,NA,RcSh,Dr,BeShThSb
+102,Pieridae,Pieris_ergane,Pieris ergane,P,SuSs,GlFl,1,3,N,0.008,0.043,2,3,0.408,BiAnHp,ShTh,Le,SiOl,GlFl,NA,Se,Sh,NA,5,10,7.5,2,11,HfMi,ShThExHnHf,NA,NA,Dr,BeShTh
+103,Pieridae,Pieris_bryoniae,Pieris bryoniae,P,SuSs,Gl,1,2,N,0.011,0.063,3,3,0.204,Hp,Sh,Le,SiOl,Gl,NA,SeSb,Sh,NA,4,4,4,6,9,HfHc,ShExHf,Pa,RcSh,DaLa,BeSh
+104,Pieridae,Pieris_napi,Pieris napi,P,SuTs,Fl,1,3,N,0.015,0.097,20,3,0.114,BiAnHp,ShTh,Le,NA,GlFl,NA,Se,ShTh,NA,2,9,5.5,3,11,HfSfHc,ShThExHnHf,Pa,ShGrThSbNsHsPs,Dr,ShGrThSb
+105,Pieridae,Pieris_segonzaci,Pieris segonzaci,ELPA,NA,NA,1,2,N,0.037,-0.039,1,1,1.000,Wp,Sb,NA,NA,NA,NA,NA,ShTh,NA,3,3,3,5,7,NA,NA,NA,NA,NA,NA
+106,Pieridae,Pieris_balcana,Pieris balcana,P,NA,NA,2,3,N,0.021,0.071,NA,3,0.289,BiAnHp,ShTh,NA,NA,NA,NA,NA,NA,NA,7,7,7,4,10,Hf,NA,NA,NA,NA,NA
+107,Pieridae,Euchloe_tagis,Euchloe tagis,P,SsTs,GlFl,1,1,N,-0.013,0.054,2,2,0.577,AnHpWp,ShSb,Fl,Ol,GlFlSl,LpMpSs,Se,ShTh,Li,3,4,3,2,5,Hf,ShThSbHf,Pa,ShThNsHsHt,Da,BeShThSb
+108,Pieridae,Euchloe_eversi,Euchloe eversi,P,NA,NA,2,2,N,0.001,-0.024,2,3,0.289,NA,NA,NA,NA,NA,NA,Se,NA,NA,4,4,4,3,6,Hf,NA,NA,NA,NA,NA
+109,Pieridae,Euchloe_grancanariensis,Euchloe grancanariensis,P,SsTs,FlSl,2,2,N,0.001,0.000,1,1,1.000,AnHp,Sh,FlBuSt,Ol,Fl,NA,Se,Th,Li,7,12,7,1,12,Hf,NA,Pa,NA,Da,NA
+110,Pieridae,Euchloe_hesperidum,Euchloe hesperidum,P,SsTs,FlSl,2,2,N,-0.009,-0.021,2,3,0.289,An,Sh,FlBu,Ol,Fl,NA,Se,Th,Li,6,12,6,1,12,Hf,NA,Pa,NA,Da,NA
+111,Pieridae,Euchloe_belemia,Euchloe belemia,P,Ss,GlFl,2,2,N,0.001,0.019,4,3,0.354,AnHp,Sh,Fl,SiOl,Gl,NA,Se,Sh,NA,5,5,5,2,6,Hf,GrShExHf,Pa,BeThSbNsHt,Da,ShGrTh
+112,Pieridae,Euchloe_insularis,Euchloe insularis,P,SsTs,Fl,1.5,2,N,-0.011,0.015,3,3,0.250,BiAnHp,ShTh,Fl,Ol,Fl,NA,Se,ShTh,NA,5,5,5,2,6,HfHc,ShThExHnHf,Pa,ShHs,Da,ShTh
+113,Pieridae,Euchloe_crameri,Euchloe crameri,P,SuSsTsSb,Fl,1,2,N,0.008,0.060,6,3,0.154,BiAnHpWp,ShThSb,Fl,Ol,Fl,LpMpSs,Se,Th,LiPs,3,3,3,2,4,HfHc,ShThSbExHnHf,Pa,ThSbNsHs,Da,BeShThSb
+114,Pieridae,Euchloe_simplonia,Euchloe simplonia,P,SsTs,Sl,0.5,1,N,0.016,-0.006,3,3,0.333,BiHp,Sh,Fl,SiOl,GlFl,NA,SeSb,ShTh,Li,4,4,4,5,8,HfHc,ShThExHnHf,PaPt,ShThSbNsHs,Da,BeShTh
+115,Pieridae,Euchloe_ausonia,Euchloe ausonia,P,SsTs,Fl,1,3,N,0.016,-0.014,8,3,0.126,BiAnHpWp,ShThSb,FlLeBu,Ol,Fl,NA,Se,ShTh,NA,4,7,5,2,8,HfHc,ShThExHnHf,PaPt,ShThNsHs,Da,BeShTh
+116,Pieridae,Euchloe_charlonia,Euchloe charlonia,P,Ts,GlFl,2,3,N,-0.032,-0.037,9,4,0.036,BiAnHp,ShTh,Le,SiOl,GlFl,NA,SeSb,ShTh,LiPs,8,12,8.5,1,12,Hf,ShThExHf,Pa,BeShNsHs,Da,BeShTh
+117,Pieridae,Euchloe_penia,Euchloe penia,P,Su,Gl,1,2,N,-0.021,-0.027,1,3,0.408,BiHp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,5,5,5,3,7,Hf,NA,Pa,RcBeShPsHt,NA,NA
+118,Pieridae,Euchloe_bazae,Euchloe bazae,P,SuSs,GlFl,1,2,N,-0.014,-0.014,2,3,0.500,Wp,Sb,FlLe,SiOl,Gl,LpMpSs,SeSb,ShTh,Li,4,4,4,3,6,Hf,NA,Pa,BeShHt,Da,BeShGr
+119,Pieridae,Euchloe_falloui,Euchloe falloui,NA,NA,NA,2,3,N,-0.007,0.016,5,4,0.102,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,7,9,7,2,10,NA,NA,NA,NA,NA,NA
+120,Pieridae,Zegris_pyrothoe,Zegris pyrothoe,NA,NA,NA,1,1,N,-0.008,0.004,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,4,5,NA,NA,NA,NA,NA,NA
+121,Pieridae,Zegris_eupheme,Zegris eupheme,P,SsTs,Fl,1,1,N,0.031,-0.031,2,3,0.192,BiAnHp,ShTh,Fl,Ol,Fl,NA,Se,ShTh,NA,4,4,4,3,6,HfHc,ThExHn,Pa,ThNsHs,Da,Th
+122,Pieridae,Anthocharis_euphenoides,Anthocharis euphenoides,P,SsTsSb,GlFl,1,1,N,-0.012,0.039,1,2,0.577,AnHp,Sh,FlBu,Ol,Fl,LpMpSs,Se,BgSh,LiPs,3,4,3.5,3,6,Hf,ThSbExHnHf,Pa,ShThNs,Da,BeShTh
+123,Pieridae,Anthocharis_belia,Anthocharis belia,P,SsTsSb,FlSl,1,1,N,-0.011,0.011,1,2,0.577,An,Sh,NA,NA,NA,NA,NA,NA,NA,6,6,6,2,7,Hf,NA,Pa,NA,NA,NA
+124,Pieridae,Anthocharis_cardamines,Anthocharis cardamines,P,SsTs,Fl,1,1,N,0.001,0.102,6,3,0.101,BiAnHp,ShTh,FlLeBu,NA,Fl,NA,Se,ShTh,NA,3,5,4,4,8,HfHc,ThExHnHf,Pa,ShGrThSbNsHsPs,Dr,ShGrThSb
+125,Pieridae,Anthocharis_gruneri,Anthocharis gruneri,P,NA,NA,1,1,N,-0.024,-0.009,1,3,0.408,AnHp,Sh,NA,NA,NA,NA,Se,Sh,NA,2,6,4,2,7,Hf,NA,NA,NA,NA,NA
+126,Pieridae,Anthocharis_damone,Anthocharis damone,P,SsTsSb,FlSl,1,1,N,-0.005,-0.069,1,1,1.000,Bi,Th,FlLeBu,NA,NA,NA,Se,ShTh,NA,2,4,3,3,6,HfHc,NA,Pa,NA,NA,NA
+127,Riodinidae,Hamearis_lucina,Hamearis lucina,P,BuTs,Gl,1,1,P,-0.032,-0.033,1,2,0.577,Hp,Sh,Le,Ol,GlFl,LpMp,Sb,Sh,Li,6,6,6,4,9,Hf,ShThSbExHf,Pt,GrThSbPs,Da,BeGrThSb
+128,Lycaenidae,Lycaena_dimorpha,Lycaena dimorpha,E,NA,NA,1,1,NA,-0.046,-0.028,NA,NA,1.000,Wp,Sb,NA,Ol,Sl,NA,NA,Sb,NA,2,2,2,5,6,HfMi,NA,NA,NA,NA,NA
+129,Lycaenidae,Lycaena_helle,Lycaena helle,P,SuSs,GlFl,1,1.5,N,-0.052,-0.008,2,3,0.289,Hp,Sh,Le,NA,Fl,NA,Se,ShTh,Sh,6,6,6,5,10,HfSf,SbTcHf,Pt,Th,Dr,Sh
+130,Lycaenidae,Lycaena_alciphron,Lycaena alciphron,L,SuSs,GlFl,1,1,N,-0.018,0.003,1,2,0.577,Hp,Sh,Le,NA,GlFl,NA,Se,ShTh,NA,4,4,4,5,8,Hf,ShExCoHn,Pt,NA,Dr,BeSh
+131,Lycaenidae,Lycaena_thetis,Lycaena thetis,NA,NA,NA,1,1,N,-0.037,0.017,1,2,0.707,Wp,Sb,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,HfHc,NA,Pa,NA,NA,NA
+132,Lycaenidae,Lycaena_thersamon,Lycaena thersamon,LP,NA,NA,1,3,N,-0.035,-0.032,1,4,0.089,AnHpWp,ShSb,FlLe,NA,NA,NA,Se,ShTh,Li,7,11,9,2,12,Hf,NA,Pt,NA,NA,ShTh
+133,Lycaenidae,Lycaena_phoebus,Lycaena phoebus,NA,NA,NA,1,2,N,-0.048,-0.009,2,2,0.577,AnHp,Sh,NA,NA,NA,NA,NA,NA,NA,6,6,6,4,9,HfHc,NA,NA,NA,NA,NA
+134,Lycaenidae,Lycaena_dispar,Lycaena dispar,L,SuSs,Fl,1,3,N,-0.012,0.035,1,2,0.408,Hp,ShTh,Le,Ol,GlFlAt,MpSs,SeSb,Th,Li,6,7,6.5,4,10,HfSfHd,ShThExHf,PaPn,ThNs,Dr,GrTh
+135,Lycaenidae,Lycaena_hippothoe,Lycaena hippothoe,EL,Ss,Gl,1,1,N,-0.027,0.015,2,3,0.289,Hp,ShTh,Le,NA,GlFl,NA,Se,ShTh,Ps,4,5,4.5,5,9,Hf,GrShThExCoHnHf,PaPt,GrThNs,Dr,ShTh
+136,Lycaenidae,Lycaena_candens,Lycaena candens,L,NA,BuGl,1,1,N,-0.012,-0.066,1,1,1.000,Hp,Sh,Le,NA,Gl,NA,SeSb,Sh,NA,3,4,3.5,6,9,Hf,NA,NA,NA,NA,ShGr
+137,Lycaenidae,Lycaena_ottomana,Lycaena ottomana,L,NA,NA,2,2,N,-0.038,-0.071,2,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,6,8,7,3,10,Hf,NA,NA,NA,NA,NA
+138,Lycaenidae,Lycaena_bleusei,Lycaena bleusei,E,SuSs,Gl,3,3,N,-0.035,-0.020,1,2,NA,An,Sh,Le,SiOl,Fl,LpMp,Se,ShTh,LiPs,9,9,9,3,11,HfSf,GrShThSbHf,PnPt,ShThSb,DaDr,ShGrThSb
+139,Lycaenidae,Lycaena_phlaeas,Lycaena phlaeas,L,SsTs,GlFl,1,3,N,-0.048,0.067,2,2,0.333,Hp,ShTh,Le,SiOl,Gl,MpSs,Se,Sh,Li,9,10,9.5,2,11,HfSfAnMi,StShThExHnHf,PaPnPt,GrThHsPs,Dr,BeShGr
+140,Lycaenidae,Lycaena_virgaureae,Lycaena virgaureae,L,SsTs,Gl,1,1,N,-0.035,0.067,1,2,0.408,Hp,ShTh,Le,Si,Gl,NA,Se,ShTh,NA,5,5,5,5,9,Hf,ThSbTcHnHf,PaPt,GrThNsPs,Dr,ShGr
+141,Lycaenidae,Lycaena_tityrus,Lycaena tityrus,L,SuSs,Gl,1,3,N,-0.036,0.004,1,4,0.136,HpWp,ShThSb,Le,NA,GlFl,NA,Se,ShTh,LiPs,7,7,7,4,10,Hf,NA,Pt,NA,Dr,ShGr
+142,Lycaenidae,Cigaritis_zohra,Cigaritis zohra,L,Bu,Bu,1,2,M,-0.056,-0.039,1,4,0.102,Wp,Sb,NA,NA,BuGlFlSlAt,NA,NA,ShThSb,NA,2,5,3,4,8,NA,NA,NA,NA,NA,NA
+143,Lycaenidae,Cigaritis_siphax,Cigaritis siphax,NA,NA,NA,2,3,NA,-0.055,0.019,NA,2,0.577,NA,NA,NA,NA,NA,NA,NA,NA,NA,7,7,7,3,9,NA,NA,NA,NA,NA,NA
+144,Lycaenidae,Cigaritis_allardi,Cigaritis allardi,L,BuSu,NA,1,1,P,-0.050,0.009,4,4,0.102,Wp,Sb,NA,NA,BuGlSlAt,NA,NA,Sb,NA,2,5,3,3,7,NA,NA,NA,NA,NA,NA
+145,Lycaenidae,Cigaritis_acamas,Cigaritis acamas,NA,NA,NA,1,3,NA,-0.037,-0.008,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,11,7.5,2,12,NA,NA,NA,NA,NA,NA
+146,Lycaenidae,Thecla_betulae,Thecla betulae,E,BuSbTr,BuGlAt,1,1,P,-0.016,-0.011,4,4,0.129,Wp,SbTr,LeBu,Ol,SlAt,LpMp,Se,Sb,Li,4,5,4.5,6,10,HfHdHc,SbExHn,PtLe,SbHsPs,La,ThSb
+147,Lycaenidae,Favonius_quercus,Favonius quercus,E,Tr,BuGlAt,1,1,P,-0.032,0.054,1,2,0.408,Wp,Tr,FlLeBu,Ol,Cl,LpMp,Se,Ca,Li,4,6,5,5,10,HdAnMiHc,SbTcExHn,PtLe,TcHsPs,La,Th
+148,Lycaenidae,Laeosopis_roboris,Laeosopis roboris,E,Tr,GlCl,1,1,O,-0.031,0.019,1,2,0.707,Wp,Tr,FlLe,NA,GlClAt,NA,Se,Li,NA,3,3,3,5,7,Hf,NA,Pt,NA,NA,NA
+149,Lycaenidae,Tomares_ballus,Tomares ballus,P,Su,Gl,1,1,M,-0.038,-0.020,4,3,0.125,AnHp,Sh,FlLe,NA,Fl,NA,Se,Sh,NA,3,5,4,1,5,Hf,NA,Pt,ShGr,La,BeSh
+150,Lycaenidae,Tomares_nogelii,Tomares nogelii,NA,NA,NA,1,1,NA,-0.032,-0.027,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,3,4,3.5,4,7,NA,NA,NA,NA,NA,NA
+151,Lycaenidae,Tomares_callimachus,Tomares callimachus,P,Bu,BuAt,1,1,NA,-0.044,-0.012,3,3,NA,NA,NA,FlLe,NA,BuGlFlAt,NA,Se,Sh,NA,3,4,3,3,6,NA,NA,PaPt,NA,NA,NA
+152,Lycaenidae,Tomares_mauretanicus,Tomares mauretanicus,NA,NA,NA,1,1,NA,-0.044,-0.017,3,3,0.289,An,Sh,NA,NA,NA,NA,NA,NA,NA,7,7,7,1,7,Hf,NA,NA,NA,NA,NA
+153,Lycaenidae,Deudorix_livia,Deudorix livia,NA,NA,NA,3,3,NA,-0.026,0.018,3,4,0.102,Wp,Sb,NA,NA,NA,NA,NA,NA,NA,10,10,10,3,12,NA,NA,NA,NA,NA,NA
+154,Lycaenidae,Callophrys_avis,Callophrys avis,P,BuSu,Gl,1,1,N,-0.028,-0.035,5,2,0.250,HpWp,ShSbTr,LeBu,NA,NA,NA,Se,SbCa,NA,3,3,3,3,5,Hf,NA,NA,NA,La,ThSb
+155,Lycaenidae,Callophrys_rubi,Callophrys rubi,P,BuSu,BuGlAt,1,1.5,P,-0.047,0.029,18,4,0.033,HpWp,ShThSb,FlLeBu,SiOl,GlFlSl,LpMpSs,Se,ShThSb,Li,5,7,6,3,9,HfSfHdHc,SbExHnHf,PnPt,ThSbPs,La,ShThSb
+156,Lycaenidae,Callophrys_suaveola,Callophrys suaveola,P,NA,NA,1,1,NA,-0.029,-0.031,1,2,NA,Hp,Th,NA,NA,NA,NA,NA,NA,NA,2,2,2,5,6,Hf,NA,NA,NA,La,Th
+157,Lycaenidae,Callophrys_chalybeitincta,Callophrys chalybeitincta,P,Bu,Bu,1,1,NA,-0.048451335,0.0216955,2,4,NA,NA,NA,FlLe,NA,BuGlFl,NA,SeSb,NA,NA,3,4,3.5,4,7,HfSf,NA,Pt,NA,NA,NA
+158,Lycaenidae,Neolycaena_rhymnus,Neolycaena rhymnus,NA,NA,NA,1,1,NA,-0.046,0.038,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,4,3,5,8,NA,NA,NA,NA,NA,NA
+159,Lycaenidae,Satyrium_pruni,Satyrium pruni,E,Sb,Sl,1,1,P,-0.033,0.028,1,2,0.134,Wp,SbTr,FlLeBu,Ol,Sl,LpMp,Se,Sb,LiPs,3,3,3,5,7,HfSfHdHc,SbExHn,PtLe,SbHsPs,La,ThSb
+160,Lycaenidae,Satyrium_ilicis,Satyrium ilicis,E,SbTr,Gl,1,1,P,-0.025,-0.017,1,4,0.112,Wp,SbTr,Le,Si,Sl,NA,Se,SbCa,NA,4,4,4,5,8,Sf,NA,Pt,NA,La,ThSb
+161,Lycaenidae,Satyrium_esculi,Satyrium esculi,E,SbTr,SlCl,1,1,M,-0.029,-0.009,1,2,0.707,Wp,SbTr,Le,Si,SlClAt,NA,Se,SbCa,NA,4,4,4,5,8,Hf,NA,Pt,NA,La,ThSb
+162,Lycaenidae,Satyrium_ledereri,Satyrium ledereri,E,NA,BuGl,1,1,NA,-0.040,-0.034,1,2,0.577,NA,NA,Fl,NA,Sl,NA,Se,Sb,NA,2,5,3.5,3,7,Hf,NA,NA,NA,NA,NA
+163,Lycaenidae,Satyrium_w-album,Satyrium w-album,E,SbTr,SlCl,1,1,P,-0.029,-0.018,1,4,0.065,Wp,SbTr,FlLeBu,Ol,SlClAt,LpMp,Se,SbCa,LiPs,3,3,3,6,8,HfHdHc,SbTcExHn,PtLe,SbTcHsPsLs,La,ThSb
+164,Lycaenidae,Satyrium_spini,Satyrium spini,E,SbTr,GlSlCl,1,1,P,-0.033,0.001,3,3,0.167,Wp,SbTr,LeBu,Si,Sl,NA,SeSb,SbCa,Li,3,4,3.5,5,8,HfSfHd,NA,PtLe,TcHs,La,Sb
+165,Lycaenidae,Satyrium_acaciae,Satyrium acaciae,E,SbTr,GlSlCl,1,1,N,-0.036,0.009,1,1,1.000,Wp,Sb,Le,Si,GlSl,NA,Se,SbCa,Li,2,4,3,5,8,HfSfHc,NA,PnPt,SbNs,DaLa,Sb
+166,Lycaenidae,Leptotes_pirithous,Leptotes pirithous,LP,SsTsSb,Gl,3,3,O,-0.053,0.011,10,4,0.045,HpWp,ShThSb,Fl,NA,FlAt,NA,Se,ShTh,NA,8,8,8,3,10,HfSf,NA,NA,NA,DaDr,Sh
+167,Lycaenidae,Cyclyrius_webbianus,Cyclyrius webbianus,ELPA,SuTsSb,Gl,3,3,NA,-0.041,0.005,8,3,0.289,Wp,Sb,Fl,NA,Fl,NA,Sb,Sb,NA,12,12,12,1,12,Hf,NA,NA,NA,NA,NA
+168,Lycaenidae,Azanus_ubaldus,Azanus ubaldus,ELPA,NA,BuGlSl,3,3,NA,-0.079,0.074,1,2,0.577,Wp,SbTr,Bu,NA,Sl,NA,SeSb,ThSb,NA,5,12,8.5,1,12,Sf,NA,Pa,SbHs,NA,NA
+169,Lycaenidae,Azanus_jesous,Azanus jesous,ELPA,NA,Gl,3,3,NA,-0.062,-0.020,4,3,0.289,Wp,Tr,Fl,Ol,Cl,NA,Se,Ca,Li,7,7,7,2,8,NA,NA,NA,NA,NA,NA
+170,Lycaenidae,Lampides_boeticus,Lampides boeticus,ELP,SuSsTs,Gl,3,3,P,-0.030,0.084,7,3,0.058,HpWp,ShThSb,FlBu,NA,FlAt,NA,Se,ShTh,NA,9,9,9,3,11,Hf,NA,NA,NA,DaDr,ShGrSb
+171,Lycaenidae,Cacyreus_marshalli,Cacyreus marshalli,LP,Ss,Fl,3,3,N,-0.057,0.016,2,2,1.000,Hp,Sh,FlLeBuSt,NA,NA,NA,Se,Sh,NA,8,8,8,3,10,Hf,Ms,NA,NA,DaDr,Sh
+172,Lycaenidae,Celastrina_argiolus,Celastrina argiolus,P,SuSbLi,GlSl,1,2,P,-0.039,0.072,48,4,0.020,BiAnHpWp,ShThSbTrLi,FlLe,Ol,SlClAt,LpMpSs,Se,SbLi,Ps,7,7,7,3,9,HfSfHdHc,SbTcExHnHf,PaPn,SbTcHsPs,La,ThSb
+173,Lycaenidae,Tarucus_theophrastus,Tarucus theophrastus,LP,TsSb,GlSl,3,3,NA,-0.065,-0.010,2,3,0.354,Wp,Sb,Le,NA,Sl,NA,Se,Sb,NA,6,6,6,4,9,NA,NA,NA,NA,NA,NA
+174,Lycaenidae,Tarucus_rosaceus,Tarucus rosaceus,NA,NA,NA,3,3,P,-0.067,0.026,2,3,0.289,Wp,Sb,NA,NA,NA,NA,NA,NA,NA,6,12,9,1,12,NA,NA,NA,NA,NA,NA
+175,Lycaenidae,Tarucus_balkanicus,Tarucus balkanicus,P,SsTs,Fl,3,3,NA,-0.066,0.047,2,3,0.267,Wp,Sb,Le,NA,Fl,NA,Se,ShTh,NA,7,7,7,4,10,Hf,NA,NA,RcBe,NA,NA
+176,Lycaenidae,Phengaris_alcon,Phengaris alcon,L,Bu,Bu,1,1,O,-0.013,-0.050,1,2,0.577,Hp,Sh,Fl,NA,BuGlFlAt,NA,SeSb,Sh,NA,3,3,3,6,8,Hf,GrExHf,Pt,ShNsHs,DaDr,ShGr
+177,Lycaenidae,Phengaris_arion,Phengaris arion,L,Bu,BuAt,1,1,O,-0.013,0.040,2,3,0.500,Hp,ShNp,Fl,Ol,BuGlFlAt,LpMp,Se,Sh,Li,4,4,4,5,8,HfHc,ThSbHf,Pa,GrNs,Dr,BeShSb
+178,Lycaenidae,Phengaris_teleius,Phengaris teleius,L,Bu,Bu,1,1,O,-0.021,-0.025,1,1,1.000,Hp,Sh,Fl,NA,BuGlFlAt,NA,Se,ShTh,NA,3,3,3,6,8,HfHc,NA,NA,NA,DaDr,ShTh
+179,Lycaenidae,Phengaris_nausithous,Phengaris nausithous,L,Bu,Bu,1,1,O,-0.015,-0.077,1,1,1.000,Hp,Sh,Fl,NA,BuGlFlAt,NA,Se,ShTh,NA,3,3,3,6,8,HfHc,ShExCoHn,Pn,ShNsHs,DaDr,Sh
+180,Lycaenidae,Turanana_taygetica,Turanana taygetica,P,NA,NA,1,2,NA,-0.063,-0.048,1,2,0.577,Wp,Sb,NA,NA,NA,NA,NA,Sh,NA,4,4,4,4,7,HfMi,NA,NA,NA,NA,NA
+181,Lycaenidae,Pseudophilotes_bavius,Pseudophilotes bavius,P,NA,NA,1,1,NA,-0.047,0.060,1,2,0.577,HpWp,ShThSb,FlLe,NA,FlAt,NA,Se,Sh,Li,3,3,3,4,6,HfSf,NA,NA,NA,NA,NA
+182,Lycaenidae,Pseudophilotes_fatma,Pseudophilotes fatma,P,NA,NA,1,1,NA,-0.051,0.070,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,4,6,NA,NA,NA,NA,NA,NA
+183,Lycaenidae,Pseudophilotes_barbagiae,Pseudophilotes barbagiae,P,Bu,NA,1,1,NA,-0.066,-0.052,1,1,1.000,Hp,Sh,NA,NA,Fl,NA,SeSb,Sh,NA,4,4,4,4,7,Hf,NA,NA,NA,NA,NA
+184,Lycaenidae,Pseudophilotes_abencerragus,Pseudophilotes abencerragus,P,Su,Gl,1,2,N,-0.070,0.060,4,4,0.354,AnHp,Sh,Fl,Ol,Fl,LpMp,Se,Sh,Li,2,2,2,4,5,HfMi,NA,NA,NA,NA,NA
+185,Lycaenidae,Pseudophilotes_panoptes,Pseudophilotes panoptes,P,SuSs,GlFl,2,2,O,-0.066,0.006,2,3,0.500,HpWp,ShSb,Fl,Ol,FlSlAt,LpMpSs,Se,Sb,NA,6,6,6,3,8,HfMi,NA,NA,NA,Dr,BeSh
+186,Lycaenidae,Pseudophilotes_vicrama,Pseudophilotes vicrama,LP,NA,NA,1,2,NA,-0.062,0.043,4,4,0.069,BiHpWp,ShThSb,FlBu,NA,FlAt,NA,NA,Sh,NA,5,5,5,4,8,Hf,NA,Pa,NA,NA,NA
+187,Lycaenidae,Pseudophilotes_baton,Pseudophilotes baton,LP,BuSu,Gl,1,2,P,-0.061,0.021,6,2,0.124,AnHpWp,ShSb,FlLe,Ol,FlAt,LpMpSs,Se,Sh,Li,5,5,5,4,8,Hf,NA,Pt,GrNs,Da,BeShGr
+188,Lycaenidae,Scolitantides_orion,Scolitantides orion,P,SuSs,GlFl,1,2,P,-0.039,0.045,1,2,0.333,BiAnHp,Sh,Le,Ol,FlAt,NA,Se,Sh,NA,5,5,5,4,8,Hf,ShSbTcExCoHn,Pa,NA,DaDr,BeSh
+189,Lycaenidae,Praephilotes_anthracias,Praephilotes anthracias,P,NA,NA,1,1,NA,-0.050164523,0.048891371,1,NA,NA,NA,NA,FlBu,NA,Sl,NA,Se,Sb,NA,2,2,2,4,5,NA,NA,NA,NA,NA,NA
+190,Lycaenidae,Iolana_iolas,Iolana iolas,P,Su,Gl,1.5,1.5,P,0.001,-0.006,1,2,0.707,Wp,Sb,Fl,NA,GlFlAt,NA,Se,Sh,NA,4,4,4,4,7,HfMiHc,NA,NA,NA,NA,NA
+191,Lycaenidae,Iolana_debilitata,Iolana debilitata,P,Bu,NA,1.5,1.5,NA,-0.008,-0.002,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,5,6,5,4,9,Hf,NA,NA,NA,NA,NA
+192,Lycaenidae,Glaucopsyche_melanops,Glaucopsyche melanops,P,Su,Gl,1,1,O,-0.046,0.084,3,3,0.224,AnWp,ShSb,Fl,NA,FlAt,NA,Se,Sh,NA,2,2,2,4,5,HfMiHc,NA,NA,NA,DaDr,BeSh
+193,Lycaenidae,Glaucopsyche_paphos,Glaucopsyche paphos,P,NA,NA,1,1,NA,-0.053,0.011,2,3,0.289,Wp,Sb,NA,NA,FlAt,NA,Se,Sh,NA,2,2,2,5,6,NA,NA,NA,NA,NA,NA
+194,Lycaenidae,Glaucopsyche_alexis,Glaucopsyche alexis,P,Bu,Gl,1,1,P,-0.036,0.091,13,3,0.065,BiAnHpWp,ShThSb,Le,NA,FlAt,NA,Se,Sh,NA,5,5,5,3,7,HfAnMi,NA,Pa,NA,DaDr,BeSh
+195,Lycaenidae,Zizeeria_knysna,Zizeeria knysna,ELPA,NA,Gl,3,3,O,-0.063,0.016,10,4,0.105,AnHp,Sh,NA,NA,NA,NA,NA,NA,NA,9,9,9,2,10,HfMi,NA,NA,NA,NA,NA
+196,Lycaenidae,Zizeeria_karsandra,Zizeeria karsandra,ELPA,NA,NA,3,3,NA,-0.060,-0.008,2,3,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,9,9,9,2,10,NA,NA,NA,NA,NA,NA
+197,Lycaenidae,Tongeia_fischeri,Tongeia fischeri,L,NA,GlFlSl,2,2,NA,-0.059,0.030,2,NA,NA,Hp,NA,FlLe,Ol,Gl,NA,Se,Sh,NA,4,4,4,5,8,HfMi,GrShThExHf,NA,NA,Da,BeShGr
+198,Lycaenidae,Cupido_argiades,Cupido argiades,L,SsTs,Fl,2,2,NA,-0.046,0.052,6,3,0.072,BiAnHpWp,ShThSbLi,Fl,NA,Fl,NA,Se,ShTh,NA,6,6,6,4,9,Hf,NA,Pa,ShGrNsHs,DaDr,Sh
+199,Lycaenidae,Cupido_decoloratus,Cupido decoloratus,LP,NA,NA,2,3,NA,-0.051,-0.003,1,3,0.258,AnHp,ShTh,Fl,NA,Fl,NA,NA,Sh,NA,5,5,5,5,9,HfHc,NA,NA,NA,NA,NA
+200,Lycaenidae,Cupido_alcetas,Cupido alcetas,L,Ss,Fl,2,3,P,-0.041,0.059,5,3,0.183,AnHp,ShTh,FlLe,NA,FlAt,NA,Se,Sh,NA,7,7,7,4,10,HfHc,NA,PtLe,ThSbPsLs,DaDr,BeSh
+201,Lycaenidae,Cupido_osiris,Cupido osiris,L,Ss,GlFl,1,2,P,-0.048,0.090,2,3,0.289,BiAnHpWp,ShSb,Fl,NA,FlAt,NA,Se,Sh,NA,6,6,6,4,9,HfMi,NA,Pt,RcShNsHs,DaDr,Sh
+202,Lycaenidae,Cupido_minimus,Cupido minimus,L,BuSu,BuGl,1,2,P,-0.062,0.107,3,3,0.105,BiAnHpWp,ShThSb,Fl,Ol,FlAt,MpSs,Se,ShTh,Li,6,6,6,4,9,HfAnMiHc,StGrShThExCoHf,Pn,ThSbPs,Dr,BeShTh
+203,Lycaenidae,Cupido_minimus_carswelli,Cupido minimus carswelli,L,Bu,GlFl,1,1,NA,-0.061,-0.044,NA,1,0.177,BiAnHp,Sh,NA,NA,NA,NA,NA,NA,NA,3,3,3,4,6,NA,NA,NA,NA,NA,NA
+204,Lycaenidae,Cupido_lorquinii,Cupido lorquinii,L,Bu,GlFl,1,1,P,-0.059,0.063,1,1,1.000,BiAnHp,Sh,Bu,Ol,FlAt,NA,NA,ShTh,NA,3,3,3,4,6,HfMiHc,NA,NA,NA,NA,NA
+205,Lycaenidae,Luthrodes_galba,Luthrodes galba,NA,NA,NA,3,3,NA,-0.068,0.029,2,3,0.289,NA,NA,FlBu,NA,NA,NA,NA,Sh,NA,9,9,9,3,11,NA,NA,NA,NA,NA,NA
+206,Lycaenidae,Freyeria_trochylus,Freyeria trochylus,NA,NA,NA,3,3,P,-0.072,0.014,2,2,0.707,An,Sh,NA,NA,NA,NA,NA,NA,NA,8,8,8,3,10,Hf,NA,NA,NA,NA,NA
+207,Lycaenidae,Plebejus_argus,Plebejus argus,E,SuSs,BuAt,1,2,O,-0.049,0.125,15,4,0.069,HpWp,ShThSb,FlLeBu,SiOl,GlFlAt,LpMpSs,Se,BgSh,Li,4,4,4,5,8,HfAnMiHc,BgStExCoHf,PaPn,RcBeGrPs,Dr,BeSh
+208,Lycaenidae,Plebejus_idas,Plebejus idas,E,Ss,BuAt,1,2,O,-0.046,0.084,8,4,0.041,HpWp,ShSbTr,Le,NA,FlAt,NA,Se,Sh,NA,5,5,5,5,9,Hf,GrShThSbExCoHnHf,Pa,NA,DaDr,BeSh
+209,Lycaenidae,Plebejus_bellieri,Plebejus bellieri,L,SuSs,GlFl,1,1,N,-0.048,-0.001,1,3,0.354,Wp,Sb,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,NA
+210,Lycaenidae,Plebejus_martini,Plebejus martini,NA,NA,NA,1,1,O,-0.038,0.013,2,2,0.577,Hp,Sh,NA,NA,FlAt,NA,NA,Sh,NA,1,3,1.5,5,7,NA,NA,NA,NA,NA,NA
+211,Lycaenidae,Plebejus_allardi,Plebejus allardi,NA,NA,NA,1,1,NA,-0.040,0.003,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,4,3,3,6,NA,NA,NA,NA,NA,NA
+212,Lycaenidae,Plebejus_vogelii,Plebejus vogelii,NA,NA,NA,2,2,NA,-0.049,-0.042,1,1,1.000,Hp,Sh,NA,NA,GlFlAt,NA,NA,Sh,NA,5,6,5,4,9,HfHc,NA,NA,NA,NA,NA
+213,Lycaenidae,Plebejus_argyrognomon,Plebejus argyrognomon,EL,Ss,GlFl,1,2,P,-0.034,-0.006,2,3,0.224,BiHp,ShTh,Le,Si,FlAt,NA,Se,Sh,NA,4,4,4,5,8,Hf,NA,Pa,NA,DaDr,BeShGr
+214,Lycaenidae,Agriades_orbitulus,Agriades orbitulus,L,SsTs,NA,1,1,NA,-0.050,-0.024,3,3,0.258,Hp,Sh,NA,NA,NA,NA,Se,ShTh,NA,3,3,3,6,8,Mi,SbTcHf,NA,NA,NA,BeShTh
+215,Lycaenidae,Agriades_optilete,Agriades optilete,L,Ss,Fl,1,1,N,-0.046,0.026,3,3,0.218,Wp,Sb,FlLe,NA,GlFl,NA,Se,Sh,NA,3,3,3,6,8,HfSfAn,ShThSbExHnHf,NA,NA,DaDr,BeShGrSb
+216,Lycaenidae,Agriades_pyrenaicus,Agriades pyrenaicus,L,Su,Gl,1,1,N,-0.047,-0.019,1,1,1.000,Hp,Sh,FlLeBu,NA,Gl,NA,Se,ShTh,NA,2,4,3,5,8,HfMi,NA,NA,NA,Da,Sh
+217,Lycaenidae,Agriades_dardanus,Agriades dardanus,NA,NA,NA,1,1,NA,-0.057,-0.006,1,2,0.577,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,3,4,6,8,NA,NA,NA,NA,NA,NA
+218,Lycaenidae,Agriades_zullichi,Agriades zullichi,L,BuSuSs,BuGl,1,1,N,-0.060,-0.013,1,1,1.000,Hp,Sh,FlLe,NA,BuGlFl,NA,Se,Sh,NA,3,3,3,6,8,Hf,NA,Pa,NA,NA,NA
+219,Lycaenidae,Agriades_glandon,Agriades glandon,L,Ss,BuGl,1,1,N,-0.049,-0.016,2,2,0.354,Hp,Sh,FlLe,NA,Fl,NA,NA,Sh,NA,2,2,2,7,8,HfHc,BgHfMs,Pa,RcBe,Da,Sh
+220,Lycaenidae,Agriades_aquilo,Agriades aquilo,L,NA,NA,0.5,1,N,-0.061,-0.005,3,4,0.289,Hp,Sh,FlLe,NA,Fl,NA,NA,NA,NA,3,3,3,6,8,NA,NA,Pt,Rc,NA,NA
+221,Lycaenidae,Plebejidea_loewii,Plebejidea loewii,NA,NA,NA,1,1,NA,-0.036,-0.046,1,2,0.707,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,8,3.5,2,9,Hf,NA,NA,NA,NA,NA
+222,Lycaenidae,Eumedonia_eumedon,Eumedonia eumedon,L,Ss,Gl,1,1,O,-0.037,0.026,1,2,0.218,Hp,Sh,FlLe,NA,GlFlAt,NA,Se,Sh,NA,4,4,4,5,8,HfHc,GrExCoHf,NA,NA,Da,BeShTh
+223,Lycaenidae,Kretania_psylorita,Kretania psylorita,NA,NA,NA,1,1,NA,-0.055,-0.036,2,2,0.577,NA,NA,NA,NA,Fl,NA,NA,ShTh,NA,2,3,2,5,7,Hf,NA,NA,NA,NA,NA
+224,Lycaenidae,Kretania_hesperica,Kretania hesperica,L,Su,BuAt,1,1,P,-0.038,0.022,1,2,0.500,Hp,Sh,Le,NA,FlAt,NA,NA,Sh,NA,4,4,4,4,7,HfMi,NA,NA,NA,NA,NA
+225,Lycaenidae,Kretania_eurypilus,Kretania eurypilus,L,SsTs,NA,1,1,NA,-0.034,-0.067,2,1,0.447,NA,NA,NA,NA,FlAt,NA,NA,ShTh,Li,2,2,2,6,7,NA,NA,Pt,GrThHs,NA,NA
+226,Lycaenidae,Kretania_trappi,Kretania trappi,L,NA,NA,1,1,NA,-0.033,0.022,1,2,0.707,NA,NA,NA,NA,GlFlAt,NA,NA,Sh,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+227,Lycaenidae,Kretania_sephirus,Kretania sephirus,L,NA,Gl,1,1,P,-0.033,0.016,2,2,0.577,Hp,Sh,NA,NA,NA,NA,Se,ShTh,Sh,4,4,4,5,8,Hf,NA,NA,NA,NA,NA
+228,Lycaenidae,Kretania_pylaon,Kretania pylaon,L,BuSu,BuGl,1,1,NA,-0.042,-0.075,1,1,1.000,NA,NA,FlLeBu,NA,FlAt,NA,Se,Sh,NA,2,2,2,5,6,HfHc,NA,NA,NA,NA,NA
+229,Lycaenidae,Cyaniris_semiargus,Cyaniris semiargus,L,Ss,Gl,1,1.5,O,-0.038,0.076,1,3,0.169,BiAnHp,ShTh,FlLeSt,SiOl,FlAt,NA,Se,Sh,NA,6,6,6,5,10,Hf,NA,NA,NA,Da,BeGr
+230,Lycaenidae,Glabroculus_cyane,Glabroculus cyane,NA,NA,NA,1,1,NA,-0.035,0.058,2,3,NA,Hp,Sh,NA,NA,Gl,NA,NA,Sh,NA,2,3,2.5,6,8,Hf,NA,NA,NA,DaDr,ShTh
+231,Lycaenidae,Aricia_morronensis,Aricia morronensis,L,Ss,Gl,1,2,P,-0.042,-0.026,1,2,0.577,BiAn,Sh,Le,NA,FlAt,NA,Se,Sh,NA,4,4,4,5,8,HfHc,NA,NA,NA,DaDr,BeSh
+232,Lycaenidae,Aricia_anteros,Aricia anteros,L,NA,NA,1,3,NA,-0.037,0.078,4,3,0.289,Hp,Sh,Le,NA,FlAt,NA,Se,Sh,Sh,5,5,5,5,9,Hf,NA,NA,NA,NA,NA
+233,Lycaenidae,Aricia_cramera,Aricia cramera,ELPA,Ss,NA,2,3,P,-0.054,0.082,4,4,0.112,AnHp,Sh,Le,NA,GlFlAt,NA,Se,Sh,NA,7,12,9.5,1,12,HfMi,NA,NA,NA,Da,ShGr
+234,Lycaenidae,Aricia_nicias,Aricia nicias,L,Ss,Gl,1,1,NA,-0.053,0.006,1,2,0.707,Hp,Sh,FlLe,NA,FlAt,NA,Se,ShTh,NA,2,2,2,7,8,HfHc,GrShThSbHnHf,NA,NA,DaDr,Sh
+235,Lycaenidae,Aricia_artaxerxes,Aricia artaxerxes,L,SuSs,BuGl,1,1,P,-0.049,0.081,3,4,0.056,AnHp,Sh,Le,SiOl,GlFlAt,MpSs,Se,Sh,Li,4,4,4,6,9,HfHc,StShThExCoHf,Pa,GrPs,Da,BeShGr
+236,Lycaenidae,Aricia_montensis,Aricia montensis,L,Su,NA,1,1,NA,-0.042,0.041,2,4,0.183,NA,NA,Le,NA,NA,NA,NA,NA,NA,4,4,4,6,9,HfMi,NA,NA,NA,NA,NA
+237,Lycaenidae,Aricia_agestis,Aricia agestis,L,SuSs,BuGlAt,1,3,P,-0.048,0.014,5,4,0.102,AnHp,Sh,Le,SiOl,GlFlAt,MpSs,Se,Sh,Li,7,7,7,4,10,HfAnMiHc,GrShThExCoHf,PaPn,GrPs,Da,BeShGr
+238,Lycaenidae,Lysandra_hispana,Lysandra hispana,E,Ss,Gl,2,2,M,-0.023,-0.023,2,1,1.000,Hp,Sh,Le,NA,FlAt,NA,Se,Sh,NA,7,7,7,4,10,HfMiHc,NA,NA,NA,DaDr,BeSh
+239,Lycaenidae,Lysandra_corydonius,Lysandra corydonius,L,NA,BuGl,1,1,NA,-0.021,-0.040,2,3,NA,NA,NA,Le,NA,GlFl,NA,Se,ShTh,NA,3,3,3,7,9,HfHc,NA,NA,NA,NA,NA
+240,Lycaenidae,Lysandra_bellargus,Lysandra bellargus,L,SuSs,BuGlAt,1,3,P,-0.031,0.011,4,3,0.183,HpWp,ShThSb,Le,SiOl,GlAt,LpMpSs,Se,BgSh,Li,7,7,7,4,10,HfAnMiHc,StThExCoHf,Pa,GrNsHs,Dr,BeSh
+241,Lycaenidae,Lysandra_punctifera,Lysandra punctifera,L,NA,NA,2,2,P,-0.030,-0.014,2,1,1.000,Hp,Sh,NA,NA,FlAt,NA,NA,Sh,NA,4,8,5.5,3,10,Hf,NA,NA,NA,NA,NA
+242,Lycaenidae,Lysandra_coridon,Lysandra coridon,E,SuSs,BuGlAt,1,2,P,-0.026,-0.004,3,3,1.000,Hp,ShTh,Le,SiOl,GlAt,LpMpSs,Se,BgSh,Li,3,3,3,7,9,HfAnMiHc,StGrShThExCoHf,Pa,GrNsHs,Dr,BeSh
+243,Lycaenidae,Lysandra_caelestissima,Lysandra caelestissima,NA,NA,NA,1,1,NA,-0.029634904,0.083842834,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,NA,NA,NA,NA,NA,NA
+244,Lycaenidae,Lysandra_albicans,Lysandra albicans,E,Ss,Gl,1,1,O,-0.012,0.044,1,1,1.000,Hp,Sh,Le,NA,FlAt,NA,NA,Sh,NA,3,3,3,6,8,HfMi,NA,NA,NA,NA,NA
+245,Lycaenidae,Neolysandra_coelestina,Neolysandra coelestina,L,NA,NA,1,1,NA,-0.049,-0.040,1,3,0.707,Hp,Th,NA,NA,NA,NA,Se,Sh,Li,2,2,2,5,6,HfHc,NA,NA,NA,NA,NA
+246,Lycaenidae,Polyommatus_escheri,Polyommatus escheri,L,SsTs,Gl,1,1,P,-0.029,0.015,2,2,0.500,Hp,Sh,FlLe,NA,GlFlAt,NA,Se,ShTh,NA,3,3,3,5,7,Hf,NA,NA,NA,DaDr,BeSh
+247,Lycaenidae,Polyommatus_thersites,Polyommatus thersites,L,Ss,Gl,1,3,P,-0.040,0.059,2,2,0.500,Hp,Sh,FlLeSt,SiOl,GlFlAt,NA,Se,Sh,NA,7,7,7,4,10,Hf,NA,NA,NA,DaDr,ShGr
+248,Lycaenidae,Polyommatus_daphnis,Polyommatus daphnis,E,SuSs,Gl,1,1,P,-0.015,-0.034,3,4,0.129,Hp,ShTh,LeSt,Si,GlFlAt,NA,Se,BgSh,NA,3,3,3,6,8,HfMi,NA,NA,NA,DaDr,ShTh
+249,Lycaenidae,Polyommatus_amandus,Polyommatus amandus,L,Su,Gl,1,2,M,-0.022,0.003,2,3,0.204,AnHp,ShTh,Le,NA,GlFlAt,NA,Se,Sh,NA,3,3,3,5,7,HfMi,GrExHf,Pt,NA,DaDr,BeSh
+250,Lycaenidae,Polyommatus_golgus,Polyommatus golgus,L,SuSs,BuGl,1,1,M,-0.044,0.010,1,1,1.000,BiAnHp,Sh,FlLeBu,SiOl,BuGlFlAt,NA,Se,Sh,NA,2,2,2,6,7,Hf,NA,PaPtLe,NA,NA,NA
+251,Lycaenidae,Polyommatus_atlanticus,Polyommatus atlanticus,NA,NA,NA,2,2,NA,-0.035,-0.040,1,1,1.000,BiAnHp,Sh,NA,NA,NA,NA,NA,Sh,NA,4,5,4,5,9,HfMi,NA,NA,NA,NA,NA
+252,Lycaenidae,Polyommatus_nivescens,Polyommatus nivescens,L,Su,Gl,1,1,M,-0.030,0.018,1,1,1.000,BiAnHp,Sh,Le,NA,GlFlAt,NA,Se,Sh,NA,4,4,4,5,8,HfMi,NA,NA,NA,DaDr,BeShGr
+253,Lycaenidae,Polyommatus_dorylas,Polyommatus dorylas,L,SuSs,Gl,1,2,P,-0.028,-0.007,1,4,0.204,BiAnHp,Sh,Le,NA,GlFlAt,NA,Se,Sh,Sh,4,4,4,5,8,Hf,BgStGrHf,NA,NA,Da,Be
+254,Lycaenidae,Polyommatus_celina,Polyommatus celina,L,Su,NA,3,3,NA,-0.040,0.150,1,1,1.000,BiAnHpWp,ShThSb,FlLe,NA,NA,NA,NA,NA,NA,11,11,11,2,12,HfMi,NA,NA,NA,DaDr,ShTh
+255,Lycaenidae,Polyommatus_icarus,Polyommatus icarus,L,Su,BuGlAt,1,3,P,-0.035,0.112,12,3,0.144,AnHpWp,ShSb,Le,SiOl,GlFlAt,LpMpSs,Se,Sh,Li,7,7,7,4,10,HfAnMiHc,GrShExCoHf,PaPn,GrNsHsPs,DaDr,BeShGrTh
+256,Lycaenidae,Polyommatus_icarus_andronicus,Polyommatus icarus andronicus,NA,NA,NA,1,1,NA,-0.036,0.095,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,6,7,Hf,NA,NA,NA,NA,NA
+257,Lycaenidae,Polyommatus_eros,Polyommatus eros,L,Ss,Gl,1,1,P,-0.040,0.035,2,3,0.408,HpWp,ShSb,FlLeSt,SiOl,FlAt,NA,Se,Sh,NA,3,3,3,7,9,HfMi,NA,NA,NA,DaDr,BeSh
+258,Lycaenidae,Polyommatus_damon,Polyommatus damon,EL,Ss,Gl,1,1,P,-0.033,0.029,1,2,0.447,Hp,Sh,Le,NA,GlAt,NA,Se,Sh,NA,2,2,2,7,8,HfMi,NA,NA,NA,DaDr,ShGr
+259,Lycaenidae,Polyommatus_damone,Polyommatus damone,NA,NA,Bu,1,3,NA,-0.037,-0.010,1,2,NA,NA,NA,Le,NA,Gl,NA,Se,Sh,NA,3,5,4,5,9,NA,NA,NA,NA,NA,NA
+260,Lycaenidae,Polyommatus_damocles,Polyommatus damocles,NA,NA,NA,1,1,NA,-0.033,-0.037,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+261,Lycaenidae,Polyommatus_admetus,Polyommatus admetus,L,BuSu,NA,1,1,P,-0.025,0.027,1,2,0.707,AnHp,Sh,NA,NA,BuGlFlAt,NA,NA,NA,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,NA
+262,Lycaenidae,Polyommatus_ripartii,Polyommatus ripartii,L,Ss,Bu,1,1,P,-0.033,0.060,1,2,0.447,Hp,Sh,Le,NA,GlFlAt,NA,Se,Sh,NA,4,4,4,6,9,Hf,NA,NA,NA,DaDr,ShGr
+263,Lycaenidae,Polyommatus_nephohiptamenos,Polyommatus nephohiptamenos,NA,NA,NA,1,1,NA,-0.035,-0.020,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,NA,NA,NA,NA,NA,NA
+264,Lycaenidae,Polyommatus_iphigenia,Polyommatus iphigenia,NA,NA,NA,1,1,NA,-0.032,-0.034,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+265,Lycaenidae,Polyommatus_violetae,Polyommatus violetae,L,SuSs,Gl,1,1,P,-0.034,0.024,1,1,1.000,Hp,Sh,FlLe,NA,FlAt,NA,NA,Sh,NA,2,2,2,7,8,HfHdMi,GrExCoHf,NA,NA,NA,NA
+266,Lycaenidae,Polyommatus_fulgens,Polyommatus fulgens,L,Su,NA,1,1,NA,-0.032,-0.044,1,1,1.000,Hp,Sh,Le,NA,FlAt,NA,NA,Sh,NA,2,2,2,7,8,Hf,NA,NA,NA,DaDr,BeShGr
+267,Lycaenidae,Polyommatus_fabressei,Polyommatus fabressei,L,NA,NA,1,1,O,-0.033,0.009,1,1,1.000,Hp,Sh,Le,NA,FlAt,NA,NA,Sh,NA,3,3,3,6,8,HfMi,NA,NA,NA,NA,NA
+268,Lycaenidae,Polyommatus_dolus,Polyommatus dolus,L,Ss,Gl,1,1,NA,-0.020,-0.013,1,1,1.000,Hp,Sh,NA,NA,NA,NA,Se,Sh,NA,2,2,2,7,8,Hf,NA,NA,NA,NA,NA
+269,Lycaenidae,Polyommatus_dolus_virgilius,Polyommatus dolus virgilius,L,NA,NA,1,1,NA,-0.025,-0.002,NA,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,NA,NA,NA,NA,NA,NA
+270,Lycaenidae,Polyommatus_humedasae,Polyommatus humedasae,L,Su,NA,1,1,NA,-0.028,0.002,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,Sh,NA,2,2,2,7,8,Hf,NA,NA,NA,NA,NA
+271,Lycaenidae,Polyommatus_orphicus,Polyommatus orphicus,NA,NA,NA,1,1,P,-0.028,-0.006,NA,2,0.577,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,4,4,6,9,NA,NA,NA,NA,NA,NA
+272,Lycaenidae,Polyommatus_aroaniensis,Polyommatus aroaniensis,L,NA,NA,1,1,P,-0.034,-0.039,1,1,1.000,Hp,Sh,Fl,NA,FlAt,NA,Se,Sh,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+273,Lycaenidae,Polyommatus_timfristos,Polyommatus timfristos,NA,NA,NA,1,1,NA,-0.026375364,-0.069473831,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,1,1,7,7,NA,NA,NA,NA,NA,NA
+274,Nymphalidae,Neptis_sappho,Neptis sappho,L,Su,FlSl,1,2,N,0.036,-0.001,2,3,0.408,HpWp,ShTr,Le,SiOl,NA,NA,Se,SbCa,NA,4,5,4.5,5,9,NA,TcExHf,NA,NA,Da,Be
+275,Nymphalidae,Neptis_rivularis,Neptis rivularis,L,Sb,Sl,1,1,N,0.041,0.013,4,3,0.258,HpWp,ThSb,Le,SiOl,NA,NA,Se,ShTh,NA,3,4,3.5,5,8,SfHc,NA,NA,NA,Da,BeGrSb
+276,Nymphalidae,Limenitis_reducta,Limenitis reducta,L,SbLi,Sl,1,3,N,0.037,0.041,1,2,0.577,Wp,SbLi,Le,Ol,Sl,LpMpSs,Se,Li,LiPs,3,7,5,4,10,HfSfHdSaAnMi,NA,PaPt,SbTcNs,Da,Sb
+277,Nymphalidae,Limenitis_populi,Limenitis populi,L,Tr,Cl,1,1,N,0.115,0.008,1,1,0.577,Wp,Tr,Le,NA,Cl,NA,Se,Ca,LiPs,2,4,2.5,5,8,SaDpAn,NA,NA,TcHsHt,Da,Be
+278,Nymphalidae,Limenitis_camilla,Limenitis camilla,L,Li,Sl,1,1,N,0.064,-0.024,2,3,0.289,Wp,SbLi,Le,Ol,SlCl,Ss,Se,Ca,PsSh,2,4,3,6,9,HfErSfHdSaAnMi,TcLiExHnHf,Pa,SbTcLs,Da,BeThSb
+279,Nymphalidae,Issoria_lathonia,Issoria lathonia,ELPA,SuSsTs,Fl,1,3,N,0.011,0.013,1,2,0.408,BiAnHp,Sh,FlLe,NA,GlFl,NA,Se,ShTh,NA,4,10,7,2,11,HfMi,NA,Pt,NA,Da,BeShThSb
+280,Nymphalidae,Issoria_eugenia,Issoria eugenia,L,NA,NA,1,1,NA,0.001821696,0.041482826,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,HfMi,NA,NA,NA,Da,BeThSb
+281,Nymphalidae,Brenthis_hecate,Brenthis hecate,E,Ss,Fl,1,1,N,0.002,0.041,1,1,0.408,Hp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,3,4,3,4,7,Hf,NA,Pa,NA,Da,ShTh
+282,Nymphalidae,Brenthis_ino,Brenthis ino,EL,SsTs,Fl,1,1,N,-0.008,0.062,5,3,0.204,Wp,Sb,Le,NA,GlFl,NA,SeSb,ShThSb,NA,2,3,2.5,6,8,HfSf,SbTcCoHnHf,Pa,NA,Da,ShTh
+283,Nymphalidae,Brenthis_daphne,Brenthis daphne,EL,Sb,Fl,1,1,N,0.023,0.015,1,2,0.447,HpWp,ShThSb,Le,SiOl,Sl,NA,Se,ShTh,NA,3,4,3.5,5,8,HfSf,NA,Pa,ThSbNs,Da,Th
+284,Nymphalidae,Argynnis_paphia,Argynnis paphia,EL,Tr,Fl,1,1,N,0.094,-0.031,1,2,0.258,Hp,Sh,Le,SiOl,Fl,MpSs,Se,Ca,PsSh,2,6,3.5,5,10,HfSfHdMi,TcExHf,PaPn,SbTcHsPsLs,Da,ShGrThSb
+285,Nymphalidae,Argynnis_pandora,Argynnis pandora,L,SuSs,BuGl,1,2,N,0.109,0.035,1,2,0.577,BiAnHp,Sh,Le,NA,BuGlFl,NA,Se,BgShTh,NA,3,7,5,4,10,HfAnMi,ShThCo,Pt,NA,Da,BeShThSb
+286,Nymphalidae,Argynnis_laodice,Argynnis laodice,L,SuSs,NA,1,1,N,0.058,0.000,1,1,0.707,Hp,Sh,NA,NA,NA,NA,NA,ShThSbTt,NA,2,2,2,7,8,SfMi,NA,NA,NA,Da,BeShThSb
+287,Nymphalidae,Speyeria_aglaja,Speyeria aglaja,EL,BuSuSbTr,GlFl,1,1,N,0.057,0.070,1,2,0.500,BiAnHp,Sh,Le,SiOl,GlFl,LpMp,Se,BgSh,Li,2,5,3.5,5,9,HfAnMi,GrThExHf,Pa,ShThSbNsHs,Da,ShThSb
+288,Nymphalidae,Fabriciana_elisa,Fabriciana elisa,EL,Ss,Gl,1,1,N,0.030,-0.043,1,1,1.000,Hp,Sh,NA,NA,Fl,NA,Se,NA,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,Be
+289,Nymphalidae,Fabriciana_niobe,Fabriciana niobe,EL,SsTs,Fl,1,1,N,0.036,0.031,1,2,0.408,Hp,Sh,NA,NA,Fl,NA,Se,BgSh,NA,1,4,2.5,5,8,Hf,NA,Pa,NA,Da,BeShThSb
+290,Nymphalidae,Fabriciana_adippe,Fabriciana adippe,EL,SsTsSbTr,Fl,1,1,N,0.051,0.050,1,2,0.500,BiAnHp,Sh,Le,SiOl,Fl,MpSs,Se,BgSh,LiPs,2,5,3.5,5,9,HfSfMi,TcExHf,Pa,BeSbTcHsPs,Da,BeShThSb
+291,Nymphalidae,Fabriciana_auresiana,Fabriciana auresiana,NA,NA,NA,1,1,N,0.048,0.082,1,NA,0.289,NA,NA,NA,NA,NA,NA,NA,Sh,NA,3,3,3,6,8,Hf,NA,NA,NA,Da,NA
+292,Nymphalidae,Boloria_eunomia,Boloria eunomia,L,SsTs,Fl,1,1,N,-0.003,0.035,1,1,0.183,Hp,Sh,Le,NA,Fl,NA,SeSb,ShTh,NA,3,4,3,5,8,Hf,NA,NA,NA,Da,ShGr
+293,Nymphalidae,Boloria_graeca,Boloria graeca,L,NA,NA,1,1,N,-0.016,0.006,1,2,1.000,Hp,Sh,NA,NA,Fl,NA,Se,ShThSb,NA,3,5,4,5,9,Hf,NA,NA,NA,Da,BeShTh
+294,Nymphalidae,Boloria_pales,Boloria pales,L,NA,GlFl,1,1,N,-0.014,0.032,2,1,0.258,AnHp,Sh,Le,NA,Fl,NA,Se,NA,NA,2,4,3,6,9,Hf,NA,NA,NA,Da,NA
+295,Nymphalidae,Boloria_napaea,Boloria napaea,L,NA,Gl,1,1,N,-0.006,0.007,2,4,0.354,Hp,Sh,Le,NA,GlFl,NA,Se,ShTh,NA,3,3,3,6,8,Hf,GrShThHnHf,NA,NA,Da,ShTh
+296,Nymphalidae,Boloria_aquilonaris,Boloria aquilonaris,L,Su,GlFl,1,1,N,-0.019,0.017,2,1,0.289,Wp,Sb,NA,NA,GlFl,NA,Se,ShTh,NA,1,3,2,6,8,Hf,GrShThExCoHf,NA,NA,Da,ShTh
+297,Nymphalidae,Boloria_alaskensis,Boloria alaskensis,NA,NA,NA,1,1,NA,-0.004429082,0.028009105,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,Hf,NA,NA,NA,Da,BeShTh
+298,Nymphalidae,Boloria_polaris,Boloria polaris,L,Bu,NA,1,1,N,-0.001,0.027,4,4,0.204,NA,NA,Le,NA,NA,NA,Se,NA,NA,1,4,2.5,5,8,NA,BgStGrSh,NA,NA,NA,NA
+299,Nymphalidae,Boloria_tritonia,Boloria tritonia,L,NA,NA,1,1,N,0.026429857,0.022470146,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,3,2,6,8,NA,NA,NA,NA,NA,NA
+300,Nymphalidae,Boloria_thore,Boloria thore,L,NA,GlFl,1,1.5,N,0.003,-0.016,1,2,0.577,BiAnHp,Sh,Le,NA,Fl,NA,Se,ShTh,NA,1,3,2,6,8,Hf,NA,NA,NA,Da,ShTh
+301,Nymphalidae,Boloria_selene,Boloria selene,LP,SuSs,Gl,1,2,N,-0.004,0.012,1,2,0.577,Hp,Sh,Le,SiOl,Fl,LpMp,Se,BgSh,Li,2,4,3.5,5,8,HfMi,ThSbExHf,Pa,ShThSbNsHs,Da,ShGrTh
+302,Nymphalidae,Boloria_euphrosyne,Boloria euphrosyne,L,Su,GlFl,1,2,N,-0.001,0.006,1,2,0.577,Hp,Sh,Le,SiOl,Fl,LpMp,Se,BgSh,LiPs,2,6,4,4,9,Hf,ThSbExHf,Pa,ShThSbTcNsHs,Da,BeGrThSb
+303,Nymphalidae,Boloria_dia,Boloria dia,L,Su,Fl,2,3,N,-0.022,-0.033,1,2,0.447,Hp,Sh,Le,NA,Fl,NA,Se,ShTh,NA,4,7,5.5,3,9,Hf,GrExCoHf,Pa,ShGrNs,Da,Sh
+304,Nymphalidae,Boloria_improba,Boloria improba,L,NA,NA,1,1,N,-0.026,0.040,2,1,0.500,Hp,Sh,NA,NA,Fl,NA,NA,ShTh,NA,1,3,2,6,8,Hf,BgStHf,NA,NA,Da,Sh
+305,Nymphalidae,Boloria_frigga,Boloria frigga,L,Bu,FlSl,1,1,N,0.001,0.060,2,1,0.707,Hp,Sh,NA,NA,Sl,NA,Se,ShTh,NA,2,2,2,6,7,Hf,NA,NA,NA,Da,ShGr
+306,Nymphalidae,Boloria_freija,Boloria freija,L,Bu,FlSl,1,1,N,-0.006,0.050,5,4,0.158,HpWp,ShSb,NA,NA,Sl,NA,Se,ShThSb,NA,2,4,2.5,5,8,Hf,NA,NA,NA,Da,Be
+307,Nymphalidae,Boloria_oscarus,Boloria oscarus,L,NA,NA,1,1,N,0.015,-0.009,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,4,3,5,8,NA,NA,NA,NA,NA,NA
+308,Nymphalidae,Boloria_selenis,Boloria selenis,NA,NA,NA,1,1,N,-0.001,0.003,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,NA,NA,NA,NA,Da,Sh
+309,Nymphalidae,Boloria_titania,Boloria titania,EL,NA,Gl,1,1,N,0.004,0.049,2,1,0.500,Wp,Sb,Le,NA,Fl,NA,Se,NA,NA,3,3,3,6,8,HfHc,NA,NA,NA,Da,ShTh
+310,Nymphalidae,Boloria_chariclea,Boloria chariclea,NA,NA,NA,1,1,N,-0.010,-0.009,2,4,0.354,NA,NA,NA,NA,NA,NA,NA,BgSh,NA,1,3,1.5,6,8,Hf,NA,NA,NA,NA,NA
+311,Nymphalidae,Boloria_angarensis,Boloria angarensis,L,NA,NA,NA,NA,NA,-0.00369442,-0.018792892,2,4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+312,Nymphalidae,Apatura_iris,Apatura iris,L,SbTr,Sl,1,1,N,0.106,-0.008,1,3,0.316,Wp,SbTr,Le,Ol,Sl,MpSs,Se,Sb,PsSh,2,3,2.5,6,8,HfHdSaAnMi,SbTcExHnHf,Pt,ThTcNsPsLs,Da,BeSb
+313,Nymphalidae,Apatura_metis,Apatura metis,L,SbTr,Cl,1,2,N,0.069,-0.020,1,1,1.000,Wp,Tr,Le,NA,SlCl,NA,Se,SbCa,Sh,4,4,4,5,8,HfSfHdAnMi,TcHn,Pa,Tc,NA,NA
+314,Nymphalidae,Apatura_ilia,Apatura ilia,L,SbTr,SlCl,1,2,N,0.091,-0.041,2,3,0.267,Wp,SbTr,Le,NA,SlCl,NA,Se,Ca,NA,3,6,4.5,5,10,HfHdSaAnMi,TcCoHn,NA,NA,Da,BeSb
+315,Nymphalidae,Araschnia_levana,Araschnia levana,P,SsTsSb,Fl,1,3,N,-0.009,0.100,1,2,0.707,Hp,ShTh,Le,NA,Fl,NA,Lb,Th,Sh,4,6,5,4,9,HfSf,BgShThTcExHf,Pa,BeShHs,Da,BeShTh
+316,Nymphalidae,Vanessa_virginiensis,Vanessa virginiensis,L,SuSs,FlSl,3,3,N,0.010,-0.016,1,4,0.048,BiAnHpWp,ShThSbTrLi,Le,Si,Fl,Ss,Se,Sh,NA,10,12,10,1,12,NA,NA,NA,NA,NA,NA
+317,Nymphalidae,Vanessa_cardui,Vanessa cardui,A,SsTsSbTr,Fl,1,3,N,0.055,0.064,7,4,0.083,BiAnHp,ShTh,Le,Ol,Fl,LpMpSs,Se,Th,Li,4,12,8,1,12,HfSfHdHc,ThSbExHnHf,PaPn,RcBeThNsHsPsHt,Da,BeGrThSb
+318,Nymphalidae,Vanessa_vulcania,Vanessa vulcania,ELPA,SuSsSbTr,Fl,3,3,N,0.064,-0.053,2,3,0.289,AnHp,ShTh,NA,NA,Fl,NA,Se,Th,PsSh,12,12,12,1,12,Hf,NA,NA,NA,NA,NA
+319,Nymphalidae,Vanessa_atalanta,Vanessa atalanta,A,SsTsSbTrLi,Fl,1,3,N,0.065,0.050,3,3,0.316,AnHp,ShTh,Le,SiOl,Fl,LpMp,Se,Th,Li,5,12,8.5,1,12,HfSfHdSaDpAnMi,TtShThSbHnHf,Pt,RcThSbNsPsLsHt,Da,BeShGrThSb
+320,Nymphalidae,Aglais_io,Aglais io,A,TsSbTrLi,Fl,1,3,N,0.061,0.047,3,4,0.236,Hp,ShThLi,Le,SiOl,Fl,LpMp,Lb,Th,Li,6,9,7.5,2,10,HfSfDpAnMi,TtShSbHfMs,PnPt,ThHsPs,Da,BeShGrThSb
+321,Nymphalidae,Aglais_urticae,Aglais urticae,A,TsSbTrLi,Fl,1,3,N,0.021,-0.014,1,2,0.707,Hp,ShTh,Le,SiOl,Fl,LpMp,Lb,Th,Li,4,10,7,2,11,HfSfDpAnMi,TtThSbHnHfMs,PnPt,BeGrThHsPsHt,Da,BeShThSb
+322,Nymphalidae,Aglais_ichnusa,Aglais ichnusa,A,NA,NA,2,2,N,0.032,0.061,1,2,0.577,Hp,ShTh,NA,NA,NA,NA,NA,Th,Li,8,8,8,3,10,Hf,NA,NA,NA,Da,BeSh
+323,Nymphalidae,Polygonia_egea,Polygonia egea,A,Bu,NA,1,3,N,0.024,-0.046,2,2,0.577,Hp,Sh,Bu,NA,Fl,NA,SeSb,ShTh,Li,6,11,8.5,1,11,Hf,NA,NA,NA,Da,Be
+324,Nymphalidae,Polygonia_c-album,Polygonia c-album,A,TsSbTrLi,FlSl,1,3,N,0.029,0.036,8,4,0.050,HpWp,ShThSbTrLi,Le,Ol,FlSlCl,MpSs,Se,ThLi,Ps,2,10,6,2,11,HfSfHdSaDpAnMi,TtThSbHf,PnPt,ThSbHsPs,Da,BeShGrThSb
+325,Nymphalidae,Nymphalis_vaualbum,Nymphalis vaualbum,A,Tr,SlCl,1,1,N,0.075,-0.017,4,4,0.354,HpWp,SbTr,Le,NA,Cl,NA,Lb,SbCa,NA,2,5,3.5,3,7,DpMi,BgTtHf,PaPt,NA,Da,Be
+326,Nymphalidae,Nymphalis_polychloros,Nymphalis polychloros,A,SbTr,Sl,1,1,N,0.069,-0.021,9,4,0.136,Wp,SbTr,Le,Ol,SlCl,LpMp,Lb,ThCa,Ps,3,10,6.5,1,10,HfSfSaDpAnMi,TcExHnHfMs,Pt,TcHsPsLs,Da,ThSb
+327,Nymphalidae,Nymphalis_xanthomelas,Nymphalis xanthomelas,A,SbTrLi,NA,1,1,N,0.074,-0.036,2,3,0.707,Wp,SbTr,NA,NA,Cl,NA,Lb,SbCa,NA,3,6,4.5,4,9,SaDp,NA,NA,NA,Da,BeSh
+328,Nymphalidae,Nymphalis_antiopa,Nymphalis antiopa,A,Tr,FlSlCl,1,1.5,N,0.106,0.005,4,3,0.192,Wp,SbTr,Le,NA,SlCl,NA,Lb,TtCa,NA,2,9,5.5,3,11,HfSfHdSaDpAnMiHc,NA,PaPt,Ps,Da,Be
+329,Nymphalidae,Hypolimnas_misippus,Hypolimnas misippus,ELPA,SsTsSbTr,NA,3,3,N,0.117,0.032,7,4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,12,9,1,12,NA,NA,NA,NA,NA,NA
+330,Nymphalidae,Euphydryas_desfontainii,Euphydryas desfontainii,L,SsTs,Fl,1,1,N,0.015,0.043,5,3,1.000,BiHp,Sh,Le,Ol,Fl,MpSs,Lb,ShTh,Li,3,3,3,4,6,Hf,SbTcHf,Pa,ShGrThNsHs,Da,BeShGrTh
+331,Nymphalidae,Euphydryas_aurinia,Euphydryas aurinia,L,TsSbLi,GlFl,1,1,N,-0.004,0.098,9,4,0.102,BiHp,ShTh,Le,Ol,GlFl,LpMp,Lb,Th,Li,2,5,3.5,4,8,Hf,ThExHf,PaPnPt,ShGrThPsLs,Da,ShGrTh
+332,Nymphalidae,Euphydryas_cynthia,Euphydryas cynthia,L,BuSsTsSb,Bu,0.5,1,N,-0.009,0.051,4,4,0.289,Hp,Sh,NA,NA,GlFl,NA,SbLb,Sh,NA,3,3,3,6,8,Hf,NA,NA,NA,Da,Be
+333,Nymphalidae,Euphydryas_iduna,Euphydryas iduna,L,SuSs,NA,1,1,N,-0.004,0.020,6,3,0.316,AnHp,ShThSb,NA,NA,Fl,NA,Sb,ShThSb,NA,2,2,2,6,7,NA,NA,Pa,NA,Da,Be
+334,Nymphalidae,Euphydryas_maturna,Euphydryas maturna,LP,SuSs,Gl,0.5,1,N,0.002,0.018,10,4,0.046,HpWp,ShThSbTr,LeSt,SiOl,GlFlCl,NA,Lb,Ca,Sh,2,3,2.5,5,7,HfHd,Tc,Pt,SbHsPs,Da,Be
+335,Nymphalidae,Euphydryas_intermedia,Euphydryas intermedia,L,Sb,FlSl,0.5,1,N,0.001,-0.042,1,2,0.577,Wp,SbLi,Le,NA,GlSl,NA,SbLb,Sb,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,NA
+336,Nymphalidae,Melitaea_trivia,Melitaea trivia,L,Su,Gl,1,3,N,-0.017,0.053,2,2,0.447,BiHp,ShTh,Le,NA,Fl,NA,Lb,Sh,NA,2,8,5,3,10,HfMi,NA,PaPn,BeHt,Da,BeSh
+337,Nymphalidae,Melitaea_didyma,Melitaea didyma,L,SuSsTs,Gl,1,3,N,-0.005,0.116,9,4,0.051,BiAnHp,ShTh,FlLe,NA,Fl,NA,Lb,ShTh,NA,3,8,5.5,3,10,Hf,ShExHn,PaPn,RcBe,Da,BeSh
+338,Nymphalidae,Melitaea_deserticola,Melitaea deserticola,NA,NA,NA,1,3,N,0.001,0.050,3,4,0.102,HpWp,ShThSb,NA,NA,NA,NA,NA,NA,NA,2,5,3,2,6,NA,NA,NA,NA,Da,NA
+339,Nymphalidae,Melitaea_arduinna,Melitaea arduinna,L,Su,GlFl,1,1,N,0.016,-0.038,1,2,0.577,AnHpWp,ShThSb,LeSt,Ol,Gl,NA,Lb,Sh,Sh,3,4,3.5,5,8,Hf,NA,Pa,NA,Da,BeSh
+340,Nymphalidae,Melitaea_aetherie,Melitaea aetherie,L,SuSs,GlFl,1,2,N,0.014,-0.024,4,3,0.408,BiHp,Sh,Le,NA,NA,NA,SbLb,ShTh,NA,2,6,2.5,4,9,HfMi,NA,NA,NA,Da,ShTh
+341,Nymphalidae,Melitaea_phoebe,Melitaea phoebe,L,SuSs,Gl,1,2,N,0.013,0.071,5,4,0.154,BiAnHp,ShTh,Le,NA,Fl,NA,Lb,ShTh,NA,2,7,4.5,3,9,HfMi,ShThExCoHf,PaPt,ShGrThHsPs,Da,BeSh
+342,Nymphalidae,Melitaea_ornata,Melitaea ornata,L,SsTs,Gl,1,1,N,0.004,-0.015,3,3,0.289,BiAnHpWp,ShTh,Le,NA,Fl,NA,Lb,ShTh,NA,4,4,4,4,7,Hf,ShThExCoHf,NA,NA,Da,ShTh
+343,Nymphalidae,Melitaea_cinxia,Melitaea cinxia,L,SuSsTs,Fl,1,2,N,-0.003,0.014,4,3,0.289,Hp,Sh,Le,SiOl,GlFl,LpMp,Lb,Sh,Li,2,7,4,3,9,Hf,ThExCoHf,PaPt,ShThNsHs,Da,ShGr
+344,Nymphalidae,Melitaea_diamina,Melitaea diamina,L,SuSs,GlFl,1,2,N,-0.012,0.051,6,4,0.126,Hp,ShTh,FlLe,NA,GlFl,Lp,Lb,ShTh,PsSh,1,6,3.5,4,9,HfAnMi,NA,Pa,NA,Da,ShGr
+345,Nymphalidae,Melitaea_celadussa,Melitaea celadussa,L,Ss,GlFl,1,2,N,-0.009,0.056,7,4,0.102,AnHp,Sh,Le,NA,NA,NA,NA,NA,NA,2,4,3,5,8,HfMi,NA,NA,NA,NA,NA
+346,Nymphalidae,Melitaea_deione,Melitaea deione,L,Su,Gl,1,2,N,-0.004,0.101,3,4,0.120,BiAnHpWp,ShSb,Le,NA,GlFl,NA,SbLb,ShSb,NA,3,6,4.5,4,9,HfMi,NA,NA,NA,Da,BeShTh
+347,Nymphalidae,Melitaea_britomartis,Melitaea britomartis,L,Ts,Fl,1,1,N,-0.027,-0.007,3,4,0.224,Hp,Sh,Le,NA,Fl,NA,Lb,Sh,NA,2,4,3,5,8,Hf,NA,Pa,NA,Da,ShTh
+348,Nymphalidae,Melitaea_aurelia,Melitaea aurelia,L,SuSs,Gl,1,1,N,-0.032,0.004,4,4,0.083,BiAnHp,ShThSb,Le,NA,Fl,Mp,SbLb,ThSb,Li,2,2,2,6,7,Hf,NA,NA,NA,Da,BeShTh
+349,Nymphalidae,Melitaea_athalia,Melitaea athalia,L,SuSs,Fl,1,1.5,N,-0.004,0.002,7,4,0.107,BiAnHp,ShTh,Le,Ol,Fl,LpMp,Lb,Sh,LiPs,2,5,3.5,5,9,HfAn,GrExHf,Pa,ShThHs,Da,ShGrThSb
+350,Nymphalidae,Melitaea_varia,Melitaea varia,L,NA,Gl,0.5,1,N,-0.026,0.001,3,4,0.289,Hp,Sh,NA,NA,GlFl,NA,SbLb,ShTh,LiPs,3,3,3,6,8,Hf,GrHf,PaPt,RcBeShGrThNs,Da,Be
+351,Nymphalidae,Melitaea_parthenoides,Melitaea parthenoides,L,SuSs,Gl,1,2,N,-0.019,0.030,1,2,0.105,BiAnHp,Sh,Le,NA,Fl,NA,SbLb,Sh,Sh,2,5,3,5,9,HfAnMi,GrShExHf,Pa,ShGrThPs,Da,Gr
+352,Nymphalidae,Melitaea_asteria,Melitaea asteria,L,NA,Gl,0.5,0.5,N,-0.042,-0.031,1,1,1.000,Hp,Sh,NA,NA,GlFl,NA,SbLb,Sh,NA,2,2,2,7,8,Hf,NA,NA,NA,Da,Gr
+353,Nymphalidae,Libythea_celtis,Libythea celtis,A,Tr,Cl,1,1.5,N,0.006,0.028,2,1,0.707,Wp,Tr,Le,NA,Cl,NA,Se,Ca,NA,5,8,6.5,3,10,HfMi,NA,NA,NA,Da,Sb
+354,Nymphalidae,Danaus_plexippus,Danaus plexippus,ELPA,Su,Sl,3,3,N,0.171,-0.006,6,3,0.500,BiAnHp,Th,Le,NA,Fl,NA,Se,NA,NA,10,12,11,1,12,HfSfHc,NA,NA,NA,NA,NA
+355,Nymphalidae,Danaus_chrysippus,Danaus chrysippus,ELPA,NA,FlSl,3,3,N,0.113,0.013,9,4,0.354,BiAnHp,ShThLi,Le,NA,Fl,NA,NA,Th,NA,9,12,10.5,1,12,Hf,NA,NA,NA,Da,NA
+356,Nymphalidae,Charaxes_jasius,Charaxes jasius,L,SbTr,SlCl,1,2,N,0.148,-0.022,6,4,0.102,AnWp,ThSbTr,Le,Ol,Cl,LpMpSs,SeSb,SbCa,LiPs,5,8,6.5,3,10,DpAnMi,NA,Pt,SbHt,Da,Be
+357,Nymphalidae,Coenonympha_phryne,Coenonympha phryne,LP,NA,NA,1,1,N,-0.022741644,0.016376876,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,4,6,NA,NA,Pa,Gr,NA,NA
+358,Nymphalidae,Coenonympha_oedippus,Coenonympha oedippus,L,Ss,Fl,1,1,N,0.000,0.033,4,2,0.258,AnHp,Sh,Le,NA,Fl,NA,Se,Sh,NA,3,3,3,6,8,HfSfHd,SbHf,NA,NA,La,GrSb
+359,Nymphalidae,Coenonympha_dorus,Coenonympha dorus,L,SsTs,Gl,1,1,N,-0.027,0.005,5,3,0.169,Hp,Sh,Le,NA,Fl,NA,Se,Sh,NA,3,3,3,6,8,HfAn,NA,PaPn,RcBeGr,La,BeGr
+360,Nymphalidae,Coenonympha_fettigii,Coenonympha fettigii,NA,NA,NA,1,1,N,-0.037,0.005,NA,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+361,Nymphalidae,Coenonympha_thyrsis,Coenonympha thyrsis,L,NA,Fl,1,3,N,-0.039,0.063,NA,NA,0.289,NA,NA,NA,NA,Fl,NA,NA,NA,NA,3,7,5,4,10,Hf,NA,NA,NA,La,NA
+362,Nymphalidae,Coenonympha_pamphilus,Coenonympha pamphilus,L,SuSsTs,Fl,1,3,N,-0.041,0.048,6,3,0.096,AnHp,ShTh,Le,SiOl,Fl,LpMpSs,Se,Sh,Ps,4,10,7,2,11,Hf,StGrThSbExHf,PaPnPtLe,RcBeShGrHsPs,La,BeShGr
+363,Nymphalidae,Coenonympha_tullia,Coenonympha tullia,L,SuSs,Fl,1,1,N,-0.017,0.073,4,3,0.115,Hp,Sh,Le,SiOl,Fl,LpMpSs,Se,Sh,Ps,1,3,2,6,8,HfSf,GrThHnHf,Pa,ThHs,La,ShGrThSb
+364,Nymphalidae,Coenonympha_amaryllis,Coenonympha amaryllis,L,NA,NA,1,1,N,-0.032461424,-0.027804774,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,4,3.5,5,8,NA,NA,NA,NA,NA,NA
+365,Nymphalidae,Coenonympha_rhodopensis,Coenonympha rhodopensis,L,NA,Fl,1,1,N,-0.026,-0.058,NA,4,0.354,NA,NA,NA,NA,Fl,NA,Se,NA,NA,2,3,2.5,6,8,Hf,NA,NA,NA,NA,NA
+366,Nymphalidae,Coenonympha_glycerion,Coenonympha glycerion,L,Ss,Fl,1,2,N,-0.024,0.003,6,3,0.258,Hp,Sh,Le,NA,Fl,NA,Se,Sh,NA,3,3,3,6,8,HfAn,NA,NA,NA,La,ShTh
+367,Nymphalidae,Coenonympha_corinna,Coenonympha corinna,L,Ss,Fl,1.5,3,N,-0.039,-0.062,1,2,0.577,NA,Th,NA,NA,Fl,NA,Se,Sh,NA,4,5,4.5,5,9,Hf,NA,NA,NA,NA,Sh
+368,Nymphalidae,Coenonympha_corinna_elbana,Coenonympha corinna elbana,L,Ss,Fl,1.5,3,N,-0.052,-0.003,NA,1,0.577,NA,Th,NA,NA,Fl,NA,Sb,Sh,NA,4,6,5,5,10,Hf,NA,NA,NA,NA,Sh
+369,Nymphalidae,Coenonympha_leander,Coenonympha leander,L,NA,Fl,1,1,N,-0.023,-0.061,2,3,0.500,NA,NA,Le,NA,Fl,NA,Se,Sh,NA,2,6,3.5,4,9,Hf,NA,NA,NA,NA,NA
+370,Nymphalidae,Coenonympha_hero,Coenonympha hero,L,Ss,Gl,1,1,N,-0.029,-0.029,5,3,0.154,AnHp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,2,3,3.5,5,7,HfSf,SbTc,Pa,NA,La,ShGrThSb
+371,Nymphalidae,Coenonympha_gardetta,Coenonympha gardetta,L,NA,GlFl,1,1,N,-0.030,-0.065,1,2,0.577,NA,NA,NA,NA,NA,NA,SeSb,ShTh,NA,4,4,4,6,9,Hf,NA,NA,NA,NA,NA
+372,Nymphalidae,Coenonympha_gardetta_darwiniana,Coenonympha gardetta darwiniana,L,NA,Fl,1,1,N,-0.026,-0.073,NA,2,0.577,NA,NA,NA,NA,Fl,NA,NA,NA,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,NA
+373,Nymphalidae,Coenonympha_orientalis,Coenonympha orientalis,NA,NA,NA,1,1,N,-0.031,-0.036,NA,3,0.500,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+374,Nymphalidae,Coenonympha_arcania,Coenonympha arcania,L,Ss,GlFl,1,1.5,N,-0.016,0.001,3,3,0.169,Hp,Sh,Le,NA,Fl,NA,SeSb,Th,NA,2,5,3.5,5,9,HfSf,GrShSbExHnHf,PaPt,ShThSbHs,La,GrThSb
+375,Nymphalidae,Coenonympha_arcanioides,Coenonympha arcanioides,NA,NA,NA,3,3,N,-0.034,0.044,NA,2,0.577,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,6,6,4,9,NA,NA,NA,NA,NA,NA
+376,Nymphalidae,Coenonympha_vaucheri,Coenonympha vaucheri,NA,NA,NA,1,1,N,-0.027,0.018,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,Sh,NA,2,5,3.5,5,9,NA,NA,NA,NA,NA,NA
+377,Nymphalidae,Kirinia_roxelana,Kirinia roxelana,L,NA,Fl,1,1,N,0.068,-0.021,1,3,0.204,NA,NA,NA,NA,NA,NA,NA,SbTt,NA,5,8,6.5,3,10,NA,NA,NA,NA,NA,NA
+378,Nymphalidae,Kirinia_climene,Kirinia climene,L,Su,GlFl,1,1,N,0.021,-0.071,1,2,0.707,NA,NA,NA,NA,GlFl,NA,Se,BgSh,NA,2,3,2.5,6,8,HfSf,NA,NA,NA,NA,NA
+379,Nymphalidae,Lopinga_achine,Lopinga achine,L,Ss,Fl,1,1,N,0.026,-0.024,4,2,0.086,Hp,ShTh,Le,NA,GlFl,NA,Se,Sh,NA,2,3,2.5,5,7,HfHdSaMi,StGrShHnHf,Pn,NA,Da,GrSb
+380,Nymphalidae,Pararge_xiphia,Pararge xiphia,ELPA,Ss,GlFl,3,3,N,0.039,-0.067,3,4,0.102,AnHp,ShTh,Le,SiOl,GlFl,MpSs,Se,Sh,NA,12,12,12,1,12,SfHdSa,SbTcExHf,PaPn,SbTcLs,Da,NA
+381,Nymphalidae,Pararge_xiphioides,Pararge xiphioides,ELPA,Ss,GlFl,3,3,N,0.006,-0.054,6,4,0.102,AnHp,ShTh,Le,SiOl,GlFl,MpSs,Se,Sh,NA,12,12,12,1,12,SfHdSa,ThSbTcExHf,PaPt,SbTcLs,Da,BeThSb
+382,Nymphalidae,Pararge_aegeria,Pararge aegeria,LP,SsSb,GlFl,1,3,N,0.008,-0.059,7,3,0.154,Hp,ShTh,Le,SiOl,Fl,MpSs,Se,Sh,LiPsSh,2,12,7,1,12,HfSfSa,ThSbTcExHf,PaPnPt,BeShSbTcPsLs,Da,BeShGrThSb
+383,Nymphalidae,Lasiommata_maera,Lasiommata maera,L,Ss,BuGlFl,1,2,N,0.027,-0.001,12,4,0.072,AnHp,ShTh,Le,NA,Fl,NA,SeSb,BgSh,NA,2,10,6,1,10,Hf,BgHf,Pt,RcHt,Da,BeSh
+384,Nymphalidae,Lasiommata_deidamia,Lasiommata deidamia,NA,NA,NA,1,1,N,0.027127771,-0.054360661,2,3,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+385,Nymphalidae,Lasiommata_meadewaldoi,Lasiommata meadewaldoi,NA,NA,NA,1,1,N,0.037,-0.037,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,Sh,NA,3,5,4,5,9,NA,BgExHf,NA,NA,NA,NA
+386,Nymphalidae,Lasiommata_petropolitana,Lasiommata petropolitana,LP,BuSuSs,Fl,1,2,N,0.001,-0.007,3,3,0.258,Hp,ShTh,Le,NA,Fl,NA,Se,Sh,NA,2,6,3.5,4,9,HfMi,BgHf,Pt,Ps,Da,BeShGr
+387,Nymphalidae,Lasiommata_paramegaera,Lasiommata paramegaera,L,NA,NA,3,3,N,-0.004,-0.020,2,3,0.354,NA,NA,NA,NA,Fl,NA,Se,Sh,PsSh,6,6,6,4,9,Hf,NA,NA,NA,Da,Be
+388,Nymphalidae,Lasiommata_megera,Lasiommata megera,L,SuSb,GlFl,1,3,N,0.013,0.054,7,3,0.120,Hp,ShTh,Le,SiOl,Fl,LpMpSs,SeSb,Sh,LiPs,3,10,6.5,2,11,HfSf,BgTtGrThSbExHfMs,PaPnPt,RcBeSbHsPsHt,Da,Be
+389,Nymphalidae,Melanargia_russiae,Melanargia russiae,L,SuSs,Gl,1,1,N,0.051,-0.010,3,3,0.120,AnHp,ShTh,Le,NA,GlFl,NA,Se,Sh,NA,3,3,3,6,8,Hf,NA,Pa,Th,Da,Sh
+390,Nymphalidae,Melanargia_lucasi,Melanargia lucasi,NA,NA,NA,1,1,N,0.033,-0.040,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,5,3.5,5,9,NA,NA,NA,NA,NA,NA
+391,Nymphalidae,Melanargia_larissa,Melanargia larissa,L,Su,Gl,1,1,N,0.052,0.036,1,2,0.707,AnHp,Sh,Le,NA,GlFl,NA,Se,Bg,NA,3,6,4,5,10,Hf,NA,NA,NA,Da,ShTh
+392,Nymphalidae,Melanargia_lachesis,Melanargia lachesis,L,SuSsTs,GlFl,1,1,N,0.041,-0.022,3,3,0.136,AnHp,Sh,Le,NA,GlFl,NA,Se,ShTh,NA,2,3,2.5,6,8,Hf,NA,NA,NA,Da,ShGr
+393,Nymphalidae,Melanargia_galathea,Melanargia galathea,L,SuSsTs,GlFl,1,1,N,0.031,-0.021,10,3,0.107,AnHp,ShTh,Le,SiOl,GlFl,LpMp,SeSb,BgShTh,Li,2,5,3.5,5,9,Hf,GrThExHf,Pa,ShGrThNsHs,Da,GrThSb
+394,Nymphalidae,Melanargia_ines,Melanargia ines,L,SsTs,Gl,1,1,N,0.030,-0.039,2,1,0.500,Hp,Sh,Le,NA,Fl,NA,NA,NA,NA,4,4,4,3,6,Hf,NA,NA,NA,NA,NA
+395,Nymphalidae,Melanargia_arge,Melanargia arge,L,NA,NA,1,1,N,0.034,-0.031,1,NA,0.289,NA,NA,NA,NA,NA,NA,NA,Sh,NA,2,2,2,5,6,Hf,NA,NA,NA,NA,NA
+396,Nymphalidae,Melanargia_pherusa,Melanargia pherusa,L,NA,Gl,1,1,N,0.034,-0.063,1,3,0.289,NA,Th,NA,NA,Fl,NA,NA,NA,NA,2,3,2.5,4,6,Hf,NA,NA,NA,NA,Be
+397,Nymphalidae,Melanargia_occitanica,Melanargia occitanica,L,SsTs,Gl,1,1,N,0.039,-0.005,4,3,0.154,Hp,ShTh,Le,NA,GlFl,NA,Se,ShTh,NA,2,3,2.5,4,6,Hf,NA,NA,NA,Da,BeShGr
+398,Nymphalidae,Hipparchia_fatua,Hipparchia fatua,L,NA,Gl,1,1,N,0.064,0.058,2,3,0.354,NA,NA,NA,NA,GlFl,NA,NA,NA,NA,6,7,6.5,4,10,NA,NA,NA,NA,NA,NA
+399,Nymphalidae,Hipparchia_statilinus,Hipparchia statilinus,L,Ss,Bu,1,1,N,0.030,-0.016,7,3,0.123,AnHp,ShTh,Le,NA,GlFl,NA,Se,BgSh,Li,2,8,5,4,11,HfSfAnMi,NA,Pt,RcBeHt,La,Be
+400,Nymphalidae,Hipparchia_tilosi,Hipparchia tilosi,L,NA,NA,1,1,N,0.065,-0.079,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,7,9,NA,NA,NA,NA,NA,NA
+401,Nymphalidae,Hipparchia_ellena,Hipparchia ellena,NA,NA,NA,1,1,N,0.068,-0.045,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,7,9,NA,NA,NA,NA,NA,NA
+402,Nymphalidae,Hipparchia_bacchus,Hipparchia bacchus,L,NA,NA,1,1,N,0.074,-0.032,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,NA,NA,NA,NA,NA,NA
+403,Nymphalidae,Hipparchia_wyssii,Hipparchia wyssii,L,NA,Gl,1,1,N,0.059,-0.050,NA,NA,0.289,NA,NA,NA,NA,GlFl,NA,NA,NA,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+404,Nymphalidae,Hipparchia_tamadabae,Hipparchia tamadabae,NA,NA,NA,1,1,N,0.055,-0.052,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,6,6,4,9,NA,NA,NA,NA,NA,NA
+405,Nymphalidae,Hipparchia_gomera,Hipparchia gomera,L,NA,NA,1,1,N,0.068,-0.021,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,5,5,5,5,9,NA,NA,NA,NA,NA,NA
+406,Nymphalidae,Hipparchia_fidia,Hipparchia fidia,L,SuSsTs,BuGl,1,1,N,0.066,-0.048,7,3,0.144,AnHp,ShTh,Le,NA,Fl,NA,Se,BgSh,Li,3,5,3.5,6,10,HfAnMi,NA,Pt,NA,La,Be
+407,Nymphalidae,Hipparchia_powelli,Hipparchia powelli,NA,NA,NA,1,1,N,0.017,-0.046,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,3,3,3,8,10,NA,NA,NA,NA,NA,NA
+408,Nymphalidae,Hipparchia_hansii,Hipparchia hansii,NA,NA,NA,1,1,N,0.024,0.003,1,2,0.577,NA,NA,NA,NA,NA,NA,NA,Sh,NA,4,4,4,8,11,NA,NA,NA,NA,NA,NA
+409,Nymphalidae,Hipparchia_neomiris,Hipparchia neomiris,L,NA,BuGl,1,1,N,0.025,-0.061,1,NA,1.000,NA,NA,NA,NA,NA,NA,Se,ShTh,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+410,Nymphalidae,Hipparchia_autonoe,Hipparchia autonoe,NA,NA,NA,1,1,N,0.060,-0.016,2,4,0.102,NA,NA,NA,NA,NA,NA,Se,NA,NA,2,2,2,7,8,HfSfAn,NA,NA,NA,NA,NA
+411,Nymphalidae,Hipparchia_hermione,Hipparchia hermione,L,SuSs,BuGl,1,1,N,0.074,-0.008,2,3,0.408,Hp,ShTh,Le,NA,GlFl,NA,Se,Sh,NA,1,3,2,6,8,HfSf,BgTtHf,Pt,NA,La,Be
+412,Nymphalidae,Hipparchia_caroli,Hipparchia caroli,NA,NA,NA,1,1,N,0.055,-0.003,1,NA,0.289,NA,NA,NA,NA,NA,NA,NA,Sh,NA,5,5,5,6,10,NA,NA,NA,NA,NA,NA
+413,Nymphalidae,Hipparchia_genava,Hipparchia genava,L,NA,BuGl,1,1,N,0.074,-0.017,2,3,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,NA,NA,Pt,RcBePs,NA,NA
+414,Nymphalidae,Hipparchia_syriaca,Hipparchia syriaca,L,NA,BuGl,1,1,N,0.080,-0.027,2,3,0.289,NA,NA,Le,NA,GlFl,NA,Se,Sh,NA,3,8,5.5,3,10,SaDp,NA,NA,NA,NA,NA
+415,Nymphalidae,Hipparchia_fagi,Hipparchia fagi,L,SuSs,Bu,1,1,N,0.095,-0.001,3,3,0.250,Hp,Sh,Le,NA,GlFl,NA,Se,Bg,NA,3,6,4.5,5,10,HfSfSaDp,BgTtTcExHf,Pt,ShPs,La,Be
+416,Nymphalidae,Hipparchia_mersina,Hipparchia mersina,L,NA,NA,1,1,N,0.040,-0.001,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,6,4.5,4,9,AnMi,BgTtExHf,NA,NA,NA,Be
+417,Nymphalidae,Hipparchia_miguelensis,Hipparchia miguelensis,NA,NA,NA,1,1,N,0.008,-0.056,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,4,4,4,6,9,HfSf,NA,NA,NA,NA,NA
+418,Nymphalidae,Hipparchia_azorina,Hipparchia azorina,NA,NA,NA,1,1,N,0.005,-0.042,1,1,1.000,Hp,Sh,NA,NA,Fl,NA,NA,Sh,NA,5,5,5,6,10,HfSf,NA,NA,NA,NA,NA
+419,Nymphalidae,Hipparchia_azorina_occidentalis,Hipparchia azorina occidentalis,NA,NA,NA,1,1,N,0.002,-0.028,NA,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,4,4,6,9,NA,NA,NA,NA,NA,NA
+420,Nymphalidae,Hipparchia_senthes,Hipparchia senthes,L,NA,NA,1,1,N,0.025,0.023,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,6,8,7,4,11,Hf,NA,NA,NA,NA,NA
+421,Nymphalidae,Hipparchia_maderensis,Hipparchia maderensis,L,SsTs,Gl,1,1,N,0.022,0.002,2,3,NA,NA,NA,NA,NA,Fl,NA,NA,NA,NA,3,3,3,7,9,NA,NA,NA,NA,NA,NA
+422,Nymphalidae,Hipparchia_semele,Hipparchia semele,L,SuSsTs,BuGl,1,1,N,0.036,0.020,16,3,0.143,AnHp,ShTh,Le,SiOl,GlFl,LpMpSs,Se,BgSh,Li,2,5,3.5,6,10,HfErSfSa,BgStHf,PaPnPt,RcBePsHt,La,BeSh
+423,Nymphalidae,Hipparchia_blachieri,Hipparchia blachieri,L,Bu,Bu,1,1,N,0.042,-0.056,2,3,0.289,NA,Sh,NA,NA,Fl,NA,NA,Th,NA,3,6,4.5,5,10,NA,NA,NA,NA,NA,Be
+424,Nymphalidae,Hipparchia_aristaeus,Hipparchia aristaeus,L,NA,BuGl,1,1,N,0.041,-0.054,3,3,1.000,AnHp,ShTh,NA,NA,NA,NA,NA,ShTh,NA,2,7,4.5,4,10,Hf,NA,NA,NA,NA,Be
+425,Nymphalidae,Hipparchia_algirica,Hipparchia algirica,NA,NA,NA,1,1,N,0.043,-0.049,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,Sh,NA,3,3,3,3,5,NA,NA,NA,NA,NA,NA
+426,Nymphalidae,Hipparchia_volgensis,Hipparchia volgensis,NA,NA,BuGl,1,1,N,0.031,-0.042,1,NA,1.000,NA,NA,Le,NA,GlFl,NA,Se,BgSh,NA,3,5,4,5,9,Hf,NA,NA,NA,NA,NA
+427,Nymphalidae,Hipparchia_neapolitana,Hipparchia neapolitana,L,NA,Bu,1,1,N,0.048,-0.087,3,NA,0.408,NA,Th,NA,NA,Fl,NA,Se,Sh,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,Be
+428,Nymphalidae,Hipparchia_leighebi,Hipparchia leighebi,L,NA,Bu,1,1,N,0.047,-0.065,2,3,0.289,NA,Sh,NA,NA,Fl,NA,NA,NA,NA,4,4,4,5,8,Hf,NA,NA,NA,NA,Be
+429,Nymphalidae,Hipparchia_pellucida,Hipparchia pellucida,L,NA,BuGl,1,1,N,0.022,0.000,NA,NA,0.289,NA,NA,Le,NA,GlFl,NA,Se,Sh,NA,3,3,4,5,7,HfDpAn,BgTtHf,NA,NA,NA,NA
+430,Nymphalidae,Hipparchia_sbordonii,Hipparchia sbordonii,L,NA,Bu,1,1,N,0.054,-0.082,3,NA,0.289,NA,Th,NA,NA,Fl,NA,NA,NA,NA,2,2,2,6,7,Sf,NA,NA,NA,NA,Be
+431,Nymphalidae,Hipparchia_cypriensis,Hipparchia cypriensis,L,NA,Gl,1,1,N,0.063,0.010,NA,NA,0.408,NA,NA,NA,NA,GlFl,NA,Se,Sh,NA,9,8,9,4,11,Sa,TtHf,NA,NA,NA,NA
+432,Nymphalidae,Hipparchia_cretica,Hipparchia cretica,L,NA,NA,1,1,N,0.059,-0.004,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,7,5.5,4,10,Hf,NA,NA,NA,NA,NA
+433,Nymphalidae,Hipparchia_christenseni,Hipparchia christenseni,NA,NA,NA,1,1,N,0.050,0.083,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,4,2,6,9,NA,NA,NA,NA,NA,NA
+434,Nymphalidae,Berberia_abdelkader,Berberia abdelkader,NA,NA,NA,1,1,N,0.100,-0.005,1,2,0.577,Hp,ShTh,NA,NA,NA,NA,NA,NA,NA,6,6,6,6,11,Hf,NA,NA,NA,NA,NA
+435,Nymphalidae,Berberia_lambessanus,Berberia lambessanus,NA,NA,NA,1,1,N,0.076,-0.049,2,3,0.289,Hp,ShTh,NA,NA,NA,NA,NA,BgSh,NA,8,8,8,4,11,Hf,NA,NA,NA,NA,NA
+436,Nymphalidae,Minois_dryas,Minois dryas,L,SsTs,Bu,1,1,N,0.066,0.016,5,3,0.200,AnHp,ShTh,Le,NA,GlFl,NA,Sb,BgSh,NA,2,4,3,6,9,HfAn,BgStSbExHf,Pa,Sh,DaLa,Be
+437,Nymphalidae,Brintesia_circe,Brintesia circe,L,SsTs,Bu,1,1,N,0.109,-0.015,3,3,0.204,Hp,ShTh,Le,NA,GlFl,NA,Sb,BgSh,NA,3,6,4.5,5,10,HfSaDpAnMi,TtExHf,PaPt,RcTc,La,Sh
+438,Nymphalidae,Arethusana_arethusa,Arethusana arethusa,L,SsTs,BuGlFl,1,1,N,0.014,-0.013,1,3,0.333,BiAnHp,Sh,Le,NA,GlFl,NA,Sb,BgSh,NA,3,5,4,5,9,Hf,NA,Pn,Rc,DaLa,Be
+439,Nymphalidae,Oeneis_tarpeia,Oeneis tarpeia,NA,NA,NA,1,1,N,0.025514531,-0.025950787,2,3, NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,5,7,NA,NA,NA,NA,NA,NA
+440,Nymphalidae,Oeneis_bore,Oeneis bore,L,NA,Gl,0.5,0.5,N,0.010,0.050,1,1,1.000,Hp,Sh,NA,NA,Fl,NA,NA,Sh,NA,1,2,1.5,6,7,NA,BgStCo,NA,NA,NA,NA
+441,Nymphalidae,Oeneis_ammon,Oeneis ammon,NA,NA,NA,1,1,N,0.012760491,-0.056443345,NA,4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,6,7,NA,NA,NA,NA,NA,NA
+442,Nymphalidae,Oeneis_melissa,Oeneis melissa,EL,NA,NA,0.5,0.5,N,0.022962967,-0.053442411,2,4,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,2,1.5,6,7,NA,NA,NA,NA,NA,NA
+443,Nymphalidae,Oeneis_jutta,Oeneis jutta,L,NA,NA,1,1,N,0.058,-0.022,2,4,0.354,Hp,NA,Le,NA,Fl,NA,NA,Sh,NA,2,3,2.5,5,7,Sf,BgTtTcHf,NA,NA,La,Gr
+444,Nymphalidae,Oeneis_magna,Oeneis magna,L,NA,NA,1,1,N,0.047955108,-0.011904671,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+445,Nymphalidae,Oeneis_norna,Oeneis norna,L,NA,NA,0.5,0.5,N,0.041,0.011,4,4,0.236,Hp,ShTh,NA,NA,Fl,NA,Se,Sh,NA,2,2,2,6,7,NA,BgTtHf,NA,NA,NA,NA
+446,Nymphalidae,Oeneis_polixenes,Oeneis polixenes,L,NA,NA,0.5,1,N,0.016271562,-0.055377342,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,3,2,6,8,NA,NA,NA,NA,NA,NA
+447,Nymphalidae,Oeneis_glacialis,Oeneis glacialis,L,NA,BuGl,0.5,0.5,N,0.052,-0.037,1,1,1.000,Hp,Sh,Le,NA,NA,NA,Se,BgSh,NA,3,3,3,6,8,Hf,BgHf,Pt,Rc,NA,NA
+448,Nymphalidae,Satyrus_ferula,Satyrus ferula,L,SuTs,NA,1,1,N,0.051,0.007,3,1,0.500,Hp,Sh,Le,NA,GlFl,NA,Sb,Sh,NA,3,5,4,5,9,HfAnMi,NA,Pa,ShGrHs,Da,BeSh
+449,Nymphalidae,Satyrus_actaea,Satyrus actaea,L,SuTsSb,Gl,1,1,N,0.046,-0.013,2,3,0.236,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,3,3,3,6,8,Hf,NA,NA,NA,DaLa,BeSh
+450,Nymphalidae,Satyrus_virbius,Satyrus virbius,L,NA,NA,1,1,N,0.058869819,-0.015342833,2,3,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+451,Nymphalidae,Chazara_briseis,Chazara briseis,L,Su,Bu,1,1,N,0.053,0.112,5,3,0.333,Hp,ShTh,Le,NA,GlFl,NA,SeSb,BgSh,Li,2,6,4,5,10,HfDpAnMi,NA,Pt,RcBe,La,Be
+452,Nymphalidae,Chazara_prieuri,Chazara prieuri,L,Su,Bu,1,1,N,0.067,0.009,3,1,1.000,Hp,Sh,Le,NA,NA,NA,NA,NA,NA,2,3,2,6,8,Hf,NA,NA,NA,NA,NA
+453,Nymphalidae,Chazara_persephone,Chazara persephone,L,NA,BuGl,1,1,N,0.053,-0.022,NA,NA,NA,NA,NA,NA,NA,NA,NA,Se,BgSh,NA,3,6,4,6,11,HfSf,NA,NA,NA,NA,NA
+454,Nymphalidae,Pseudochazara_geyeri,Pseudochazara geyeri,L,NA,NA,1,1,N,0.028,-0.069,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,Hf,NA,NA,NA,NA,NA
+455,Nymphalidae,Pseudochazara_graeca,Pseudochazara graeca,L,NA,NA,1,1,N,0.044,-0.052,NA,NA,0.289,NA,NA,NA,NA,NA,NA,Se,NA,NA,2,4,3,6,9,Hf,NA,NA,NA,Da,Gr
+456,Nymphalidae,Pseudochazara_atlantis,Pseudochazara atlantis,NA,NA,NA,1,1,N,0.042,-0.059,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,NA
+457,Nymphalidae,Pseudochazara_amymone,Pseudochazara amymone,L,NA,Bu,1,1,N,0.040,-0.071,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,Sh,NA,2,3,2.5,6,8,HfMi,BgShThExHf,NA,NA,Da,Be
+458,Nymphalidae,Pseudochazara_anthelea,Pseudochazara anthelea,NA,NA,Gl,1,1,N,0.032,-0.036,NA,NA,0.289,NA,NA,NA,NA,BuGlFl,NA,NA,NA,NA,3,5,4,5,9,Hf,BgHf,Pt,Rc,NA,NA
+459,Nymphalidae,Pseudochazara_amalthea,Pseudochazara amalthea,NA,NA,NA,1,1,N,0.037303642,-0.040331516,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,5,5,5,5,9,NA,NA,NA,NA,NA,NA
+460,Nymphalidae,Pseudochazara_mamurra,Pseudochazara mamurra,L,NA,BuGl,1,1,N,0.052,-0.054,NA,NA,0.289,NA,NA,Le,NA,GlFl,NA,Se,ShTh,NA,1,1,1,7,7,Hf,NA,Pt,NA,NA,NA
+461,Nymphalidae,Pseudochazara_williamsi,Pseudochazara williamsi,L,SuSs,NA,1,1,N,0.039,-0.015,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,HfMi,NA,NA,NA,NA,NA
+462,Nymphalidae,Pseudochazara_euxina,Pseudochazara euxina,NA,NA,NA,1,1,N,0.066,-0.041,1,1,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,NA,NA,NA,NA,NA,NA
+463,Nymphalidae,Pseudochazara_mercurius,Pseudochazara mercurius,L,Su,BuGl,1,1,N,0.029,-0.049,1,1,1.000,Hp,Sh,Le,NA,NA,NA,NA,NA,NA,2,2,2,6,7,Hf,NA,NA,NA,NA,NA
+464,Nymphalidae,Pseudochazara_cingovskii,Pseudochazara cingovskii,L,NA,NA,1,1,N,0.049,-0.045,1,2,0.577,NA,NA,NA,NA,NA,NA,NA,Bg,NA,2,2,2,7,8,NA,NA,NA,NA,NA,NA
+465,Nymphalidae,Pseudochazara_orestes,Pseudochazara orestes,NA,NA,NA,1,1,N,0.058,-0.070,1,NA,0.289,NA,NA,NA,NA,NA,NA,NA,BgSh,Sh,2,4,3,6,9,Hf,NA,NA,NA,NA,NA
+466,Nymphalidae,Pseudochazara_tisiphone,Pseudochazara tisiphone,NA,NA,NA,1,1,N,0.038584347,-0.075832832,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,4,4,6,9,NA,NA,NA,NA,NA,NA
+467,Nymphalidae,Pseudochazara_mniszechii,Pseudochazara mniszechii,NA,NA,Bu,1,1,N,0.054,-0.049,1,1,1.000,NA,NA,NA,NA,NA,NA,Se,BgShTh,NA,2,2,2,7,8,Hf,NA,Pa,NA,NA,NA
+468,Nymphalidae,Ypthima_asterope,Ypthima asterope,L,NA,NA,3,3,N,-0.031,-0.043,1,1,0.500,An,NA,NA,NA,Fl,NA,Se,BgSh,NA,7,8,7.5,4,11,Hf,BgStSbExCoHf,PaPn,RcBeShGrThHs,NA,Be
+469,Nymphalidae,Proterebia_phegea,Proterebia phegea,L,NA,GlFl,1,1,N,0.025,-0.033,1,1,1.000,Hp,Sh,Le,NA,GlFl,NA,SeSb,Bg,NA,2,4,2.5,3,6,Hf,NA,PaLe,ShHt,Da,Be
+470,Nymphalidae,Hyponephele_maroccana,Hyponephele maroccana,NA,NA,NA,1,1,N,-0.006,-0.039,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,NA
+471,Nymphalidae,Hyponephele_huebneri,Hyponephele huebneri,L,NA,NA,1,1,N,-0.006126739,0.024779657,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,5,6,Sf,NA,NA,NA,NA,NA
+472,Nymphalidae,Hyponephele_lycaon,Hyponephele lycaon,L,SsTs,Gl,1,1,N,0.000,0.022,4,3,0.204,Hp,ShTh,Le,NA,Fl,NA,Se,Sh,NA,2,5,3.5,5,9,Hf,NA,NA,NA,Da,BeSh
+473,Nymphalidae,Hyponephele_lupina,Hyponephele lupina,L,SuSs,Fl,1,1,N,0.018,-0.016,3,3,0.169,BiAnHp,ShTh,Le,NA,GlFl,NA,Se,Th,NA,2,7,4.5,4,10,HfHdSaDp,SbCoHf,NA,NA,NA,NA
+474,Nymphalidae,Aphantopus_hyperantus,Aphantopus hyperantus,L,Ss,GlFl,1,1,N,0.004,-0.005,16,4,0.063,AnHp,ShTh,Le,SiOl,GlFl,LpMp,SeSb,Sh,Ps,3,3,3,6,8,HfSf,GrSbTcExHnHf,Pa,GrThNsHs,Da,GrThSb
+475,Nymphalidae,Pyronia_cecilia,Pyronia cecilia,L,Ss,Gl,1,1,N,-0.024,0.000,3,3,0.177,Hp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,3,4,3.5,5,8,HfMi,NA,NA,NA,Da,Sh
+476,Nymphalidae,Pyronia_tithonus,Pyronia tithonus,L,Ss,Fl,1,1,N,-0.007,-0.039,8,3,0.081,AnHp,ShTh,Le,SiOl,GlFl,LpMp,Se,Sh,Ps,2,5,3.5,5,9,HfSf,GrExHnHf,PaPn,ShGrThSbHsPs,Da,ShGrThSb
+477,Nymphalidae,Pyronia_bathseba,Pyronia bathseba,L,SsTs,Gl,1,1,N,-0.002,-0.015,2,1,0.354,Hp,ShTh,Le,NA,GlFl,NA,Se,ShThSb,NA,4,5,4.5,4,8,Hf,NA,NA,NA,Da,BeSh
+478,Nymphalidae,Pyronia_janiroides,Pyronia janiroides,NA,NA,NA,1,1,N,0.014,-0.056,1,1,1.000,An,Sh,NA,NA,NA,NA,NA,NA,NA,3,3,3,7,9,NA,NA,NA,NA,NA,NA
+479,Nymphalidae,Maniola_jurtina,Maniola jurtina,L,SuSsTs,Gl,1,1,N,0.022,0.034,10,3,0.289,Hp,ShTh,Le,SiOl,GlFl,LpMp,Sb,ShTt,Li,2,8,5,3,10,HfSf,BgStGrThSbTcLiExHnHf,PaPn,ShGrThSbNsHs,Da,BeShGrThSb
+480,Nymphalidae,Maniola_nurag,Maniola nurag,L,NA,GlFl,1,1,N,-0.007,-0.061,1,1,1.000,NA,Th,Le,SiOl,GlFl,NA,SeSb,Sh,NA,3,5,3.5,4,8,Hf,StGrShThSbHnHf,Pa,ShGrThSbNsHs,Da,ShTh
+481,Nymphalidae,Maniola_chia,Maniola chia,L,NA,GlFl,1,1,N,0.023,0.013,NA,NA,0.289,NA,NA,Le,SiOl,GlFl,NA,SeSb,Sh,NA,5,5,5,5,9,Hf,StGrShThSbHnHf,Pa,ShGrThSbNsHs,Da,ShTh
+482,Nymphalidae,Maniola_megala,Maniola megala,L,NA,GlFl,1,1,N,0.026,-0.048,NA,3,0.289,NA,NA,Le,SiOl,GlFl,NA,SeSb,Sh,NA,2,5,3.5,5,9,HfSf,BgExHnHf,NA,ShGrThSbNsHs,Da,ShTh
+483,Nymphalidae,Maniola_cypricola,Maniola cypricola,L,NA,GlFl,1,1,N,0.000,0.065,NA,NA,0.289,NA,NA,Le,SiOl,GlFl,NA,SeSb,Sh,NA,4,4,4,4,7,HfSf,StGrShThSbTcHnHf,Pa,ShGrThSbNsHs,Da,ShTh
+484,Nymphalidae,Maniola_telmessia,Maniola telmessia,L,NA,GlFl,1,1,N,0.007,0.010,2,3,0.354,NA,NA,Le,SiOl,GlFl,NA,SeSb,Sh,NA,5,10,7.5,1,10,Hf,StGrShThSbHnHf,Pa,ShGrThSbNsHs,Da,ShTh
+485,Nymphalidae,Maniola_halicarnassus,Maniola halicarnassus,L,NA,GlFl,1,1,N,0.024,-0.047,NA,NA,0.289,NA,NA,Le,SiOl,GlFl,NA,SeSb,Sh,NA,1,5,3,5,9,Hf,StGrShThSbHnHf,Pa,ShGrThSbNsHs,Da,ShTh
+486,Nymphalidae,Erebia_edda,Erebia edda,L,NA,NA,1,1,N,0.028742557,-0.042651059,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+487,Nymphalidae,Erebia_fasciata,Erebia fasciata,L,NA,NA,0.5,1,N,0.028025078,-0.026966061,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,3,2,6,8,NA,NA,NA,NA,NA,NA
+488,Nymphalidae,Erebia_discoidalis,Erebia discoidalis,L,NA,NA,0.5,1,N,0.022959289,-0.043139419,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+489,Nymphalidae,Erebia_rossii,Erebia rossii,L,NA,NA,0.5,0.5,N,0.02817459,-0.045903924,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,2,1.5,6,7,NA,NA,NA,NA,NA,NA
+490,Nymphalidae,Erebia_cyclopius,Erebia cyclopius,L,NA,NA,1,1,N,0.042746943,-0.039404279,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,5,7,NA,NA,NA,NA,NA,NA
+491,Nymphalidae,Erebia_embla,Erebia embla,NA,NA,NA,1,1,N,0.025,-0.043,2,3,0.224,Hp,ShTh,NA,NA,Fl,NA,NA,NA,NA,2,2,2,6,7,NA,TtStHf,NA,NA,NA,NA
+492,Nymphalidae,Erebia_disa,Erebia disa,L,NA,Gl,0.5,0.5,N,0.026,0.023,1,2,0.577,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,6,7,NA,StGrShThHnHf,NA,NA,NA,NA
+493,Nymphalidae,Erebia_jeniseiensis,Erebia jeniseiensis,NA,NA,NA,1,1,N,0.002934423,-0.040698082,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,1,1,7,7,NA,NA,NA,NA,NA,NA
+494,Nymphalidae,Erebia_dabanensis,Erebia dabanensis,L,NA,NA,1,1,N,0.002063073,0.016254305,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,NA,NA
+495,Nymphalidae,Erebia_meolans,Erebia meolans,L,SuSsTs,Gl,1,1,N,0.013,0.059,5,3,0.200,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,3,4,3.5,5,8,Hf,NA,Pa,NA,Da,BeShTh
+496,Nymphalidae,Erebia_claudina,Erebia claudina,L,NA,GlFl,0.5,1,N,-0.017,-0.065,1,1,0.500,Hp,ShTh,NA,NA,Fl,NA,NA,NA,NA,2,4,3,5,8,Hf,NA,NA,NA,Da,NA
+497,Nymphalidae,Erebia_manto,Erebia manto,EL,SsTs,NA,0.5,0.5,N,0.000,0.061,2,1,0.316,Hp,Sh,NA,NA,Fl,NA,Se,ShTh,NA,3,3,3,7,9,Hf,NA,NA,NA,NA,NA
+498,Nymphalidae,Erebia_ottomana,Erebia ottomana,L,NA,NA,1,1,N,-0.006,0.024,2,1,0.707,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,2,5,3.5,5,9,Hf,NA,NA,NA,Da,Th
+499,Nymphalidae,Erebia_hispania,Erebia hispania,L,SsTs,Gl,1,1,N,-0.002,-0.017,1,1,1.000,Hp,Sh,Le,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,HfMi,NA,NA,NA,Da,Be
+500,Nymphalidae,Erebia_callias,Erebia callias,NA,NA,NA,1,1,N,-9.55E-03,0.025015712,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,4,3.5,6,9,NA,NA,NA,NA,NA,NA
+501,Nymphalidae,Erebia_rondoui,Erebia rondoui,L,SsTs,Gl,1,1,N,-0.012,0.009,1,1,1.000,BiAnHp,ShTh,Le,NA,NA,NA,NA,NA,NA,2,2,2,6,7,Hf,NA,NA,NA,Da,BeSh
+502,Nymphalidae,Erebia_tyndarus,Erebia tyndarus,L,NA,NA,1,1,N,-0.017,-0.067,2,3,0.500,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,2,4,3,7,10,Hf,NA,NA,NA,Da,Sh
+503,Nymphalidae,Erebia_arvernensis,Erebia arvernensis,L,NA,NA,1,1,N,-0.008912732,-0.024100189,1,2,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,4,4,4,6,9,NA,NA,NA,NA,NA,NA
+504,Nymphalidae,Erebia_cassioides,Erebia cassioides,L,SsTs,GlFl,1,1,N,-0.016,-0.021,1,1,1.000,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,2,4,3,6,9,HfMi,BgHf,NA,NA,Da,Be
+505,Nymphalidae,Erebia_neleus,Erebia neleus,NA,NA,NA,1,1,N,4.71E-05,-0.021480611,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,3,3,7,9,NA,NA,NA,NA,NA,NA
+506,Nymphalidae,Erebia_nivalis,Erebia nivalis,L,NA,NA,0.5,0.5,N,-0.026,-0.033,1,1,1.000,Hp,Sh,NA,NA,NA,NA,Se,Sh,NA,1,2,1.5,7,8,Hf,NA,NA,NA,NA,NA
+507,Nymphalidae,Erebia_calcarius,Erebia calcarius,L,NA,NA,1,1,N,-0.012,-0.041,2,1,0.500,Hp,Sh,NA,NA,NA,NA,NA,Sh,NA,3,2,3,7,8,Hf,NA,NA,NA,Da,NA
+508,Nymphalidae,Erebia_oeme,Erebia oeme,L,NA,Gl,0.5,1,N,0.002,-0.006,5,4,0.100,Hp,ShTh,Le,NA,GlFl,NA,Se,ShTh,NA,3,3,3,6,8,Hf,NA,Pa,BeShGrNsHs,Da,Be
+509,Nymphalidae,Erebia_gorge,Erebia gorge,L,NA,NA,0.5,0.5,N,-0.010,-0.014,3,3,0.316,Hp,Sh,NA,NA,Fl,NA,NA,NA,NA,3,3,3,6,8,NA,NA,NA,NA,DaLa,Be
+510,Nymphalidae,Erebia_sthennyo,Erebia sthennyo,L,NA,NA,1,1,N,0.005,-0.060,1,3,0.577,AnHp,Sh,Le,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,NA,NA,NA,NA,Da,Be
+511,Nymphalidae,Erebia_pandrose,Erebia pandrose,L,SsTs,GlFl,0.5,0.5,N,0.009,0.018,4,3,0.192,AnHp,Sh,Le,NA,GlFl,NA,Se,ShTh,NA,2,3,2.5,6,8,Hf,BgGrHf,NA,NA,Da,Sh
+512,Nymphalidae,Erebia_eriphyle,Erebia eriphyle,EL,NA,Fl,0.5,0.5,N,-0.015,-0.047,2,3,0.500,Hp,ShTh,NA,NA,Fl,NA,NA,NA,NA,3,3,3,6,8,Hf,NA,NA,NA,Da,NA
+513,Nymphalidae,Erebia_epistygne,Erebia epistygne,L,NA,NA,1,1,N,0.023,-0.026,1,1,1.000,Hp,Sh,Le,NA,NA,NA,NA,NA,NA,3,3,3,3,5,Hf,NA,NA,NA,Da,Be
+514,Nymphalidae,Erebia_euryale,Erebia euryale,EL,SsTs,Gl,0.5,1,N,0.008,-0.052,6,3,0.096,Hp,ShTh,Le,NA,Fl,NA,Se,ShTh,NA,2,4,3,6,9,Hf,GrHnHf,Pa,NA,Da,Gr
+515,Nymphalidae,Erebia_palarica,Erebia palarica,L,SuSs,GlFl,1,1,N,0.056,-0.062,2,3,0.289,Hp,Sh,Le,NA,GlFl,NA,Sb,ShTh,NA,3,3,3,5,7,Hf,NA,Pa,NA,Da,Be
+516,Nymphalidae,Erebia_ligea,Erebia ligea,EL,NA,Gl,0.5,1,N,0.020,0.044,1,2,0.183,Hp,Sh,Le,NA,GlFl,NA,Se,Sh,NA,2,4,3,5,8,HfMi,BgStGrShThExHnHf,Pa,BeShGrThSbPsLs,DaLa,BeShThSb
+517,Nymphalidae,Erebia_pluto,Erebia pluto,L,NA,NA,0.5,1,N,0.016,0.018,2,3,0.354,Hp,Sh,NA,NA,GlFl,NA,Se,ShTh,NA,2,3,2.5,6,8,NA,NA,NA,NA,Da,Be
+518,Nymphalidae,Erebia_aethiopellus,Erebia aethiopellus,L,NA,NA,1,1,N,-0.009,-0.054,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,Sh,NA,2,2,2,7,8,NA,NA,NA,NA,NA,NA
+519,Nymphalidae,Erebia_gorgone,Erebia gorgone,L,NA,NA,1,1,N,0.002,-0.081,NA,2,0.577,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,Hf,NA,NA,NA,Da,NA
+520,Nymphalidae,Erebia_rhodopensis,Erebia rhodopensis,L,NA,NA,1,1,N,-0.005,-0.047,1,2,0.577,NA,NA,NA,NA,NA,NA,NA,NA,NA,1,2,1.5,7,8,Hf,NA,NA,NA,Da,Be
+521,Nymphalidae,Erebia_mnestra,Erebia mnestra,L,NA,NA,0.5,1,N,-0.009,-0.047,2,3,0.500,Hp,Sh,NA,NA,Fl,NA,NA,Sh,NA,2,2,2,7,8,Hf,NA,NA,NA,Da,BeTh
+522,Nymphalidae,Erebia_albergana,Erebia albergana,L,NA,NA,1,1,N,0.005,-0.005,2,3,0.333,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,3,3,3,6,8,HfMi,GrHnHf,Pa,ShGrThSbNs,DaLa,ShGrTh
+523,Nymphalidae,Erebia_sudetica,Erebia sudetica,L,NA,NA,1,1,N,-0.031,-0.065,2,1,1.000,Hp,Sh,NA,NA,NA,NA,Se,BgSh,NA,2,3,2.5,7,9,Hf,GrCo,Pa,NA,NA,Gr
+524,Nymphalidae,Erebia_melampus,Erebia melampus,L,NA,NA,1,1,N,-0.025,0.017,3,3,0.289,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,3,3,3,7,9,Hf,GrHnHf,NA,NA,Da,NA
+525,Nymphalidae,Erebia_triarius,Erebia triarius,L,SsTs,Fl,1,1,N,0.021,-0.015,3,3,0.289,HpWp,Sh,Le,NA,GlFl,NA,NA,NA,NA,4,4,4,4,7,HfMi,NA,NA,NA,Da,Be
+526,Nymphalidae,Erebia_polaris,Erebia polaris,L,NA,Gl,1,1,N,-0.001,0.004,1,NA,0.250,NA,NA,NA,NA,Fl,NA,Se,Sh,NA,1,2,1.5,6,7,NA,NA,NA,NA,Da,Be
+527,Nymphalidae,Erebia_medusa,Erebia medusa,L,SuSs,Gl,0.5,1,N,0.002,0.021,6,3,0.224,Hp,ShTh,Le,NA,GlFl,NA,Se,Sh,NA,3,4,3.5,5,8,Hf,NA,Pa,NA,Da,BeSh
+528,Nymphalidae,Erebia_aethiops,Erebia aethiops,L,Su,BuGl,1,1,N,0.022,-0.013,12,4,0.043,BiAnHp,ShTh,Le,SiOl,GlFl,LpMp,Se,Sh,Li,3,4,3.5,6,9,Hf,GrThSbCoHnHf,PaPn,GrThHs,Da,GrThSb
+529,Nymphalidae,Erebia_pharte,Erebia pharte,L,NA,Fl,0.5,0.5,N,-0.015,0.011,5,4,0.167,Hp,Sh,NA,NA,NA,NA,NA,NA,NA,2,2,2,7,8,Hf,NA,NA,NA,Da,NA
+530,Nymphalidae,Erebia_christi,Erebia christi,L,NA,NA,0.5,0.5,N,-0.009,-0.042,1,1,1.000,Hp,Sh,NA,NA,NA,NA,NA,Sh,NA,2,3,2.5,6,8,HfMi,NA,NA,NA,Da,NA
+531,Nymphalidae,Erebia_orientalis,Erebia orientalis,L,NA,NA,1,1,N,-0.009,-0.053,NA,NA,0.289,NA,NA,NA,NA,NA,NA,NA,NA,NA,2,3,2.5,6,8,Hf,NA,NA,NA,Da,Gr
+532,Nymphalidae,Erebia_epiphron,Erebia epiphron,L,SsTs,GlFl,0.5,1,N,-0.011,0.067,4,1,0.224,Hp,Sh,Le,SiOl,Fl,LpMp,Se,Sh,Li,2,3,2.5,6,8,Hf,GrExHnHf,Pa,GrThHs,Da,Gr
+533,Nymphalidae,Erebia_flavofasciata,Erebia flavofasciata,L,NA,NA,0.5,0.5,N,-0.022,-0.056,1,1,1.000,Hp,Sh,NA,Ol,NA,NA,Se,BgSh,NA,3,3,3,6,8,Hf,NA,NA,NA,NA,NA
+534,Nymphalidae,Erebia_montana,Erebia montana,L,NA,NA,1,1,N,0.021,-0.042,2,3,0.354,Hp,Sh,NA,NA,Gl,NA,NA,NA,NA,3,3,3,7,9,Hf,BgHf,NA,NA,Da,Be
+535,Nymphalidae,Erebia_styx,Erebia styx,L,NA,NA,0.5,1,N,0.030,-0.006,1,1,0.707,Hp,Sh,NA,Ol,NA,NA,NA,NA,NA,3,3,3,7,9,Hf,NA,NA,NA,NA,NA
+536,Nymphalidae,Erebia_stiria,Erebia stiria,L,NA,NA,1,1,N,0.022,-0.032,1,1,0.408,Hp,Sh,NA,Ol,NA,NA,NA,NA,NA,3,3,3,7,9,Hf,NA,NA,NA,NA,NA
+537,Nymphalidae,Erebia_scipio,Erebia scipio,L,NA,NA,0.5,1,N,0.025,-0.067,1,1,0.500,Hp,Sh,NA,SiOl,NA,NA,NA,NA,NA,2,2,2,7,8,Hf,NA,NA,NA,Da,Be
+538,Nymphalidae,Erebia_pronoe,Erebia pronoe,L,NA,NA,1,1,N,0.018,0.010,3,2,0.707,Hp,Sh,NA,SiOl,NA,NA,NA,Sh,NA,3,4,3.5,6,9,Hf,NA,NA,NA,Da,BeSh
+539,Nymphalidae,Erebia_melas,Erebia melas,L,NA,NA,1,1,N,0.016,-0.022,1,1,1.000,NA,NA,NA,NA,NA,NA,NA,NA,NA,3,4,3.5,6,9,Hf,NA,NA,NA,Da,NA
+540,Nymphalidae,Erebia_lefebvrei,Erebia lefebvrei,L,NA,NA,1,1,N,0.012,-0.012,1,3,0.707,Hp,ShTh,Le,SiOl,NA,NA,Se,NA,NA,3,3,3,6,8,NA,NA,NA,NA,Da,ShTh
+541,Nymphalidae,Erebia_zapateri,Erebia zapateri,L,SuSs,Gl,1,1,N,-0.002,-0.029,2,3,0.289,BiAnHp,Sh,Le,SiOl,GlFl,LpMp,Se,BgSh,LiPs,3,4,3.5,6,9,Hf,NA,Pa,NA,Da,BeShGr
+542,Nymphalidae,Erebia_neoridas,Erebia neoridas,L,SsTs,Gl,1,1,N,0.002,0.017,3,3,0.289,AnHp,Sh,Le,NA,Fl,NA,Se,Sh,NA,2,3,2.5,8,10,Hf,NA,Pa,NA,Da,Be
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

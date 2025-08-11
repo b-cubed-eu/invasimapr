@@ -1,7 +1,5 @@
 url: https://macsands.github.io/invasimapr/
 template:
-  logo: "man/figures/logo.png"   # path to your file
-  favicon: "favicon.ico"         # will be auto-created in step 3
   bootstrap: 5
   bslib:
     bg: '#ffffff'
@@ -27,3 +25,34 @@ navbar:
       icon: fa-cube
       href: https://b-cubed.eu/
       aria-label: B-Cubed website
+
+reference:
+# 1. Overview block
+  - title: "Overview of invasimapr functions"
+    desc: |
+      Quantifies and visualises invasion fitness from occurrence and trait data.
+      Computes trait centrality, maps trait dispersion, and estimates interaction strength.
+      Assesses site-level invasibility and community openness to new invasions.
+      Produces interaction matrices and trait-specific invasion risk indicators.
+      Aligns with Hui et al. (2023): integrates traits, propagule pressure, and environment.
+
+# 2. First five functions, in order
+  - title: "Core Functions"
+    contents:
+      - get_trait_data
+      - compute_trait_similarity
+      - compute_trait_dispersion
+      - build_glmm_formula
+      - simulate_invaders
+      - predict_invader_response
+      - compute_interaction_strength
+      - compute_competition_kernel
+      - compute_environment_kernel
+      - assemble_matrices
+      - compute_invasion_fitness
+
+articles:
+  - title: "All tutorials"
+    navbar: "Articles"
+    contents:
+      - "getting-started"
