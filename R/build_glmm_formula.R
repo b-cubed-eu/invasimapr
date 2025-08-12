@@ -141,7 +141,7 @@ build_glmm_formula = function(
   # --- Auto-detect ENV columns ----------------------------------------------
   # Heuristic 1: prefer common env prefixes; adjust as needed.
   if (is.null(env_cols)) {
-    env_guess = grep("^(env_|e_|clim_|soil_)", names(data), value = TRUE)
+    env_guess = grep("^(env_|e_|clim_|soil_|bio_)", names(data), value = TRUE)
     # Heuristic 2 (fallback): remaining non-excluded, non-trait columns.
     if (!length(env_guess)) {
       env_guess = setdiff(

@@ -52,12 +52,13 @@ comprehensive invasion model.
 
 This workflow demonstrates a comprehensive workflow for quantifying and
 visualizing invasion fitness, operationalizing the concepts of **trait
-centrality**, **trait dispersion**, **interaction strength**,
-**invasibility**, and **invasion fitness** using simulated site-level
-species occurrence, abundance, and trait data. Analyses include
-calculation of trait-based distances, clustering, trait-space mapping,
-generalized linear mixed modeling of abundance, and explicit estimation
-of invasion fitness for hypothetical invaders across a landscape.
+centrality**, **trait dispersion**, **interaction strength**, **invasion
+fitness**, **invasibility**, and **invasivenessy** using site-level
+environment, species occurrence, abundance, and trait data. Analyses
+include calculation of trait-based distances, clustering, trait-space
+mapping, generalized linear mixed modeling of abundance, and explicit
+estimation of invasion fitness for hypothetical invaders across a
+landscape.
 
 ------------------------------------------------------------------------
 
@@ -141,6 +142,8 @@ environmental predictors.
 
 # Ensure the package is loaded
 library(dissmapr)
+sessionInfo()$otherPkgs$dissmapr$Version
+#> [1] "0.1.0"
 ```
 
 ### 4.2. Import and harmonise biodiversity-occurrence data
@@ -164,7 +167,7 @@ bfly_data = get_occurrence_data(
 # Check results but only a subset of columns to fit in console
 dim(bfly_data)
 #> [1] 81825    52
-# str(bfly_data[,c(51,52,22,23,1,14,16,17,30)]) 
+# str(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
 head(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
 #>   site_id pa         y        x    gbifID             verbatimScientificName
 #> 1       1  1 -34.42086 19.24410 923051749                   Pieris brassicae
@@ -188,34 +191,22 @@ head(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
 #> 5 2012-10-30T00:00
 #> 6 2012-10-23T00:00
 
-# Use local data adpated from GBIF
+# Use local data loaded into the environment as a data.frame
 # local_df = read.csv('D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata/site_species.csv')
 # head(local_df)
+# bfly_data = get_occurrence_data(
+#   data = local_df,
+#   source_type = 'data_frame')
 
-bfly_data = get_occurrence_data(
-  data = system.file("extdata", "site_species.csv", package = "invasimapr"),
-  source_type = 'local_csv'
-)
-
-# Check results but only a subset of columns to fit in console
-dim(bfly_data)
-#> [1] 11205     6
-str(bfly_data) 
-#> 'data.frame':    11205 obs. of  6 variables:
-#>  $ site_id: int  1026 1026 1026 1026 1026 1026 1026 1026 1026 1026 ...
-#>  $ x      : num  28.8 28.8 28.8 28.8 28.8 ...
-#>  $ y      : num  -22.3 -22.3 -22.3 -22.3 -22.3 ...
-#>  $ sp_name: chr  "Acraea horta" "Amata cerbera" "Bicyclus safitza safitza" "Cacyreus lingeus" ...
-#>  $ count  : int  10 0 0 0 9 8 8 3 19 0 ...
-#>  $ abund  : num  10 0 0 0 9 8 8 3 19 0 ...
-head(bfly_data)
-#>   site_id     x         y                    sp_name count abund
-#> 1    1026 28.75 -22.25004               Acraea horta    10    10
-#> 2    1026 28.75 -22.25004              Amata cerbera     0     0
-#> 3    1026 28.75 -22.25004   Bicyclus safitza safitza     0     0
-#> 4    1026 28.75 -22.25004           Cacyreus lingeus     0     0
-#> 5    1026 28.75 -22.25004        Charaxes wakefieldi     9     9
-#> 6    1026 28.75 -22.25004 Danaus chrysippus orientis     8     8
+# # Use local .csv file in `invasimapr` package
+# bfly_data = get_occurrence_data(
+#   data = system.file("extdata", "site_species.csv", package = "invasimapr"),
+#   source_type = 'local_csv')
+# 
+# # Check results but only a subset of columns to fit in console
+# dim(bfly_data)
+# # str(bfly_data) 
+# head(bfly_data)
 ```
 
 ### 4.3. Format Biodiversity Records to Long / Wide
@@ -229,25 +220,27 @@ names, observation values), and prepares two main outputs: `site_obs`
 analysis).
 
 ``` r
-# bfly_result = format_df(
-#   data        = bfly_data, # A `data.frame` of biodiversity records
-#   species_col = 'verbatimScientificName', # Name of species column (required for `"long"`)
-#   value_col   = 'pa', # Name of value column (e.g. presence/abundance; for `"long"`)
-#   extra_cols  = NULL, # Character vector of other columns to keep
-#   format      = 'long' # Either`"long"` or `"wide"`. If `NULL`, inferred from `species_col` & `value_col`
-# )
-
+# Continue from GBIF data
 bfly_result = format_df(
   data        = bfly_data, # A `data.frame` of biodiversity records
-  species_col = 'sp_name', # Name of species column (required for `"long"`)
-  value_col   = 'count' # Name of value column (e.g. presence/abundance; for `"long"`)
-  )
+  species_col = 'verbatimScientificName', # Name of species column (required for `"long"`)
+  value_col   = 'pa', # Name of value column (e.g. presence/abundance; for `"long"`)
+  extra_cols  = NULL, # Character vector of other columns to keep
+  format      = 'long' # Either`"long"` or `"wide"`
+)
+
+# # Continue using local data
+# bfly_result = format_df(
+#   data        = bfly_data, # A `data.frame` of biodiversity records
+#   species_col = 'sp_name', # Name of species column (required for `"long"`)
+#   value_col   = 'count' # Name of value column (e.g. presence/abundance; for `"long"`)
+#   )
 
 # Check `bfly_result` structure
 str(bfly_result, max.level = 1)
 #> List of 2
-#>  $ site_obs:'data.frame':    11205 obs. of  5 variables:
-#>  $ site_spp: tibble [415 × 30] (S3: tbl_df/tbl/data.frame)
+#>  $ site_obs:'data.frame':    79953 obs. of  5 variables:
+#>  $ site_spp: tibble [56,090 × 2,871] (S3: tbl_df/tbl/data.frame)
 
 # Optional: Create new objects from list items
 site_obs = bfly_result$site_obs
@@ -255,42 +248,43 @@ site_spp = bfly_result$site_spp
 
 # Check results
 dim(site_obs)
-#> [1] 11205     5
+#> [1] 79953     5
 head(site_obs)
-#>   site_id     x         y                    species value
-#> 1    1026 28.75 -22.25004               Acraea horta    10
-#> 2    1026 28.75 -22.25004              Amata cerbera     0
-#> 3    1026 28.75 -22.25004   Bicyclus safitza safitza     0
-#> 4    1026 28.75 -22.25004           Cacyreus lingeus     0
-#> 5    1026 28.75 -22.25004        Charaxes wakefieldi     9
-#> 6    1026 28.75 -22.25004 Danaus chrysippus orientis     8
+#>   site_id        x         y                            species value
+#> 1       1 19.24410 -34.42086                   Pieris brassicae     1
+#> 2       2 18.75564 -33.96044                   Pieris brassicae     1
+#> 3       3 18.40321 -33.91651 Papilio demodocus subsp. demodocus     1
+#> 4       1 19.24410 -34.42086 Mylothris agathina subsp. agathina     1
+#> 5       4 18.47488 -34.35024                  Eutricha capensis     1
+#> 6       5 25.65097 -33.58570            Drepanogynis bifasciata     1
 
 dim(site_spp)
-#> [1] 415  30
+#> [1] 56090  2871
 head(site_spp[,1:6])
 #> # A tibble: 6 × 6
-#>   site_id     x     y `Acraea horta` `Amata cerbera` `Bicyclus safitza safitza`
-#>     <int> <dbl> <dbl>          <dbl>           <dbl>                      <dbl>
-#> 1      82  19.2 -34.8              0               0                         25
-#> 2      83  19.8 -34.8              0               7                          0
-#> 3      84  20.2 -34.8              0               0                          0
-#> 4     117  18.2 -34.3             13               0                         20
-#> 5     118  18.8 -34.3              0               0                         24
-#> 6     119  19.2 -34.3              0               0                         15
+#>   site_id     x     y `Mylothris agathina subsp. agathina` `Pieris brassicae`
+#>     <int> <dbl> <dbl>                                <dbl>              <dbl>
+#> 1       1  19.2 -34.4                                    1                  1
+#> 2       2  18.8 -34.0                                    0                  1
+#> 3       3  18.4 -33.9                                    0                  0
+#> 4       4  18.5 -34.4                                    0                  0
+#> 5       5  25.7 -33.6                                    0                  0
+#> 6       6  22.2 -33.6                                    0                  0
+#> # ℹ 1 more variable: `Tarucus thespis` <dbl>
 
 #### Get parameters from processed data to use later
 # Number of species
 (n_sp = dim(site_spp)[2] - 3)
-#> [1] 27
+#> [1] 2868
 
 # Species names
 sp_cols = names(site_spp)[-c(1:3)]
 sp_cols[1:10]
-#>  [1] "Acraea horta"               "Amata cerbera"             
-#>  [3] "Bicyclus safitza safitza"   "Cacyreus lingeus"          
-#>  [5] "Charaxes wakefieldi"        "Danaus chrysippus orientis"
-#>  [7] "Dira clytus clytus"         "Eutricha capensis"         
-#>  [9] "Hypolimnas misippus"        "Junonia elgiva"
+#>  [1] "Mylothris agathina subsp. agathina" "Pieris brassicae"                  
+#>  [3] "Tarucus thespis"                    "Acraea horta"                      
+#>  [5] "Danaus chrysippus"                  "Papilio demodocus subsp. demodocus"
+#>  [7] "Eutricha capensis"                  "Mesocelis monticola"               
+#>  [9] "Vanessa cardui"                     "Cuneisigna obstans"
 ```
 
 ### 4.4. Generate Spatial Grid and Gridded Summaries
@@ -349,8 +343,8 @@ str(grid_list, max.level = 1)
 #>   ..- attr(*, "sf_column")= chr "geometry"
 #>   ..- attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA NA NA NA NA NA NA
 #>   .. ..- attr(*, "names")= chr [1:7] "centroid_lon" "centroid_lat" "grid_id" "mapsheet" ...
-#>  $ grid_spp   : tibble [415 × 33] (S3: tbl_df/tbl/data.frame)
-#>  $ grid_spp_pa: tibble [415 × 33] (S3: tbl_df/tbl/data.frame)
+#>  $ grid_spp   : tibble [415 × 2,874] (S3: tbl_df/tbl/data.frame)
+#>  $ grid_spp_pa: tibble [415 × 2,874] (S3: tbl_df/tbl/data.frame)
 
 # (Optional) Promote list items to named objects 
 grid_r = grid_list$grid_r$grid_id    # raster
@@ -362,9 +356,9 @@ grid_spp_pa = grid_list$grid_spp_pa # presence/absence summary
 dim(grid_sf) #; head(grid_sf)
 #> [1] 1110    8
 dim(grid_spp) #; head(grid_spp[, 1:8])
-#> [1] 415  33
+#> [1]  415 2874
 dim(grid_spp_pa) #; head(grid_spp_pa[, 1:8])
-#> [1] 415  33
+#> [1]  415 2874
 
 # 1. Extract & stretch the layers 
 effRich_r = sqrt(grid_list$grid_r[[c("obs_sum", "spp_rich")]])
@@ -403,6 +397,63 @@ centroids. This produces both a site-by-environment data frame
 environmental data.
 
 ``` r
+# Read in target species list
+species = read.csv(system.file("extdata", 
+                               "rsa_butterfly_species_names_n27_100plus.csv", 
+                               package = "invasimapr"), stringsAsFactors = FALSE)$species
+
+# Filter `grid_spp` and convert to long-format
+grid_obs = grid_spp %>%
+  dplyr::select(-mapsheet) %>%                              # Drop mapsheet metadata
+  pivot_longer(
+    cols = -c(grid_id, centroid_lon, centroid_lat, obs_sum, spp_rich), # Keep core metadata columns only
+    names_to  = "species",
+    values_to = "count",
+    values_drop_na = TRUE
+  ) %>%
+  filter(
+    # obs_sum > 100,                                   # Only high-observation sites
+    count > 0,                                       # Remove absent species
+    species %in% !!species                           # Keep only target species
+  ) %>%
+  rename(
+    site_id = grid_id,    # Change 'grid_id' to 'site_id'
+    x = centroid_lon,     # Change 'centroid_lon' to 'x'
+    y = centroid_lat      # Change 'centroid_lat' to 'y'
+  ) %>%
+  relocate(site_id, x, y, obs_sum, spp_rich, species, count)
+
+dim(grid_obs)
+#> [1] 1737    7
+head(grid_obs)
+#> # A tibble: 6 × 7
+#>   site_id     x     y obs_sum spp_rich species                    count
+#>   <chr>   <dbl> <dbl>   <dbl>    <dbl> <chr>                      <dbl>
+#> 1 1027     29.2 -22.3      41       31 Utetheisa pulchella            1
+#> 2 1029     30.3 -22.3       7        7 Danaus chrysippus orientis     1
+#> 3 1029     30.3 -22.3       7        7 Telchinia serena               1
+#> 4 1031     31.3 -22.3     107       76 Vanessa cardui                 1
+#> 5 1031     31.3 -22.3     107       76 Utetheisa pulchella            2
+#> 6 1031     31.3 -22.3     107       76 Hypolimnas misippus            2
+length(unique(grid_obs$species))
+#> [1] 27
+length(unique(grid_obs$site_id))
+#> [1] 314
+```
+
+``` r
+# Reshape site-by-species matrix to wide format and clean
+grid_spp = grid_obs %>%
+  pivot_wider(
+    names_from = species,
+    values_from = count,
+    values_fill = 0  # Replace missing counts with 0
+  )
+
+dim(grid_spp)
+#> [1] 314  32
+# head(grid_spp)
+
 # Retrieve 19 bioclim layers (≈10-km, WorldClim v2.1) for all grid centroids
 data_path = "inst/extdata"               # cache folder for rasters
 enviro_list = get_enviro_data(
@@ -417,15 +468,15 @@ enviro_list = get_enviro_data(
   ext_cols   = c("obs_sum", "spp_rich")   # carry effort & richness through
 )
 
-# Quick checks 
+# Quick checks
 str(enviro_list, max.level = 1)
 #> List of 3
 #>  $ env_rast:S4 class 'SpatRaster' [package "terra"]
-#>  $ sites_sf: sf [415 × 2] (S3: sf/tbl_df/tbl/data.frame)
+#>  $ sites_sf: sf [314 × 2] (S3: sf/tbl_df/tbl/data.frame)
 #>   ..- attr(*, "sf_column")= chr "geometry"
 #>   ..- attr(*, "agr")= Factor w/ 3 levels "constant","aggregate",..: NA
-#>   .. ..- attr(*, "names")= chr "grid_id"
-#>  $ env_df  : tibble [415 × 24] (S3: tbl_df/tbl/data.frame)
+#>   .. ..- attr(*, "names")= chr "site_id"
+#>  $ env_df  : tibble [314 × 24] (S3: tbl_df/tbl/data.frame)
 
 # (Optional) Assign concise layer names for readability
 # Find names here https://www.worldclim.org/data/bioclim.html
@@ -439,7 +490,7 @@ names(enviro_list$env_rast) = names_env
 env_r = enviro_list$env_rast    # cropped climate stack
 env_df = enviro_list$env_df      # site × environment data-frame
 
-# Quick checks 
+# Quick checks
 env_r; dim(env_df); head(env_df)
 #> class       : SpatRaster 
 #> size        : 30, 37, 19  (nrow, ncol, nlyr)
@@ -450,41 +501,45 @@ env_r; dim(env_df); head(env_df)
 #> names       : temp_mean,       mdr,      iso, temp_sea, temp_max,  temp_min, ... 
 #> min values  :  9.779773,  8.977007, 47.10606, 228.9986, 19.92147, -4.110302, ... 
 #> max values  : 24.406433, 18.352308, 64.92966, 653.4167, 36.19497, 12.005042, ...
-#> [1] 415  24
+#> [1] 314  24
 #> # A tibble: 6 × 24
-#>   grid_id centroid_lon centroid_lat bio01 bio02 bio03 bio04 bio05 bio06 bio07
-#>   <chr>          <dbl>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#> 1 1026            28.8        -22.3  21.9  14.5  55.8  425.  32.5  6.44  26.1
-#> 2 1027            29.2        -22.3  21.8  14.5  55.1  430.  32.6  6.30  26.3
-#> 3 1028            29.7        -22.3  22.0  14.2  56.3  396.  32.3  7.15  25.2
-#> 4 1029            30.3        -22.3  22.8  13.9  58.0  359.  32.7  8.79  23.9
-#> 5 1030            30.8        -22.3  23.3  13.9  60.0  332.  33.2  9.97  23.2
-#> 6 1031            31.3        -22.3  24.2  14.2  61.3  326.  34.2 10.9   23.2
-#> # ℹ 14 more variables: bio08 <dbl>, bio09 <dbl>, bio10 <dbl>, bio11 <dbl>,
-#> #   bio12 <dbl>, bio13 <dbl>, bio14 <dbl>, bio15 <dbl>, bio16 <dbl>,
-#> #   bio17 <dbl>, bio18 <dbl>, bio19 <dbl>, obs_sum <dbl>, spp_rich <dbl>
+#>   site_id     x     y bio01 bio02 bio03 bio04 bio05 bio06 bio07 bio08 bio09
+#>   <chr>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1 1027     29.2 -22.3  21.8 14.5   55.1  430.  32.6  6.30  26.3  26.2  15.9
+#> 2 1029     30.3 -22.3  22.8 13.9   58.0  359.  32.7  8.79  23.9  26.5  17.8
+#> 3 1031     31.3 -22.3  24.2 14.2   61.3  326.  34.2 10.9   23.2  27.5  19.7
+#> 4 117      18.2 -34.3  20.2 11.8   56.8  317.  29.8  9.29  20.5  19.9  19.8
+#> 5 118      18.7 -34.3  16.2  9.28  52.3  309.  25.4  7.65  17.7  12.4  19.8
+#> 6 119      19.3 -34.3  15.8 10.2   53.5  321.  25.8  6.67  19.2  11.8  19.6
+#> # ℹ 12 more variables: bio10 <dbl>, bio11 <dbl>, bio12 <dbl>, bio13 <dbl>,
+#> #   bio14 <dbl>, bio15 <dbl>, bio16 <dbl>, bio17 <dbl>, bio18 <dbl>,
+#> #   bio19 <dbl>, obs_sum <dbl>, spp_rich <dbl>
 
 # Build the final site × environment table
 grid_env = env_df %>%
-  dplyr::select(grid_id, centroid_lon, centroid_lat,
-                obs_sum, spp_rich, dplyr::everything())
+  dplyr::select(site_id, x, y,
+                obs_sum, spp_rich, dplyr::everything()) %>%
+  mutate(across(
+    .cols = -c(site_id, x, y, obs_sum, spp_rich),  # all other columns
+    .fns  = ~ as.numeric(scale(.x)), # Scale bio
+    .names = "{.col}"  # keep same names
+  ))
 
 str(grid_env, max.level = 1)
-#> tibble [415 × 24] (S3: tbl_df/tbl/data.frame)
+#> tibble [314 × 24] (S3: tbl_df/tbl/data.frame)
 head(grid_env)
 #> # A tibble: 6 × 24
-#>   grid_id centroid_lon centroid_lat obs_sum spp_rich bio01 bio02 bio03 bio04
-#>   <chr>          <dbl>        <dbl>   <dbl>    <dbl> <dbl> <dbl> <dbl> <dbl>
-#> 1 1026            28.8        -22.3     172       17  21.9  14.5  55.8  425.
-#> 2 1027            29.2        -22.3      92        9  21.8  14.5  55.1  430.
-#> 3 1028            29.7        -22.3     131       11  22.0  14.2  56.3  396.
-#> 4 1029            30.3        -22.3     129       12  22.8  13.9  58.0  359.
-#> 5 1030            30.8        -22.3     136       13  23.3  13.9  60.0  332.
-#> 6 1031            31.3        -22.3      99       13  24.2  14.2  61.3  326.
-#> # ℹ 15 more variables: bio05 <dbl>, bio06 <dbl>, bio07 <dbl>, bio08 <dbl>,
-#> #   bio09 <dbl>, bio10 <dbl>, bio11 <dbl>, bio12 <dbl>, bio13 <dbl>,
-#> #   bio14 <dbl>, bio15 <dbl>, bio16 <dbl>, bio17 <dbl>, bio18 <dbl>,
-#> #   bio19 <dbl>
+#>   site_id     x     y obs_sum spp_rich  bio01   bio02  bio03  bio04  bio05 bio06
+#>   <chr>   <dbl> <dbl>   <dbl>    <dbl>  <dbl>   <dbl>  <dbl>  <dbl>  <dbl> <dbl>
+#> 1 1027     29.2 -22.3      41       31  1.75   0.274  -0.309  0.272  1.24  0.605
+#> 2 1029     30.3 -22.3       7        7  2.20  -0.0315  0.616 -0.450  1.27  1.28 
+#> 3 1031     31.3 -22.3     107       76  2.78   0.150   1.68  -0.792  1.79  1.87 
+#> 4 117      18.2 -34.3    4246      231  1.08  -1.05    0.236 -0.883  0.241 1.42 
+#> 5 118      18.7 -34.3    2202      215 -0.628 -2.25   -1.21  -0.975 -1.30  0.973
+#> 6 119      19.3 -34.3     989      173 -0.799 -1.79   -0.838 -0.842 -1.15  0.706
+#> # ℹ 13 more variables: bio07 <dbl>, bio08 <dbl>, bio09 <dbl>, bio10 <dbl>,
+#> #   bio11 <dbl>, bio12 <dbl>, bio13 <dbl>, bio14 <dbl>, bio15 <dbl>,
+#> #   bio16 <dbl>, bio17 <dbl>, bio18 <dbl>, bio19 <dbl>
 ```
 
 ### 4.6. Remove Highly Correlated Predictors (optional)
@@ -535,59 +590,6 @@ trait linkage. The process includes:
 These actions ensure your analysis is based on well-sampled taxa and
 avoids downstream issues related to sparse or missing data.
 
-``` r
-# Reshape site-by-species matrix to long format and clean
-grid_obs = grid_spp %>% 
-  dplyr::select(-mapsheet) %>%                         # Drop mapsheet metadata
-  pivot_longer(
-    cols = -c(grid_id, centroid_lon, centroid_lat,     # Keep core metadata columns only
-              obs_sum, spp_rich),
-    names_to  = "species",
-    values_to = "count",
-    values_drop_na = TRUE ) %>%                        # Drop missing values
-  filter(count > 0) %>%                                # Remove zero-count (absent) records
-  relocate(grid_id, centroid_lon, centroid_lat,
-           obs_sum, spp_rich, species, count)
-
-# # Only keep observations where species have >500 observations
-# site_spp_obs = site_spp_obs %>%
-#   # select only the columns you care about
-#   dplyr::select(10, 13, 14, 16:17, 19, 22:23, 30:33) %>%
-#   # drop rows where species is NA
-#   filter(!is.na(species)) %>%
-#   # add a count column called "n_obs"
-#   add_count(species, name = "n_obs") %>%
-#   # keep only species with >100 observations
-#   filter(n_obs > 500) %>%
-#   # (optional) sort by descending count
-#   arrange(desc(n_obs))
-
-# # Further filter: retain only observations with count > 10 and non-missing species
-# grid_obs = grid_obs %>%
-#   filter(!is.na(species)) %>%
-#   filter(count > 10) %>%
-#   arrange(desc(count))                                 # Optionally, sort by descending count
-
-# Final data check
-# Examine structure and summary statistics before further filtering
-str(grid_obs)
-#> tibble [3,839 × 7] (S3: tbl_df/tbl/data.frame)
-#>  $ grid_id     : chr [1:3839] "1026" "1026" "1026" "1026" ...
-#>  $ centroid_lon: num [1:3839] 28.8 28.8 28.8 28.8 28.8 ...
-#>  $ centroid_lat: num [1:3839] -22.3 -22.3 -22.3 -22.3 -22.3 ...
-#>  $ obs_sum     : num [1:3839] 172 172 172 172 172 172 172 172 172 172 ...
-#>  $ spp_rich    : num [1:3839] 17 17 17 17 17 17 17 17 17 17 ...
-#>  $ species     : chr [1:3839] "Acraea horta" "Charaxes wakefieldi" "Danaus chrysippus orientis" "Dira clytus clytus" ...
-#>  $ count       : num [1:3839] 10 9 8 8 3 19 9 9 6 13 ...
-dim(grid_obs)
-#> [1] 3839    7
-length(unique(grid_obs$species))
-#> [1] 27
-summary(grid_obs$count)
-#>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-#>    1.00    6.00    9.00   10.88   14.00   87.00
-```
-
 ### 5.2. Retrieve and Link Trait and Metadata for Each Species
 
 This utility provides an automated pipeline for extracting and joining
@@ -617,7 +619,6 @@ community ecology, macroecology, and biodiversity informatics projects.
 
 ``` r
 # # Local trait data.frame version 1
-# btfly_traits1 = read.csv("D:/Data/Traits/Butterflies/Middleton_etal_2020/Middleton_etal_2020_traits.csv") # adjust path
 # btfly_traits1 = read.csv(system.file("extdata", "Middleton_etal_2020_traits.csv", package = "invasimapr"))
 # str(btfly_traits1)
 # length(unique(btfly_traits1$Species))
@@ -664,8 +665,8 @@ community ecology, macroecology, and biodiversity informatics projects.
 # )
 
 # Local trait data.frame version 2
-# btfly_traits3 = read.csv("D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata/species_traits.csv") # adjust path
 btfly_traits3 = read.csv(system.file("extdata", "species_traits.csv", package = "invasimapr"))
+# btfly_traits3 = read.csv(system.file("extdata", "species_traits_sim.csv", package = "invasimapr"))
 str(btfly_traits3)
 #> 'data.frame':    27 obs. of  21 variables:
 #>  $ species     : chr  "Acraea horta" "Amata cerbera" "Bicyclus safitza safitza" "Cacyreus lingeus" ...
@@ -712,50 +713,50 @@ spp_traits = purrr::map_dfr(
 
 str(spp_traits)
 #> tibble [27 × 29] (S3: tbl_df/tbl/data.frame)
-#>  $ species     : chr [1:27] "Acraea horta" "Charaxes wakefieldi" "Danaus chrysippus orientis" "Dira clytus clytus" ...
-#>  $ summary     : chr [1:27] "Acraea horta or the garden acraea is a butterfly of the family Nymphalidae. It is found in South Africa and Zimbabwe." "Euxanthe wakefieldi, the forest queen, is a butterfly of the family Nymphalidae. It is found in South Africa, f"| __truncated__ NA "Dira clytus, the Cape autumn widow, is a butterfly of the family Nymphalidae. It is found in South Africa." ...
-#>  $ Kingdom     : Named chr [1:27] "Animalia" "Animalia" NA "Animalia" ...
+#>  $ species     : chr [1:27] "Utetheisa pulchella" "Danaus chrysippus orientis" "Telchinia serena" "Vanessa cardui" ...
+#>  $ summary     : chr [1:27] "Utetheisa pulchella, the crimson-speckled flunkey, crimson-speckled footman, or crimson-speckled moth, is a mot"| __truncated__ NA "Acraea serena, the dancing acraea, is a butterfly of the family Nymphalidae. It is found throughout Africa sout"| __truncated__ "Vanessa cardui is the most widespread of all butterfly species. It is commonly called the painted lady, or form"| __truncated__ ...
+#>  $ Kingdom     : Named chr [1:27] "Animalia" NA "Animalia" "Animalia" ...
 #>   ..- attr(*, "names")= chr [1:27] "Kingdom" "Kingdom" "Kingdom" "Kingdom" ...
-#>  $ Phylum      : Named chr [1:27] "Arthropoda" "Arthropoda" NA "Arthropoda" ...
+#>  $ Phylum      : Named chr [1:27] "Arthropoda" NA "Arthropoda" "Arthropoda" ...
 #>   ..- attr(*, "names")= chr [1:27] "Phylum" "Phylum" "Phylum" "Phylum" ...
-#>  $ Class       : Named chr [1:27] "Insecta" "Insecta" NA "Insecta" ...
+#>  $ Class       : Named chr [1:27] "Insecta" NA "Insecta" "Insecta" ...
 #>   ..- attr(*, "names")= chr [1:27] "Class" "Class" "Class" "Class" ...
-#>  $ Order       : Named chr [1:27] "Lepidoptera" "Lepidoptera" NA "Lepidoptera" ...
+#>  $ Order       : Named chr [1:27] "Lepidoptera" NA "Lepidoptera" "Lepidoptera" ...
 #>   ..- attr(*, "names")= chr [1:27] "Order" "Order" "Order" "Order" ...
-#>  $ Family      : Named chr [1:27] "Nymphalidae" "Nymphalidae" NA "Nymphalidae" ...
+#>  $ Family      : Named chr [1:27] "Erebidae" NA "Nymphalidae" "Nymphalidae" ...
 #>   ..- attr(*, "names")= chr [1:27] "Family" "Family" "Family" "Family" ...
-#>  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Garden_acraea_%28Acraea_horta%29.jpg/250px-Garden_acr"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/GroseSmithKirby1892RhopExotNEPlate1%2C_1%2C_%E2%99%80"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/SeitzFaunaAfricanaXIIITaf28%2C_Dira_clytus.jpg/250px-"| __truncated__ ...
-#>  $ palette     : chr [1:27] "#404A14, #9AA552, #BDC57C, #6F782D, #DE8345" "#988976, #37200C, #D1CBBE, #FDFBF9, #644D35" NA "#FEFDFC, #4F1D09, #885B39, #C5B091, #6B3110" ...
-#>  $ trait_cont1 : num [1:27] 0.8296 0.2835 0.0382 0.4732 -0.7307 ...
-#>  $ trait_cont2 : num [1:27] 0.811 0.622 -0.224 0.37 -0.992 ...
-#>  $ trait_cont3 : num [1:27] -0.9221 -0.4778 0.0288 0.3512 0.9656 ...
-#>  $ trait_cont4 : num [1:27] -0.684 0.127 -0.533 -0.82 -0.829 ...
-#>  $ trait_cont5 : num [1:27] 0.0715 0.503 -0.0945 0.0716 0.0748 ...
-#>  $ trait_cont6 : num [1:27] 0.1596 0.2472 -0.7031 -0.8395 -0.0719 ...
-#>  $ trait_cont7 : num [1:27] 0.2035 -0.0962 -0.3659 -0.7677 -0.6278 ...
-#>  $ trait_cont8 : num [1:27] -0.4245 -0.7418 -0.8555 -0.8937 0.0637 ...
-#>  $ trait_cont9 : num [1:27] 0.1493 -0.02 -0.6567 0.0861 0.9229 ...
-#>  $ trait_cont10: num [1:27] -0.57722 -0.70084 -0.00145 0.88113 -0.33154 ...
-#>  $ trait_cat11 : chr [1:27] "wetland" "forest" "grassland" "forest" ...
-#>  $ trait_cat12 : chr [1:27] "diurnal" "nocturnal" "diurnal" "diurnal" ...
-#>  $ trait_cat13 : chr [1:27] "bivoltine" "bivoltine" "univoltine" "bivoltine" ...
-#>  $ trait_cat14 : chr [1:27] "detritivore" "generalist" "detritivore" "detritivore" ...
+#>  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Arctiidae_-_Utetheisa_pulchella.JPG/250px-Arctiidae_-"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Dancing_acraea_%28Acraea_serena%29_underside_Maputo.j"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/0_Belle-dame_%28Vanessa_cardui%29_-_Echinacea_purpure"| __truncated__ ...
+#>  $ palette     : chr [1:27] "#1D220C, #A59A47, #CCBF98, #8C8012, #535509" NA "#524832, #86885D, #B2852C, #E8E6CE, #9D9C6D" "#EA8FD3, #C65D9B, #CC8242, #6A5C42, #3A311F" ...
+#>  $ trait_cont1 : num [1:27] 0.0284 0.0382 -0.8351 -0.2196 0.314 ...
+#>  $ trait_cont2 : num [1:27] -0.203 -0.224 -0.307 0.569 0.666 ...
+#>  $ trait_cont3 : num [1:27] -0.9969 0.0288 0.0288 0.1632 0.5191 ...
+#>  $ trait_cont4 : num [1:27] 0.48 -0.533 0.925 0.466 -0.39 ...
+#>  $ trait_cont5 : num [1:27] 0.8748 -0.0945 0.263 0.701 -0.9972 ...
+#>  $ trait_cont6 : num [1:27] 0.87 -0.703 0.36 0.101 0.559 ...
+#>  $ trait_cont7 : num [1:27] 0.586 -0.366 0.836 -0.733 0.459 ...
+#>  $ trait_cont8 : num [1:27] -0.0974 -0.8555 -0.8781 0.6775 -0.7754 ...
+#>  $ trait_cont9 : num [1:27] 0.123 -0.657 -0.865 -0.859 -0.373 ...
+#>  $ trait_cont10: num [1:27] 0.85009 -0.00145 -0.5899 0.77351 -0.62313 ...
+#>  $ trait_cat11 : chr [1:27] "wetland" "grassland" "forest" "forest" ...
+#>  $ trait_cat12 : chr [1:27] "diurnal" "diurnal" "nocturnal" "diurnal" ...
+#>  $ trait_cat13 : chr [1:27] "multivoltine" "univoltine" "multivoltine" "univoltine" ...
+#>  $ trait_cat14 : chr [1:27] "detritivore" "detritivore" "generalist" "generalist" ...
 #>  $ trait_cat15 : chr [1:27] "migratory" "migratory" "migratory" "resident" ...
-#>  $ trait_ord16 : int [1:27] 4 4 1 1 4 1 3 1 2 2 ...
-#>  $ trait_ord17 : int [1:27] 1 2 4 3 5 4 1 3 5 2 ...
-#>  $ trait_bin18 : int [1:27] 1 1 1 1 1 0 0 0 0 0 ...
-#>  $ trait_bin19 : int [1:27] 1 0 1 1 1 0 1 0 1 1 ...
-#>  $ trait_ord20 : chr [1:27] "medium" "medium" "medium" "large" ...
+#>  $ trait_ord16 : int [1:27] 3 1 2 3 1 1 4 4 2 2 ...
+#>  $ trait_ord17 : int [1:27] 4 4 5 3 4 2 1 5 2 5 ...
+#>  $ trait_bin18 : int [1:27] 1 1 1 0 0 0 1 1 0 0 ...
+#>  $ trait_bin19 : int [1:27] 1 1 1 0 0 0 1 1 1 1 ...
+#>  $ trait_ord20 : chr [1:27] "small" "medium" "large" "large" ...
 head(spp_traits)
 #> # A tibble: 6 × 29
 #>   species  summary Kingdom Phylum Class Order Family img_url palette trait_cont1
 #>   <chr>    <chr>   <chr>   <chr>  <chr> <chr> <chr>  <chr>   <chr>         <dbl>
-#> 1 Acraea … Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #404A1…      0.830 
-#> 2 Charaxe… Euxant… Animal… Arthr… Inse… Lepi… Nymph… https:… #98897…      0.283 
-#> 3 Danaus … <NA>    <NA>    <NA>   <NA>  <NA>  <NA>   <NA>    <NA>         0.0382
-#> 4 Dira cl… Dira c… Animal… Arthr… Inse… Lepi… Nymph… https:… #FEFDF…      0.473 
-#> 5 Eutrich… Eutric… Animal… Arthr… Inse… Lepi… Lasio… https:… #BB927…     -0.731 
-#> 6 Hypolim… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B2A79…      0.314 
+#> 1 Utethei… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #1D220…      0.0284
+#> 2 Danaus … <NA>    <NA>    <NA>   <NA>  <NA>  <NA>   <NA>    <NA>         0.0382
+#> 3 Telchin… Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #52483…     -0.835 
+#> 4 Vanessa… Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #EA8FD…     -0.220 
+#> 5 Hypolim… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #96925…      0.314 
+#> 6 Pieris … Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #6C6E4…     -0.765 
 #> # ℹ 19 more variables: trait_cont2 <dbl>, trait_cont3 <dbl>, trait_cont4 <dbl>,
 #> #   trait_cont5 <dbl>, trait_cont6 <dbl>, trait_cont7 <dbl>, trait_cont8 <dbl>,
 #> #   trait_cont9 <dbl>, trait_cont10 <dbl>, trait_cat11 <chr>,
@@ -775,12 +776,10 @@ sum(!is.na(spp_traits$species))
 ### 5.3. Load local combined site, environment, and trait data
 
 ``` r
-# Optional - Set working directory
-# setwd('D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata')
-
-# Read primary data (one row per site–species combination)
+# Read GBIF species occurrence with simulated traits and enviro data (one row per site-species combination)
 # site_env_spp = read.csv('site_env_spp_simulated.csv')
 site_env_spp = read.csv(system.file("extdata", "site_env_spp_simulated.csv", package = "invasimapr"))
+# site_env_spp = read.csv(system.file("extdata", "site_env_spp_trt_sim.csv", package = "invasimapr"))
 dim(site_env_spp)
 #> [1] 11205    36
 str(site_env_spp)
@@ -822,25 +821,9 @@ str(site_env_spp)
 #>  $ env10       : num  0.933 0.933 0.933 0.933 0.933 ...
 #>  $ cat11_num   : int  -1 1 -1 -1 1 0 1 -1 1 0 ...
 
-# # Format 'dissmapr' output to be the same
-# grid_obs = grid_obs %>%
-#   rename(
-#     site_id = grid_id,    # Change 'grid_id' to 'site_id'
-#     x = centroid_lon,     # Change 'centroid_lon' to 'x'
-#     y = centroid_lat      # Change 'centroid_lat' to 'y'
-#   )
-
-# grid_env = grid_env %>%
-#   rename(
-#     site_id = grid_id,      # Change 'grid_id' to 'site_id'
-#     x = centroid_lon,     # Change 'centroid_lon' to 'x'
-#     y = centroid_lat      # Change 'centroid_lat' to 'y'
-#   )
-
 # Check the results
 names(grid_obs)
-#> [1] "grid_id"      "centroid_lon" "centroid_lat" "obs_sum"      "spp_rich"    
-#> [6] "species"      "count"
+#> [1] "site_id"  "x"        "y"        "obs_sum"  "spp_rich" "species"  "count"
 # names(grid_env)
 ```
 
@@ -903,23 +886,15 @@ head(site_env[1:6,1:6])
 #> 1031    1031 31.25 -22.25004 2.046307 1.4773531 -0.4125693
 
 # site_env = grid_env %>%
-#   dplyr::select(site_id, x, y, 
-#                 obs_sum, spp_rich, 
+#   dplyr::select(site_id, x, y,
+#                 obs_sum, spp_rich,
 #                 bio01:bio19) %>%
 #   distinct() %>%
 #   mutate(.site_id_rn = site_id) %>%
 #   column_to_rownames(var = ".site_id_rn")
-
-dim(site_env)
-#> [1] 415  13
-head(site_env[1:6,1:6])
-#>      site_id     x         y     env1      env2       env3
-#> 1026    1026 28.75 -22.25004 2.203029 0.6471631 -0.4910981
-#> 1027    1027 29.25 -22.25004 2.086006 1.4025519 -0.4471106
-#> 1028    1028 29.75 -22.25004 2.233508 0.8008731 -0.5405243
-#> 1029    1029 30.25 -22.25004 2.333375 1.1607272 -0.4405388
-#> 1030    1030 30.75 -22.25004 2.153073 1.2747649 -0.2945477
-#> 1031    1031 31.25 -22.25004 2.046307 1.4773531 -0.4125693
+# 
+# dim(site_env)
+# head(site_env[1:6,1:6])
 ```
 
 ### 6.3. Extract **site-species** abundances and presence-absence
@@ -1002,31 +977,38 @@ assembly, functional diversity, and invasion processes.
 # Species-by-trait matrix (wide)
 # Extract and process continuous, categorical, and ordinal trait data
 spp_trait = spp_traits %>% # site_env_spp
-  dplyr::select(species, trait_cont1:trait_cont10, 
-                trait_cat11:trait_cat15, 
+  dplyr::select(species, trait_cont1:trait_cont10,
+                trait_cat11:trait_cat15,
                 trait_ord16:trait_ord20) %>%
   distinct() %>%
   mutate(.species_rn = species) %>%
   column_to_rownames(var = ".species_rn") %>%
   mutate(across(where(is.character), as.factor))
 
+# spp_trait = spp_traits %>% # site_env_spp
+#   dplyr::select(species, trt1:trt20) %>%
+#   distinct() %>%
+#   mutate(.species_rn = species) %>%
+#   column_to_rownames(var = ".species_rn") %>%
+#   mutate(across(where(is.character), as.factor))
+
 dim(spp_trait)
 #> [1] 27 21
 head(spp_trait[1:6,1:6])
 #>                                               species trait_cont1 trait_cont2
-#> Acraea horta                             Acraea horta   0.8296121   0.8114763
-#> Charaxes wakefieldi               Charaxes wakefieldi   0.2834910   0.6221103
-#> Danaus chrysippus orientis Danaus chrysippus orientis   0.0381919  -0.2237834
-#> Dira clytus clytus                 Dira clytus clytus   0.4731766   0.3703395
-#> Eutricha capensis                   Eutricha capensis  -0.7306668  -0.9921033
-#> Hypolimnas misippus               Hypolimnas misippus   0.3139846   0.6658322
+#> Utetheisa pulchella               Utetheisa pulchella  0.02842357  -0.2030292
+#> Danaus chrysippus orientis Danaus chrysippus orientis  0.03819190  -0.2237834
+#> Telchinia serena                     Telchinia serena -0.83512488  -0.3065035
+#> Vanessa cardui                         Vanessa cardui -0.21959307   0.5693856
+#> Hypolimnas misippus               Hypolimnas misippus  0.31398458   0.6658322
+#> Pieris brassicae                     Pieris brassicae -0.76502528  -0.1364975
 #>                            trait_cont3 trait_cont4 trait_cont5
-#> Acraea horta               -0.92212702  -0.6841896  0.07152258
-#> Charaxes wakefieldi        -0.47782407   0.1272937  0.50304513
+#> Utetheisa pulchella        -0.99685889   0.4797106  0.87477170
 #> Danaus chrysippus orientis  0.02882587  -0.5325932 -0.09453685
-#> Dira clytus clytus          0.35121455  -0.8200390  0.07157999
-#> Eutricha capensis           0.96563440  -0.8287759  0.07475339
+#> Telchinia serena            0.02881542   0.9252160  0.26301460
+#> Vanessa cardui              0.16320801   0.4664918  0.70096550
 #> Hypolimnas misippus         0.51908854  -0.3895633 -0.99723831
+#> Pieris brassicae           -0.71904181   0.4879493 -0.21005391
 ```
 
 ------------------------------------------------------------------------
@@ -1127,8 +1109,9 @@ head(df_traits)
 #> 6 trait_cont6       62.5
 
 # Barplot: trait-level similarity (percent identity or scaled distance)
-ggplot(df_traits, aes(x = reorder(Trait, Similarity), y = Similarity, fill = Trait)) +
+ggplot(df_traits, aes(x = reorder(Trait, Similarity), y = Similarity, fill = Similarity)) +
   geom_col(show.legend = FALSE) +
+  scale_fill_viridis_c(option = "inferno") +  # ramp color scale
   # ylim(0,100) +
   labs(
     title = "Average Trait Similarity (%)",
@@ -1475,13 +1458,13 @@ head(res$similarity)
 #> 6 trait_cont6   62.46692
 str(res$dispersion, max.level=1)
 #> List of 7
-#>  $ distance_matrix: num [1:27, 1:27] 0 0.304 0.358 0.394 0.413 ...
+#>  $ distance_matrix: num [1:27, 1:27] 0 0.398 0.416 0.534 0.607 ...
 #>   ..- attr(*, "dimnames")=List of 2
 #>  $ hc             :List of 7
 #>   ..- attr(*, "class")= chr "hclust"
 #>  $ pcoa           :List of 5
 #>  $ scores         :'data.frame': 27 obs. of  3 variables:
-#>  $ centroid       : num [1:2] -3.11e-17 2.91e-17
+#>  $ centroid       : num [1:2] -1.44e-17 -5.42e-20
 #>  $ metrics_df     :'data.frame': 3 obs. of  2 variables:
 #>  $ plots          :List of 4
 ```
@@ -1501,13 +1484,13 @@ the combined layout used when `show_plot = TRUE`, but omits the base
 ``` r
 str(res$dispersion, max.level=1)
 #> List of 7
-#>  $ distance_matrix: num [1:27, 1:27] 0 0.304 0.358 0.394 0.413 ...
+#>  $ distance_matrix: num [1:27, 1:27] 0 0.398 0.416 0.534 0.607 ...
 #>   ..- attr(*, "dimnames")=List of 2
 #>  $ hc             :List of 7
 #>   ..- attr(*, "class")= chr "hclust"
 #>  $ pcoa           :List of 5
 #>  $ scores         :'data.frame': 27 obs. of  3 variables:
-#>  $ centroid       : num [1:2] -3.11e-17 2.91e-17
+#>  $ centroid       : num [1:2] -1.44e-17 -5.42e-20
 #>  $ metrics_df     :'data.frame': 3 obs. of  2 variables:
 #>  $ plots          :List of 4
 
@@ -1564,6 +1547,7 @@ correctly handled by the model.
 
 ``` r
 # Prepare long-format data
+# Use simulated traits
 longDF = site_env_spp %>%
   dplyr::select(
     site_id, x, y, species, count,           # Metadata + response
@@ -1574,49 +1558,16 @@ longDF = site_env_spp %>%
   ) %>%
   mutate(across(where(is.character), as.factor))
 
-head(longDF)
-#>   site_id     x         y                    species count     env1      env2
-#> 1    1026 28.75 -22.25004               Acraea horta    10 2.203029 0.6471631
-#> 2    1026 28.75 -22.25004              Amata cerbera     0 2.203029 0.6471631
-#> 3    1026 28.75 -22.25004   Bicyclus safitza safitza     0 2.203029 0.6471631
-#> 4    1026 28.75 -22.25004           Cacyreus lingeus     0 2.203029 0.6471631
-#> 5    1026 28.75 -22.25004        Charaxes wakefieldi     9 2.203029 0.6471631
-#> 6    1026 28.75 -22.25004 Danaus chrysippus orientis     8 2.203029 0.6471631
-#>         env3       env4      env5     env6      env7      env8        env9
-#> 1 -0.4910981 -0.7934531 0.8216381 1.545075 0.4185999 -1.050379 -0.05366469
-#> 2 -0.4910981 -0.7934531 0.8216381 1.545075 0.4185999 -1.050379 -0.05366469
-#> 3 -0.4910981 -0.7934531 0.8216381 1.545075 0.4185999 -1.050379 -0.05366469
-#> 4 -0.4910981 -0.7934531 0.8216381 1.545075 0.4185999 -1.050379 -0.05366469
-#> 5 -0.4910981 -0.7934531 0.8216381 1.545075 0.4185999 -1.050379 -0.05366469
-#> 6 -0.4910981 -0.7934531 0.8216381 1.545075 0.4185999 -1.050379 -0.05366469
-#>       env10 trait_cont1 trait_cont2 trait_cont3 trait_cont4 trait_cont5
-#> 1 0.9329782   0.8296121   0.8114763 -0.92212702  -0.6841896  0.07152258
-#> 2 0.9329782   0.8741508  -0.1060607  0.49759077  -0.2819434 -0.99545407
-#> 3 0.9329782  -0.4277209   0.6720085  0.35455366   0.2912638  0.21787491
-#> 4 0.9329782   0.6608953   0.4751912 -0.65747134   0.5516467  0.67360312
-#> 5 0.9329782   0.2834910   0.6221103 -0.47782407   0.1272937  0.50304512
-#> 6 0.9329782   0.0381919  -0.2237834  0.02882587  -0.5325932 -0.09453686
-#>   trait_cont6 trait_cont7 trait_cont8 trait_cont9 trait_cont10 trait_cat11
-#> 1   0.1596418  0.20353247  -0.4245005  0.14927467 -0.577216122     wetland
-#> 2   0.6428078 -0.60601102  -0.6106477 -0.29329924  0.099240827      forest
-#> 3  -0.7725628  0.07047322   0.5682188  0.09485216 -0.036037103     wetland
-#> 4   0.5290155 -0.64088852  -0.7422557  0.78543719 -0.681060291     wetland
-#> 5   0.2472269 -0.09622701  -0.7418214 -0.02001886 -0.700842010      forest
-#> 6  -0.7031068 -0.36589330  -0.8554938 -0.65673577 -0.001454239   grassland
-#>   trait_cat12  trait_cat13 trait_cat14 trait_cat15 trait_ord16 trait_ord17
-#> 1     diurnal    bivoltine detritivore   migratory           4           1
-#> 2   nocturnal multivoltine detritivore    resident           1           4
-#> 3     diurnal   univoltine  generalist    resident           4           4
-#> 4   nocturnal multivoltine nectarivore   migratory           3           3
-#> 5   nocturnal    bivoltine  generalist   migratory           4           2
-#> 6     diurnal   univoltine detritivore   migratory           1           4
-#>   trait_bin18 trait_bin19 trait_ord20
-#> 1           1           1      medium
-#> 2           1           0       large
-#> 3           1           1      medium
-#> 4           0           0      medium
-#> 5           1           0      medium
-#> 6           1           1      medium
+# # Use real enviro and simulated traits
+# longDF = site_env_spp %>%
+#   dplyr::select(
+#     site_id, x, y, species, count,            # Metadata + response
+#     bio01:bio19,                              # Environment variables
+#     trt1:trt20
+#   ) %>%
+#   mutate(across(where(is.character), as.factor))
+# names(longDF)
+# head(longDF)
 
 # # Use `grid_obs` from `dissmapr` imports instead
 # longDF = grid_obs %>%
@@ -1657,6 +1608,7 @@ fml = build_glmm_formula(
   response             = "count",            # Response variable
   species_col          = "species",          # Random effect grouping
   site_col             = "site_id",          # Random effect grouping
+  # env_cols             = names(longDF[,6:24]),
   include_interactions = TRUE,               # Add all trait × environment terms
   random_effects       = c("(1 | species)", "(1 | site_id)")
 )
@@ -1674,7 +1626,7 @@ fml
 #>     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + 
 #>     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + 
 #>     (1 | species) + (1 | site_id)
-#> <environment: 0x000001f23af077a8>
+#> <environment: 0x000001efac9a97a8>
 # Example output:
 # count ~ trait_cont1 + trait_cont2 + ... + env1 + env2 + ... +
 #         (trait_cont1 + ... + trait_cat15):(env1 + ... + env10) +
@@ -2071,33 +2023,33 @@ inv_traits = simulate_invaders(
 
 head(inv_traits)
 #>      species trait_cont1 trait_cont2 trait_cont3 trait_cont4 trait_cont5
-#> inv1    inv1  -0.2195931  -0.2030292  0.02882587  -0.5828601  0.65788426
-#> inv2    inv2  -0.7306668  -0.5846821 -0.45742677  -0.5325932  0.07157999
-#> inv3    inv3   0.8296121   0.3703395  0.35455366  -0.5668654  0.07157999
-#> inv4    inv4  -0.4277209   0.6720085 -0.65747134  -0.6841896  0.80726905
-#> inv5    inv5  -0.4891424  -0.9921033  0.35121455   0.8512895 -0.99545407
-#> inv6    inv6   0.4731766   0.9151532  0.96563440   0.4797106 -0.21005391
+#> inv1    inv1  0.47317663  -0.9853317  0.02881542  -0.8287759  0.07475339
+#> inv2    inv2  0.31398458   0.8114763  0.65631697   0.9252160  0.70096550
+#> inv3    inv3  0.02842357   0.5693856  0.69937944   0.1272937  0.70096550
+#> inv4    inv4 -0.08451645  -0.5846821  0.43871168   0.4797106  0.20694817
+#> inv5    inv5  0.86934449   0.6658322  0.16320801   0.8660683  0.65788426
+#> inv6    inv6 -0.21959307  -0.1060607  0.51908854   0.3348530  0.14695180
 #>      trait_cont6 trait_cont7 trait_cont8 trait_cont9 trait_cont10 trait_cat11
-#> inv1   0.6428078 -0.09622701  0.77023537   0.6087866  -0.70084201      forest
-#> inv2  -0.7031068  0.72525955  0.06374887  -0.9033064   0.09924083      forest
-#> inv3   0.8696459 -0.36589330 -0.42450050  -0.2977862   0.85009178     wetland
-#> inv4   0.5516501  0.48453290  0.67751007  -0.6567358   0.77350720   grassland
-#> inv5   0.1009882 -0.17625586  0.46263095  -0.8647264   0.09924083   grassland
-#> inv6   0.4670559 -0.09622701 -0.89374103   0.9229354  -0.33153735     wetland
+#> inv1  -0.6596750  -0.3658933  0.06374887   0.9931054 -0.001454239      forest
+#> inv2   0.3603284   0.8361128 -0.77538352  -0.5086517 -0.957099543      forest
+#> inv3   0.4670559   0.8358081 -0.09737830  -0.8268388 -0.460567643     wetland
+#> inv4   0.3571857   0.4947222 -0.89374103  -0.8647264  0.881129756   grassland
+#> inv5  -0.8394711   0.4845329 -0.42450050  -0.6819552 -0.957099543   grassland
+#> inv6  -0.9418284  -0.3658933  0.67751007  -0.3726324 -0.623131341     wetland
 #>      trait_cat12  trait_cat13 trait_cat14 trait_cat15 trait_ord16 trait_ord17
-#> inv1   nocturnal multivoltine detritivore   migratory           3           4
-#> inv2   nocturnal   univoltine detritivore   migratory           4           2
-#> inv3   nocturnal    bivoltine nectarivore   migratory           4           4
-#> inv4   nocturnal multivoltine  generalist   migratory           4           4
-#> inv5     diurnal    bivoltine nectarivore    resident           2           2
-#> inv6     diurnal   univoltine  generalist   migratory           3           2
+#> inv1   nocturnal multivoltine detritivore   migratory           1           2
+#> inv2   nocturnal   univoltine detritivore   migratory           3           2
+#> inv3   nocturnal    bivoltine nectarivore   migratory           1           2
+#> inv4   nocturnal multivoltine  generalist   migratory           1           2
+#> inv5     diurnal    bivoltine nectarivore    resident           2           1
+#> inv6     diurnal   univoltine  generalist   migratory           1           3
 #>      trait_bin18 trait_bin19 trait_ord20
-#> inv1           1           0       large
-#> inv2           0           0       small
-#> inv3           1           0      medium
+#> inv1           1           1       large
+#> inv2           0           1       small
+#> inv3           1           1      medium
 #> inv4           1           1      medium
-#> inv5           1           1      medium
-#> inv6           1           1       large
+#> inv5           0           1      medium
+#> inv6           0           1       large
 ```
 
 - Use `mode = "rowwise"` when you want to preserve realistic trait
@@ -2143,76 +2095,76 @@ all_traits = bind_rows(
 ) 
 head(all_traits)
 #>                                               species trait_cont1 trait_cont2
-#> Acraea horta                             Acraea horta   0.8296121   0.8114763
-#> Charaxes wakefieldi               Charaxes wakefieldi   0.2834910   0.6221103
-#> Danaus chrysippus orientis Danaus chrysippus orientis   0.0381919  -0.2237834
-#> Dira clytus clytus                 Dira clytus clytus   0.4731766   0.3703395
-#> Eutricha capensis                   Eutricha capensis  -0.7306668  -0.9921033
-#> Hypolimnas misippus               Hypolimnas misippus   0.3139846   0.6658322
+#> Utetheisa pulchella               Utetheisa pulchella  0.02842357  -0.2030292
+#> Danaus chrysippus orientis Danaus chrysippus orientis  0.03819190  -0.2237834
+#> Telchinia serena                     Telchinia serena -0.83512488  -0.3065035
+#> Vanessa cardui                         Vanessa cardui -0.21959307   0.5693856
+#> Hypolimnas misippus               Hypolimnas misippus  0.31398458   0.6658322
+#> Pieris brassicae                     Pieris brassicae -0.76502528  -0.1364975
 #>                            trait_cont3 trait_cont4 trait_cont5 trait_cont6
-#> Acraea horta               -0.92212702  -0.6841896  0.07152258   0.1596418
-#> Charaxes wakefieldi        -0.47782407   0.1272937  0.50304513   0.2472269
+#> Utetheisa pulchella        -0.99685889   0.4797106  0.87477170   0.8696459
 #> Danaus chrysippus orientis  0.02882587  -0.5325932 -0.09453685  -0.7031068
-#> Dira clytus clytus          0.35121455  -0.8200390  0.07157999  -0.8394711
-#> Eutricha capensis           0.96563440  -0.8287759  0.07475339  -0.0718609
+#> Telchinia serena            0.02881542   0.9252160  0.26301460   0.3603284
+#> Vanessa cardui              0.16320801   0.4664918  0.70096550   0.1009882
 #> Hypolimnas misippus         0.51908854  -0.3895633 -0.99723831   0.5587363
+#> Pieris brassicae           -0.71904181   0.4879493 -0.21005391   0.5576190
 #>                            trait_cont7 trait_cont8 trait_cont9 trait_cont10
-#> Acraea horta                0.20353247 -0.42450050  0.14927467 -0.577216122
-#> Charaxes wakefieldi        -0.09622701 -0.74182143 -0.02001886 -0.700842010
-#> Danaus chrysippus orientis -0.36589330 -0.85549378 -0.65673577 -0.001454239
-#> Dira clytus clytus         -0.76765066 -0.89374103  0.08606199  0.881129756
-#> Eutricha capensis          -0.62779569  0.06374887  0.92293539 -0.331537347
-#> Hypolimnas misippus         0.45946019 -0.77538352 -0.37263236 -0.623131341
-#>                            trait_cat11 trait_cat12 trait_cat13 trait_cat14
-#> Acraea horta                   wetland     diurnal   bivoltine detritivore
-#> Charaxes wakefieldi             forest   nocturnal   bivoltine  generalist
-#> Danaus chrysippus orientis   grassland     diurnal  univoltine detritivore
-#> Dira clytus clytus              forest     diurnal   bivoltine detritivore
-#> Eutricha capensis              wetland   nocturnal   bivoltine nectarivore
-#> Hypolimnas misippus             forest     diurnal  univoltine nectarivore
+#> Utetheisa pulchella          0.5863824  -0.0973783   0.1228759  0.850091782
+#> Danaus chrysippus orientis  -0.3658933  -0.8554938  -0.6567358 -0.001454239
+#> Telchinia serena             0.8358081  -0.8781005  -0.8647264 -0.589900776
+#> Vanessa cardui              -0.7333408   0.6775101  -0.8585562  0.773507196
+#> Hypolimnas misippus          0.4594602  -0.7753835  -0.3726324 -0.623131341
+#> Pieris brassicae             0.5380649   0.9354673  -0.9649034  0.429707387
+#>                            trait_cat11 trait_cat12  trait_cat13 trait_cat14
+#> Utetheisa pulchella            wetland     diurnal multivoltine detritivore
+#> Danaus chrysippus orientis   grassland     diurnal   univoltine detritivore
+#> Telchinia serena                forest   nocturnal multivoltine  generalist
+#> Vanessa cardui                  forest     diurnal   univoltine  generalist
+#> Hypolimnas misippus             forest     diurnal   univoltine nectarivore
+#> Pieris brassicae             grassland   nocturnal   univoltine  generalist
 #>                            trait_cat15 trait_ord16 trait_ord17 trait_bin18
-#> Acraea horta                 migratory           4           1           1
-#> Charaxes wakefieldi          migratory           4           2           1
+#> Utetheisa pulchella          migratory           3           4           1
 #> Danaus chrysippus orientis   migratory           1           4           1
-#> Dira clytus clytus            resident           1           3           1
-#> Eutricha capensis            migratory           4           5           1
+#> Telchinia serena             migratory           2           5           1
+#> Vanessa cardui                resident           3           3           0
 #> Hypolimnas misippus           resident           1           4           0
+#> Pieris brassicae              resident           1           2           0
 #>                            trait_bin19 trait_ord20
-#> Acraea horta                         1      medium
-#> Charaxes wakefieldi                  0      medium
+#> Utetheisa pulchella                  1       small
 #> Danaus chrysippus orientis           1      medium
-#> Dira clytus clytus                   1       large
-#> Eutricha capensis                    1       small
+#> Telchinia serena                     1       large
+#> Vanessa cardui                       0       large
 #> Hypolimnas misippus                  0       large
+#> Pieris brassicae                     0       large
 tail(all_traits)
 #>       species trait_cont1 trait_cont2 trait_cont3 trait_cont4 trait_cont5
-#> inv5     inv5  -0.4891424  -0.9921033  0.35121455   0.8512895 -0.99545407
-#> inv6     inv6   0.4731766   0.9151532  0.96563440   0.4797106 -0.21005391
-#> inv7     inv7   0.8741508   0.7755098 -0.71904181   0.4681886  0.07475339
-#> inv8     inv8  -0.7225797   0.9419332  0.96563440   0.8849114  0.07157999
-#> inv9     inv9  -0.2195931  -0.1060607 -0.04120287  -0.2221099  0.50304513
-#> inv10   inv10   0.8933365  -0.3331456 -0.47782407  -0.5668654  0.87477170
+#> inv5     inv5   0.8693445   0.6658322  0.16320801   0.8660683  0.65788426
+#> inv6     inv6  -0.2195931  -0.1060607  0.51908854   0.3348530  0.14695180
+#> inv7     inv7   0.4382245   0.9151532  0.38640964  -0.5656846 -0.99723831
+#> inv8     inv8   0.2834910   0.6221103  0.51908854   0.5516467  0.70096550
+#> inv9     inv9   0.4731766   0.8132028 -0.56722917   0.8849114 -0.09453685
+#> inv10   inv10   0.6608953   0.4751912  0.02882587   0.1272937 -0.28866809
 #>       trait_cont6 trait_cont7 trait_cont8 trait_cont9 trait_cont10 trait_cat11
-#> inv5    0.1009882 -0.17625586  0.46263095  -0.8647264   0.09924083   grassland
-#> inv6    0.4670559 -0.09622701 -0.89374103   0.9229354  -0.33153735     wetland
-#> inv7   -0.6242619 -0.36604952  0.93546733   0.1228759  -0.75339884      forest
-#> inv8    0.6428078  0.45946019  0.70386197   0.9931054  -0.95709954      forest
-#> inv9    0.5587363 -0.48147885  0.03422211   0.9229354   0.89147833   grassland
-#> inv10   0.5587363 -0.72701928 -0.68423980   0.1091717  -0.95709954     wetland
+#> inv5   -0.8394711  0.48453290 -0.42450050  -0.6819552  -0.95709954   grassland
+#> inv6   -0.9418284 -0.36589330  0.67751007  -0.3726324  -0.62313134     wetland
+#> inv7    0.2472269  0.72525955 -0.11440746   0.6410291   0.09924083      forest
+#> inv8   -0.6596750  0.53806485  0.03422211  -0.2932992  -0.33153735      forest
+#> inv9    0.5576190 -0.09622701  0.70386197  -0.3726324  -0.37790076   grassland
+#> inv10   0.5576190 -0.14501107 -0.11535072  -0.1572432  -0.33153735     wetland
 #>       trait_cat12  trait_cat13 trait_cat14 trait_cat15 trait_ord16 trait_ord17
-#> inv5      diurnal    bivoltine nectarivore    resident           2           2
-#> inv6      diurnal   univoltine  generalist   migratory           3           2
-#> inv7    nocturnal multivoltine  generalist    resident           3           2
-#> inv8      diurnal    bivoltine detritivore    resident           3           2
-#> inv9      diurnal    bivoltine nectarivore   migratory           1           3
-#> inv10     diurnal multivoltine detritivore    resident           4           5
+#> inv5      diurnal    bivoltine nectarivore    resident           2           1
+#> inv6      diurnal   univoltine  generalist   migratory           1           3
+#> inv7    nocturnal multivoltine  generalist    resident           4           4
+#> inv8      diurnal    bivoltine detritivore    resident           1           5
+#> inv9      diurnal    bivoltine nectarivore   migratory           1           2
+#> inv10     diurnal multivoltine detritivore    resident           1           4
 #>       trait_bin18 trait_bin19 trait_ord20
-#> inv5            1           1      medium
-#> inv6            1           1       large
-#> inv7            1           1       large
-#> inv8            1           1       small
-#> inv9            0           0      medium
-#> inv10           0           0      medium
+#> inv5            0           1      medium
+#> inv6            0           1       large
+#> inv7            1           0       large
+#> inv8            0           1       small
+#> inv9            0           1      medium
+#> inv10           1           1      medium
 
 # Predict across all sites × all species using predict_invader_response()
 pred = predict_invader_response(
@@ -2243,13 +2195,13 @@ names(pred$newdata)      # long table: site_id, species, pred
 #> [31] "env7"         "env8"         "env9"         "env10"        "obs_sum"     
 #> [36] "spp_rich"
 head(pred$predictions)      # long table: site_id, species, pred
-#>   site_id      species     pred
-#> 1    1026 Acraea horta 2.274204
-#> 2    1027 Acraea horta 1.772548
-#> 3    1028 Acraea horta 2.993519
-#> 4    1029 Acraea horta 2.076743
-#> 5    1030 Acraea horta 1.782345
-#> 6    1031 Acraea horta 1.290956
+#>   site_id             species     pred
+#> 1    1026 Utetheisa pulchella 1.761536
+#> 2    1027 Utetheisa pulchella 1.561990
+#> 3    1028 Utetheisa pulchella 1.771892
+#> 4    1029 Utetheisa pulchella 1.364692
+#> 5    1030 Utetheisa pulchella 1.843295
+#> 6    1031 Utetheisa pulchella 1.359066
 dim(pred$prediction_matrix) # sites × species matrix (for fitness/impact/risk calcs)
 #> [1] 415  37
 ```
@@ -2317,698 +2269,21 @@ cis = compute_interaction_strength(
 # site × resident abundance matrix
 # - Nstar is built from predictions and restricted to resident species.
 Nstar  = cis$Nstar
-head(Nstar)
-#>                                 1026     1027      1028      1029     1030
-#> Acraea horta                2.274204 1.772548 2.9935185 2.0767430 1.782345
-#> Charaxes wakefieldi         6.167690 5.328839 7.0464565 6.3587540 5.691443
-#> Danaus chrysippus orientis  3.239507 3.001678 3.6772660 3.4462809 3.272581
-#> Dira clytus clytus          5.125246 4.273005 6.4242768 6.2231972 3.760703
-#> Eutricha capensis           1.170313 1.131297 0.9787083 0.9396865 1.019897
-#> Hypolimnas misippus        15.112295 7.529349 9.2119631 7.9586711 5.810478
-#>                                1031       117       118       119       120
-#> Acraea horta               1.290956  3.407672  4.196807  2.401167  2.741558
-#> Charaxes wakefieldi        4.414552  2.058646  2.084670  1.603886  1.938895
-#> Danaus chrysippus orientis 2.748701  5.067923  5.104957  4.332980  4.731894
-#> Dira clytus clytus         4.061438  3.923454  3.083844  2.996367  2.807311
-#> Eutricha capensis          1.184911 26.343253 24.713793 31.661939 24.986923
-#> Hypolimnas misippus        4.886898  1.356147  1.369970  1.394588  1.297032
-#>                                  121        122       123       124      125
-#> Acraea horta                2.370538  2.6874337  2.293706  1.918440 5.409368
-#> Charaxes wakefieldi         1.574194  1.5098539  1.572253  1.665630 2.112923
-#> Danaus chrysippus orientis  4.060287  4.3916784  4.181584  4.259153 2.705870
-#> Dira clytus clytus          2.838536  2.1464615  2.360288  3.261245 1.843071
-#> Eutricha capensis          29.100408 30.6677745 27.144921 25.169106 8.735787
-#> Hypolimnas misippus         1.421527  0.8539178  1.033734  1.084271 1.091097
-#>                                  126        127       128       129       130
-#> Acraea horta                4.443336  3.0293713 2.1318085 2.2084253 2.1952541
-#> Charaxes wakefieldi         1.619609  1.4183538 1.6496676 1.3286899 2.2571746
-#> Danaus chrysippus orientis  2.449347  2.0167576 3.1812960 2.8110829 3.6170520
-#> Dira clytus clytus          1.894501  1.5409602 1.2869191 0.9480474 1.2465092
-#> Eutricha capensis          11.229183 10.6703133 7.6319580 8.5605569 4.8024228
-#> Hypolimnas misippus         1.026912  0.8992047 0.8492767 0.8354032 0.8460739
-#>                                  131       132       154       155       156
-#> Acraea horta               2.0595121 2.1825928  4.834203  4.129273  2.430991
-#> Charaxes wakefieldi        1.5180650 1.6975138  2.845871  2.258916  1.806915
-#> Danaus chrysippus orientis 3.0167883 3.1630209  5.110797  5.057811  4.458700
-#> Dira clytus clytus         1.0366573 1.1356581  5.069971  4.584943  3.245703
-#> Eutricha capensis          7.4000882 7.1646561 19.262050 24.136097 26.381455
-#> Hypolimnas misippus        0.6689216 0.8195843  3.973656  1.484528  1.309315
-#>                                  157       158       159        160        161
-#> Acraea horta                2.429446  2.165572  2.250851  2.1759210  2.1348607
-#> Charaxes wakefieldi         1.596583  1.547736  1.723825  1.5491948  1.8139539
-#> Danaus chrysippus orientis  4.452676  4.046869  4.009724  4.0395995  4.3643122
-#> Dira clytus clytus          2.971399  3.103381  3.064527  3.7395862  3.2018740
-#> Eutricha capensis          30.539126 29.319234 25.542665 25.3898045 22.7764971
-#> Hypolimnas misippus         1.070684  1.020383  1.222561  0.8914409  0.9552181
-#>                                   162       163        164       165       166
-#> Acraea horta                4.7252263 5.1828670  3.5651731 2.2112999 1.3093020
-#> Charaxes wakefieldi         1.7628838 2.3459553  1.3778071 1.7702355 1.2951705
-#> Danaus chrysippus orientis  2.5839682 2.7496899  2.1830363 3.1364690 2.7100825
-#> Dira clytus clytus          1.5264320 2.4616606  1.7592254 1.2697811 1.2777037
-#> Eutricha capensis          10.3087198 7.1587660 11.9350012 6.3343851 8.2227557
-#> Hypolimnas misippus         0.8598654 0.9705049  0.7338386 0.9283028 0.7331888
-#>                                  167       168      169       170      171
-#> Acraea horta               1.9849561 1.5194214 1.710388 1.3864301 1.315102
-#> Charaxes wakefieldi        1.4588468 1.4736129 1.284636 1.9709405 1.764081
-#> Danaus chrysippus orientis 2.7935996 2.7925243 2.503840 3.1617994 3.039825
-#> Dira clytus clytus         0.7927533 1.0309421 1.083234 0.9674839 1.195065
-#> Eutricha capensis          7.7336503 7.2069377 9.214962 4.8610331 5.927058
-#> Hypolimnas misippus        1.0516770 0.8886183 1.099022 1.0216497 1.151369
-#>                                  172       190       191       192       193
-#> Acraea horta               1.1709342  3.653150  3.572963  3.317036  2.390717
-#> Charaxes wakefieldi        1.7526875  2.900778  2.055343  2.027627  1.576957
-#> Danaus chrysippus orientis 2.9164784  6.789468  4.990309  4.845296  3.995174
-#> Dira clytus clytus         0.8873723  4.546699  3.847205  4.400042  2.822587
-#> Eutricha capensis          5.5139794 18.928841 25.521134 28.020133 28.753612
-#> Hypolimnas misippus        1.2027722  1.780423  1.531092  1.870460  1.508119
-#>                                  194       195       196       197       198
-#> Acraea horta                3.145210  2.637603  3.108413  2.545882  1.914383
-#> Charaxes wakefieldi         2.346536  1.834799  2.072509  2.190885  1.975451
-#> Danaus chrysippus orientis  5.033437  4.275251  4.704487  4.666226  4.628738
-#> Dira clytus clytus          4.415470  3.499299  4.014909  3.110371  3.550361
-#> Eutricha capensis          20.092147 25.634166 22.521849 20.766890 21.906435
-#> Hypolimnas misippus         1.481612  1.533684  1.223113  1.455406  1.335704
-#>                                  199        200       201      202      203
-#> Acraea horta               4.1427279  3.7124298 3.5306386 2.227061 2.382859
-#> Charaxes wakefieldi        2.1009007  1.6186240 1.6980398 2.081627 2.016565
-#> Danaus chrysippus orientis 2.5304842  2.3443929 2.3126755 3.465244 3.309477
-#> Dira clytus clytus         1.8613022  1.3829662 1.6596773 1.447070 1.421509
-#> Eutricha capensis          7.4981668 10.7392906 8.7184257 5.893684 5.880383
-#> Hypolimnas misippus        0.8310243  0.8610694 0.8677224 1.482743 1.148172
-#>                                 204      205       206       207       208
-#> Acraea horta               1.816465 3.350183 2.2586806 1.2133696 1.8350443
-#> Charaxes wakefieldi        1.830721 2.180859 1.6642645 1.6570779 1.8380396
-#> Danaus chrysippus orientis 2.926399 3.373190 3.0377264 2.8167753 3.2113431
-#> Dira clytus clytus         1.403745 1.520510 1.2470967 0.7782002 1.4294330
-#> Eutricha capensis          6.004250 6.036611 7.1728607 6.0054364 6.1052413
-#> Hypolimnas misippus        1.537541 1.826082 0.9522643 0.9961841 0.9491297
-#>                                 209      210       227       228       229
-#> Acraea horta               1.139640 1.174868  2.528019  3.835920  2.908403
-#> Charaxes wakefieldi        1.725314 1.752900  2.420555  3.190800  1.897145
-#> Danaus chrysippus orientis 2.926515 2.875393  5.656813  7.030049  4.388622
-#> Dira clytus clytus         1.199415 1.133658  3.631887  5.542555  3.045098
-#> Eutricha capensis          5.508307 6.144533 18.739514 19.531809 27.771495
-#> Hypolimnas misippus        1.285771 1.413501  1.317890  2.817576  1.740123
-#>                                  230       231       232       233       235
-#> Acraea horta                2.454650  2.561739  2.853649  2.791368  2.009860
-#> Charaxes wakefieldi         1.596962  1.913324  1.980918  2.714554  1.714293
-#> Danaus chrysippus orientis  4.174150  4.552907  4.485744  5.202010  3.640635
-#> Dira clytus clytus          2.810725  3.530164  5.216396  4.489779  2.474921
-#> Eutricha capensis          32.161178 23.984551 23.028600 15.759044 23.623357
-#> Hypolimnas misippus         2.011952  1.055911  1.979868  1.517985  1.952810
-#>                                 236      237      238       239      240
-#> Acraea horta               4.436508 6.475642 4.654558 2.7637946 2.825649
-#> Charaxes wakefieldi        1.963416 2.431026 1.847346 1.6168845 1.857252
-#> Danaus chrysippus orientis 2.463946 3.028364 2.300742 3.0738924 3.182224
-#> Dira clytus clytus         2.524719 1.967748 1.770595 1.2323254 1.360406
-#> Eutricha capensis          9.571633 7.906135 8.222428 7.4801385 6.072793
-#> Hypolimnas misippus        1.104989 1.079069 1.004005 0.9938717 1.040317
-#>                                 241      242      243       244       245
-#> Acraea horta               2.543088 1.843548 1.579173 1.3858602 1.3937145
-#> Charaxes wakefieldi        2.178116 1.629917 1.920693 1.7182786 1.8746840
-#> Danaus chrysippus orientis 3.118336 2.919639 2.872872 3.1072018 3.0718921
-#> Dira clytus clytus         1.380720 1.357823 1.282387 1.3413908 0.8532012
-#> Eutricha capensis          4.799497 6.505107 5.234941 6.9018002 5.0827422
-#> Hypolimnas misippus        1.641787 1.225426 1.591208 0.9315435 1.0670232
-#>                                  246       247      248       249       265
-#> Acraea horta               1.0313906 1.1663439 1.221218  1.089937  3.634687
-#> Charaxes wakefieldi        1.4714457 2.1419640 1.964666  1.753426  3.121778
-#> Danaus chrysippus orientis 2.6638461 3.3438379 3.204749  4.854663  6.977974
-#> Dira clytus clytus         0.9572942 1.2051394 1.103831  1.826855  4.124810
-#> Eutricha capensis          7.0442637 4.0261000 4.844334 13.081462 17.288906
-#> Hypolimnas misippus        1.2889014 0.7986475 1.019388  1.302557  1.681700
-#>                                  266       267       268       269       270
-#> Acraea horta                3.142328  2.835145  3.356652  2.640474  2.040881
-#> Charaxes wakefieldi         2.992911  2.506933  2.431463  2.332737  2.229537
-#> Danaus chrysippus orientis  6.632207  4.578410  5.019363  5.197448  4.259455
-#> Dira clytus clytus          5.060615  4.791036  3.482903  3.413600  3.675192
-#> Eutricha capensis          17.993587 17.798862 18.791531 20.485226 17.039251
-#> Hypolimnas misippus         1.679938  2.556166  1.753638  1.216761  2.528552
-#>                                  271       272      273      274      275
-#> Acraea horta                2.718914  2.695711 5.550353 4.585274 2.854414
-#> Charaxes wakefieldi         2.516143  2.111580 2.734029 2.167010 1.823029
-#> Danaus chrysippus orientis  4.847742  4.527921 2.925487 2.437157 2.137069
-#> Dira clytus clytus          3.921504  3.855945 2.890259 2.671435 1.937238
-#> Eutricha capensis          17.286045 21.279878 6.719790 8.053473 8.751498
-#> Hypolimnas misippus         1.858680  1.834128 1.484636 1.844940 1.489675
-#>                                 276      277      278      279      280
-#> Acraea horta               2.472244 3.004316 2.660800 2.104140 2.388142
-#> Charaxes wakefieldi        1.971790 1.727527 1.921868 2.026055 2.192892
-#> Danaus chrysippus orientis 3.027809 3.107453 3.190118 3.180884 3.255708
-#> Dira clytus clytus         1.439046 1.657846 1.510720 1.075906 1.565866
-#> Eutricha capensis          6.396260 7.778077 6.033303 4.952733 5.039394
-#> Hypolimnas misippus        2.248347 1.282929 1.217523 1.088494 1.269472
-#>                                 281       282      283      284        286
-#> Acraea horta               2.273897 2.2293586 1.112741 1.461918  1.1183412
-#> Charaxes wakefieldi        2.577315 2.7149443 2.144917 2.221896  1.8878416
-#> Danaus chrysippus orientis 3.708250 4.0351267 3.112897 3.401623  4.9578019
-#> Dira clytus clytus         1.635112 1.2744542 1.355614 1.284227  2.0376552
-#> Eutricha capensis          4.445363 3.8906030 4.322369 4.502231 11.5947122
-#> Hypolimnas misippus        1.451110 0.8922611 1.034308 1.261465  0.9782257
-#>                                   287       302       303       304       305
-#> Acraea horta                0.9513361  2.496584  3.248092  3.087708  3.615153
-#> Charaxes wakefieldi         1.7800402  2.776297  3.615763  2.909067  3.089118
-#> Danaus chrysippus orientis  4.6407563  6.398917  6.822410  5.997630  5.279728
-#> Dira clytus clytus          2.5572585  3.845245  5.028927  4.625385  5.839393
-#> Eutricha capensis          12.6890434 20.189399 12.926872 16.381517 15.397567
-#> Hypolimnas misippus         1.3778468  2.196589  2.326060  2.102464  2.531392
-#>                                  306       307        310      312      314
-#> Acraea horta                3.821695  3.014596  2.7036724 2.029201 2.907073
-#> Charaxes wakefieldi         2.400226  2.444593  1.5563153 1.680356 2.224900
-#> Danaus chrysippus orientis  4.577044  5.103966  3.1595200 2.838581 3.323442
-#> Dira clytus clytus          4.273038  5.001209  2.4158988 1.300445 1.722051
-#> Eutricha capensis          21.286411 18.032813 16.9144687 6.994915 6.187004
-#> Hypolimnas misippus         2.647058  1.317172  0.9895355 1.218670 2.008278
-#>                                 315      316      318      319       322
-#> Acraea horta               2.703435 1.827622 1.771486 1.416612  1.057207
-#> Charaxes wakefieldi        2.839205 1.793396 2.208743 2.260409  2.072105
-#> Danaus chrysippus orientis 3.808353 2.907252 3.154233 3.302117  5.248975
-#> Dira clytus clytus         1.730269 1.286072 1.948472 1.412681  2.568502
-#> Eutricha capensis          4.143696 5.788204 4.781786 4.209576 10.839393
-#> Hypolimnas misippus        1.558612 1.240340 1.729968 1.091294  1.159686
-#>                                   323       324       325       339       340
-#> Acraea horta                0.8673914  1.368134  1.509737  2.156413  2.146494
-#> Charaxes wakefieldi         1.7716446  1.907494  1.995070  2.870917  3.416562
-#> Danaus chrysippus orientis  4.5830642  3.992369  4.170215  6.744498  6.766323
-#> Dira clytus clytus          2.4457970  2.916005  3.543509  3.286281  3.416430
-#> Eutricha capensis          11.0038806 12.601374 13.143940 17.858302 14.287320
-#> Hypolimnas misippus         1.1072453  1.111271  1.427270  2.209005  2.926105
-#>                                  341       342       343       347      348
-#> Acraea horta                2.501647  2.147045  2.998985  2.296110 5.103712
-#> Charaxes wakefieldi         3.636971  2.595827  2.450844  1.411236 2.583587
-#> Danaus chrysippus orientis  6.988110  5.703428  4.556675  3.004407 2.672788
-#> Dira clytus clytus          3.949305  2.922774  4.789833  2.355585 3.322886
-#> Eutricha capensis          13.266846 16.221857 17.883190 20.103208 6.673831
-#> Hypolimnas misippus         2.525237  1.630823  2.470155  1.002102 1.726959
-#>                                 349      350      351      352      353
-#> Acraea horta               3.522183 2.745011 2.711788 2.574691 1.810018
-#> Charaxes wakefieldi        2.986529 2.652449 2.524061 2.170094 2.178698
-#> Danaus chrysippus orientis 3.817893 3.595973 3.770440 3.181886 3.332033
-#> Dira clytus clytus         2.112364 1.901302 1.790641 1.641879 1.250151
-#> Eutricha capensis          3.744006 4.484210 4.760666 5.104384 4.840623
-#> Hypolimnas misippus        1.684047 1.899296 1.421646 1.543575 1.103623
-#>                                 354      355      357      358      359
-#> Acraea horta               1.737554 1.855025 1.143485 1.543545 1.647523
-#> Charaxes wakefieldi        3.130738 2.446108 2.107220 2.689942 2.801952
-#> Danaus chrysippus orientis 3.482403 3.603002 3.131976 4.421757 5.943584
-#> Dira clytus clytus         1.305993 1.397566 1.705907 2.279472 3.555614
-#> Eutricha capensis          3.088339 4.772684 5.085130 5.949721 8.872337
-#> Hypolimnas misippus        2.715097 1.957183 1.506807 1.707711 1.833321
-#>                                  360        362      363       374       375
-#> Acraea horta                1.407015  1.3802325 1.769186  2.804617  3.159178
-#> Charaxes wakefieldi         2.265860  2.0637123 2.849384  3.973970  4.009838
-#> Danaus chrysippus orientis  4.331169  4.3013302 4.997901  7.408491  7.935444
-#> Dira clytus clytus          2.513601  2.1339238 4.297450  6.419577  4.891470
-#> Eutricha capensis          10.827465 11.9473256 9.767218 13.468878 12.736178
-#> Hypolimnas misippus         1.194231  0.9804527 2.122361  3.462189  2.082927
-#>                                  376       377       378       380       383
-#> Acraea horta                3.542574  2.857736  2.738238  2.259494  3.708260
-#> Charaxes wakefieldi         3.951436  3.328915  4.148450  3.709491  2.174424
-#> Danaus chrysippus orientis  7.666521  6.902711  6.801835  7.013336  3.796490
-#> Dira clytus clytus          5.454962  5.654911  4.670782  5.084882  4.790036
-#> Eutricha capensis          13.413084 16.771815 11.069950 12.389632 15.015523
-#> Hypolimnas misippus         2.794723  2.518811  3.745658  2.297483  1.846981
-#>                                  384      385      386      387      388
-#> Acraea horta                3.173267 5.918432 2.534056 2.965224 4.381826
-#> Charaxes wakefieldi         1.737396 3.030818 2.699510 2.543821 2.966738
-#> Danaus chrysippus orientis  3.056380 3.022097 3.559858 3.569419 3.695217
-#> Dira clytus clytus          3.053008 3.517500 2.024382 2.081623 2.473827
-#> Eutricha capensis          15.000018 6.355399 4.454756 5.097380 4.376563
-#> Hypolimnas misippus         1.746999 2.250768 2.323385 2.277639 2.889498
-#>                                 389      390      391      392      393
-#> Acraea horta               3.149915 2.288369 2.344992 2.470076 2.139239
-#> Charaxes wakefieldi        3.422090 2.614943 3.251109 3.076254 3.474422
-#> Danaus chrysippus orientis 3.972030 3.384942 3.921502 3.613022 4.266348
-#> Dira clytus clytus         2.525084 2.169957 2.156382 2.066030 2.456611
-#> Eutricha capensis          3.218463 4.315675 3.804469 3.799467 3.235556
-#> Hypolimnas misippus        1.925530 2.323267 3.016341 3.430194 1.709892
-#>                                 394      395      396       398       399
-#> Acraea horta               1.312576 1.424384 2.627789  1.640415  1.368429
-#> Charaxes wakefieldi        2.691501 3.136779 2.922867  2.441046  2.171216
-#> Danaus chrysippus orientis 3.349127 5.862635 5.345350  4.511724  4.055082
-#> Dira clytus clytus         1.474651 3.926470 3.970270  4.371031  3.048153
-#> Eutricha capensis          3.234031 7.635771 9.054621 10.953108 10.918671
-#> Hypolimnas misippus        1.800926 3.457787 1.668826  1.456579  1.325553
-#>                                  400        401       411       412       413
-#> Acraea horta                2.088933  1.9521366  3.682179  2.323400  3.065229
-#> Charaxes wakefieldi         1.485219  1.6108341  4.480763  3.006992  4.616778
-#> Danaus chrysippus orientis  3.325701  3.0580222  8.118804  5.953709  7.465511
-#> Dira clytus clytus          3.005326  3.9241691  5.784913  4.685295  6.060268
-#> Eutricha capensis          13.801911 11.9642340 12.635237 15.571001 11.139593
-#> Hypolimnas misippus         0.631621  0.9007122  3.600146  2.449106  4.198381
-#>                                  417      424      425      427      428
-#> Acraea horta                2.854386 4.796761 2.870704 3.422252 1.986812
-#> Charaxes wakefieldi         4.368637 3.804363 3.073690 3.481819 3.647234
-#> Danaus chrysippus orientis  7.442839 3.881367 3.517248 3.783173 3.928756
-#> Dira clytus clytus          6.416714 3.110764 1.902252 2.609443 3.273138
-#> Eutricha capensis          10.121709 3.625577 3.651502 3.459351 3.265335
-#> Hypolimnas misippus         2.543031 2.515643 2.984181 2.859098 3.143612
-#>                                 429      431      433       434      435
-#> Acraea horta               1.478480 2.102454 1.624678  1.345338 1.864563
-#> Charaxes wakefieldi        3.321279 3.428317 2.774925  1.959868 2.752724
-#> Danaus chrysippus orientis 3.741730 4.964299 4.285426  3.852747 4.746161
-#> Dira clytus clytus         1.602766 3.597149 4.737917  3.831307 3.435031
-#> Eutricha capensis          2.770395 5.003899 9.382663 12.628640 8.855799
-#> Hypolimnas misippus        2.134082 2.109717 3.001950  1.196336 1.468308
-#>                                 436      437      438       448       449
-#> Acraea horta               2.141700 2.309773 1.559245  2.122824  3.578114
-#> Charaxes wakefieldi        1.940196 2.043345 1.916580  4.195617  4.131561
-#> Danaus chrysippus orientis 3.359926 3.344566 3.082353  6.852733  7.879241
-#> Dira clytus clytus         3.247579 4.351199 3.559702  5.429244  5.382528
-#> Eutricha capensis          9.789156 8.989277 8.863934 11.661571 14.353322
-#> Hypolimnas misippus        1.141041 1.198387 1.434813  4.779974  3.730021
-#>                                  450      458      459      462      463
-#> Acraea horta                3.042027 1.505647 1.770457 1.642949 2.545212
-#> Charaxes wakefieldi         4.270461 2.192094 2.992406 2.278626 3.173663
-#> Danaus chrysippus orientis  8.058063 3.655119 3.113049 2.248993 4.141048
-#> Dira clytus clytus          5.623160 1.759668 1.563730 1.044014 2.497255
-#> Eutricha capensis          12.669225 5.543692 2.357123 2.449984 3.965674
-#> Hypolimnas misippus         2.490784 1.807236 1.571227 1.579978 2.522565
-#>                                 465      466      472       473      474
-#> Acraea horta               1.726290 1.648737 4.536476  2.966779 2.368962
-#> Charaxes wakefieldi        3.123149 3.544431 2.971091  2.201654 2.125277
-#> Danaus chrysippus orientis 3.523939 4.000556 4.320024  3.891258 3.553263
-#> Dira clytus clytus         2.219003 1.755361 5.384520  6.045097 4.669277
-#> Eutricha capensis          3.346283 2.591522 7.203138 10.052248 9.039798
-#> Hypolimnas misippus        2.942194 1.931639 1.796547  1.172127 1.170873
-#>                                 475      476      484       486       487
-#> Acraea horta               2.786354 2.209267 3.101358  3.234049  2.303790
-#> Charaxes wakefieldi        2.313516 2.161124 5.128606  5.132582  4.667549
-#> Danaus chrysippus orientis 3.661408 3.335986 7.260499  8.332908  7.467952
-#> Dira clytus clytus         4.840946 4.213637 7.004084  7.661278  5.888862
-#> Eutricha capensis          8.843874 8.737689 9.784493 10.034204 10.504551
-#> Hypolimnas misippus        1.672924 1.896342 6.536521  3.375707  5.311184
-#>                                  489      494      497      498      499
-#> Acraea horta                3.071036 1.143145 1.622358 2.190565 1.746364
-#> Charaxes wakefieldi         4.703018 1.549845 2.724801 3.348865 2.835613
-#> Danaus chrysippus orientis  7.319558 3.231178 2.683124 2.968369 2.618877
-#> Dira clytus clytus          5.370016 1.130420 1.041359 1.290375 1.384451
-#> Eutricha capensis          10.648048 7.541109 2.466789 2.462687 2.279561
-#> Hypolimnas misippus         4.910972 1.462646 2.652035 4.284075 3.010549
-#>                                 500      503      505       509      510
-#> Acraea horta               1.937212 1.630999 2.587695  1.651849 2.414592
-#> Charaxes wakefieldi        2.726877 2.667578 4.992010  1.741100 2.223356
-#> Danaus chrysippus orientis 2.809204 2.853803 6.221171  3.002830 3.428818
-#> Dira clytus clytus         1.578607 1.777225 5.919318  3.015807 5.260560
-#> Eutricha capensis          2.829056 4.698188 7.883438 10.351909 8.948607
-#> Hypolimnas misippus        1.889549 1.461736 2.235360  1.518043 1.957815
-#>                                 511      512      513      514      521
-#> Acraea horta               2.743629 3.048114 2.431501 1.948252 4.109681
-#> Charaxes wakefieldi        2.441115 2.259898 2.534681 1.892490 5.570111
-#> Danaus chrysippus orientis 3.476019 3.589166 3.643163 3.081715 8.428495
-#> Dira clytus clytus         4.665462 4.694004 4.805462 2.961871 8.817853
-#> Eutricha capensis          7.707324 8.889681 7.149781 8.915188 9.871154
-#> Hypolimnas misippus        1.859675 1.483141 1.427487 1.399389 4.670695
-#>                                  522      523      527      528      529
-#> Acraea horta                4.820074 3.683712 1.034766 1.494419 1.467233
-#> Charaxes wakefieldi         6.337277 5.570450 2.937207 2.334351 2.475204
-#> Danaus chrysippus orientis  8.574253 7.938598 3.927236 3.926308 3.753986
-#> Dira clytus clytus         10.188441 9.478638 1.898134 1.806884 2.046683
-#> Eutricha capensis           8.480309 9.688630 5.797843 5.318560 5.175738
-#> Hypolimnas misippus         6.395428 5.449585 2.026530 2.514417 3.065108
-#>                                 530       531      532       533      534
-#> Acraea horta               1.521572 0.9284953 1.064135 0.8629525 2.200570
-#> Charaxes wakefieldi        2.486304 1.8913856 2.104426 1.9110846 3.649001
-#> Danaus chrysippus orientis 3.737403 3.2070252 3.304401 3.1493429 3.285376
-#> Dira clytus clytus         1.895862 1.6117607 1.444254 1.6809912 1.406068
-#> Eutricha capensis          5.606476 6.4411892 5.826511 5.6970024 2.016343
-#> Hypolimnas misippus        4.070270 2.8006355 3.506618 2.3255473 3.481580
-#>                                 535      537      538      540       542
-#> Acraea horta               1.412482 1.378248 2.876865 5.334210  2.857906
-#> Charaxes wakefieldi        2.959982 2.562671 2.196360 4.455471  2.796893
-#> Danaus chrysippus orientis 2.746361 2.452716 1.748720 4.452286  3.821962
-#> Dira clytus clytus         1.323875 1.171505 1.645735 5.066029  6.035911
-#> Eutricha capensis          2.181421 2.472777 3.550337 4.961436 11.058565
-#> Hypolimnas misippus        3.277823 2.865358 1.168956 2.200527  1.404586
-#>                                 544       545      546      547      548
-#> Acraea horta               4.571914  2.456322 2.764044 3.127711 2.670108
-#> Charaxes wakefieldi        3.269952  1.775925 2.516530 2.335746 2.075738
-#> Danaus chrysippus orientis 4.720016  3.228526 3.692189 3.687461 3.358418
-#> Dira clytus clytus         6.491802  3.384571 5.835526 5.361937 4.153803
-#> Eutricha capensis          7.570295 11.299593 8.260036 8.495020 9.965217
-#> Hypolimnas misippus        2.385465  1.366902 2.245475 1.487092 2.139734
-#>                                 549      550      551      552      558
-#> Acraea horta               2.833685 2.353108 3.097637 1.891926 5.339520
-#> Charaxes wakefieldi        2.411881 2.091228 2.649962 2.169415 7.108849
-#> Danaus chrysippus orientis 3.869594 3.374169 3.663053 3.342554 9.128018
-#> Dira clytus clytus         4.203661 3.379498 6.016591 4.871050 9.925284
-#> Eutricha capensis          8.371361 9.008607 7.813820 7.725863 8.150353
-#> Hypolimnas misippus        1.381476 1.455256 2.198717 1.474570 7.472122
-#>                                 559      565      566      567      568
-#> Acraea horta               3.846104 1.723501 1.213303 1.615024 1.066919
-#> Charaxes wakefieldi        6.241384 2.511492 2.749788 2.613576 2.133640
-#> Danaus chrysippus orientis 8.891579 3.807990 3.937151 3.940620 3.318547
-#> Dira clytus clytus         7.850986 2.002214 1.778560 2.152586 1.409487
-#> Eutricha capensis          8.611395 5.295063 4.377026 5.189827 5.320536
-#> Hypolimnas misippus        4.980324 3.680008 3.568255 3.328669 2.486629
-#>                                 569      570      571      572      573
-#> Acraea horta               1.102370 1.015778 2.592089 1.747355 2.666613
-#> Charaxes wakefieldi        2.209505 2.469298 3.679793 2.840400 4.921402
-#> Danaus chrysippus orientis 3.536566 3.841528 3.035929 2.686566 3.535654
-#> Dira clytus clytus         1.891101 1.792775 1.773437 1.319432 1.854687
-#> Eutricha capensis          5.632524 4.714979 2.227392 2.489718 1.421524
-#> Hypolimnas misippus        3.023569 2.770460 5.756111 2.721015 4.176495
-#>                                 574       577      578      579      581
-#> Acraea horta               1.921177 2.3001942 4.656782 4.633200 2.506278
-#> Charaxes wakefieldi        3.906692 2.9094673 3.939993 3.742686 2.740343
-#> Danaus chrysippus orientis 3.126356 2.0012857 4.581683 4.364439 3.552511
-#> Dira clytus clytus         1.739772 1.4390540 8.920716 8.169235 4.985174
-#> Eutricha capensis          1.608531 2.1528654 7.935020 7.390045 9.740373
-#> Hypolimnas misippus        3.003419 0.7389485 1.583564 1.704683 1.787010
-#>                                 582      583      584      585      587
-#> Acraea horta               3.808706 2.768460 4.474712 2.721628 3.263293
-#> Charaxes wakefieldi        3.363193 2.453226 3.338298 2.801079 3.316052
-#> Danaus chrysippus orientis 3.991156 3.676306 4.589910 4.013168 4.134985
-#> Dira clytus clytus         8.289120 5.575108 7.068287 6.460873 7.830914
-#> Eutricha capensis          6.664445 8.481304 6.764023 7.120992 5.732002
-#> Hypolimnas misippus        3.386934 1.962712 1.678913 1.943963 1.934170
-#>                                 588      589      590      607      608
-#> Acraea horta               1.565884 2.205225 2.362545 1.074372 2.358426
-#> Charaxes wakefieldi        2.160483 2.605245 2.614705 1.975612 3.776163
-#> Danaus chrysippus orientis 3.146956 3.675601 3.771479 3.418463 3.410632
-#> Dira clytus clytus         3.939563 4.296226 3.746097 1.410900 1.431309
-#> Eutricha capensis          7.198157 6.604155 6.441616 5.561345 2.137080
-#> Hypolimnas misippus        1.557885 1.710572 1.624182 1.703963 3.661934
-#>                                 612      613      614      615      616
-#> Acraea horta               4.661764 3.296644 1.651383 4.095473 3.858312
-#> Charaxes wakefieldi        4.332887 3.204544 2.029482 4.213093 3.453151
-#> Danaus chrysippus orientis 2.371534 1.974210 2.017271 4.320308 4.073567
-#> Dira clytus clytus         2.542927 1.718372 1.193064 7.105290 8.853375
-#> Eutricha capensis          1.954637 2.435389 3.962028 7.025004 8.017049
-#> Hypolimnas misippus        2.589205 2.415812 1.052528 2.168085 1.506417
-#>                                 617      618      619      620      621
-#> Acraea horta               4.201532 2.947082 4.954802 4.689743 3.246344
-#> Charaxes wakefieldi        3.594842 3.279651 3.323075 3.641303 2.654426
-#> Danaus chrysippus orientis 4.264966 3.726923 4.020198 4.652069 3.923367
-#> Dira clytus clytus         7.107371 6.472513 8.364965 9.569672 5.568683
-#> Eutricha capensis          7.969706 8.298659 8.827314 6.944860 8.301590
-#> Hypolimnas misippus        2.243277 2.218082 1.846069 2.727008 2.158903
-#>                                 622      623      624      625      626
-#> Acraea horta               2.632501 2.763038 3.346350 2.809393 1.988213
-#> Charaxes wakefieldi        2.697113 2.810616 3.096625 3.208278 2.183358
-#> Danaus chrysippus orientis 3.638400 3.807619 3.957415 3.669498 3.186073
-#> Dira clytus clytus         5.079234 7.016577 7.123541 6.060450 4.701595
-#> Eutricha capensis          6.803688 6.909089 6.576673 5.352078 8.471545
-#> Hypolimnas misippus        2.101716 2.208458 2.633074 3.171163 2.012302
-#>                                 627      640      643      644      645
-#> Acraea horta               2.037478 1.985132 1.270080 1.081448 2.243596
-#> Charaxes wakefieldi        2.633922 2.776659 3.046591 2.347526 4.264185
-#> Danaus chrysippus orientis 3.640906 3.953403 3.940263 3.436733 3.433223
-#> Dira clytus clytus         4.074332 2.558126 2.278738 2.084729 2.029706
-#> Eutricha capensis          6.249863 5.200635 3.683379 5.026249 1.746374
-#> Hypolimnas misippus        1.550426 4.676979 3.109065 3.284091 3.326070
-#>                                 647       651      652      654      655
-#> Acraea horta               2.199676 3.2467015 5.584115 4.500347 4.444147
-#> Charaxes wakefieldi        4.729296 2.4967477 5.175443 4.245216 3.550796
-#> Danaus chrysippus orientis 3.323766 2.1315460 4.480694 4.008644 4.184150
-#> Dira clytus clytus         2.675352 1.6873445 6.405315 7.659315 7.223207
-#> Eutricha capensis          1.497482 3.1302727 5.163868 5.470647 7.766074
-#> Hypolimnas misippus        5.773735 0.8210218 2.848182 1.937233 1.594003
-#>                                 656      657      658      659      660
-#> Acraea horta               4.827585 3.543875 4.704271 2.411754 2.615053
-#> Charaxes wakefieldi        3.855333 3.092334 4.148778 2.954623 3.036179
-#> Danaus chrysippus orientis 4.400229 3.924032 4.500097 3.926609 4.224442
-#> Dira clytus clytus         6.399737 7.054553 7.852730 6.072435 5.337860
-#> Eutricha capensis          7.810752 7.519355 5.087404 6.695892 6.255638
-#> Hypolimnas misippus        2.289398 2.989719 3.585250 2.272875 1.623488
-#>                                 661      662      663      664      677
-#> Acraea horta               2.790180 3.322825 1.696632 2.702523 1.622184
-#> Charaxes wakefieldi        3.247582 3.835342 2.598833 2.796625 3.944359
-#> Danaus chrysippus orientis 3.989065 4.734019 3.401622 3.738227 4.439424
-#> Dira clytus clytus         7.803836 6.631905 3.834344 6.214551 2.352222
-#> Eutricha capensis          5.838887 5.259329 5.992820 7.324622 2.995656
-#> Hypolimnas misippus        2.456051 2.197223 1.755306 2.438032 5.760468
-#>                                 679      680      685      686      687
-#> Acraea horta               1.644654 1.463197 3.517556 2.305799 2.141850
-#> Charaxes wakefieldi        2.922796 2.978120 3.130949 2.521867 2.437053
-#> Danaus chrysippus orientis 4.007341 4.091410 2.331415 2.013067 1.888243
-#> Dira clytus clytus         2.607960 2.859126 2.381586 1.633636 1.310645
-#> Eutricha capensis          4.191155 4.430007 3.042867 3.054146 3.136710
-#> Hypolimnas misippus        3.066130 4.272254 1.629989 1.037877 1.644848
-#>                                 689      690      691       692      693
-#> Acraea horta               4.176685 3.460745 2.533973 2.5638967 2.509605
-#> Charaxes wakefieldi        3.369311 3.762315 2.248135 2.8745494 3.266321
-#> Danaus chrysippus orientis 2.320260 2.446704 1.877329 2.3675203 2.239710
-#> Dira clytus clytus         2.448240 4.010775 1.962705 2.7760524 2.863336
-#> Eutricha capensis          3.270470 2.711217 4.731636 3.4987342 3.257283
-#> Hypolimnas misippus        1.918022 1.715808 1.476562 0.9508323 1.635994
-#>                                 694       695      696      697      700
-#> Acraea horta               2.503933 1.5054963 3.446472 2.719085 1.491221
-#> Charaxes wakefieldi        2.798569 1.8909036 4.086701 3.243958 2.139147
-#> Danaus chrysippus orientis 1.942433 2.0271075 4.652228 3.945193 3.100883
-#> Dira clytus clytus         2.300523 2.3782869 6.895789 6.841070 4.952770
-#> Eutricha capensis          3.082793 3.4116724 4.753514 5.558753 7.867142
-#> Hypolimnas misippus        1.606977 0.7730695 2.933653 2.010253 1.794497
-#>                                 701      713      714      720      721
-#> Acraea horta               2.094019 1.941458 1.629585 1.594375 1.772559
-#> Charaxes wakefieldi        3.160989 3.994850 2.907419 3.961048 4.988044
-#> Danaus chrysippus orientis 3.748163 4.420590 3.844733 3.458994 3.685665
-#> Dira clytus clytus         5.794064 3.743173 2.768235 1.949961 2.694725
-#> Eutricha capensis          5.432379 3.394763 4.308346 2.146200 1.449092
-#> Hypolimnas misippus        2.203220 6.019827 3.568534 4.024681 4.584729
-#>                                 725      727      728      729      730
-#> Acraea horta               3.884996 2.911369 3.072960 2.080813 2.786175
-#> Charaxes wakefieldi        3.946475 3.483662 3.328468 2.802679 3.463010
-#> Danaus chrysippus orientis 2.389188 2.341049 2.321081 2.008187 2.458398
-#> Dira clytus clytus         3.502500 3.608297 2.797015 2.318410 3.491813
-#> Eutricha capensis          2.559823 3.000674 3.213637 3.287484 3.210864
-#> Hypolimnas misippus        2.395666 1.842558 1.587539 1.430509 1.558441
-#>                                 731      732      733      734      735
-#> Acraea horta               1.985441 1.602439 1.741998 2.370185 1.753455
-#> Charaxes wakefieldi        2.947208 2.205919 2.382421 2.974946 1.916213
-#> Danaus chrysippus orientis 2.037736 2.040134 2.133897 2.397018 2.010080
-#> Dira clytus clytus         2.698354 1.739470 2.481111 2.631923 1.875127
-#> Eutricha capensis          3.350662 2.438706 2.428549 1.925554 3.025703
-#> Hypolimnas misippus        2.394451 2.968638 2.846755 3.231394 2.162964
-#>                                 749      750      751      755      761
-#> Acraea horta               1.591114 2.375457 1.484928 1.140528 3.476696
-#> Charaxes wakefieldi        2.828695 4.160667 4.132893 3.357748 4.237969
-#> Danaus chrysippus orientis 3.560555 4.894621 4.701738 4.264501 2.414098
-#> Dira clytus clytus         2.106780 3.536994 2.888374 2.204378 2.558572
-#> Eutricha capensis          4.478202 3.521410 2.907238 3.176731 1.985429
-#> Hypolimnas misippus        5.290002 4.589206 3.682420 3.089689 2.683355
-#>                                 762      763      764      765      766
-#> Acraea horta               3.050181 3.681939 3.438817 3.029898 3.458427
-#> Charaxes wakefieldi        3.492863 3.492101 3.795121 3.592301 3.311113
-#> Danaus chrysippus orientis 2.262281 2.505387 2.493687 2.311556 2.154284
-#> Dira clytus clytus         3.627062 3.757551 3.932432 3.495512 2.707874
-#> Eutricha capensis          3.278456 3.176607 2.830406 2.737970 2.962155
-#> Hypolimnas misippus        2.426008 1.416525 1.701577 1.753706 2.143344
-#>                                 767      768      769      770      771
-#> Acraea horta               1.444916 2.600532 1.886384 1.374586 1.459082
-#> Charaxes wakefieldi        2.628302 4.586845 3.339123 2.936502 2.966993
-#> Danaus chrysippus orientis 1.754663 3.216992 2.794053 2.616123 2.688202
-#> Dira clytus clytus         2.832949 3.473897 2.572521 2.133446 2.908875
-#> Eutricha capensis          3.070613 1.618830 1.970262 2.072705 2.064078
-#> Hypolimnas misippus        1.965948 6.393154 3.646407 2.535480 2.853726
-#>                                 772      773      788      798      799
-#> Acraea horta               1.238583 1.215061 1.504214 4.796462 4.626858
-#> Charaxes wakefieldi        3.049787 3.281077 3.655011 4.173998 4.688371
-#> Danaus chrysippus orientis 2.580439 2.635913 4.126038 2.569564 2.680993
-#> Dira clytus clytus         2.277134 2.222311 2.302569 4.242492 4.936027
-#> Eutricha capensis          1.874693 1.803387 3.397203 3.454872 2.457304
-#> Hypolimnas misippus        3.040882 3.725277 6.421138 3.283286 3.490369
-#>                                 800      801       802      803      804
-#> Acraea horta               3.844525 3.212363 1.9288127 3.818940 2.792692
-#> Charaxes wakefieldi        4.046153 3.985518 2.8284482 4.934814 4.394914
-#> Danaus chrysippus orientis 2.439879 2.367271 2.2386124 2.843489 3.325980
-#> Dira clytus clytus         4.388053 3.351792 2.2001756 4.481683 3.225941
-#> Eutricha capensis          2.650528 2.848305 3.1768723 2.203472 1.655297
-#> Hypolimnas misippus        2.242410 2.884402 0.9113985 2.135644 3.939759
-#>                                 805      806      807      808      809
-#> Acraea horta               1.852997 1.808132 1.674036 1.218990 1.463416
-#> Charaxes wakefieldi        3.142411 3.379825 3.651758 4.416903 3.339075
-#> Danaus chrysippus orientis 2.839572 2.716737 2.878815 3.084857 2.890121
-#> Dira clytus clytus         3.089907 3.010403 2.570280 2.636435 2.573787
-#> Eutricha capensis          2.191290 1.934872 1.809960 1.180834 2.003075
-#> Hypolimnas misippus        2.527648 4.132790 3.521419 3.515213 2.624389
-#>                                 810        82      823      824        83
-#> Acraea horta               1.273315  2.861670 1.827437 1.512906  2.609168
-#> Charaxes wakefieldi        3.746130  1.597933 4.149051 4.070842  1.452602
-#> Danaus chrysippus orientis 2.829465  4.470170 4.458183 4.444711  4.209027
-#> Dira clytus clytus         2.951799  2.623300 4.316325 2.887103  2.811066
-#> Eutricha capensis          1.700983 31.853069 3.319228 2.648191 35.053955
-#> Hypolimnas misippus        4.425641  1.172738 6.879410 4.156837  1.285587
-#>                                 836      837      838      839        84
-#> Acraea horta               4.167412 4.454236 3.199919 3.793481  3.430735
-#> Charaxes wakefieldi        4.600496 3.987150 4.145746 4.109914  1.792274
-#> Danaus chrysippus orientis 2.534179 2.395467 2.351109 2.549368  4.541169
-#> Dira clytus clytus         4.666226 3.717430 3.862594 3.806441  3.006331
-#> Eutricha capensis          2.572019 2.710436 2.472549 2.416390 27.503315
-#> Hypolimnas misippus        3.451982 2.647808 2.770347 1.605210  1.197992
-#>                                 840      841      842      843      844
-#> Acraea horta               2.084474 2.191675 2.355542 1.991782 1.918135
-#> Charaxes wakefieldi        4.119866 3.888812 4.427857 4.526716 4.058757
-#> Danaus chrysippus orientis 3.039022 3.071814 3.123896 3.121011 2.863940
-#> Dira clytus clytus         2.944377 3.117449 3.322867 4.749708 4.268535
-#> Eutricha capensis          1.812682 1.792363 1.563705 1.505343 1.608723
-#> Hypolimnas misippus        5.907845 4.596574 4.558888 6.483343 4.922502
-#>                                 845      846      847      848      874
-#> Acraea horta               1.827477 1.221263 1.307045 1.188856 3.879305
-#> Charaxes wakefieldi        3.706928 3.672120 3.407695 3.467448 5.042001
-#> Danaus chrysippus orientis 2.728789 2.679429 2.598322 2.579519 2.866227
-#> Dira clytus clytus         2.514479 3.176088 3.334765 2.001365 4.838569
-#> Eutricha capensis          1.731771 1.674528 1.989706 1.652678 2.535831
-#> Hypolimnas misippus        5.079505 5.055254 6.055500 4.357585 3.276108
-#>                                 875      876      877      878      879
-#> Acraea horta               2.921470 2.217272 1.841827 3.213147 1.860488
-#> Charaxes wakefieldi        3.379948 4.110309 3.908309 5.076075 4.448839
-#> Danaus chrysippus orientis 2.140571 2.976450 2.810476 3.577942 2.995599
-#> Dira clytus clytus         4.433330 3.709008 3.620319 4.094991 3.856353
-#> Eutricha capensis          2.989375 1.855883 1.787983 1.559628 1.327697
-#> Hypolimnas misippus        2.367177 6.250647 7.129127 5.911622 4.481500
-#>                                 880      881      882      883       884
-#> Acraea horta               1.650725 1.952629 1.209465 1.501626 0.9651316
-#> Charaxes wakefieldi        3.449044 5.102776 3.196489 3.734420 2.9376791
-#> Danaus chrysippus orientis 2.655920 3.146138 2.613216 2.716396 2.3498635
-#> Dira clytus clytus         2.594780 3.596057 2.357932 3.489180 2.5433856
-#> Eutricha capensis          1.960168 1.175589 1.871595 1.637928 1.9064914
-#> Hypolimnas misippus        7.176999 6.562327 3.498970 5.231454 4.0454389
-#>                                 912      913      914      915      916
-#> Acraea horta               2.419249 2.776463 2.486331 1.852110 2.230718
-#> Charaxes wakefieldi        4.419204 5.252449 5.420245 4.168118 4.100883
-#> Danaus chrysippus orientis 2.995625 3.411049 3.558691 2.932135 2.746182
-#> Dira clytus clytus         2.894532 4.969887 4.566142 4.704642 2.964154
-#> Eutricha capensis          1.663918 1.406458 1.386670 1.650393 1.706062
-#> Hypolimnas misippus        8.542238 7.038170 6.303966 6.194989 5.831904
-#>                                 917      918      919      920      921
-#> Acraea horta               2.054416 1.884004 1.828395 1.528112 1.205469
-#> Charaxes wakefieldi        4.469106 4.562977 4.683642 4.161762 3.999573
-#> Danaus chrysippus orientis 2.889657 3.216985 3.150920 3.051187 2.750469
-#> Dira clytus clytus         3.641488 3.870507 3.331476 3.907327 3.009489
-#> Eutricha capensis          1.563517 1.419982 1.446716 1.533582 1.437642
-#> Hypolimnas misippus        9.096659 4.226642 6.966277 5.375490 5.463367
-#>                                 950      951      953      954       955
-#> Acraea horta               2.407455 2.365278 1.977267 1.998699 1.9846075
-#> Charaxes wakefieldi        5.275476 5.081720 4.387108 5.306580 5.8758100
-#> Danaus chrysippus orientis 3.386701 3.349446 3.041349 3.289745 3.2021511
-#> Dira clytus clytus         5.014946 3.711366 4.496121 4.666748 3.8881161
-#> Eutricha capensis          1.457621 1.372533 1.576680 1.239063 0.9922402
-#> Hypolimnas misippus        8.360986 6.479667 5.140320 5.875737 7.8255363
-#>                                 956      957      958      988      989
-#> Acraea horta               1.483330 1.553889 1.239991 2.878620 1.841443
-#> Charaxes wakefieldi        5.001064 4.635383 4.163382 6.490092 4.603586
-#> Danaus chrysippus orientis 3.064863 3.118474 2.645489 3.626733 2.968241
-#> Dira clytus clytus         4.489016 4.172148 3.851123 5.822280 3.630764
-#> Eutricha capensis          1.252660 1.310109 1.424915 1.118887 1.427728
-#> Hypolimnas misippus        6.562900 5.220297 6.596687 8.941571 6.458553
-#>                                 990      991      992      993      994
-#> Acraea horta               2.257803 2.796256 2.030892 1.564671 1.453817
-#> Charaxes wakefieldi        6.033002 5.854684 5.533700 4.093081 4.010876
-#> Danaus chrysippus orientis 3.530996 3.476394 3.401597 2.736042 2.779034
-#> Dira clytus clytus         5.223635 4.642810 4.967488 3.484057 3.794495
-#> Eutricha capensis          1.215913 1.150576 1.206531 1.480968 1.443524
-#> Hypolimnas misippus        7.623542 6.127163 6.844614 6.129254 5.356811
+head(Nstar[1:2,1:4])
+#>                                1026     1027     1028     1029
+#> Utetheisa pulchella        1.761536 1.561990 1.771892 1.364692
+#> Danaus chrysippus orientis 3.239507 3.001678 3.677266 3.446281
 
 # trait-based distances (interaction strengths)
 # - g_all[i, j] is the trait dissimilarity between species i and j.
 g_all  = cis$g_all
-head(g_all)
-#>                            Acraea horta Charaxes wakefieldi
-#> Acraea horta                  0.0000000           0.3041460
-#> Charaxes wakefieldi           0.3041460           0.0000000
-#> Danaus chrysippus orientis    0.3577512           0.4718073
-#> Dira clytus clytus            0.3936204           0.4814306
-#> Eutricha capensis             0.4134583           0.4612162
-#> Hypolimnas misippus           0.5706830           0.4926691
-#>                            Danaus chrysippus orientis Dira clytus clytus
-#> Acraea horta                                0.3577512          0.3936204
-#> Charaxes wakefieldi                         0.4718073          0.4814306
-#> Danaus chrysippus orientis                  0.0000000          0.3199516
-#> Dira clytus clytus                          0.3199516          0.0000000
-#> Eutricha capensis                           0.4892746          0.5149563
-#> Hypolimnas misippus                         0.4566735          0.3998373
-#>                            Eutricha capensis Hypolimnas misippus
-#> Acraea horta                       0.4134583           0.5706830
-#> Charaxes wakefieldi                0.4612162           0.4926691
-#> Danaus chrysippus orientis         0.4892746           0.4566735
-#> Dira clytus clytus                 0.5149563           0.3998373
-#> Eutricha capensis                  0.0000000           0.6497507
-#> Hypolimnas misippus                0.6497507           0.0000000
-#>                            Junonia natalica natalica Junonia oenone oenone
-#> Acraea horta                               0.4612133             0.4541450
-#> Charaxes wakefieldi                        0.5127649             0.2881686
-#> Danaus chrysippus orientis                 0.3582458             0.4200614
-#> Dira clytus clytus                         0.4959568             0.5496448
-#> Eutricha capensis                          0.4485547             0.5760250
-#> Hypolimnas misippus                        0.4907241             0.5034943
-#>                            Leptotes pirithous Mesocelis monticola
-#> Acraea horta                        0.5129972           0.5437012
-#> Charaxes wakefieldi                 0.5354576           0.3841327
-#> Danaus chrysippus orientis          0.5645264           0.4974097
-#> Dira clytus clytus                  0.5050138           0.4458534
-#> Eutricha capensis                   0.4123579           0.4335488
-#> Hypolimnas misippus                 0.4784413           0.5058630
-#>                            Mylothris agathina agathina Nudaurelia cytherea
-#> Acraea horta                                 0.4895114           0.5576822
-#> Charaxes wakefieldi                          0.5513977           0.5038974
-#> Danaus chrysippus orientis                   0.4227823           0.4542675
-#> Dira clytus clytus                           0.3400324           0.4837985
-#> Eutricha capensis                            0.5448484           0.5464023
-#> Hypolimnas misippus                          0.3784668           0.2372383
-#>                            Pieris brassicae Precis archesia archesia
-#> Acraea horta                      0.6880261                0.3634717
-#> Charaxes wakefieldi               0.5113449                0.4981140
-#> Danaus chrysippus orientis        0.5290636                0.4480285
-#> Dira clytus clytus                0.5961900                0.5157646
-#> Eutricha capensis                 0.6912039                0.5864822
-#> Hypolimnas misippus               0.3931083                0.5205462
-#>                            Telchinia esebria Telchinia serena Vanessa cardui
-#> Acraea horta                       0.3846088        0.5429170      0.6239640
-#> Charaxes wakefieldi                0.5234983        0.3759496      0.4486358
-#> Danaus chrysippus orientis         0.3778860        0.4409018      0.5248909
-#> Dira clytus clytus                 0.4232726        0.5009763      0.4088823
-#> Eutricha capensis                  0.6483213        0.4640343      0.6665711
-#> Hypolimnas misippus                0.5415628        0.4987773      0.3280948
-#>                            Amata cerbera Papilio demodocus demodocus
-#> Acraea horta                   0.5598758                   0.2597808
-#> Charaxes wakefieldi            0.4434218                   0.4736231
-#> Danaus chrysippus orientis     0.4309091                   0.3641993
-#> Dira clytus clytus             0.3153878                   0.3943992
-#> Eutricha capensis              0.5649080                   0.5548255
-#> Hypolimnas misippus            0.3003224                   0.5137972
-#>                            Protogoniomorpha parhassus Junonia elgiva
-#> Acraea horta                                0.2426728      0.5064653
-#> Charaxes wakefieldi                         0.2939509      0.4144333
-#> Danaus chrysippus orientis                  0.4670588      0.3927294
-#> Dira clytus clytus                          0.4302457      0.5739214
-#> Eutricha capensis                           0.4608644      0.4685654
-#> Hypolimnas misippus                         0.5172598      0.5419046
-#>                            Telchinia encedon encedon Rhodogastria amasis
-#> Acraea horta                               0.3445460           0.3608207
-#> Charaxes wakefieldi                        0.3587363           0.3715177
-#> Danaus chrysippus orientis                 0.3573376           0.3981438
-#> Dira clytus clytus                         0.5504748           0.4436517
-#> Eutricha capensis                          0.4639129           0.5307252
-#> Hypolimnas misippus                        0.5635878           0.4679238
-#>                            Utetheisa pulchella Bicyclus safitza safitza
-#> Acraea horta                         0.3349957                0.3602102
-#> Charaxes wakefieldi                  0.5035135                0.4185504
-#> Danaus chrysippus orientis           0.3980720                0.3483183
-#> Dira clytus clytus                   0.4743108                0.4208342
-#> Eutricha capensis                    0.4456029                0.4459795
-#> Hypolimnas misippus                  0.6069859                0.4871182
-#>                            Rubraea petraea Cacyreus lingeus      inv1      inv2
-#> Acraea horta                     0.4393985        0.4236482 0.4716460 0.5056534
-#> Charaxes wakefieldi              0.4713585        0.3091901 0.3303897 0.4057451
-#> Danaus chrysippus orientis       0.4228180        0.5471794 0.4526810 0.4403851
-#> Dira clytus clytus               0.4650575        0.6237749 0.4723731 0.5712483
-#> Eutricha capensis                0.2222283        0.4624784 0.4324384 0.4597438
-#> Hypolimnas misippus              0.5895349        0.4753625 0.4700450 0.4912156
-#>                                 inv3      inv4      inv5      inv6      inv7
-#> Acraea horta               0.3216107 0.4083555 0.4606710 0.3342920 0.4482907
-#> Charaxes wakefieldi        0.2801333 0.3508234 0.5077901 0.3881554 0.3461780
-#> Danaus chrysippus orientis 0.4375771 0.4044631 0.3655486 0.3935351 0.5479688
-#> Dira clytus clytus         0.4616505 0.5853374 0.4386255 0.4274004 0.3917015
-#> Eutricha capensis          0.3234677 0.4666314 0.4516298 0.4354035 0.5495290
-#> Hypolimnas misippus        0.4940078 0.6408994 0.4913856 0.4376189 0.5292979
-#>                                 inv8      inv9     inv10
-#> Acraea horta               0.3980359 0.4775394 0.3748373
-#> Charaxes wakefieldi        0.4707841 0.4242280 0.4466263
-#> Danaus chrysippus orientis 0.5474664 0.3749042 0.4737134
-#> Dira clytus clytus         0.3987751 0.4622563 0.4987956
-#> Eutricha capensis          0.4384759 0.4701587 0.5546257
-#> Hypolimnas misippus        0.5029632 0.4302811 0.4437495
+tail(g_all[1:2,1:4])
+#>                            Utetheisa pulchella Danaus chrysippus orientis
+#> Utetheisa pulchella                   0.000000                   0.398072
+#> Danaus chrysippus orientis            0.398072                   0.000000
+#>                            Telchinia serena Vanessa cardui
+#> Utetheisa pulchella               0.4164589      0.5341222
+#> Danaus chrysippus orientis        0.4409018      0.5248909
 ```
 
 *The matrix `g_all` provides a quantitative framework for trait-based
@@ -3076,27 +2351,27 @@ a_ij = comp$a_ij   # Gaussian competition coefficients
 sigma_t
 #> [1] 0.08758267
 head(d_ij[1:4,1:4])
-#>      Acraea horta Eutricha capensis Hypolimnas misippus
-#> inv1    0.4716460         0.4324384           0.4700450
-#> inv2    0.5056534         0.4597438           0.4912156
-#> inv3    0.3216107         0.3234677           0.4940078
-#> inv4    0.4083555         0.4666314           0.6408994
-#>      Junonia natalica natalica
-#> inv1                 0.3472671
-#> inv2                 0.3321891
-#> inv3                 0.4882970
-#> inv4                 0.4087344
+#>      Charaxes wakefieldi Pieris brassicae Junonia natalica natalica
+#> inv1           0.4455386        0.5636112                 0.3361560
+#> inv2           0.3796433        0.5182350                 0.3264219
+#> inv3           0.3233117        0.5268791                 0.4470511
+#> inv4           0.3714113        0.3924734                 0.3911780
+#>      Rubraea petraea
+#> inv1       0.3004515
+#> inv2       0.4612006
+#> inv3       0.3190029
+#> inv4       0.4183745
 head(a_ij[1:4,1:4])
-#>      Acraea horta Eutricha capensis Hypolimnas misippus
-#> inv1 5.043824e-07      5.084087e-06        5.564678e-07
-#> inv2 5.779776e-08      1.038906e-06        1.476881e-07
-#> inv3 1.180174e-03      1.091531e-03        1.234444e-07
-#> inv4 1.902950e-05      6.854140e-07        2.356122e-12
-#>      Junonia natalica natalica
-#> inv1              3.856056e-04
-#> inv2              7.519014e-04
-#> inv3              1.779401e-07
-#> inv4              1.864927e-05
+#>      Charaxes wakefieldi Pieris brassicae Junonia natalica natalica
+#> inv1        2.402236e-06     1.017576e-09              6.325683e-04
+#> inv2        8.315968e-05     2.495953e-08              9.631308e-04
+#> inv3        1.098731e-03     1.385141e-08              2.199881e-06
+#> inv4        1.244327e-04     4.359923e-05              4.658171e-05
+#>      Rubraea petraea
+#> inv1    2.783259e-03
+#> inv2    9.519114e-07
+#> inv3    1.315947e-03
+#> inv4    1.109039e-05
 
 # Example use with N* (from Section 7.1):
 # For invader i at site s, total expected competitive pressure (scalar) could be:
@@ -3162,35 +2437,35 @@ env_dist = ek$env_dist   # sites × species (distance)
 g_env    = ek$K_env      # sites × species (Gaussian similarity), if requested
 
 sigma_e
-#> [1] 0.04740812
+#> [1] 0.0495915
 head(env_opt[1:4,1:4])
-#>                                   env1        env2         env3        env4
-#> Acraea horta               -0.03863891 -0.12234252 0.0093751877  0.12598720
-#> Charaxes wakefieldi         0.29508207  0.04223080 0.0001094638 -0.08790976
-#> Danaus chrysippus orientis -0.09139371 -0.19942460 0.2255452778  0.17620522
-#> Dira clytus clytus          0.17746843  0.02704718 0.2600548763  0.29166305
+#>                                   env1        env2        env3       env4
+#> Utetheisa pulchella        -0.45572568 -0.25326724 -0.05813116  0.1956375
+#> Danaus chrysippus orientis -0.09139371 -0.19942460  0.22554528  0.1762052
+#> Telchinia serena           -0.15295732 -0.10760847  0.16373671  0.2630910
+#> Vanessa cardui              0.17546879 -0.03901351  0.02578274 -0.1113054
 head(env_dist[1:4,1:4])
-#>      Acraea horta Charaxes wakefieldi Danaus chrysippus orientis
-#> 1026    0.2646698           0.2304165                  0.2901035
-#> 1027    0.2731754           0.2389221                  0.2986090
-#> 1028    0.2778923           0.2436389                  0.3033259
-#> 1029    0.2957653           0.2615120                  0.3211989
-#>      Dira clytus clytus
-#> 1026          0.2677902
-#> 1027          0.2762958
-#> 1028          0.2810127
-#> 1029          0.2988857
+#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena
+#> 1026           0.2919083                  0.2901035        0.2891394
+#> 1027           0.3004139                  0.2986090        0.2976450
+#> 1028           0.3051308                  0.3033259        0.3023619
+#> 1029           0.3230038                  0.3211989        0.3202349
+#>      Vanessa cardui
+#> 1026      0.2443649
+#> 1027      0.2528705
+#> 1028      0.2575874
+#> 1029      0.2754604
 head(g_env[1:4,1:4])
-#>      Acraea horta Charaxes wakefieldi Danaus chrysippus orientis
-#> 1026 1.706239e-07        7.421447e-06               7.392615e-09
-#> 1027 6.166690e-08        3.053500e-06               2.426660e-09
-#> 1028 3.458730e-08        1.840275e-06               1.290304e-09
-#> 1029 3.534383e-09        2.469326e-07               1.077086e-10
-#>      Dira clytus clytus
-#> 1026       1.178999e-07
-#> 1027       4.211117e-08
-#> 1028       2.346485e-08
-#> 1029       2.339041e-09
+#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena
+#> 1026        2.994181e-08               3.707048e-08     4.152730e-08
+#> 1027        1.075079e-08               1.339372e-08     1.505410e-08
+#> 1028        6.015103e-09               7.519820e-09     8.467670e-09
+#> 1029        6.137287e-10               7.773871e-10     8.815289e-10
+#>      Vanessa cardui
+#> 1026   5.339339e-06
+#> 1027   2.259750e-06
+#> 1028   1.385049e-06
+#> 1029   1.996438e-07
 ```
 
 *This environmental kernel enables assessment of site-level invasibility
@@ -3250,9 +2525,9 @@ am = assemble_matrices(
 # Check results
 str(am, max.level=1)
 #> List of 3
-#>  $ I_raw            : num [1:10, 1:27, 1:415] 1.57e-12 1.73e-13 1.15e-09 9.93e-12 8.99e-13 ...
+#>  $ I_raw            : num [1:10, 1:27, 1:415] 2.77e-09 2.40e-07 6.25e-07 4.29e-08 2.41e-10 ...
 #>   ..- attr(*, "dimnames")=List of 3
-#>  $ pressure_inv_site: num [1:10, 1:415] 5.85e-07 2.94e-06 1.00e-06 1.17e-07 1.17e-08 ...
+#>  $ pressure_inv_site: num [1:10, 1:415] 5.39e-07 1.45e-06 1.23e-06 5.49e-07 1.57e-05 ...
 #>   ..- attr(*, "dimnames")=List of 2
 #>  $ meta             :List of 6
 
@@ -3318,34 +2593,18 @@ strengths to final invasion fitness.
 
 **Conceptual flow**
 
-``` r
-cat("```text\n",
-"I_raw  (invader x resident x site)\n",
-"   │  Sum over residents (j)\n",
-"   ▼\n",
-"C_raw  (invader x site)\n",
-"   │  Subtract from predicted growth r_mat\n",
-"   ▼\n",
-"λ (invasion fitness) variants\n",
-"   │\n",
-"   ├── λ_raw       = r - C_raw\n",
-"   ├── λ_scaled    = r - (C_raw / J)\n",
-"   ├── λ_rel       = r - (A %*% N_rel)\n",
-"   └── λ_logis     = r - inv_logit( k * (C_target - x0) )\n")
-#> ```text
-#>  I_raw  (invader x resident x site)
-#>     │  Sum over residents (j)
-#>     ▼
-#>  C_raw  (invader x site)
-#>     │  Subtract from predicted growth r_mat
-#>     ▼
-#>  λ (invasion fitness) variants
-#>     │
-#>     ├── λ_raw       = r - C_raw
-#>     ├── λ_scaled    = r - (C_raw / J)
-#>     ├── λ_rel       = r - (A %*% N_rel)
-#>     └── λ_logis     = r - inv_logit( k * (C_target - x0) )
-```
+    #> I_raw  (invader x resident x site)
+    #>     │  Sum over residents (j)
+    #>     ▼
+    #>  C_raw  (invader x site)
+    #>     │  Subtract from predicted growth r_mat
+    #>     ▼
+    #>  λ (invasion fitness) variants
+    #>     │
+    #>     ├── λ_raw       = r - C_raw
+    #>     ├── λ_scaled    = r - (C_raw / J)
+    #>     ├── λ_rel       = r - (A %*% N_rel)
+    #>     └── λ_logis     = r - inv_logit( k * (C_target - x0) )
 
 ``` r
 # Compute invasion fitness (uses am$I_raw from assemble_matrices and pred$predictions)
@@ -3363,19 +2622,19 @@ fitness = compute_invasion_fitness(
 # Check results
 str(fitness, max.level=1)
 #> List of 8
-#>  $ C_raw        : num [1:10, 1:415] 5.85e-07 2.94e-06 1.00e-06 1.17e-07 1.17e-08 ...
+#>  $ C_raw        : num [1:10, 1:415] 5.39e-07 1.45e-06 1.23e-06 5.49e-07 1.57e-05 ...
 #>   ..- attr(*, "dimnames")=List of 2
-#>  $ r_mat        : num [1:10, 1:415] 8.02 7.71 2.52 1.34 2.36 ...
+#>  $ r_mat        : num [1:10, 1:415] 9.09 22.79 4.49 2.73 7.63 ...
 #>   ..- attr(*, "dimnames")=List of 2
-#>  $ lambda_raw   : num [1:10, 1:415] 8.02 7.71 2.52 1.34 2.36 ...
+#>  $ lambda_raw   : num [1:10, 1:415] 9.09 22.79 4.49 2.73 7.63 ...
 #>   ..- attr(*, "dimnames")=List of 2
-#>  $ lambda_scaled: num [1:10, 1:415] 8.02 7.71 2.52 1.34 2.36 ...
+#>  $ lambda_scaled: num [1:10, 1:415] 9.09 22.79 4.49 2.73 7.63 ...
 #>   ..- attr(*, "dimnames")=List of 2
-#>  $ lambda_rel   : num [1:10, 1:415] 8.02 7.71 2.52 1.34 2.36 ...
+#>  $ lambda_rel   : num [1:10, 1:415] 9.09 22.79 4.49 2.72 7.63 ...
 #>   ..- attr(*, "dimnames")=List of 2
-#>  $ lambda_logis : num [1:10, 1:415] 7.519 7.214 2.021 0.844 1.857 ...
+#>  $ lambda_logis : num [1:10, 1:415] 8.59 22.29 3.99 2.23 7.13 ...
 #>   ..- attr(*, "dimnames")=List of 2
-#>  $ lambda       : num [1:10, 1:415] 7.519 7.214 2.021 0.844 1.857 ...
+#>  $ lambda       : num [1:10, 1:415] 8.59 22.29 3.99 2.23 7.13 ...
 #>   ..- attr(*, "dimnames")=List of 2
 #>  $ meta         :List of 5
 
@@ -3751,6 +3010,7 @@ cluster_means = invader_summary %>%
 
 # Define category labels in descending order of risk/friendly invasion fitness
 category_labels = c("very-high", "high", "medium", "low", "very-low")[1:nrow(cluster_means)]
+# category_labels = c("high", "medium", "low")[1:nrow(cluster_means)]
 
 # Create a named vector to recode numeric cluster assignments to descriptive categories
 cluster_map = setNames(category_labels, cluster_means$invader_cluster)
@@ -3787,6 +3047,7 @@ site_category_df = site_sum %>%
 
 # Assign descriptive category labels to site clusters
 site_labels = c("very-high", "high", "medium", "low", "very-low")[1:nrow(site_category_df)]
+# site_labels = c("high", "medium", "low")[1:nrow(site_category_df)]
 site_map = setNames(site_labels, site_category_df$site_cluster)
 
 site_sum = site_sum %>%
@@ -3850,21 +3111,21 @@ by mean invasion fitness, as plain-text console output. This is useful
 for tabular reporting and rapid identification of outlier risks.
 
     #> ==== Top 3 Invaders by Mean Invasion Fitness ====
-    #> 1. inv5: 13.67
-    #> 2. inv9: 10.481
-    #> 3. inv8: 6.857
+    #> 1. inv3: 5.703
+    #> 2. inv4: 5.611
+    #> 3. inv9: 5.14
     #> ==== Bottom 3 Invaders by Mean Invasion Fitness ====
-    #> 1. inv7: 2.612
-    #> 2. inv6: 2.383
-    #> 3. inv10: 2.134
+    #> 1. inv2: 2.816
+    #> 2. inv10: 2.3
+    #> 3. inv7: 2.289
     #> ==== Top 3 Sites by Mean Invasion Fitness ====
-    #> 1. 494: 13.513
-    #> 2. 118: 13.44
-    #> 3. 122: 12.831
+    #> 1. 558: 8.559
+    #> 2. 823: 8.338
+    #> 3. 1026: 8.173
     #> ==== Bottom 3 Sites by Mean Invasion Fitness ====
-    #> 1. 700: 2.607
-    #> 2. 663: 2.566
-    #> 3. 588: 2.507
+    #> 1. 729: 1.046
+    #> 2. 614: 0.952
+    #> 3. 802: 0.927
 
 ### 11.3. Trait Rankings by Mean Invasion Fitness
 
@@ -3878,20 +3139,20 @@ interpretable, trait-based metric for prioritizing further functional or
 mechanistic investigation.
 
     #> ==== Top 3 Continuous Traits by Correlation with Mean Invasion Fitness ====
-    #> 1. trait_cont4: 0.377
-    #> 2. trait_cont10: 0.364
-    #> 3. trait_cont8: 0.353
+    #> 1. trait_cont10: 0.403
+    #> 2. trait_cont6: 0.321
+    #> 3. trait_cont5: 0.302
     #> 
     #> ==== Bottom 3 Continuous Traits by Correlation with Mean Invasion Fitness ====
-    #> 1. trait_cont5: -0.442
-    #> 2. trait_cont2: -0.463
-    #> 3. trait_cont1: -0.627
+    #> 1. trait_cont2: -0.278
+    #> 2. trait_cont9: -0.459
+    #> 3. trait_cont1: -0.505
     #> ==== Categorical Traits: Top Value per Trait by Mean Invasion Fitness ====
-    #> trait_cat11: grassland (10.17)
-    #> trait_cat12: diurnal (7.10)
-    #> trait_cat13: bivoltine (8.45)
-    #> trait_cat14: nectarivore (8.98)
-    #> trait_cat15: resident (6.32)
+    #> trait_cat11: grassland (4.53)
+    #> trait_cat12: nocturnal (4.01)
+    #> trait_cat13: bivoltine (4.25)
+    #> trait_cat14: nectarivore (4.56)
+    #> trait_cat15: migratory (4.36)
 
 ### 11.4. Faceted site maps for key invaders
 

@@ -42,6 +42,7 @@ reference:
       - get_trait_data
       - compute_trait_similarity
       - compute_trait_dispersion
+      - compute_trait_space
       - build_glmm_formula
       - simulate_invaders
       - predict_invader_response

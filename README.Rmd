@@ -4,9 +4,16 @@ author: "Sandra MacFadyen"
 date: "2025-08-08"
 output:
   github_document:
-    html_preview: false
+    html_preview: true
     toc: true
     toc_depth: 2
+  html_document:
+    toc: true
+    theme: cerulean     # or bootstrap, etc.
+    mathjax: default
+editor_options: 
+  markdown: 
+    wrap: sentence  
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -60,7 +67,7 @@ The primary goal of this research milestone is to develop a workflow that quanti
 
 # 2. Workflow and Step-by-Step Tutorial
 
-This workflow demonstrates a comprehensive workflow for quantifying and visualizing invasion fitness, operationalizing the concepts of **trait centrality**, **trait dispersion**, **interaction strength**, **invasibility**, and **invasion fitness** using simulated site-level species occurrence, abundance, and trait data. Analyses include calculation of trait-based distances, clustering, trait-space mapping, generalized linear mixed modeling of abundance, and explicit estimation of invasion fitness for hypothetical invaders across a landscape.
+This workflow demonstrates a comprehensive workflow for quantifying and visualizing invasion fitness, operationalizing the concepts of **trait centrality**, **trait dispersion**, **interaction strength**, **invasion fitness**, **invasibility**, and **invasivenessy** using site-level environment, species occurrence, abundance, and trait data. Analyses include calculation of trait-based distances, clustering, trait-space mapping, generalized linear mixed modeling of abundance, and explicit estimation of invasion fitness for hypothetical invaders across a landscape.
 
 ---
 
@@ -135,6 +142,7 @@ To acquire and prepare species occurrence data for biodiversity modelling using 
 
 # Ensure the package is loaded
 library(dissmapr)
+sessionInfo()$otherPkgs$dissmapr$Version
 ```
 
 ### 4.2. Import and harmonise biodiversity-occurrence data
@@ -150,41 +158,46 @@ bfly_data = get_occurrence_data(
 
 # Check results but only a subset of columns to fit in console
 dim(bfly_data)
-# str(bfly_data[,c(51,52,22,23,1,14,16,17,30)]) 
+# str(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
 head(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
 
-# Use local data adpated from GBIF
+# Use local data loaded into the environment as a data.frame
 # local_df = read.csv('D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata/site_species.csv')
 # head(local_df)
+# bfly_data = get_occurrence_data(
+#   data = local_df,
+#   source_type = 'data_frame')
 
-bfly_data = get_occurrence_data(
-  data = system.file("extdata", "site_species.csv", package = "invasimapr"),
-  source_type = 'local_csv'
-)
-
-# Check results but only a subset of columns to fit in console
-dim(bfly_data)
-str(bfly_data) 
-head(bfly_data)
+# # Use local .csv file in `invasimapr` package
+# bfly_data = get_occurrence_data(
+#   data = system.file("extdata", "site_species.csv", package = "invasimapr"),
+#   source_type = 'local_csv')
+# 
+# # Check results but only a subset of columns to fit in console
+# dim(bfly_data)
+# # str(bfly_data) 
+# head(bfly_data)
 ```
 
 ### 4.3. Format Biodiversity Records to Long / Wide   
 Next, [`format_df()`](https://macsands.github.io/dissmapr/reference/format_df.html) restructures the raw records into tidy long and wide formats. This assigns unique site IDs, extracts key fields (coordinates, species names, observation values), and prepares two main outputs: `site_obs` (long format for mapping) and `site_spp` (wide format for species-level analysis).
 
 ```{r format-df}
-# bfly_result = format_df(
-#   data        = bfly_data, # A `data.frame` of biodiversity records
-#   species_col = 'verbatimScientificName', # Name of species column (required for `"long"`)
-#   value_col   = 'pa', # Name of value column (e.g. presence/abundance; for `"long"`)
-#   extra_cols  = NULL, # Character vector of other columns to keep
-#   format      = 'long' # Either`"long"` or `"wide"`. If `NULL`, inferred from `species_col` & `value_col`
-# )
-
+# Continue from GBIF data
 bfly_result = format_df(
   data        = bfly_data, # A `data.frame` of biodiversity records
-  species_col = 'sp_name', # Name of species column (required for `"long"`)
-  value_col   = 'count' # Name of value column (e.g. presence/abundance; for `"long"`)
-  )
+  species_col = 'verbatimScientificName', # Name of species column (required for `"long"`)
+  value_col   = 'pa', # Name of value column (e.g. presence/abundance; for `"long"`)
+  extra_cols  = NULL, # Character vector of other columns to keep
+  format      = 'long' # Either`"long"` or `"wide"`
+)
+
+# # Continue using local data
+# bfly_result = format_df(
+#   data        = bfly_data, # A `data.frame` of biodiversity records
+#   species_col = 'sp_name', # Name of species column (required for `"long"`)
+#   value_col   = 'count' # Name of value column (e.g. presence/abundance; for `"long"`)
+#   )
 
 # Check `bfly_result` structure
 str(bfly_result, max.level = 1)
@@ -279,7 +292,52 @@ par(old_par)  # reset plotting parameters
 ### 4.5. Retrieve, crop, resample, and link environmental rasters to sampling sites
 Environmental predictors are appended using [`get_enviro_data()`](https://macsands.github.io/dissmapr/reference/get_enviro_data.html), which buffers the grid, downloads raster data (e.g. WorldClim bioclimatic variables), resamples it, and links values to grid-cell centroids. This produces both a site-by-environment data frame (`env_df`) and a SpatRaster object (`env_r`), aligning biological and environmental data.
 
+```{r spp-filter}
+# Read in target species list
+species = read.csv(system.file("extdata", 
+                               "rsa_butterfly_species_names_n27_100plus.csv", 
+                               package = "invasimapr"), stringsAsFactors = FALSE)$species
+
+# Filter `grid_spp` and convert to long-format
+grid_obs = grid_spp %>%
+  dplyr::select(-mapsheet) %>%                              # Drop mapsheet metadata
+  pivot_longer(
+    cols = -c(grid_id, centroid_lon, centroid_lat, obs_sum, spp_rich), # Keep core metadata columns only
+    names_to  = "species",
+    values_to = "count",
+    values_drop_na = TRUE
+  ) %>%
+  filter(
+    # obs_sum > 100,                                   # Only high-observation sites
+    count > 0,                                       # Remove absent species
+    species %in% !!species                           # Keep only target species
+  ) %>%
+  rename(
+    site_id = grid_id,    # Change 'grid_id' to 'site_id'
+    x = centroid_lon,     # Change 'centroid_lon' to 'x'
+    y = centroid_lat      # Change 'centroid_lat' to 'y'
+  ) %>%
+  relocate(site_id, x, y, obs_sum, spp_rich, species, count)
+
+dim(grid_obs)
+head(grid_obs)
+length(unique(grid_obs$species))
+length(unique(grid_obs$site_id))
+```
+
+
 ```{r get-enviro}
+# Reshape site-by-species matrix to wide format and clean
+grid_spp = grid_obs %>%
+  pivot_wider(
+    names_from = species,
+    values_from = count,
+    values_fill = 0  # Replace missing counts with 0
+  )
+
+dim(grid_spp)
+# head(grid_spp)
+
 # Retrieve 19 bioclim layers (≈10-km, WorldClim v2.1) for all grid centroids
 data_path = "inst/extdata"               # cache folder for rasters
 enviro_list = get_enviro_data(
@@ -294,7 +352,7 @@ enviro_list = get_enviro_data(
   ext_cols   = c("obs_sum", "spp_rich")   # carry effort & richness through
 )
 
-# Quick checks 
+# Quick checks
 str(enviro_list, max.level = 1)
 
 # (Optional) Assign concise layer names for readability
@@ -309,13 +367,18 @@ names(enviro_list$env_rast) = names_env
 env_r = enviro_list$env_rast    # cropped climate stack
 env_df = enviro_list$env_df      # site × environment data-frame
 
-# Quick checks 
+# Quick checks
 env_r; dim(env_df); head(env_df)
 
 # Build the final site × environment table
 grid_env = env_df %>%
-  dplyr::select(grid_id, centroid_lon, centroid_lat,
-                obs_sum, spp_rich, dplyr::everything())
+  dplyr::select(site_id, x, y,
+                obs_sum, spp_rich, dplyr::everything()) %>%
+  mutate(across(
+    .cols = -c(site_id, x, y, obs_sum, spp_rich),  # all other columns
+    .fns  = ~ as.numeric(scale(.x)), # Scale bio
+    .names = "{.col}"  # keep same names
+  ))
 
 str(grid_env, max.level = 1)
 head(grid_env)
@@ -357,49 +420,6 @@ This step converts the wide site-by-species abundance matrix into a long-format 
 
 These actions ensure your analysis is based on well-sampled taxa and avoids downstream issues related to sparse or missing data.
 
-
-```{r spp-filter}
-# Reshape site-by-species matrix to long format and clean
-grid_obs = grid_spp %>% 
-  dplyr::select(-mapsheet) %>%                         # Drop mapsheet metadata
-  pivot_longer(
-    cols = -c(grid_id, centroid_lon, centroid_lat,     # Keep core metadata columns only
-              obs_sum, spp_rich),
-    names_to  = "species",
-    values_to = "count",
-    values_drop_na = TRUE ) %>%                        # Drop missing values
-  filter(count > 0) %>%                                # Remove zero-count (absent) records
-  relocate(grid_id, centroid_lon, centroid_lat,
-           obs_sum, spp_rich, species, count)
-
-# # Only keep observations where species have >500 observations
-# site_spp_obs = site_spp_obs %>%
-#   # select only the columns you care about
-#   dplyr::select(10, 13, 14, 16:17, 19, 22:23, 30:33) %>%
-#   # drop rows where species is NA
-#   filter(!is.na(species)) %>%
-#   # add a count column called "n_obs"
-#   add_count(species, name = "n_obs") %>%
-#   # keep only species with >100 observations
-#   filter(n_obs > 500) %>%
-#   # (optional) sort by descending count
-#   arrange(desc(n_obs))
-
-# # Further filter: retain only observations with count > 10 and non-missing species
-# grid_obs = grid_obs %>%
-#   filter(!is.na(species)) %>%
-#   filter(count > 10) %>%
-#   arrange(desc(count))                                 # Optionally, sort by descending count
-
-# Final data check
-# Examine structure and summary statistics before further filtering
-str(grid_obs)
-dim(grid_obs)
-length(unique(grid_obs$species))
-summary(grid_obs$count)
-
-```
-
 ### 5.2. Retrieve and Link Trait and Metadata for Each Species
 This utility provides an automated pipeline for extracting and joining both biological trait data and rich metadata for any focal species. The function integrates several steps:
 
@@ -412,7 +432,6 @@ This function greatly simplifies the assembly of a unified species-trait-metadat
 
 ```{r get-traits}
 # # Local trait data.frame version 1
-# btfly_traits1 = read.csv("D:/Data/Traits/Butterflies/Middleton_etal_2020/Middleton_etal_2020_traits.csv") # adjust path
 # btfly_traits1 = read.csv(system.file("extdata", "Middleton_etal_2020_traits.csv", package = "invasimapr"))
 # str(btfly_traits1)
 # length(unique(btfly_traits1$Species))
@@ -459,8 +478,8 @@ This function greatly simplifies the assembly of a unified species-trait-metadat
 # )
 
 # Local trait data.frame version 2
-# btfly_traits3 = read.csv("D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata/species_traits.csv") # adjust path
 btfly_traits3 = read.csv(system.file("extdata", "species_traits.csv", package = "invasimapr"))
+# btfly_traits3 = read.csv(system.file("extdata", "species_traits_sim.csv", package = "invasimapr"))
 str(btfly_traits3)
 # length(unique(btfly_traits3$species))
 
@@ -496,29 +515,12 @@ sum(!is.na(spp_traits$species))
 ### 5.3. Load local combined site, environment, and trait data
 
 ```{r data-import}
-# Optional - Set working directory
-# setwd('D:/Methods/R/myR_Packages/myCompletePks/invasimapr/inst/extdata')
-
-# Read primary data (one row per site–species combination)
+# Read GBIF species occurrence with simulated traits and enviro data (one row per site-species combination)
 # site_env_spp = read.csv('site_env_spp_simulated.csv')
 site_env_spp = read.csv(system.file("extdata", "site_env_spp_simulated.csv", package = "invasimapr"))
+# site_env_spp = read.csv(system.file("extdata", "site_env_spp_trt_sim.csv", package = "invasimapr"))
 dim(site_env_spp)
 str(site_env_spp)
-
-# # Format 'dissmapr' output to be the same
-# grid_obs = grid_obs %>%
-#   rename(
-#     site_id = grid_id,    # Change 'grid_id' to 'site_id'
-#     x = centroid_lon,     # Change 'centroid_lon' to 'x'
-#     y = centroid_lat      # Change 'centroid_lat' to 'y'
-#   )
-
-# grid_env = grid_env %>%
-#   rename(
-#     site_id = grid_id,      # Change 'grid_id' to 'site_id'
-#     x = centroid_lon,     # Change 'centroid_lon' to 'x'
-#     y = centroid_lat      # Change 'centroid_lat' to 'y'
-#   )
 
 # Check the results
 names(grid_obs)
@@ -559,15 +561,15 @@ dim(site_env)
 head(site_env[1:6,1:6])
 
 # site_env = grid_env %>%
-#   dplyr::select(site_id, x, y, 
-#                 obs_sum, spp_rich, 
+#   dplyr::select(site_id, x, y,
+#                 obs_sum, spp_rich,
 #                 bio01:bio19) %>%
 #   distinct() %>%
 #   mutate(.site_id_rn = site_id) %>%
 #   column_to_rownames(var = ".site_id_rn")
-
-dim(site_env)
-head(site_env[1:6,1:6])
+# 
+# dim(site_env)
+# head(site_env[1:6,1:6])
 ```
 
 ### 6.3. Extract **site-species** abundances and presence-absence
@@ -611,13 +613,20 @@ Here we build the species-by-trait matrix (`spp_trait`), including all measured 
 # Species-by-trait matrix (wide)
 # Extract and process continuous, categorical, and ordinal trait data
 spp_trait = spp_traits %>% # site_env_spp
-  dplyr::select(species, trait_cont1:trait_cont10, 
-                trait_cat11:trait_cat15, 
+  dplyr::select(species, trait_cont1:trait_cont10,
+                trait_cat11:trait_cat15,
                 trait_ord16:trait_ord20) %>%
   distinct() %>%
   mutate(.species_rn = species) %>%
   column_to_rownames(var = ".species_rn") %>%
   mutate(across(where(is.character), as.factor))
+
+# spp_trait = spp_traits %>% # site_env_spp
+#   dplyr::select(species, trt1:trt20) %>%
+#   distinct() %>%
+#   mutate(.species_rn = species) %>%
+#   column_to_rownames(var = ".species_rn") %>%
+#   mutate(across(where(is.character), as.factor))
 
 dim(spp_trait)
 head(spp_trait[1:6,1:6])
@@ -684,8 +693,9 @@ df_traits = compute_trait_similarity(spp_trait[,-1])
 head(df_traits)
 
 # Barplot: trait-level similarity (percent identity or scaled distance)
-ggplot(df_traits, aes(x = reorder(Trait, Similarity), y = Similarity, fill = Trait)) +
+ggplot(df_traits, aes(x = reorder(Trait, Similarity), y = Similarity, fill = Similarity)) +
   geom_col(show.legend = FALSE) +
+  scale_fill_viridis_c(option = "inferno") +  # ramp color scale
   # ylim(0,100) +
   labs(
     title = "Average Trait Similarity (%)",
@@ -964,6 +974,7 @@ Finally, we convert all character variables to factors so they’re correctly ha
 
 ```{r fit-data, cache=TRUE}
 # Prepare long-format data
+# Use simulated traits
 longDF = site_env_spp %>%
   dplyr::select(
     site_id, x, y, species, count,           # Metadata + response
@@ -974,7 +985,16 @@ longDF = site_env_spp %>%
   ) %>%
   mutate(across(where(is.character), as.factor))
 
-head(longDF)
+# # Use real enviro and simulated traits
+# longDF = site_env_spp %>%
+#   dplyr::select(
+#     site_id, x, y, species, count,            # Metadata + response
+#     bio01:bio19,                              # Environment variables
+#     trt1:trt20
+#   ) %>%
+#   mutate(across(where(is.character), as.factor))
+# names(longDF)
+# head(longDF)
 
 # # Use `grid_obs` from `dissmapr` imports instead
 # longDF = grid_obs %>%
@@ -1006,6 +1026,7 @@ fml = build_glmm_formula(
   response             = "count",            # Response variable
   species_col          = "species",          # Random effect grouping
   site_col             = "site_id",          # Random effect grouping
+  # env_cols             = names(longDF[,6:24]),
   include_interactions = TRUE,               # Add all trait × environment terms
   random_effects       = c("(1 | species)", "(1 | site_id)")
 )
@@ -1016,7 +1037,6 @@ fml
 #         (trait_cont1 + ... + trait_cat15):(env1 + ... + env10) +
 #         (1 | species) + (1 | site_id)
 ```
-
 
 ### 5.3. Fit the GLMM
 
@@ -1174,12 +1194,12 @@ cis = compute_interaction_strength(
 # site × resident abundance matrix
 # - Nstar is built from predictions and restricted to resident species.
 Nstar  = cis$Nstar
-head(Nstar)
+head(Nstar[1:2,1:4])
 
 # trait-based distances (interaction strengths)
 # - g_all[i, j] is the trait dissimilarity between species i and j.
 g_all  = cis$g_all
-head(g_all)
+tail(g_all[1:2,1:4])
 ```
 
 *The matrix `g_all` provides a quantitative framework for trait-based interaction strength among all species pairs.*
@@ -1367,8 +1387,8 @@ The diagram below shows the information flow from raw interaction strengths to f
 
 **Conceptual flow**
 
-```{r text}
-cat("```text\n",
+```{r text, echo=FALSE}
+cat(
 "I_raw  (invader x resident x site)\n",
 "   │  Sum over residents (j)\n",
 "   ▼\n",
@@ -1695,6 +1715,7 @@ cluster_means = invader_summary %>%
 
 # Define category labels in descending order of risk/friendly invasion fitness
 category_labels = c("very-high", "high", "medium", "low", "very-low")[1:nrow(cluster_means)]
+# category_labels = c("high", "medium", "low")[1:nrow(cluster_means)]
 
 # Create a named vector to recode numeric cluster assignments to descriptive categories
 cluster_map = setNames(category_labels, cluster_means$invader_cluster)
@@ -1731,6 +1752,7 @@ site_category_df = site_sum %>%
 
 # Assign descriptive category labels to site clusters
 site_labels = c("very-high", "high", "medium", "low", "very-low")[1:nrow(site_category_df)]
+# site_labels = c("high", "medium", "low")[1:nrow(site_category_df)]
 site_map = setNames(site_labels, site_category_df$site_cluster)
 
 site_sum = site_sum %>%
