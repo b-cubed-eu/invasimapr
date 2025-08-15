@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_environment_kernel.R
 \name{compute_environment_kernel}
 \alias{compute_environment_kernel}
-\title{Environmental optima and site–species environmental distance (with optional kernel)}
+\title{Environmental optima and site-species environmental distance (with optional kernel)}
 \usage{
 compute_environment_kernel(
   site_env,
@@ -37,7 +37,7 @@ auto-detect as all non-\code{site_col} non-coordinate columns.}
 
 \item{coord_cols}{character. Columns to exclude from env detection (e.g., coords). Default \code{c("x","y")}.}
 
-\item{method}{character. Distance metric for site–optimum comparison: \code{"gower"} (default),
+\item{method}{character. Distance metric for site-optimum comparison: \code{"gower"} (default),
 \code{"euclidean"}, or \code{"manhattan"}.}
 
 \item{gower_stand}{logical. Standardise numeric vars inside Gower (default \code{TRUE}).}
@@ -51,7 +51,7 @@ non-zero \code{env_dist} using \code{sigma_method}.}
 \item{sigma_method}{character. How to estimate \code{sigma_e} when missing: \code{"sd"} (default),
 \code{"median"}, or \code{"iqr"}.}
 
-\item{scale_01}{logical. Min–max scale distances to \link{0,1} \strong{before} \code{"similarity"};
+\item{scale_01}{logical. Min-max scale distances to \link{0,1} \strong{before} \code{"similarity"};
 for non-Gower metrics only, this is applied automatically if needed.}
 }
 \value{
@@ -84,15 +84,55 @@ controls how quickly suitability decays with mismatch; by default we estimate
 \eqn{\sigma_e} from the distribution of \eqn{d_{sj}}.
 }
 \examples{
-# Suppose: site_env (site_id, x, y, env1:env10) and a long prediction table pred$predictions
-ek = compute_environmental_kernel(
-  site_env        = site_env,
-  predictions     = pred$predictions,   # columns: species, site_id, pred
-  site_col        = "site_id",
-  method          = "gower",
-  kernel          = "gaussian",         # similarity
-  sigma_method    = "sd"
+# --- Simulate sites, environments, and species weights (no extra packages) ---
+set.seed(123)
+
+# Sites and species
+n_sites <- 6
+n_spp   <- 4
+sites   <- paste0("s", seq_len(n_sites))
+spp     <- paste0("sp", seq_len(n_spp))
+
+# Site-level environment table (include optional coord columns)
+site_env <- data.frame(
+  site_id = sites,
+  x       = rnorm(n_sites),
+  y       = rnorm(n_sites),
+  temp    = runif(n_sites, 5, 25),     # numeric env var
+  precip  = runif(n_sites, 400, 900),  # numeric env var
+  check.names = FALSE
 )
-str(ek$env_opt); dim(ek$env_dist); dim(ek$K_env)
+
+# Sites × species abundance/weights (any non-negative numbers)
+abundance_wide <- matrix(
+  rexp(n_sites * n_spp, rate = 1),
+  nrow = n_sites, ncol = n_spp,
+  dimnames = list(sites, spp)
+)
+
+# Compute environmental optima and site–species distances
+ek <- compute_environment_kernel(
+  site_env       = site_env,
+  abundance_wide = abundance_wide,   # avoids needing tidyr
+  site_col       = "site_id",
+  method         = "euclidean",      # uses stats::dist (no extra deps)
+  kernel         = "gaussian",       # also returns K_env
+  sigma_method   = "sd"
+)
+
+# Inspect results
+str(ek$env_opt)       # species × env optima
+dim(ek$env_dist)      # sites × species distance matrix
+if (!is.null(ek$K_env)) range(ek$K_env, na.rm = TRUE)
+
+# (Optional) If you prefer Gower distances, set method = "gower".
+# This uses cluster::daisy internally and may require the 'cluster' package:
+# ek_gower <- compute_environment_kernel(
+#   site_env       = site_env,
+#   abundance_wide = abundance_wide,
+#   site_col       = "site_id",
+#   method         = "gower",
+#   kernel         = "similarity"
+# )
 
 }

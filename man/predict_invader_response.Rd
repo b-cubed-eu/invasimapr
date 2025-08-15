@@ -52,8 +52,8 @@ A list with:
 }
 }
 \description{
-Builds a complete \strong{site × species} prediction grid by crossing a species–trait table
-(residents + simulated invaders) with a site–environment table, then calls the fitted
+Builds a complete \strong{site × species} prediction grid by crossing a species-trait table
+(residents + simulated invaders) with a site-environment table, then calls the fitted
 model’s \code{predict()} to obtain expected responses (e.g., abundance). The function is
 robust to factor level issues and mirrors a typical \code{expand_grid()} + left-join workflow.
 }
@@ -89,7 +89,7 @@ out <- predict_invader_response(
   species_col    = "species",
   site_col       = "site_id",
   response_type  = "response",
-  include_random = FALSE,  # population-level
+  include_random = FALSE, # population-level
   site_aug       = dplyr::select(spp_rich_obs, site_id, obs_sum, spp_rich)
 )
 head(out$predictions)

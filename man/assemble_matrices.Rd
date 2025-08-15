@@ -32,7 +32,7 @@ Long table with columns \code{species}, \code{site_id}, \code{pred}.
 Used only if \code{invader_pred_wide} is \code{NULL}.}
 
 \item{env_dist}{numeric matrix (sites × residents).
-Site–resident environmental distance (e.g., from \code{compute_environment_kernel()}).
+Site-resident environmental distance (e.g., from \code{compute_environment_kernel()}).
 Row names = site IDs; column names = resident IDs.}
 
 \item{sigma_e}{numeric or \code{NULL}.
@@ -68,15 +68,35 @@ where \eqn{r_{i s}} and \eqn{r_{j s}} are predicted (or expected) abundances,
 and \eqn{K^{(env)}_{j s}} is an environmental matching kernel for resident \eqn{j} at site \eqn{s}.
 }
 \examples{
-# comp$a_ij from compute_competition(), cis$Nstar from compute_interaction_strength(),
-# ek$env_dist or ek$K_env from compute_environment_kernel(), and 'pred' from predict_invader_response()
-am <- assemble_matrices(
-  a_ij              = comp$a_ij,
-  Nstar             = cis$Nstar,
-  predictions       = pred$predictions,  # or invader_pred_wide = <sites × invaders matrix>
-  env_dist          = ek$env_dist,
-  sigma_e           = ek$sigma_e         # or pass K_env = ek$K_env and omit env_dist/sigma_e
+# Minimal, self-contained toy example
+set.seed(1)
+inv <- paste0("inv", 1:2)
+res <- paste0("sp", 1:3)
+sites <- paste0("s", 1:4)
+
+# invader × resident Gaussian kernel (a_ij)
+a_ij <- matrix(runif(length(inv) * length(res), 0.1, 0.9),
+  nrow = length(inv), dimnames = list(inv, res)
 )
-dim(am$I_raw); dim(am$pressure_inv_site)
+
+# residents × sites abundances (Nstar)
+Nstar <- matrix(abs(rnorm(length(res) * length(sites), 5, 2)),
+  nrow = length(res), dimnames = list(res, sites)
+)
+
+# site × resident environmental kernel (K_env)
+K_env <- matrix(runif(length(sites) * length(res), 0.3, 1),
+  nrow = length(sites), dimnames = list(sites, res)
+)
+
+# long predictions data.frame (pred) with r_is
+predictions <- expand.grid(site_id = sites, species = inv)
+predictions$pred <- rlnorm(nrow(predictions), 0, 0.4)
+
+am <- assemble_matrices(
+  a_ij = a_ij, Nstar = Nstar,
+  K_env = K_env, predictions = predictions
+)
+str(am)
 
 }

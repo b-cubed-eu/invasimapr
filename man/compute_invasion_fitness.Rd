@@ -66,7 +66,7 @@ predicted growth.
 \details{
 Let \eqn{I_{i j s}} be the per-pair impact at site \eqn{s} (e.g., from
 \code{assemble_matrices()}), with invader \eqn{i}, resident \eqn{j}. The total
-competition penalty at each invader–site is
+competition penalty at each invader-site is
 \deqn{C_{i s} = \sum_{j} I_{i j s}.}
 Given a matrix of invader growth predictions \eqn{r_{i s}}, we compute:
 \itemize{
@@ -80,14 +80,55 @@ selected via \code{logistic_on = "raw"} or \code{"rel"}.
 }
 }
 \examples{
+# --- Minimal, fully simulated example (base R only) ------------------------
+set.seed(123)
+
+# IDs
+invaders <- paste0("sp", 1:3)   # 3 invaders
+residents <- paste0("r", 1:4)   # 4 residents
+sites    <- paste0("s", 1:5)    # 5 sites
+
+# Competition coefficients a_ij (invader × resident), e.g. from a Gaussian of
+# synthetic distances. Values in (0,1].
+n_i <- length(invaders); n_j <- length(residents); n_s <- length(sites)
+d_ij  <- matrix(runif(n_i * n_j), nrow = n_i,
+                dimnames = list(invaders, residents))
+sigma <- 0.4
+a_ij  <- exp(-(d_ij^2) / (2 * sigma^2))
+
+# Resident abundances per site Nstar (resident × site), positive numbers
+Nstar <- matrix(rexp(n_j * n_s, rate = 1), nrow = n_j,
+                dimnames = list(residents, sites))
+
+# Build a simple impact tensor I_raw [invader, resident, site]:
+# I_ijs = a_ij * Nstar[j, s]
+I_raw <- array(NA_real_, dim = c(n_i, n_j, n_s),
+               dimnames = list(invaders, residents, sites))
+for (s in seq_along(sites)) {
+  I_raw[, , s] <- a_ij * rep(Nstar[, s], each = n_i)
+}
+
+# Predicted growth on the response scale r_mat [invader, site]
+r_mat <- matrix(rexp(n_i * n_s, rate = 1), nrow = n_i,
+                dimnames = list(invaders, sites))
+
+# Compute invasion fitness (logistic cap applied to relative pressure A \%*\% N_rel)
 fit <- compute_invasion_fitness(
-  I_raw       = am$I_raw,                # or pressure_inv_site = am$pressure_inv_site
-  predictions = pred$predictions,        # constructs r_mat internally
-  a_ij        = comp$a_ij,               # for lambda_rel / logistic_on = "rel"
-  Nstar       = cis$Nstar,
-  logistic_on = "rel", k = 1, x0 = NULL, # logistic on A \%*\% N_rel
+  I_raw       = I_raw,
+  r_mat       = r_mat,
+  a_ij        = a_ij,
+  Nstar       = Nstar,
+  logistic_on = "rel",
+  k           = 1,
+  x0          = NULL,
   prefer      = "logis"
 )
-str(fit$lambda)  # final fitness matrix [invader, site]
+
+# Inspect the final fitness matrix [invader × site]
+dim(fit$lambda); range(fit$lambda, na.rm = TRUE)
+
+# Alternative variants:
+# fit_raw    <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "raw")
+# fit_scaled <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "scaled")
 
 }

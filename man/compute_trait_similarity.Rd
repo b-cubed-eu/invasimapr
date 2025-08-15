@@ -13,7 +13,7 @@ compute_trait_similarity(df)
 A tibble with two columns:
 \describe{
 \item{Trait}{The original column name}
-\item{Similarity}{Percentage similarity (0–100) for that trait}
+\item{Similarity}{Percentage similarity (0-100) for that trait}
 }
 }
 \description{
@@ -24,7 +24,7 @@ traits use the proportion of identical pairs.
 \examples{
 df <- data.frame(
   height = c(10, 15, 15, 20),
-  color  = c("red","blue","red","red")
+  color  = c("red", "blue", "red", "red")
 )
 compute_trait_similarity(df)
 }

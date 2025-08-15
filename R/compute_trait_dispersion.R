@@ -34,43 +34,43 @@
 #'
 #' @examples
 #' # --- Built-in simulated example for reproducibility (mixed continuous + categorical traits) ---
-#' tdp_simulate_traits = function(n = 30, seed = NULL) {
+#' tdp_simulate_traits <- function(n = 30, seed = NULL) {
 #'   if (!is.null(seed)) set.seed(seed)
-#'   species = paste0("sp_", seq_len(n))
+#'   species <- paste0("sp_", seq_len(n))
 #'   # continuous
-#'   t1 = rnorm(n, 0, 1)
-#'   t2 = runif(n, -1, 1)
+#'   t1 <- rnorm(n, 0, 1)
+#'   t2 <- runif(n, -1, 1)
 #'   # ordinal
-#'   t3 = factor(sample(1:3, n, TRUE), ordered = TRUE)
+#'   t3 <- factor(sample(1:3, n, TRUE), ordered = TRUE)
 #'   # binary
-#'   t4 = factor(sample(c(0, 1), n, TRUE))
+#'   t4 <- factor(sample(c(0, 1), n, TRUE))
 #'   # categorical
-#'   t5 = factor(sample(LETTERS[1:4], n, TRUE))
-#'   traits = data.frame(
+#'   t5 <- factor(sample(LETTERS[1:4], n, TRUE))
+#'   traits <- data.frame(
 #'     species = species,
-#'     t_len   = t1,
-#'     t_mass  = t2,
-#'     t_rank  = t3,
-#'     t_bin   = t4,
-#'     t_cat   = t5,
+#'     t_len = t1,
+#'     t_mass = t2,
+#'     t_rank = t3,
+#'     t_bin = t4,
+#'     t_cat = t5,
 #'     check.names = FALSE
 #'   )
-#'   abundance = rexp(n, rate = 1)
+#'   abundance <- rexp(n, rate = 1)
 #'   list(traits = traits, abundance = abundance)
 #' }
 #'
 #' # Generate simulated traits + abundance
-#' sim_data = tdp_simulate_traits(n = 25, seed = 123)
+#' sim_data <- tdp_simulate_traits(n = 25, seed = 123)
 #'
 #' # Run pipeline and show combined patchwork
-#' res = compute_trait_dispersion(
-#'   trait_df    = sim_data$traits,
+#' res <- compute_trait_dispersion(
+#'   trait_df = sim_data$traits,
 #'   species_col = "species",
-#'   abundance   = sim_data$abundance,
-#'   k           = 4,
-#'   pcoa_dims   = 2,
+#'   abundance = sim_data$abundance,
+#'   k = 4,
+#'   pcoa_dims = 2,
 #'   show_density_plot = FALSE,
-#'   show_plots   = TRUE
+#'   show_plots = TRUE
 #' )
 #'
 #' # Access metrics
@@ -87,63 +87,66 @@
 #' @importFrom viridisLite viridis
 #' @importFrom patchwork plot_layout
 #' @export
-compute_trait_dispersion = function(trait_df,
-                                      species_col = 1,
-                                      k = 4,
-                                      pcoa_dims = 2,
-                                      abundance = NULL,
-                                      kde_n = 100,
-                                      viridis_option = "D",
-                                      show_density_plot = TRUE,
-                                      show_plots = FALSE,
-                                      seed = NULL) {
+compute_trait_dispersion <- function(trait_df,
+                                     species_col = 1,
+                                     k = 4,
+                                     pcoa_dims = 2,
+                                     abundance = NULL,
+                                     kde_n = 100,
+                                     viridis_option = "D",
+                                     show_density_plot = TRUE,
+                                     show_plots = FALSE,
+                                     seed = NULL) {
   # ---- input checks ---------------------------------------------------------
   if (!is.data.frame(trait_df)) stop("trait_df must be a data.frame.")
-  sp_col_idx = if (is.character(species_col)) {
+  sp_col_idx <- if (is.character(species_col)) {
     match(species_col, names(trait_df))
   } else {
     as.integer(species_col)
   }
-  if (is.na(sp_col_idx) || sp_col_idx < 1L || sp_col_idx > ncol(trait_df))
+  if (is.na(sp_col_idx) || sp_col_idx < 1L || sp_col_idx > ncol(trait_df)) {
     stop("species_col not found / out of range.")
+  }
   if (pcoa_dims < 2L) stop("pcoa_dims must be >= 2.")
   if (!is.null(seed)) set.seed(seed)
 
-  n = nrow(trait_df)
+  n <- nrow(trait_df)
 
   # ---- weights --------------------------------------------------------------
   if (is.null(abundance)) {
-    p = rep(1 / n, n)
+    p <- rep(1 / n, n)
   } else {
-    if (!is.numeric(abundance) || length(abundance) != n || any(abundance < 0))
+    if (!is.numeric(abundance) || length(abundance) != n || any(abundance < 0)) {
       stop("abundance must be non-negative numeric, length == nrow(trait_df).")
-    s = sum(abundance); if (s == 0) stop("sum(abundance) is zero.")
-    p = as.numeric(abundance) / s
+    }
+    s <- sum(abundance)
+    if (s == 0) stop("sum(abundance) is zero.")
+    p <- as.numeric(abundance) / s
   }
 
   # ---- Gower dissimilarity --------------------------------------------------
-  gower_obj  = cluster::daisy(trait_df[, -sp_col_idx, drop = FALSE], metric = "gower")
-  trait_dist = as.matrix(gower_obj)
+  gower_obj <- cluster::daisy(trait_df[, -sp_col_idx, drop = FALSE], metric = "gower")
+  trait_dist <- as.matrix(gower_obj)
 
   # ---- clustering & ordination ---------------------------------------------
-  hc   = stats::hclust(stats::as.dist(gower_obj))
-  pcoa = stats::cmdscale(gower_obj, eig = TRUE, k = max(2L, pcoa_dims))
-  scores = as.data.frame(pcoa$points)[, seq_len(pcoa_dims), drop = FALSE]
-  colnames(scores) = paste0("PCoA", seq_len(pcoa_dims))
+  hc <- stats::hclust(stats::as.dist(gower_obj))
+  pcoa <- stats::cmdscale(gower_obj, eig = TRUE, k = max(2L, pcoa_dims))
+  scores <- as.data.frame(pcoa$points)[, seq_len(pcoa_dims), drop = FALSE]
+  colnames(scores) <- paste0("PCoA", seq_len(pcoa_dims))
 
   # ---- centroid & centrality -----------------------------------------------
-  centroid = vapply(seq_len(pcoa_dims), function(j) stats::weighted.mean(scores[[j]], w = p), numeric(1))
-  scores$centrality = sqrt(rowSums((as.matrix(scores[, seq_len(pcoa_dims)]) -
-                                       matrix(centroid, nrow(scores), pcoa_dims, byrow = TRUE))^2))
+  centroid <- vapply(seq_len(pcoa_dims), function(j) stats::weighted.mean(scores[[j]], w = p), numeric(1))
+  scores$centrality <- sqrt(rowSums((as.matrix(scores[, seq_len(pcoa_dims)]) -
+    matrix(centroid, nrow(scores), pcoa_dims, byrow = TRUE))^2))
 
   # ---- metrics --------------------------------------------------------------
-  FDis = sum(p * scores$centrality)
+  FDis <- sum(p * scores$centrality)
 
-  FRic = NA_real_
+  FRic <- NA_real_
   if (n >= (pcoa_dims + 1L)) {
-    ch_try = try(geometry::convhulln(as.matrix(scores[, seq_len(pcoa_dims)]), options = "FA"), silent = TRUE)
+    ch_try <- try(geometry::convhulln(as.matrix(scores[, seq_len(pcoa_dims)]), options = "FA"), silent = TRUE)
     if (!inherits(ch_try, "try-error") && !is.null(ch_try$vol)) {
-      FRic = as.numeric(ch_try$vol)
+      FRic <- as.numeric(ch_try$vol)
     } else {
       warning("FRic not computed: convex hull failed; returning NA.")
     }
@@ -151,26 +154,33 @@ compute_trait_dispersion = function(trait_df,
     warning(sprintf("FRic requires at least %d points; have %d. Returning NA.", pcoa_dims + 1L, n))
   }
 
-  dmat = as.matrix(stats::dist(scores[, seq_len(pcoa_dims)]))
-  RaoQ = 0.5 * sum(outer(p, p) * dmat)
+  dmat <- as.matrix(stats::dist(scores[, seq_len(pcoa_dims)]))
+  RaoQ <- 0.5 * sum(outer(p, p) * dmat)
 
-  metrics_df = data.frame(Metric = c("FDis", "FRic", "RaoQ"),
-                           Value  = c(FDis, FRic, RaoQ),
-                           row.names = NULL, check.names = FALSE)
+  metrics_df <- data.frame(
+    Metric = c("FDis", "FRic", "RaoQ"),
+    Value = c(FDis, FRic, RaoQ),
+    row.names = NULL, check.names = FALSE
+  )
 
   # ---- plots (always constructed) ------------------------------------------
-  k_cols = viridisLite::viridis(k, option = viridis_option)
-  dend_gg = factoextra::fviz_dend(
-    hc, k = k, cex = 0.5,
+  k_cols <- viridisLite::viridis(k, option = viridis_option)
+  dend_gg <- factoextra::fviz_dend(
+    hc,
+    k = k, cex = 0.5,
     k_colors = k_cols, color_labels_by_k = TRUE,
     rect = TRUE, rect_border = "grey40",
     main = "Gower Cluster Dendrogram"
   ) + ggplot2::guides(scale = "none")
 
-  scores2 = scores[, c("PCoA1", "PCoA2")]
-  xrange = range(scores2$PCoA1); xpad = 0.1 * diff(xrange); xlims = xrange + c(-xpad, xpad)
-  yrange = range(scores2$PCoA2); ypad = 0.1 * diff(yrange); ylims = yrange + c(-ypad, ypad)
-  kd = MASS::kde2d(scores2$PCoA1, scores2$PCoA2, n = kde_n, lims = c(xlims, ylims))
+  scores2 <- scores[, c("PCoA1", "PCoA2")]
+  xrange <- range(scores2$PCoA1)
+  xpad <- 0.1 * diff(xrange)
+  xlims <- xrange + c(-xpad, xpad)
+  yrange <- range(scores2$PCoA2)
+  ypad <- 0.1 * diff(yrange)
+  ylims <- yrange + c(-ypad, ypad)
+  kd <- MASS::kde2d(scores2$PCoA1, scores2$PCoA2, n = kde_n, lims = c(xlims, ylims))
 
   if (isTRUE(show_density_plot)) {
     filled.contour(
@@ -179,34 +189,39 @@ compute_trait_dispersion = function(trait_df,
       xlim = xlims, ylim = ylims,
       plot.title = title(main = "Trait Space Density Contours", xlab = "PCoA1", ylab = "PCoA2"),
       plot.axes = {
-        axis(1); axis(2)
+        axis(1)
+        axis(2)
         points(scores2, pch = 19, cex = 0.5)
         contour(kd$x, kd$y, kd$z, add = TRUE, drawlabels = FALSE, lwd = 0.7, col = "grey60")
-        contour(kd$x, kd$y, kd$z, add = TRUE, drawlabels = FALSE,
-                levels = max(kd$z) * 0.5, lwd = 2, col = "black")
+        contour(kd$x, kd$y, kd$z,
+          add = TRUE, drawlabels = FALSE,
+          levels = max(kd$z) * 0.5, lwd = 2, col = "black"
+        )
       },
       key.title = title(main = "Density")
     )
   }
 
-  density_gg = ggplot2::ggplot(scores2, ggplot2::aes(PCoA1, PCoA2)) +
+  density_gg <- ggplot2::ggplot(scores2, ggplot2::aes(PCoA1, PCoA2)) +
     ggplot2::stat_density_2d_filled(contour = TRUE) +
     ggplot2::geom_point(size = 0.7) +
-    ggplot2::labs(title = "Trait Space Density (PCoA1–PCoA2)", x = "PCoA1", y = "PCoA2") +
+    ggplot2::labs(title = "Trait Space Density (PCoA1-PCoA2)", x = "PCoA1", y = "PCoA2") +
     ggplot2::theme_bw()
 
-  centrality_hist = ggplot2::ggplot(scores, ggplot2::aes(x = centrality)) +
+  centrality_hist <- ggplot2::ggplot(scores, ggplot2::aes(x = centrality)) +
     ggplot2::geom_histogram(bins = 20, fill = "steelblue", color = "white") +
     ggplot2::theme_bw() +
-    ggplot2::labs(x = "Distance to community centroid", y = "Number of species",
-                  title = "Trait Centrality (Community Edge vs Core)")
+    ggplot2::labs(
+      x = "Distance to community centroid", y = "Number of species",
+      title = "Trait Centrality (Community Edge vs Core)"
+    )
 
-  metrics_bar = ggplot2::ggplot(metrics_df, ggplot2::aes(x = Metric, y = Value)) +
+  metrics_bar <- ggplot2::ggplot(metrics_df, ggplot2::aes(x = Metric, y = Value)) +
     ggplot2::geom_col(width = 0.6, fill = "firebrick") +
     ggplot2::theme_classic() +
     ggplot2::labs(title = "Community-Level Trait Dispersion", y = "Metric value")
 
-  plots = list(
+  plots <- list(
     dend = dend_gg,
     density_gg = density_gg,
     centrality_hist = centrality_hist,
@@ -215,7 +230,7 @@ compute_trait_dispersion = function(trait_df,
 
   # ---- optional console display (patchwork) --------------------------------
   if (isTRUE(show_plots)) {
-    combined = plots$dend /
+    combined <- plots$dend /
       (plots$centrality_hist | plots$metrics_bar) /
       plots$density_gg +
       patchwork::plot_layout(heights = c(1, 2, 1))

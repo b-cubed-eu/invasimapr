@@ -976,7 +976,7 @@ data}\label{load-local-combined-site-environment-and-trait-data}}
 \CommentTok{\# Optional {-} Set working directory}
 \FunctionTok{setwd}\NormalTok{(}\StringTok{\textquotesingle{}D:/Methods/R/myR\_Packages/myCompletePks/invasimapr/inst/extdata\textquotesingle{}}\NormalTok{)}
 
-\CommentTok{\# Read primary data (one row per site–species combination)}
+\CommentTok{\# Read primary data (one row per site-species combination)}
 \NormalTok{site\_env\_spp }\OtherTok{=} \FunctionTok{read.csv}\NormalTok{(}\StringTok{\textquotesingle{}site\_env\_spp\_simulated.csv\textquotesingle{}}\NormalTok{)}
 \FunctionTok{dim}\NormalTok{(site\_env\_spp)}
 \CommentTok{\#\textgreater{} [1] 11205    36}
@@ -1473,7 +1473,7 @@ functional trait space and examine density and clustering patterns.
 \end{Shaded}
 
 \begin{figure}
-\includegraphics[width=1\linewidth]{man/figures/README-pcoa-traitspace-1} \caption{Kernel density in trait space (PCoA axes 1–2).}\label{fig:pcoa-traitspace}
+\includegraphics[width=1\linewidth]{man/figures/README-pcoa-traitspace-1} \caption{Kernel density in trait space (PCoA axes 1-2).}\label{fig:pcoa-traitspace}
 \end{figure}
 
 \hypertarget{trait-centrality}{%
@@ -1518,7 +1518,7 @@ to escape biotic resistance.
 \CommentTok{\#   geom\_point(size = 3) +}
 \CommentTok{\#   scale\_colour\_viridis\_c(option = "magma") +}
 \CommentTok{\#   labs(colour = "Centrality",}
-\CommentTok{\#        title = "Species Position in Trait Space (PCoA axes 1–2)")}
+\CommentTok{\#        title = "Species Position in Trait Space (PCoA axes 1-2)")}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2681,7 +2681,7 @@ invasion modelling steps that follow because:
   facilitation outcomes.
 \end{itemize}
 
-We use the function \texttt{compute\_interaction\_strength()} to: 1.
+We use the function \texttt{`compute_interaction_strength()`} to: 1.
 Compute the trait-based interaction matrix (\texttt{g\_all}) from
 resident and invader traits. 2. Optionally transform it into a
 \textbf{similarity} or \textbf{Gaussian kernel} for methods that require
@@ -3412,7 +3412,7 @@ Competition}\label{trait-based-competition}}
 
 Trait-based competition is a specific case of negative biotic
 interaction arising from \textbf{ecological similarity}.
-\texttt{compute\_competition\_kernel()} converts trait distances into
+\texttt{`compute_competition_kernel()`} converts trait distances into
 \textbf{competition coefficients} using a \textbf{Gaussian kernel},
 which controls how rapidly competition decays with trait difference.
 
@@ -3470,7 +3470,7 @@ visualise trait dispersion and assess invasiveness/invasibility}:
   \AttributeTok{g\_all     =}\NormalTok{ g\_all,            }\CommentTok{\# trait distance matrix (e.g., Gower)}
   \AttributeTok{residents =}\NormalTok{ residents,        }\CommentTok{\# resident IDs}
   \CommentTok{\# invaders = paste0("inv", 1:n\_inv),  \# optional; default = non{-}residents}
-  \CommentTok{\# sigma\_t  = NULL,             \# optional; auto from resident–resident distances}
+  \CommentTok{\# sigma\_t  = NULL,             \# optional; auto from resident-resident distances}
   \AttributeTok{sigma\_method =} \StringTok{"sd"}           \CommentTok{\# or "median", "iqr"}
 \NormalTok{)}
 
@@ -3538,7 +3538,7 @@ Gaussian), use the original distance matrix to compute \(d_{ij}\).
 \subsubsection{7.3. Environmental Optimum and
 Distance}\label{environmental-optimum-and-distance}}
 
-\texttt{compute\_environment\_kernel()} quantifies how well each species
+\texttt{`compute_environment_kernel()`} quantifies how well each species
 matches local abiotic conditions. We estimate each species'
 \textbf{environmental optimum} as the abundance-weighted mean of the
 site-level covariates, and then measure the \textbf{mismatch} between
@@ -3667,7 +3667,7 @@ I_{i j s} \;=\; r_{i s}\; r_{j s}\; a_{ij}\; K^{(env)}_{j s},
 encodes trait-based competition (Gaussian kernel of trait distance), and
 \(K^{(env)}_{js}\) measures abiotic match.
 
-Use \texttt{assemble\_matrices()} to construct the full 3D
+Use \texttt{`assemble_matrices()`} to construct the full 3D
 \textbf{impact tensor} and site-wise totals:
 
 \begin{Shaded}
@@ -3716,7 +3716,7 @@ traits/overlap) and \textbf{invasibility} (site context).
 \subsubsection{8.2. Summarise Competition and Compute Invasion
 Fitness}\label{summarise-competition-and-compute-invasion-fitness}}
 
-We use \texttt{compute\_invasion\_fitness()} to summarise the 3D impact
+We use \texttt{`compute_invasion_fitness()`} to summarise the 3D impact
 tensor (\texttt{I\_raw}) into a \textbf{total competitive penalty} per
 invader-site and then compute multiple versions of \textbf{invasion
 fitness} by subtracting these penalties from predicted growth.
@@ -3743,10 +3743,10 @@ directly compared across species and sites.
 \begin{itemize}
 \tightlist
 \item
-  \textbf{λ\_raw} = \(r - C_{\text{raw}}\) → direct penalty; use when
+  \textbf{λ\_raw} = \(r - C^{\mathrm{(raw)}}\) → direct penalty; use when
   you want unscaled total competition.
 \item
-  \textbf{λ\_scaled} = \(r - \frac{C_{\text{raw}}}{J}\) ~\emph{(\(J\) =
+  \textbf{λ\_scaled} = \(r - \frac{C^{\mathrm{(raw)}}}{J}\) ~\emph{(\(J\) =
   number of residents)} → penalty scaled by resident richness; useful if
   competition dilutes with more species present.
 \item
@@ -3892,7 +3892,7 @@ heatmap, where each cell,\\
 represents the predicted fitness of invader \emph{i} in site \emph{k},
 after integrating both \textbf{trait-based competition} and
 \textbf{environmental filtering} via
-\texttt{compute\_invasion\_fitness()}.
+\texttt{`compute_invasion_fitness()`}.
 
 This matrix is central to the invasion framework because it enables:\\
 - \textbf{Direct comparison} of all simulated invaders across all

@@ -64,43 +64,43 @@ Use \code{\link{tdp_simulate_traits}} to generate a small, mixed-type trait tabl
 
 \examples{
 # --- Built-in simulated example for reproducibility (mixed continuous + categorical traits) ---
-tdp_simulate_traits = function(n = 30, seed = NULL) {
+tdp_simulate_traits <- function(n = 30, seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
-  species = paste0("sp_", seq_len(n))
+  species <- paste0("sp_", seq_len(n))
   # continuous
-  t1 = rnorm(n, 0, 1)
-  t2 = runif(n, -1, 1)
+  t1 <- rnorm(n, 0, 1)
+  t2 <- runif(n, -1, 1)
   # ordinal
-  t3 = factor(sample(1:3, n, TRUE), ordered = TRUE)
+  t3 <- factor(sample(1:3, n, TRUE), ordered = TRUE)
   # binary
-  t4 = factor(sample(c(0, 1), n, TRUE))
+  t4 <- factor(sample(c(0, 1), n, TRUE))
   # categorical
-  t5 = factor(sample(LETTERS[1:4], n, TRUE))
-  traits = data.frame(
+  t5 <- factor(sample(LETTERS[1:4], n, TRUE))
+  traits <- data.frame(
     species = species,
-    t_len   = t1,
-    t_mass  = t2,
-    t_rank  = t3,
-    t_bin   = t4,
-    t_cat   = t5,
+    t_len = t1,
+    t_mass = t2,
+    t_rank = t3,
+    t_bin = t4,
+    t_cat = t5,
     check.names = FALSE
   )
-  abundance = rexp(n, rate = 1)
+  abundance <- rexp(n, rate = 1)
   list(traits = traits, abundance = abundance)
 }
 
 # Generate simulated traits + abundance
-sim_data = tdp_simulate_traits(n = 25, seed = 123)
+sim_data <- tdp_simulate_traits(n = 25, seed = 123)
 
 # Run pipeline and show combined patchwork
-res = compute_trait_dispersion(
-  trait_df    = sim_data$traits,
+res <- compute_trait_dispersion(
+  trait_df = sim_data$traits,
   species_col = "species",
-  abundance   = sim_data$abundance,
-  k           = 4,
-  pcoa_dims   = 2,
+  abundance = sim_data$abundance,
+  k = 4,
+  pcoa_dims = 2,
   show_density_plot = FALSE,
-  show_plots   = TRUE
+  show_plots = TRUE
 )
 
 # Access metrics

@@ -23,7 +23,7 @@ with row/column names as species IDs (e.g., from Gower).}
 defaults to all species in \code{g_all} that are not in \code{residents}.}
 
 \item{sigma_t}{NULL or numeric. Kernel bandwidth. If \code{NULL}, estimated from the
-upper triangle of the resident–resident distances using \code{sigma_method}.}
+upper triangle of the resident-resident distances using \code{sigma_method}.}
 
 \item{sigma_method}{character. How to estimate \eqn{\sigma_t} when missing; one of
 \code{c("sd","median","iqr")}. Default \code{"sd"}.}
@@ -34,7 +34,7 @@ default \code{1e-8}.}
 \value{
 A list with:
 \itemize{
-\item \code{d_ij} \code{(n_inv × n_res)}: invader–resident distance block (from \code{g_all}).
+\item \code{d_ij} \code{(n_inv × n_res)}: invader-resident distance block (from \code{g_all}).
 \item \code{a_ij} \code{(n_inv × n_res)}: competition coefficients (Gaussian kernel of distances \eqn{d_{ij}}).
 \item \code{sigma_t}: bandwidth used.
 \item \code{meta}: list with estimation method and counts of invaders/residents.
@@ -47,7 +47,7 @@ it to a \strong{competition coefficient} matrix \eqn{a_{ij}} using a Gaussian ke
 \deqn{a_{ij} = \exp\!\left\{ - \frac{d_{ij}^2}{2\,\sigma_t^2} \right\}.}
 
 The kernel bandwidth \eqn{\sigma_t} controls how quickly competition decays with
-trait difference. By default it is estimated from the \strong{resident–resident} distances,
+trait difference. By default it is estimated from the \strong{resident-resident} distances,
 so the decay reflects the realised dispersion of the resident pool.
 }
 \details{
@@ -58,9 +58,36 @@ so the decay reflects the realised dispersion of the resident pool.
 }
 }
 \examples{
-# Assume g_all (trait distances), residents, and invader IDs are defined:
-comp <- compute_competition(g_all, residents = spp_trait$species)
-str(comp$a_ij)     # competition coefficients
-comp$sigma_t       # bandwidth used
+# --- Simulate a toy distance matrix (no external packages) ---
+set.seed(42)
+spp <- paste0("sp_", 1:8)
+traits <- data.frame(
+  t1 = rnorm(length(spp)),
+  t2 = runif(length(spp))
+)
+
+# Euclidean distances on simulated traits, scaled to [0, 1]
+g_all <- as.matrix(stats::dist(traits, method = "euclidean"))
+g_all <- g_all / max(g_all)                 # scale to [0,1]
+rownames(g_all) <- colnames(g_all) <- spp
+
+# Define residents and invaders
+residents <- spp[1:5]
+invaders  <- spp[6:8]
+
+# Compute competition kernel (sigma_t estimated from resident–resident distances)
+comp <- compute_competition_kernel(
+  g_all     = g_all,
+  residents = residents,
+  invaders  = invaders,
+  sigma_method = "sd"
+)
+
+# Inspect results
+str(comp$a_ij)           # (invaders × residents) competition coefficients
+comp$sigma_t             # bandwidth used
+
+# Same call without providing invaders (uses complement of residents)
+comp2 <- compute_competition_kernel(g_all, residents = residents)
 
 }

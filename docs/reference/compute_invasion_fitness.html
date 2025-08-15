@@ -133,7 +133,7 @@ use <code>"rel"</code> to apply it to <code>A %*% N_rel</code>.</p></dd>
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>Let \(I_{i j s}\) be the per-pair impact at site \(s\) (e.g., from
 <code><a href="assemble_matrices.html">assemble_matrices()</a></code>), with invader \(i\), resident \(j\). The total
-competition penalty at each invader–site is
+competition penalty at each invader-site is
 $$C_{i s} = \sum_{j} I_{i j s}.$$
 Given a matrix of invader growth predictions \(r_{i s}\), we compute:</p><ul><li><p><strong>Raw:</strong> \(\lambda^{raw}_{i s} = r_{i s} - C_{i s}\).</p></li>
 <li><p><strong>Scaled:</strong> \(\lambda^{scaled}_{i s} = r_{i s} - C_{i s}/J\) \,(where \(J\) is the number of residents).</p></li>
@@ -146,17 +146,58 @@ selected via <code>logistic_on = "raw"</code> or <code>"rel"</code>.</p></li>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  I_raw       <span class="op">=</span> <span class="va">am</span><span class="op">$</span><span class="va">I_raw</span>,                <span class="co"># or pressure_inv_site = am$pressure_inv_site</span></span></span>
-<span class="r-in"><span>  predictions <span class="op">=</span> <span class="va">pred</span><span class="op">$</span><span class="va">predictions</span>,        <span class="co"># constructs r_mat internally</span></span></span>
-<span class="r-in"><span>  a_ij        <span class="op">=</span> <span class="va">comp</span><span class="op">$</span><span class="va">a_ij</span>,               <span class="co"># for lambda_rel / logistic_on = "rel"</span></span></span>
-<span class="r-in"><span>  Nstar       <span class="op">=</span> <span class="va">cis</span><span class="op">$</span><span class="va">Nstar</span>,</span></span>
-<span class="r-in"><span>  logistic_on <span class="op">=</span> <span class="st">"rel"</span>, k <span class="op">=</span> <span class="fl">1</span>, x0 <span class="op">=</span> <span class="cn">NULL</span>, <span class="co"># logistic on A %*% N_rel</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># --- Minimal, fully simulated example (base R only) ------------------------</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># IDs</span></span></span>
+<span class="r-in"><span><span class="va">invaders</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span>   <span class="co"># 3 invaders</span></span></span>
+<span class="r-in"><span><span class="va">residents</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span>   <span class="co"># 4 residents</span></span></span>
+<span class="r-in"><span><span class="va">sites</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">)</span>    <span class="co"># 5 sites</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Competition coefficients a_ij (invader × resident), e.g. from a Gaussian of</span></span></span>
+<span class="r-in"><span><span class="co"># synthetic distances. Values in (0,1].</span></span></span>
+<span class="r-in"><span><span class="va">n_i</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">invaders</span><span class="op">)</span>; <span class="va">n_j</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">residents</span><span class="op">)</span>; <span class="va">n_s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">d_ij</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">n_i</span> <span class="op">*</span> <span class="va">n_j</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">n_i</span>,</span></span>
+<span class="r-in"><span>                dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">invaders</span>, <span class="va">residents</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sigma</span> <span class="op">&lt;-</span> <span class="fl">0.4</span></span></span>
+<span class="r-in"><span><span class="va">a_ij</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">d_ij</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">sigma</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Resident abundances per site Nstar (resident × site), positive numbers</span></span></span>
+<span class="r-in"><span><span class="va">Nstar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">rexp</a></span><span class="op">(</span><span class="va">n_j</span> <span class="op">*</span> <span class="va">n_s</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">n_j</span>,</span></span>
+<span class="r-in"><span>                dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">residents</span>, <span class="va">sites</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Build a simple impact tensor I_raw [invader, resident, site]:</span></span></span>
+<span class="r-in"><span><span class="co"># I_ijs = a_ij * Nstar[j, s]</span></span></span>
+<span class="r-in"><span><span class="va">I_raw</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/array.html" class="external-link">array</a></span><span class="op">(</span><span class="cn">NA_real_</span>, dim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">n_i</span>, <span class="va">n_j</span>, <span class="va">n_s</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>               dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">invaders</span>, <span class="va">residents</span>, <span class="va">sites</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">s</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">I_raw</span><span class="op">[</span>, , <span class="va">s</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">a_ij</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">Nstar</span><span class="op">[</span>, <span class="va">s</span><span class="op">]</span>, each <span class="op">=</span> <span class="va">n_i</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Predicted growth on the response scale r_mat [invader, site]</span></span></span>
+<span class="r-in"><span><span class="va">r_mat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">rexp</a></span><span class="op">(</span><span class="va">n_i</span> <span class="op">*</span> <span class="va">n_s</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="va">n_i</span>,</span></span>
+<span class="r-in"><span>                dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">invaders</span>, <span class="va">sites</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Compute invasion fitness (logistic cap applied to relative pressure A %*% N_rel)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  I_raw       <span class="op">=</span> <span class="va">I_raw</span>,</span></span>
+<span class="r-in"><span>  r_mat       <span class="op">=</span> <span class="va">r_mat</span>,</span></span>
+<span class="r-in"><span>  a_ij        <span class="op">=</span> <span class="va">a_ij</span>,</span></span>
+<span class="r-in"><span>  Nstar       <span class="op">=</span> <span class="va">Nstar</span>,</span></span>
+<span class="r-in"><span>  logistic_on <span class="op">=</span> <span class="st">"rel"</span>,</span></span>
+<span class="r-in"><span>  k           <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  x0          <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>  prefer      <span class="op">=</span> <span class="st">"logis"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'am' not found</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">lambda</span><span class="op">)</span>  <span class="co"># final fitness matrix [invader, site]</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'fit' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Inspect the final fitness matrix [invader × site]</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">lambda</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">lambda</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.4682323  2.1860024</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Alternative variants:</span></span></span>
+<span class="r-in"><span><span class="co"># fit_raw    &lt;- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "raw")</span></span></span>
+<span class="r-in"><span><span class="co"># fit_scaled &lt;- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "scaled")</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

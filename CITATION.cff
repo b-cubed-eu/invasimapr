@@ -24,7 +24,7 @@ license: MIT
 repository-code: https://github.com/macSands/invasimapr/
 type: software
 abstract: >
-  `invasimapr` is an R package in development for quantifying and mapping community–level invasion fitness and site-specific invasibility.  It links three data streams—species occurrences, functional traits, and (in a later module) curated invasive-alien-species lists—to generate spatial grids, extract and harmonise environmental and trait information, visualise community trait profiles, and compute invasion metrics such as interaction-strength matrices, invasion hotspots, and maximum-invasiveness traits (MITs).  By explicitly modelling how trait–environment–competition relationships shape establishment success, `invasimapr` delivers biologically informed predictions that support evidence-based biodiversity management and policy planning.
+  `invasimapr` is an R package in development for quantifying and mapping community-level invasion fitness and site-specific invasibility.  It links three data streams—species occurrences, functional traits, and (in a later module) curated invasive-alien-species lists—to generate spatial grids, extract and harmonise environmental and trait information, visualise community trait profiles, and compute invasion metrics such as interaction-strength matrices, invasion hotspots, and maximum-invasiveness traits (MITs).  By explicitly modelling how trait-environment-competition relationships shape establishment success, `invasimapr` delivers biologically informed predictions that support evidence-based biodiversity management and policy planning.
 identifiers:
   - type: url
     value: https://github.com/macSands/invasimapr/

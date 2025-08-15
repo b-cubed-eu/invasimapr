@@ -98,7 +98,7 @@ Used only if <code>invader_pred_wide</code> is <code>NULL</code>.</p></dd>
 
 <dt id="arg-env-dist">env_dist<a class="anchor" aria-label="anchor" href="#arg-env-dist"></a></dt>
 <dd><p>numeric matrix (sites × residents).
-Site–resident environmental distance (e.g., from <code><a href="compute_environment_kernel.html">compute_environment_kernel()</a></code>).
+Site-resident environmental distance (e.g., from <code><a href="compute_environment_kernel.html">compute_environment_kernel()</a></code>).
 Row names = site IDs; column names = resident IDs.</p></dd>
 
 
@@ -133,18 +133,53 @@ and \(K^{(env)}_{j s}\) is an environmental matching kernel for resident \(j\) a
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># comp$a_ij from compute_competition(), cis$Nstar from compute_interaction_strength(),</span></span></span>
-<span class="r-in"><span><span class="co"># ek$env_dist or ek$K_env from compute_environment_kernel(), and 'pred' from predict_invader_response()</span></span></span>
-<span class="r-in"><span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu">assemble_matrices</span><span class="op">(</span></span></span>
-<span class="r-in"><span>  a_ij              <span class="op">=</span> <span class="va">comp</span><span class="op">$</span><span class="va">a_ij</span>,</span></span>
-<span class="r-in"><span>  Nstar             <span class="op">=</span> <span class="va">cis</span><span class="op">$</span><span class="va">Nstar</span>,</span></span>
-<span class="r-in"><span>  predictions       <span class="op">=</span> <span class="va">pred</span><span class="op">$</span><span class="va">predictions</span>,  <span class="co"># or invader_pred_wide = &lt;sites × invaders matrix&gt;</span></span></span>
-<span class="r-in"><span>  env_dist          <span class="op">=</span> <span class="va">ek</span><span class="op">$</span><span class="va">env_dist</span>,</span></span>
-<span class="r-in"><span>  sigma_e           <span class="op">=</span> <span class="va">ek</span><span class="op">$</span><span class="va">sigma_e</span>         <span class="co"># or pass K_env = ek$K_env and omit env_dist/sigma_e</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Minimal, self-contained toy example</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">inv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"inv"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># invader × resident Gaussian kernel (a_ij)</span></span></span>
+<span class="r-in"><span><span class="va">a_ij</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">inv</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>, <span class="fl">0.1</span>, <span class="fl">0.9</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">inv</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">inv</span>, <span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'comp' not found</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">am</span><span class="op">$</span><span class="va">I_raw</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">am</span><span class="op">$</span><span class="va">pressure_inv_site</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'am' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># residents × sites abundances (Nstar)</span></span></span>
+<span class="r-in"><span><span class="va">Nstar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span>, <span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">sites</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># site × resident environmental kernel (K_env)</span></span></span>
+<span class="r-in"><span><span class="va">K_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>, <span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">sites</span>, <span class="va">res</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># long predictions data.frame (pred) with r_is</span></span></span>
+<span class="r-in"><span><span class="va">predictions</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>site_id <span class="op">=</span> <span class="va">sites</span>, species <span class="op">=</span> <span class="va">inv</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">predictions</span><span class="op">$</span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Lognormal.html" class="external-link">rlnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">predictions</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.4</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">am</span> <span class="op">&lt;-</span> <span class="fu">assemble_matrices</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  a_ij <span class="op">=</span> <span class="va">a_ij</span>, Nstar <span class="op">=</span> <span class="va">Nstar</span>,</span></span>
+<span class="r-in"><span>  K_env <span class="op">=</span> <span class="va">K_env</span>, predictions <span class="op">=</span> <span class="va">predictions</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">am</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ I_raw            : num [1:2, 1:3, 1:4] 2.23 2.03 3.798 4.021 0.968 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "dimnames")=List of 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : chr [1:2] "inv1" "inv2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : chr [1:3] "sp1" "sp2" "sp3"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : chr [1:4] "s1" "s2" "s3" "s4"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ pressure_inv_site: num [1:2, 1:4] 7 8.22 5.22 8.25 2.73 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..- attr(*, "dimnames")=List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : chr [1:2] "inv1" "inv2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   .. ..$ : chr [1:4] "s1" "s2" "s3" "s4"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  $ meta             :List of 6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ n_inv    : int 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ n_res    : int 3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ n_sites  : int 4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ invaders : chr [1:2] "inv1" "inv2"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ residents: chr [1:3] "sp1" "sp2" "sp3"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ sites    : chr [1:4] "s1" "s2" "s3" "s4"</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

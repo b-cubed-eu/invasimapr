@@ -1,8 +1,8 @@
 #' Predict site-level responses for residents and simulated invaders
 #'
 #' @description
-#' Builds a complete **site × species** prediction grid by crossing a species–trait table
-#' (residents + simulated invaders) with a site–environment table, then calls the fitted
+#' Builds a complete **site × species** prediction grid by crossing a species-trait table
+#' (residents + simulated invaders) with a site-environment table, then calls the fitted
 #' model’s `predict()` to obtain expected responses (e.g., abundance). The function is
 #' robust to factor level issues and mirrors a typical `expand_grid()` + left-join workflow.
 #'
@@ -63,7 +63,7 @@
 #'   species_col    = "species",
 #'   site_col       = "site_id",
 #'   response_type  = "response",
-#'   include_random = FALSE,  # population-level
+#'   include_random = FALSE, # population-level
 #'   site_aug       = dplyr::select(spp_rich_obs, site_id, obs_sum, spp_rich)
 #' )
 #' head(out$predictions)
@@ -75,46 +75,48 @@
 #' @export
 predict_invader_response <- function(
     model,
-    species_traits,                 # residents + invaders (must include species_col)
-    site_env,                       # site-level predictors (must include site_col)
-    species_col    = "species",
-    site_col       = "site_id",
-    response_type  = "response",
-    include_random = FALSE,         # population-level by default
-    site_aug       = NULL,          # optional extra site-level columns (e.g., obs_sum, spp_rich)
-    species_aug    = NULL           # optional extra species-level columns
-){
+    species_traits, # residents + invaders (must include species_col)
+    site_env, # site-level predictors (must include site_col)
+    species_col = "species",
+    site_col = "site_id",
+    response_type = "response",
+    include_random = FALSE, # population-level by default
+    site_aug = NULL, # optional extra site-level columns (e.g., obs_sum, spp_rich)
+    species_aug = NULL # optional extra species-level columns
+    ) {
   # ---- Basic checks ----------------------------------------------------------
   stopifnot(is.data.frame(species_traits), is.data.frame(site_env))
   if (!species_col %in% names(species_traits)) stop("species_col not found in species_traits.")
-  if (!site_col %in% names(site_env))         stop("site_col not found in site_env.")
+  if (!site_col %in% names(site_env)) stop("site_col not found in site_env.")
 
   # ---- Optional augments (mirror typical dplyr joins) ------------------------
   if (!is.null(site_aug)) {
-    if (!is.data.frame(site_aug) || !site_col %in% names(site_aug))
+    if (!is.data.frame(site_aug) || !site_col %in% names(site_aug)) {
       stop("site_aug must be a data.frame containing column: ", site_col)
+    }
     site_env <- dplyr::left_join(site_env, site_aug, by = site_col)
   }
   if (!is.null(species_aug)) {
-    if (!is.data.frame(species_aug) || !species_col %in% names(species_aug))
+    if (!is.data.frame(species_aug) || !species_col %in% names(species_aug)) {
       stop("species_aug must be a data.frame containing column: ", species_col)
+    }
     species_traits <- dplyr::left_join(species_traits, species_aug, by = species_col)
   }
 
   # ---- Construct site × species grid robustly --------------------------------
-  sp_vals   <- unique(species_traits[[species_col]])
+  sp_vals <- unique(species_traits[[species_col]])
   site_vals <- unique(site_env[[site_col]])
 
   # Use tidyr::expand_grid if available; else replicate manually
   if (requireNamespace("tidyr", quietly = TRUE)) {
     grid <- tidyr::expand_grid(
       !!species_col := sp_vals,
-      !!site_col    := site_vals
+      !!site_col := site_vals
     )
   } else {
     grid <- data.frame(
       species_tmp = rep(sp_vals, each = length(site_vals)),
-      site_tmp    = rep(site_vals, times = length(sp_vals)),
+      site_tmp = rep(site_vals, times = length(sp_vals)),
       stringsAsFactors = FALSE
     )
     names(grid) <- c(species_col, site_col)
@@ -133,8 +135,8 @@ predict_invader_response <- function(
   }
 
   # ---- Join traits and site covariates (same logic as your working code) -----
-  newdata <- dplyr::left_join(grid,     species_traits, by = species_col) %>%
-    dplyr::left_join(          site_env,       by = site_col)
+  newdata <- dplyr::left_join(grid, species_traits, by = species_col) %>%
+    dplyr::left_join(site_env, by = site_col)
 
   # ---- Fixed-effects terms & factor-level harmonisation ----------------------
   # Try to recover the training frame (handles glmmTMB/lme4/glm/lm/gam)
@@ -144,15 +146,18 @@ predict_invader_response <- function(
   }
 
   # Extract fixed-effects formula per model class
-  fe_formula <- tryCatch({
-    if (inherits(model, "glmmTMB")) {
-      stats::formula(model)$cond
-    } else if (inherits(model, "merMod")) {
-      lme4::formula(model, fixed.only = TRUE)
-    } else {
-      stats::formula(model)
-    }
-  }, error = function(e) stats::formula(model))
+  fe_formula <- tryCatch(
+    {
+      if (inherits(model, "glmmTMB")) {
+        stats::formula(model)$cond
+      } else if (inherits(model, "merMod")) {
+        lme4::formula(model, fixed.only = TRUE)
+      } else {
+        stats::formula(model)
+      }
+    },
+    error = function(e) stats::formula(model)
+  )
 
   # Expand interaction labels to underlying variables
   rhs_labels <- tryCatch(attr(stats::terms(fe_formula), "term.labels"), error = function(e) NULL)
@@ -165,7 +170,7 @@ predict_invader_response <- function(
   # Coerce non-ID fixed-effect factors in newdata to training levels (prevents MM mismatch)
   if (!is.null(train_df)) {
     for (v in intersect(rhs_all, intersect(names(train_df), names(newdata)))) {
-      if (v %in% c(site_col, species_col)) next  # never touch ID columns
+      if (v %in% c(site_col, species_col)) next # never touch ID columns
       trv <- train_df[[v]]
       if (is.factor(trv)) {
         newdata[[v]] <- if (is.ordered(trv)) {
@@ -193,7 +198,8 @@ predict_invader_response <- function(
     # Try population-level (or conditional) first; if it errors, fall back to allow.new.levels only
     pred <- try(
       predict(
-        model, newdata = newdata, type = response_type,
+        model,
+        newdata = newdata, type = response_type,
         re.form = if (isTRUE(include_random)) NULL else ~0,
         allow.new.levels = TRUE
       ),
@@ -204,8 +210,10 @@ predict_invader_response <- function(
     }
   } else if (inherits(model, "merMod")) {
     pred <- if (isTRUE(include_random)) {
-      lme4::predictMerMod(model, newdata = newdata, type = response_type,
-                          re.form = NULL, allow.new.levels = TRUE)
+      lme4::predictMerMod(model,
+        newdata = newdata, type = response_type,
+        re.form = NULL, allow.new.levels = TRUE
+      )
     } else {
       lme4::predictMerMod(model, newdata = newdata, type = response_type, re.form = NA)
     }
@@ -214,17 +222,19 @@ predict_invader_response <- function(
   } else if (inherits(model, "glm")) {
     pred <- stats::predict(model, newdata = newdata, type = response_type)
   } else if (inherits(model, "lm")) {
-    pred <- stats::predict(model, newdata = newdata)  # no 'type'
+    pred <- stats::predict(model, newdata = newdata) # no 'type'
   } else {
-    stop("Unsupported model class: ", paste(class(model), collapse = ", "),
-         ". Supported: glmmTMB, lme4::merMod, mgcv::gam, stats::glm, stats::lm.")
+    stop(
+      "Unsupported model class: ", paste(class(model), collapse = ", "),
+      ". Supported: glmmTMB, lme4::merMod, mgcv::gam, stats::glm, stats::lm."
+    )
   }
 
   # ---- Tidy outputs; NA-safe matrix construction ----------------------------
   predictions <- data.frame(
-    site    = newdata[[site_col]],
+    site = newdata[[site_col]],
     species = newdata[[species_col]],
-    pred    = as.numeric(pred),
+    pred = as.numeric(pred),
     check.names = FALSE
   )
   names(predictions)[1:2] <- c(site_col, species_col)
@@ -237,7 +247,7 @@ predict_invader_response <- function(
   }
 
   # Construct wide matrix (sites × species)
-  site_levels    <- sort(unique(as.character(predictions[[site_col]])))
+  site_levels <- sort(unique(as.character(predictions[[site_col]])))
   species_levels <- sort(unique(as.character(predictions[[species_col]])))
   prediction_matrix <- matrix(
     NA_real_,
@@ -246,7 +256,7 @@ predict_invader_response <- function(
     dimnames = list(site_levels, species_levels)
   )
   idx <- cbind(
-    match(as.character(predictions[[site_col]]),    site_levels),
+    match(as.character(predictions[[site_col]]), site_levels),
     match(as.character(predictions[[species_col]]), species_levels)
   )
   prediction_matrix[idx] <- predictions$pred

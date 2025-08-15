@@ -23,7 +23,7 @@
 #'
 #' @return A list with (present elements depend on flags):
 #' \itemize{
-#'   \item \code{similarity}: data.frame with columns \code{Trait}, \code{Similarity} (0–100).
+#'   \item \code{similarity}: data.frame with columns \code{Trait}, \code{Similarity} (0-100).
 #'   \item \code{dispersion}: list containing
 #'         \code{distance_matrix}, \code{hc}, \code{pcoa}, \code{scores}, \code{centroid},
 #'         \code{metrics_df}, and \code{plots} (ggplots: \code{$dend}, \code{$density_gg},
@@ -36,17 +36,19 @@
 #' n <- 20
 #' trait_df <- data.frame(
 #'   species = paste0("sp_", seq_len(n)),
-#'   height  = rnorm(n),
-#'   mass    = runif(n, -1, 1),
-#'   rank    = factor(sample(1:3, n, TRUE), ordered = TRUE),
-#'   bin     = factor(sample(c(0, 1), n, TRUE)),
-#'   cat     = factor(sample(LETTERS[1:4], n, TRUE)),
+#'   height = rnorm(n),
+#'   mass = runif(n, -1, 1),
+#'   rank = factor(sample(1:3, n, TRUE), ordered = TRUE),
+#'   bin = factor(sample(c(0, 1), n, TRUE)),
+#'   cat = factor(sample(LETTERS[1:4], n, TRUE)),
 #'   check.names = FALSE
 #' )
 #' abundance <- rexp(n)
 #'
-#' out <- compute_trait_space(trait_df, species_col = "species", abundance = abundance,
-#'                            k = 3, pcoa_dims = 2, show_density_plot = FALSE)
+#' out <- compute_trait_space(trait_df,
+#'   species_col = "species", abundance = abundance,
+#'   k = 3, pcoa_dims = 2, show_density_plot = FALSE
+#' )
 #' out$similarity
 #' out$dispersion$metrics_df
 #'
@@ -74,8 +76,9 @@ compute_trait_space <- function(trait_df,
   # ---- checks ----
   if (!is.data.frame(trait_df)) stop("trait_df must be a data.frame.")
   sp_col_idx <- if (is.character(species_col)) match(species_col, names(trait_df)) else as.integer(species_col)
-  if (is.na(sp_col_idx) || sp_col_idx < 1L || sp_col_idx > ncol(trait_df))
+  if (is.na(sp_col_idx) || sp_col_idx < 1L || sp_col_idx > ncol(trait_df)) {
     stop("species_col not found / out of range.")
+  }
   if (!is.null(seed)) set.seed(seed)
 
   n <- nrow(trait_df)
@@ -98,16 +101,22 @@ compute_trait_space <- function(trait_df,
     # helpers
     sim_numeric <- function(x) {
       x2 <- x[!is.na(x)]
-      if (length(x2) <= 1) return(1)
+      if (length(x2) <= 1) {
+        return(1)
+      }
       r <- diff(range(x2))
-      if (r == 0) return(1)
+      if (r == 0) {
+        return(1)
+      }
       x_scaled <- (x2 - min(x2)) / r
       1 - mean(stats::dist(x_scaled))
     }
     sim_categ <- function(x) {
       x <- as.character(x)
       freqs <- table(x)
-      if (sum(freqs) < 2) return(1)
+      if (sum(freqs) < 2) {
+        return(1)
+      }
       as.numeric(sum(choose(freqs, 2)) / choose(sum(freqs), 2))
     }
 
@@ -131,18 +140,20 @@ compute_trait_space <- function(trait_df,
     p <- if (is.null(abundance)) {
       rep(1 / n, n)
     } else {
-      if (!is.numeric(abundance) || length(abundance) != n || any(abundance < 0))
+      if (!is.numeric(abundance) || length(abundance) != n || any(abundance < 0)) {
         stop("abundance must be non-negative numeric, length == nrow(trait_df).")
-      s <- sum(abundance); if (s == 0) stop("sum(abundance) is zero.")
+      }
+      s <- sum(abundance)
+      if (s == 0) stop("sum(abundance) is zero.")
       as.numeric(abundance) / s
     }
 
     # Gower
-    gower_obj  <- cluster::daisy(trait_df[, -sp_col_idx, drop = FALSE], metric = "gower")
+    gower_obj <- cluster::daisy(trait_df[, -sp_col_idx, drop = FALSE], metric = "gower")
     trait_dist <- as.matrix(gower_obj)
 
     # clustering + PCoA
-    hc   <- stats::hclust(stats::as.dist(gower_obj))
+    hc <- stats::hclust(stats::as.dist(gower_obj))
     pcoa <- stats::cmdscale(gower_obj, eig = TRUE, k = max(2L, pcoa_dims))
     scores <- as.data.frame(pcoa$points)[, seq_len(pcoa_dims), drop = FALSE]
     colnames(scores) <- paste0("PCoA", seq_len(pcoa_dims))
@@ -150,7 +161,7 @@ compute_trait_space <- function(trait_df,
     # centroid + centrality
     centroid <- vapply(seq_len(pcoa_dims), function(j) stats::weighted.mean(scores[[j]], w = p), numeric(1))
     scores$centrality <- sqrt(rowSums((as.matrix(scores[, seq_len(pcoa_dims)]) -
-                                         matrix(centroid, nrow(scores), pcoa_dims, byrow = TRUE))^2))
+      matrix(centroid, nrow(scores), pcoa_dims, byrow = TRUE))^2))
 
     # metrics
     FDis <- sum(p * scores$centrality)
@@ -170,22 +181,29 @@ compute_trait_space <- function(trait_df,
     dmat <- as.matrix(stats::dist(scores[, seq_len(pcoa_dims)]))
     RaoQ <- 0.5 * sum(outer(p, p) * dmat)
 
-    metrics_df <- data.frame(Metric = c("FDis", "FRic", "RaoQ"),
-                             Value  = c(FDis, FRic, RaoQ),
-                             row.names = NULL, check.names = FALSE)
+    metrics_df <- data.frame(
+      Metric = c("FDis", "FRic", "RaoQ"),
+      Value = c(FDis, FRic, RaoQ),
+      row.names = NULL, check.names = FALSE
+    )
 
     # plots
     k_cols <- viridisLite::viridis(k, option = viridis_option)
     dend_gg <- factoextra::fviz_dend(
-      hc, k = k, cex = 0.5,
+      hc,
+      k = k, cex = 0.5,
       k_colors = k_cols, color_labels_by_k = TRUE,
       rect = TRUE, rect_border = "grey40",
       main = "Gower Cluster Dendrogram"
     ) + ggplot2::guides(scale = "none")
 
     scores2 <- scores[, c("PCoA1", "PCoA2")]
-    xrange <- range(scores2$PCoA1); xpad <- 0.1 * diff(xrange); xlims <- xrange + c(-xpad, xpad)
-    yrange <- range(scores2$PCoA2); ypad <- 0.1 * diff(yrange); ylims <- yrange + c(-ypad, ypad)
+    xrange <- range(scores2$PCoA1)
+    xpad <- 0.1 * diff(xrange)
+    xlims <- xrange + c(-xpad, xpad)
+    yrange <- range(scores2$PCoA2)
+    ypad <- 0.1 * diff(yrange)
+    ylims <- yrange + c(-ypad, ypad)
     kd <- MASS::kde2d(scores2$PCoA1, scores2$PCoA2, n = kde_n, lims = c(xlims, ylims))
 
     if (isTRUE(show_density_plot)) {
@@ -195,11 +213,14 @@ compute_trait_space <- function(trait_df,
         xlim = xlims, ylim = ylims,
         plot.title = title(main = "Trait Space Density Contours", xlab = "PCoA1", ylab = "PCoA2"),
         plot.axes = {
-          axis(1); axis(2)
+          axis(1)
+          axis(2)
           points(scores2, pch = 19, cex = 0.5)
           contour(kd$x, kd$y, kd$z, add = TRUE, drawlabels = FALSE, lwd = 0.7, col = "grey60")
-          contour(kd$x, kd$y, kd$z, add = TRUE, drawlabels = FALSE,
-                  levels = max(kd$z) * 0.5, lwd = 2, col = "black")
+          contour(kd$x, kd$y, kd$z,
+            add = TRUE, drawlabels = FALSE,
+            levels = max(kd$z) * 0.5, lwd = 2, col = "black"
+          )
         },
         key.title = title(main = "Density")
       )
@@ -208,14 +229,16 @@ compute_trait_space <- function(trait_df,
     density_gg <- ggplot2::ggplot(scores2, ggplot2::aes(PCoA1, PCoA2)) +
       ggplot2::stat_density_2d_filled(contour = TRUE) +
       ggplot2::geom_point(size = 0.7) +
-      ggplot2::labs(title = "Trait Space Density (PCoA1–PCoA2)", x = "PCoA1", y = "PCoA2") +
+      ggplot2::labs(title = "Trait Space Density (PCoA1-PCoA2)", x = "PCoA1", y = "PCoA2") +
       ggplot2::theme_bw()
 
     centrality_hist <- ggplot2::ggplot(scores, ggplot2::aes(x = centrality)) +
       ggplot2::geom_histogram(bins = 20, fill = "steelblue", color = "white") +
       ggplot2::theme_bw() +
-      ggplot2::labs(x = "Distance to community centroid", y = "Number of species",
-                    title = "Trait Centrality (Community Edge vs Core)")
+      ggplot2::labs(
+        x = "Distance to community centroid", y = "Number of species",
+        title = "Trait Centrality (Community Edge vs Core)"
+      )
 
     metrics_bar <- ggplot2::ggplot(metrics_df, ggplot2::aes(x = Metric, y = Value)) +
       ggplot2::geom_col(width = 0.6, fill = "firebrick") +

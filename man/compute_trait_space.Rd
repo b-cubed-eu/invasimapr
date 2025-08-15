@@ -52,7 +52,7 @@ default = all columns except \code{species_col}.}
 \value{
 A list with (present elements depend on flags):
 \itemize{
-\item \code{similarity}: data.frame with columns \code{Trait}, \code{Similarity} (0–100).
+\item \code{similarity}: data.frame with columns \code{Trait}, \code{Similarity} (0-100).
 \item \code{dispersion}: list containing
 \code{distance_matrix}, \code{hc}, \code{pcoa}, \code{scores}, \code{centroid},
 \code{metrics_df}, and \code{plots} (ggplots: \code{$dend}, \code{$density_gg},
@@ -70,17 +70,19 @@ set.seed(123)
 n <- 20
 trait_df <- data.frame(
   species = paste0("sp_", seq_len(n)),
-  height  = rnorm(n),
-  mass    = runif(n, -1, 1),
-  rank    = factor(sample(1:3, n, TRUE), ordered = TRUE),
-  bin     = factor(sample(c(0, 1), n, TRUE)),
-  cat     = factor(sample(LETTERS[1:4], n, TRUE)),
+  height = rnorm(n),
+  mass = runif(n, -1, 1),
+  rank = factor(sample(1:3, n, TRUE), ordered = TRUE),
+  bin = factor(sample(c(0, 1), n, TRUE)),
+  cat = factor(sample(LETTERS[1:4], n, TRUE)),
   check.names = FALSE
 )
 abundance <- rexp(n)
 
-out <- compute_trait_space(trait_df, species_col = "species", abundance = abundance,
-                           k = 3, pcoa_dims = 2, show_density_plot = FALSE)
+out <- compute_trait_space(trait_df,
+  species_col = "species", abundance = abundance,
+  k = 3, pcoa_dims = 2, show_density_plot = FALSE
+)
 out$similarity
 out$dispersion$metrics_df
 

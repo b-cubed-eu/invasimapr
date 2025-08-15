@@ -4,53 +4,54 @@ Title: Workflow to visualise trait dispersion and assess invasibility
 Version: 0.1.0
 Authors@R: 
   person("Sandra", "MacFadyen", email = "macfadyen@sun.ac.za", role = c("aut", "cre"))
-Description: Tools to visualise trait dispersion and assess invasibility.
+Description: Utilities for assembling invader–resident interaction tensors, 
+    computing trait-based competition kernels from distance matrices, 
+    deriving environmental suitability kernels, calculating invasion fitness, 
+    and summarising trait dispersion metrics. Includes helpers to predict 
+    site × species responses for residents and simulated invaders.
 License: MIT + file LICENSE
 URL: https://github.com/macSands/invasimapr, https://macsands.github.io/invasimapr/
 BugReports: https://github.com/macSands/invasimapr/issues
-Suggests:
-    devtools,
-    knitr,
-    pkgdown,
-    remotes,
-    rmarkdown,
-    testthat (>= 3.0.0)
-Imports:
-    caret,
-    cluster,
-    clValid,
-    corrplot,
-    data.table,
-    dplyr,
-    entropy,
-    factoextra,
-    fields,
-    future,
-    geosphere,
-    ggplot2,
-    httr,
-    mclust,
-    NbClust,
-    patchwork,
-    pbapply,
-    purrr,
-    rcmdcheck,
-    rlang,
-    reshape2,
-    sf,
-    terra,
-    tidyr,
-    vegan,
-    viridis,
-    zoo,
-    zetadiv,
-    MASS,
-    geometry,
-    viridisLite
-VignetteBuilder: 
-    knitr
-Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: false
+Depends:
+    R (>= 4.1.0)
+Imports:
+    stats,
+    graphics,
+    cluster,
+    MASS,
+    geometry,
+    viridisLite,
+    ggplot2,
+    patchwork,
+    factoextra,
+    dplyr,
+    tidyr,
+    tibble,
+    purrr,
+    tidyselect,
+    magrittr,
+    glmmTMB,
+    lme4,
+    mgcv
+Suggests:
+    sf,
+    terra,
+    ClustGeo,
+    devtools,
+    remotes,
+    scales,
+    viridis,
+    stringr,
+    fastDummies,
+    vegan,
+    performance,
+    lattice,
+    RColorBrewer,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr
+Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

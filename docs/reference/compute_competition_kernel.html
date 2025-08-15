@@ -4,13 +4,13 @@ extracts the invader × resident block of distances \(d_{ij}\) and transforms
 it to a competition coefficient matrix \(a_{ij}\) using a Gaussian kernel:
 $$a_{ij} = \exp\!\left\{ - \frac{d_{ij}^2}{2\,\sigma_t^2} \right\}.$$
 The kernel bandwidth \(\sigma_t\) controls how quickly competition decays with
-trait difference. By default it is estimated from the resident–resident distances,
+trait difference. By default it is estimated from the resident-resident distances,
 so the decay reflects the realised dispersion of the resident pool."><meta property="og:description" content="Given a species-by-species trait distance matrix (e.g., Gower), this function
 extracts the invader × resident block of distances \(d_{ij}\) and transforms
 it to a competition coefficient matrix \(a_{ij}\) using a Gaussian kernel:
 $$a_{ij} = \exp\!\left\{ - \frac{d_{ij}^2}{2\,\sigma_t^2} \right\}.$$
 The kernel bandwidth \(\sigma_t\) controls how quickly competition decays with
-trait difference. By default it is estimated from the resident–resident distances,
+trait difference. By default it is estimated from the resident-resident distances,
 so the decay reflects the realised dispersion of the resident pool."><meta property="og:image" content="https://macsands.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -57,7 +57,7 @@ extracts the <strong>invader × resident</strong> block of distances \(d_{ij}\) 
 it to a <strong>competition coefficient</strong> matrix \(a_{ij}\) using a Gaussian kernel:
 $$a_{ij} = \exp\!\left\{ - \frac{d_{ij}^2}{2\,\sigma_t^2} \right\}.$$</p>
 <p>The kernel bandwidth \(\sigma_t\) controls how quickly competition decays with
-trait difference. By default it is estimated from the <strong>resident–resident</strong> distances,
+trait difference. By default it is estimated from the <strong>resident-resident</strong> distances,
 so the decay reflects the realised dispersion of the resident pool.</p>
     </div>
 
@@ -93,7 +93,7 @@ defaults to all species in <code>g_all</code> that are not in <code>residents</c
 
 <dt id="arg-sigma-t">sigma_t<a class="anchor" aria-label="anchor" href="#arg-sigma-t"></a></dt>
 <dd><p>NULL or numeric. Kernel bandwidth. If <code>NULL</code>, estimated from the
-upper triangle of the resident–resident distances using <code>sigma_method</code>.</p></dd>
+upper triangle of the resident-resident distances using <code>sigma_method</code>.</p></dd>
 
 
 <dt id="arg-sigma-method">sigma_method<a class="anchor" aria-label="anchor" href="#arg-sigma-method"></a></dt>
@@ -108,7 +108,7 @@ default <code>1e-8</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with:</p><ul><li><p><code>d_ij</code> <code>(n_inv × n_res)</code>: invader–resident distance block (from <code>g_all</code>).</p></li>
+    <p>A list with:</p><ul><li><p><code>d_ij</code> <code>(n_inv × n_res)</code>: invader-resident distance block (from <code>g_all</code>).</p></li>
 <li><p><code>a_ij</code> <code>(n_inv × n_res)</code>: competition coefficients (Gaussian kernel of distances \(d_{ij}\)).</p></li>
 <li><p><code>sigma_t</code>: bandwidth used.</p></li>
 <li><p><code>meta</code>: list with estimation method and counts of invaders/residents.</p></li>
@@ -123,13 +123,42 @@ default <code>1e-8</code>.</p></dd>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Assume g_all (trait distances), residents, and invader IDs are defined:</span></span></span>
-<span class="r-in"><span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu">compute_competition</span><span class="op">(</span><span class="va">g_all</span>, residents <span class="op">=</span> <span class="va">spp_trait</span><span class="op">$</span><span class="va">species</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in compute_competition(g_all, residents = spp_trait$species):</span> could not find function "compute_competition"</span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">comp</span><span class="op">$</span><span class="va">a_ij</span><span class="op">)</span>     <span class="co"># competition coefficients</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'comp' not found</span>
-<span class="r-in"><span><span class="va">comp</span><span class="op">$</span><span class="va">sigma_t</span>       <span class="co"># bandwidth used</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'comp' not found</span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># --- Simulate a toy distance matrix (no external packages) ---</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">42</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">spp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp_"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  t1 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spp</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  t2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">spp</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Euclidean distances on simulated traits, scaled to [0, 1]</span></span></span>
+<span class="r-in"><span><span class="va">g_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/coerce.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/dist.html" class="external-link">dist</a></span><span class="op">(</span><span class="va">traits</span>, method <span class="op">=</span> <span class="st">"euclidean"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">g_all</span> <span class="op">&lt;-</span> <span class="va">g_all</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">g_all</span><span class="op">)</span>                 <span class="co"># scale to [0,1]</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">g_all</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">g_all</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="va">spp</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Define residents and invaders</span></span></span>
+<span class="r-in"><span><span class="va">residents</span> <span class="op">&lt;-</span> <span class="va">spp</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="va">invaders</span>  <span class="op">&lt;-</span> <span class="va">spp</span><span class="op">[</span><span class="fl">6</span><span class="op">:</span><span class="fl">8</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Compute competition kernel (sigma_t estimated from resident–resident distances)</span></span></span>
+<span class="r-in"><span><span class="va">comp</span> <span class="op">&lt;-</span> <span class="fu">compute_competition_kernel</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  g_all     <span class="op">=</span> <span class="va">g_all</span>,</span></span>
+<span class="r-in"><span>  residents <span class="op">=</span> <span class="va">residents</span>,</span></span>
+<span class="r-in"><span>  invaders  <span class="op">=</span> <span class="va">invaders</span>,</span></span>
+<span class="r-in"><span>  sigma_method <span class="op">=</span> <span class="st">"sd"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Inspect results</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">comp</span><span class="op">$</span><span class="va">a_ij</span><span class="op">)</span>           <span class="co"># (invaders × residents) competition coefficients</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  num [1:3, 1:5] 0.006808 0.966233 0.024361 0.694695 0.000156 ...</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  - attr(*, "dimnames")=List of 2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr [1:3] "sp_6" "sp_7" "sp_8"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   ..$ : chr [1:5] "sp_1" "sp_2" "sp_3" "sp_4" ...</span>
+<span class="r-in"><span><span class="va">comp</span><span class="op">$</span><span class="va">sigma_t</span>             <span class="co"># bandwidth used</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.2388547</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Same call without providing invaders (uses complement of residents)</span></span></span>
+<span class="r-in"><span><span class="va">comp2</span> <span class="op">&lt;-</span> <span class="fu">compute_competition_kernel</span><span class="op">(</span><span class="va">g_all</span>, residents <span class="op">=</span> <span class="va">residents</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

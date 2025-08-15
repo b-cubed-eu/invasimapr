@@ -32,13 +32,13 @@
 #' @examples
 #' \dontrun{
 #' # Example using TRY table:
-#' get_trait_data("Acacia karroo", use_try=TRUE, try_data=try_traits, trait_species_col="SpeciesName")
+#' get_trait_data("Acacia karroo", use_try = TRUE, try_data = try_traits, trait_species_col = "SpeciesName")
 #'
 #' # Example using local trait table:
-#' get_trait_data("Acraea horta", local_trait_df=traits, local_species_col="species")
+#' get_trait_data("Acraea horta", local_trait_df = traits, local_species_col = "species")
 #'
 #' # Scrape only metadata (no traits):
-#' get_trait_data("Acacia karroo", use_try=FALSE)
+#' get_trait_data("Acacia karroo", use_try = FALSE)
 #' }
 #' @export
 get_trait_data <- function(
@@ -58,14 +58,15 @@ get_trait_data <- function(
     trait_species_col = "AccSpeciesName",
     local_trait_df = NULL,
     local_species_col = "species",
-    max_dist = 1
-) {
-  requireNamespace("dplyr"); requireNamespace("purrr"); requireNamespace("tibble")
+    max_dist = 1) {
+  requireNamespace("dplyr")
+  requireNamespace("purrr")
+  requireNamespace("tibble")
   # ensure no connection leakage
-  on.exit(closeAllConnections(), add=TRUE)
+  on.exit(closeAllConnections(), add = TRUE)
 
   # ---- Helper: Clean string encoding ----
-  clean_col <- function(x) iconv(as.character(x), from="", to="UTF-8", sub="byte")
+  clean_col <- function(x) iconv(as.character(x), from = "", to = "UTF-8", sub = "byte")
 
   # ---- Wikipedia summary
   # get_wikipedia_summary <- function(species) {
@@ -81,7 +82,9 @@ get_trait_data <- function(
     page_title <- gsub(" ", "_", species)
     url <- paste0("https://en.wikipedia.org/api/rest_v1/page/summary/", URLencode(page_title, reserved = TRUE))
     resp <- tryCatch(httr::GET(url), error = function(e) NULL)
-    if (is.null(resp) || resp$status_code != 200) return(NA)
+    if (is.null(resp) || resp$status_code != 200) {
+      return(NA)
+    }
     cont <- tryCatch(jsonlite::fromJSON(rawToChar(resp$content)), error = function(e) NA)
     # Fix: check if cont is a list and has $extract
     if (is.list(cont) && !is.null(cont$extract)) {
@@ -92,15 +95,19 @@ get_trait_data <- function(
   }
   # ---- Wikipedia taxonomy via infobox table
   get_wikipedia_taxonomy <- function(species) {
-    url     <- paste0("https://en.wikipedia.org/wiki/", stringr::str_replace_all(species, " ", "_"))
-    page    <- tryCatch(rvest::read_html(url), error = function(e) NULL)
-    if (is.null(page)) return(setNames(rep(NA_character_, 5), c("Kingdom", "Phylum", "Class", "Order", "Family")))
+    url <- paste0("https://en.wikipedia.org/wiki/", stringr::str_replace_all(species, " ", "_"))
+    page <- tryCatch(rvest::read_html(url), error = function(e) NULL)
+    if (is.null(page)) {
+      return(setNames(rep(NA_character_, 5), c("Kingdom", "Phylum", "Class", "Order", "Family")))
+    }
     infobox <- page %>% rvest::html_node("table.infobox")
-    if (inherits(infobox, "xml_missing") || is.null(infobox)) return(setNames(rep(NA_character_, 5), c("Kingdom", "Phylum", "Class", "Order", "Family")))
+    if (inherits(infobox, "xml_missing") || is.null(infobox)) {
+      return(setNames(rep(NA_character_, 5), c("Kingdom", "Phylum", "Class", "Order", "Family")))
+    }
     tbl <- infobox %>%
       rvest::html_table(fill = TRUE) %>%
       tibble::as_tibble(.name_repair = "minimal") %>%
-      purrr::set_names(c("trait","value")) %>%
+      purrr::set_names(c("trait", "value")) %>%
       dplyr::filter(trait != "" & value != "")
     tbl <- tbl %>% dplyr::mutate(trait = stringr::str_remove(trait, ":$"), value = stringr::str_squish(value))
     ranks <- c("Kingdom", "Phylum", "Class", "Order", "Family")
@@ -115,29 +122,35 @@ get_trait_data <- function(
   get_wikipedia_image <- function(species) {
     url <- paste0("https://en.wikipedia.org/wiki/", gsub(" ", "_", species))
     html <- tryCatch(rvest::read_html(url), error = function(e) NULL)
-    if (is.null(html)) return(NA)
+    if (is.null(html)) {
+      return(NA)
+    }
     img_url <- html %>%
       rvest::html_node(".infobox img") %>%
       rvest::html_attr("src")
-    if (is.na(img_url) || is.null(img_url)) return(NA)
+    if (is.na(img_url) || is.null(img_url)) {
+      return(NA)
+    }
     if (!startsWith(img_url, "http")) img_url <- paste0("https:", img_url)
     img_url
   }
   # ---- Background removal (simple color threshold)
   remove_background_color <- function(image_url, bg_thresh = 80, green_delta = 20, out_file = NULL) {
     img <- tryCatch(magick::image_read(image_url), error = function(e) NULL)
-    if (is.null(img)) return(NA)
+    if (is.null(img)) {
+      return(NA)
+    }
     img <- magick::image_scale(img, "200")
     img_data <- magick::image_data(img, channels = "rgb")
-    r <- as.integer(img_data[1,,])
-    g <- as.integer(img_data[2,,])
-    b <- as.integer(img_data[3,,])
+    r <- as.integer(img_data[1, , ])
+    g <- as.integer(img_data[2, , ])
+    b <- as.integer(img_data[3, , ])
     mask <- !(
       (g > r + green_delta & g > b + green_delta & g > bg_thresh) |
         (r > bg_thresh & g > bg_thresh & b > bg_thresh)
     )
     alpha <- as.raw(ifelse(mask, 255, 0))
-    img_data_alpha <- abind::abind(img_data, array(alpha, dim=dim(img_data)[2:3]), along=1)
+    img_data_alpha <- abind::abind(img_data, array(alpha, dim = dim(img_data)[2:3]), along = 1)
     img_rgba <- magick::image_read(img_data_alpha)
     if (!is.null(out_file)) magick::image_write(img_rgba, out_file)
     img_rgba
@@ -146,14 +159,18 @@ get_trait_data <- function(
   get_image_palette_local <- function(img, n = 5) {
     img <- magick::image_scale(img, "100")
     img_data <- magick::image_data(img, channels = "rgba")
-    alpha <- as.integer(img_data[4,,])
+    alpha <- as.integer(img_data[4, , ])
     keep <- which(alpha > 0)
-    if (length(keep) < n) return(NA)
-    r <- as.integer(img_data[1,,])[keep]
-    g <- as.integer(img_data[2,,])[keep]
-    b <- as.integer(img_data[3,,])[keep]
+    if (length(keep) < n) {
+      return(NA)
+    }
+    r <- as.integer(img_data[1, , ])[keep]
+    g <- as.integer(img_data[2, , ])[keep]
+    b <- as.integer(img_data[3, , ])[keep]
     df <- data.frame(r = r, g = g, b = b)
-    if (nrow(unique(df)) < n) return(NA)
+    if (nrow(unique(df)) < n) {
+      return(NA)
+    }
     km <- kmeans(df, centers = n)
     rgb <- round(km$centers)
     rgb_hex <- apply(rgb, 1, function(x) rgb(x[1], x[2], x[3], maxColorValue = 255))
@@ -210,8 +227,8 @@ get_trait_data <- function(
         localtab,
         by = setNames(local_species_col, "species"),
         max_dist = max_dist,
-        ignore_case  = TRUE,
-        distance_col = "distance"   # name of the Levenshtein-distance column
+        ignore_case = TRUE,
+        distance_col = "distance" # name of the Levenshtein-distance column
       )
     })
     if (nrow(trait_match) > 0) {
@@ -222,16 +239,19 @@ get_trait_data <- function(
 
   # ---- Metadata scrape: conditional on user opts ----
   summary <- if (do_summary) get_wikipedia_summary(species) else NA
-  taxonomy <- if (do_taxonomy) get_wikipedia_taxonomy(species) else setNames(rep(NA, 5), c("Kingdom","Phylum","Class","Order","Family"))
+  taxonomy <- if (do_taxonomy) get_wikipedia_taxonomy(species) else setNames(rep(NA, 5), c("Kingdom", "Phylum", "Class", "Order", "Family"))
   img_url <- if (do_image) get_wikipedia_image(species) else NA
-  img_rgba <- if (do_image && !is.na(img_url) && remove_bg)
+  img_rgba <- if (do_image && !is.na(img_url) && remove_bg) {
     remove_background_color(img_url, bg_thresh, green_delta)
-  else if (do_image && !is.na(img_url)) magick::image_read(img_url)
-  else NULL
+  } else if (do_image && !is.na(img_url)) {
+    magick::image_read(img_url)
+  } else {
+    NULL
+  }
   if (preview && inherits(img_rgba, "magick-image")) print(img_rgba)
   if (!is.null(save_folder) && inherits(img_rgba, "magick-image")) {
     if (!dir.exists(save_folder)) dir.create(save_folder, recursive = TRUE)
-    fname <- paste0(gsub(" ", "_", species), "_bg", if(remove_bg) "_removed" else "", ".png")
+    fname <- paste0(gsub(" ", "_", species), "_bg", if (remove_bg) "_removed" else "", ".png")
     outfile <- file.path(save_folder, fname)
     magick::image_write(img_rgba, outfile)
   }
@@ -249,7 +269,7 @@ get_trait_data <- function(
     img_url = img_url,
     palette = palette
   )
-  if (!is.null(try_traits))   output <- dplyr::bind_cols(output, try_traits)
+  if (!is.null(try_traits)) output <- dplyr::bind_cols(output, try_traits)
   if (!is.null(local_traits)) output <- dplyr::bind_cols(output, local_traits)
   output
 }

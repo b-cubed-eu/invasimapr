@@ -2,7 +2,7 @@
 % Please edit documentation in R/build_glmm_formula.R
 \name{build_glmm_formula}
 \alias{build_glmm_formula}
-\title{Build a trait–environment GLMM formula safely and flexibly}
+\title{Build a trait-environment GLMM formula safely and flexibly}
 \usage{
 build_glmm_formula(
   data,
@@ -63,7 +63,7 @@ and any requested random effects, e.g.:
   }
 }
 \description{
-Constructs a model formula for trait–environment analyses in a single step.
+Constructs a model formula for trait-environment analyses in a single step.
 The function (i) auto-detects trait and environment columns from a long-format
 table, (ii) assembles fixed effects for all traits and all environment variables,
 (iii) optionally includes all pairwise \eqn{trait \times environment} interactions,
@@ -93,23 +93,23 @@ Supplied verbatim (e.g., random intercepts/slopes). For example,
 \examples{
 # Minimal reproducible toy example -----------------------------------------
 set.seed(1)
-n = 100
-longDF = data.frame(
-  site_id  = factor(sample(paste0("s", 1:10), n, TRUE)),
-  species  = factor(sample(paste0("sp", 1:15), n, TRUE)),
+n <- 100
+longDF <- data.frame(
+  site_id = factor(sample(paste0("s", 1:10), n, TRUE)),
+  species = factor(sample(paste0("sp", 1:15), n, TRUE)),
   x = runif(n), y = runif(n),
-  count     = rpois(n, lambda = 3),
+  count = rpois(n, lambda = 3),
   # traits
   trait_cont1 = rnorm(n),
   trait_cont2 = rnorm(n),
-  trait_cat   = factor(sample(letters[1:3], n, TRUE)),
+  trait_cat = factor(sample(letters[1:3], n, TRUE)),
   # environments
-  env1 = scale(rnorm(n))[,1],
-  env2 = scale(runif(n))[,1]
+  env1 = scale(rnorm(n))[, 1],
+  env2 = scale(runif(n))[, 1]
 )
 
 # Build a full formula with all trait × environment interactions and default REs
-fml = build_glmm_formula(longDF)
+fml <- build_glmm_formula(longDF)
 fml
 
 # Example fit (uncomment if glmmTMB is available)
@@ -117,12 +117,12 @@ fml
 # summary(mod)
 
 # Targeted columns & no interactions
-fml2 = build_glmm_formula(
-  data                = longDF,
-  trait_cols          = c("trait_cont1","trait_cont2","trait_cat"),
-  env_cols            = c("env1","env2"),
+fml2 <- build_glmm_formula(
+  data = longDF,
+  trait_cols = c("trait_cont1", "trait_cont2", "trait_cat"),
+  env_cols = c("env1", "env2"),
   include_interactions = FALSE,
-  random_effects       = character(0)
+  random_effects = character(0)
 )
 fml2
 

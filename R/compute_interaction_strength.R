@@ -41,23 +41,22 @@
 #'   \item `sigma`: bandwidth used (if Gaussian kernel).
 #' }
 #' @export
-compute_interaction_strength = function(
+compute_interaction_strength <- function(
     traits,
     predDF,
-    method       = "gower",
-    kernel       = c("distance", "similarity", "gaussian"),
-    sigma        = NULL,
-    standardise  = FALSE,
-    sparsify_k   = NULL
-) {
+    method = "gower",
+    kernel = c("distance", "similarity", "gaussian"),
+    sigma = NULL,
+    standardise = FALSE,
+    sparsify_k = NULL) {
   stopifnot(is.data.frame(traits), ncol(traits) >= 2)
   stopifnot(all(c("site_id", "species", "pred") %in% names(predDF)))
 
-  kernel = match.arg(kernel)
+  kernel <- match.arg(kernel)
 
   # --- Resident species abundances -------------------------------------------
-  residents = setdiff(traits[[1]], grep("^inv", traits[[1]], value = TRUE))
-  Nstar = predDF %>%
+  residents <- setdiff(traits[[1]], grep("^inv", traits[[1]], value = TRUE))
+  Nstar <- predDF %>%
     dplyr::filter(species %in% residents) %>%
     dplyr::select(species, site_id, pred) %>%
     tidyr::pivot_wider(names_from = site_id, values_from = pred) %>%
@@ -65,42 +64,45 @@ compute_interaction_strength = function(
     as.matrix()
 
   # --- Pairwise Gower (or other) distances -----------------------------------
-  raw_distance = cluster::daisy(traits[,-1], metric = method) %>% as.matrix()
-  rownames(raw_distance) = colnames(raw_distance) = traits[[1]]
+  raw_distance <- cluster::daisy(traits[, -1], metric = method) %>% as.matrix()
+  rownames(raw_distance) <- colnames(raw_distance) <- traits[[1]]
 
   # --- Optional scaling ------------------------------------------------------
-  scale01 = function(M) {
-    rng = range(M, na.rm = TRUE)
-    if (diff(rng) == 0) return(M*0)
+  scale01 <- function(M) {
+    rng <- range(M, na.rm = TRUE)
+    if (diff(rng) == 0) {
+      return(M * 0)
+    }
     (M - rng[1]) / diff(rng)
   }
-  D = if (standardise || (kernel == "similarity" && method != "gower")) scale01(raw_distance) else raw_distance
+  D <- if (standardise || (kernel == "similarity" && method != "gower")) scale01(raw_distance) else raw_distance
 
   # --- Kernelisation ---------------------------------------------------------
   if (kernel == "similarity") {
-    g_all = 1 - D
+    g_all <- 1 - D
   } else if (kernel == "gaussian") {
     if (is.null(sigma)) {
-      vals = D[upper.tri(D)]
-      sigma = median(vals[vals > 0], na.rm = TRUE)
+      vals <- D[upper.tri(D)]
+      sigma <- median(vals[vals > 0], na.rm = TRUE)
     }
-    g_all = exp(-(D^2) / (2 * sigma^2))
-    diag(g_all) = 0
+    g_all <- exp(-(D^2) / (2 * sigma^2))
+    diag(g_all) <- 0
   } else {
-    g_all = D
+    g_all <- D
   }
 
   # --- Optional sparsification -----------------------------------------------
   if (!is.null(sparsify_k)) {
-    sparsify_knn = function(K, k) {
-      n = nrow(K); A = matrix(0, n, n, dimnames = dimnames(K))
+    sparsify_knn <- function(K, k) {
+      n <- nrow(K)
+      A <- matrix(0, n, n, dimnames = dimnames(K))
       for (i in 1:n) {
-        idx = order(K[i, ], decreasing = TRUE)[seq_len(min(k, n))]
-        A[i, idx] = K[i, idx]
+        idx <- order(K[i, ], decreasing = TRUE)[seq_len(min(k, n))]
+        A[i, idx] <- K[i, idx]
       }
       pmax(A, t(A))
     }
-    g_all = sparsify_knn(g_all, sparsify_k)
+    g_all <- sparsify_knn(g_all, sparsify_k)
   }
 
   list(
