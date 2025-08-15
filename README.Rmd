@@ -79,6 +79,8 @@ Practically, the package is modular and reproducible. Each step can be run indep
 The figure below summarizes the **invasimapr** pipeline from inputs to decision-ready outputs. Starting with species **traits** (T), **site environments** $\mathbf{E}_s$, and **resident communities** (Y), the workflow derives intermediate quantities in two coordinated tracks: a **trait track** that yields pairwise distances and a competition kernel $\alpha_{ij}$, and an **environment track** that yields resident optima $\theta_j$, site-resident mismatch $\Delta_{js}$, an environmental kernel $K_e$, and resident context $N^{*}_{js}$. These parts are assembled into an **impact tensor** $I_{ijs}$, aggregated to a **penalty** $C^{\mathrm{(raw)}}_{is}$, and combined with predicted **intrinsic growth** $r_{is}$ to produce **invasion fitness** $\lambda_{is}$. Site- and species-level summaries (**invasibility** $V_s$ and **invasiveness** $I_i$) support mapping and prioritisation.
 
 ![](tools/invasimapr_flowchart.png){width=80%}
+<!-- <img src="/invasimapr/tools/invasimapr_flowchart.png" style="width:80%"> -->
+
 <!-- for crisp scaling. ​:contentReference[oaicite:0]{index=0}​ -->
 
 > **Figure 1**: Traits and environment feed two tracks - (1) **competition** via trait distances → $\alpha_{ij}$, and (2) **environmental filtering** via optima and mismatch → $K_e(\Delta_{js};\sigma_e)$ plus **resident context** $N^{*}_{js}$. These combine into an **impact tensor** $I_{ijs}$, which sums to the **penalty** $C^{\mathrm{(raw)}}_{is}$. Subtracting this from the **intrinsic growth** $r_{is}$ gives **invasion fitness** $\lambda_{is}$, which aggregates to **invasibility** $V_s$ and **invasiveness** $I_i$ and can be mapped.
