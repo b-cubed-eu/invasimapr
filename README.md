@@ -1,227 +1,364 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# invasimapr
+
+## A Novel Framework to visualise trait dispersion and assess species invasiveness or site invasibility
+
 <!-- badges: start -->
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/nithecs-biomath/RBasicPack/master?urlpath=rstudio)
-[![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![R-CMD-check](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml)
 [![test-coverage](https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml)
+[![codecov](https://codecov.io/gh/macSands/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/macSands/invasimapr)
+[![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 [![Codecov test
 coverage](https://codecov.io/gh/macSands/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/macSands/invasimapr)
-[![R-CMD-check](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml)
-
 <!-- badges: end -->
-
-------------------------------------------------------------------------
-
-# `invasimapr`
-
-## A Novel Framework to visualise trait dispersion and assess invasiveness and invasibility
 
 ------------------------------------------------------------------------
 
 ## 1. Introduction
 
-Biological invasions threaten global biodiversity. Invasive alien
-species (IAS) can expand rapidly and transform ecosystems. Because
-invasion dynamics arise from multiple drivers, from species interactions
-and traits to environmental gradients, we need rigorous, reproducible
-workflows to diagnose how species establish and spread. Recent theory,
-including trait-mediated ecological networks and invasion fitness,
-offers a coherent basis for integrating traits, environment, and biotic
-interactions (Hui et al., 2016; Hui et al., 2021). In the `invasimapr`
-framework, **invasion fitness** is the **low-density per-capita growth
-rate** of an invader in a resident community. The low-density condition
-reflects a realistic introduction stage where the invader is rare and
-not self-limited, so establishment potential depends on environmental
-suitability and interspecific interactions. Positive values indicate
-growth from rarity; negative values indicate likely exclusion. This
-aligns with mutual invasibility and adaptive-dynamics invasion criteria.
+Biological invasions are a major driver of biodiversity loss. Invasive
+alien species can spread quickly, alter ecosystem processes, and
+displace native taxa. Because invasion outcomes depend jointly on
+functional traits, resident communities, and local environments, ad-hoc
+analyses are not enough. We need a transparent, reproducible way to
+quantify establishment potential at specific sites and to compare that
+potential across species and landscapes.
 
-#### Formal model and notation
+**invasimapr** fills this gap. It is a trait-based, site-specific R
+package that estimates **invasion fitness** for candidate invaders,
+assembles the resident community context that constrains establishment,
+and turns these quantities into mappable indicators for decision making.
+The workflow links three pillars: a functional **trait space** that
+governs competitive overlap, **environmental suitability** that
+determines how well species perform at a site, and **biotic
+competition** from residents that reduces the chance of establishment.
+By fitting a single trait–environment model and reusing it to derive
+both invader growth and resident context, the package keeps assumptions
+coherent and results easy to interpret.
 
-We compute **invasion fitness** for invader $i$ at site $s$ as:  
-<a id="def-lambda"></a> $$
+This milestone report describes the rationale, model components, and
+software design of **invasimapr**. We define the ecological quantities
+we estimate, show how raw data are prepared and validated, and explain
+how outputs are summarised as **invasibility** (how open a site is to
+newcomers) and **invasiveness** (how prone a species is to establish
+across sites). The implementation relies on widely used methods such as
+GLMM or GAM for trait–environment responses and standard distance
+measures such as Gower for trait and environmental dissimilarities,
+which keeps the approach accessible and extensible.
+
+Practically, the package is modular and reproducible. Each step can be
+run independently or as a full pipeline, inputs and assumptions are
+explicit, and all intermediate objects can be inspected. The end result
+is a consistent set of site-level maps and species-level rankings that
+support surveillance, prioritisation, and scenario testing under
+changing environments.
+
+------------------------------------------------------------------------
+
+## 2. Context and model overview
+
+The figure below summarizes the **invasimapr** pipeline from inputs to
+decision-ready outputs. Starting with species **traits** (T), **site
+environments** $\mathbf{E}_s$, and **resident communities** (Y), the
+workflow derives intermediate quantities in two coordinated tracks: a
+**trait track** that yields pairwise distances and a competition kernel
+$\alpha_{ij}$, and an **environment track** that yields resident optima
+$\theta_j$, site-resident mismatch $\Delta_{js}$, an environmental
+kernel $K_e$, and resident context $N^{*}_{js}$. These parts are
+assembled into an **impact tensor** $I_{ijs}$, aggregated to a
+**penalty** $C^{\mathrm{(raw)}}_{is}$, and combined with predicted
+**intrinsic growth** $r_{is}$ to produce **invasion fitness**
+$\lambda_{is}$. Site- and species-level summaries (**invasibility**
+$V_s$ and **invasiveness** $I_i$) support mapping and prioritisation.
+
+<img src="tools/invasimapr_flowchart.png" style="width:80.0%" />
+<!-- for crisp scaling. ​:contentReference[oaicite:0]{index=0}​ -->
+
+> **Figure 1**: Traits and environment feed two tracks - (1)
+> **competition** via trait distances → $\alpha_{ij}$, and (2)
+> **environmental filtering** via optima and mismatch →
+> $K_e(\Delta_{js};\sigma_e)$ plus **resident context** $N^{*}_{js}$.
+> These combine into an **impact tensor** $I_{ijs}$, which sums to the
+> **penalty** $C^{\mathrm{(raw)}}_{is}$. Subtracting this from the
+> **intrinsic growth** $r_{is}$ gives **invasion fitness**
+> $\lambda_{is}$, which aggregates to **invasibility** $V_s$ and
+> **invasiveness** $I_i$ and can be mapped.
+
+### 2.1. Inputs
+
+- **Species traits** *(T)*: measurable characteristics (e.g., height,
+  seed mass, leaf area, diet) that shape how species use resources and
+  interact. Traits let us compare species on a common ecological scale.
+- **Site environment** $\mathbf{E}_s$ *(E)*: local conditions (climate,
+  soils, habitat structure) that determine whether a species can survive
+  and grow at a place.
+- **Residents** *(Y)*: the species already established at a site (the
+  *resident community*). Their presence sets the biotic backdrop into
+  which newcomers arrive.
+- **Candidate invaders**: the species being evaluated. They may be real
+  introductions or simulated species drawn from trait distributions to
+  explore “what-if” scenarios.
+
+The **trait-environment response** model ties traits and environments to
+observed abundances to generate consistent predictions for both invaders
+and residents.
+
+------------------------------------------------------------------------
+
+### 2.2. Invasion fitness
+
+Invasion fitness is the net potential for a newcomer to increase when
+rare. It combines how well the site suits the species (its predicted
+growth) with how much the resident community pushes back (competitive
+penalty). Positive values mean establishment is feasible; negative
+values indicate likely exclusion.
+
+<a id="def-lambda"></a>
+
+$$
 \mathbf{\lambda_{is} \;=\; r_{is} \;-\; C^{\mathrm{(raw)}}_{is}}
 $$
 
-where:
+------------------------------------------------------------------------
 
-- Predicted **growth potential** (intrinsic growth or abundance proxy
-  for invader $i$ at site $s$ from the trait-environment model)
-  is:  <a id="def-r"></a>$r_{is}$  
-- **Total raw competitive penalty** is: <a id="def-Craw"></a> $$
-  C^{\mathrm{(raw)}}_{is} \;=\; \sum_{j \neq i} I_{ijs}
-  $$
-- **Impact tensor** (resident $j$ on invader $i$ in site $s$) is:
-  <a id="def-I"></a> $$
-  I_{ijs} \;=\; \alpha_{ij} \; K_e(\Delta_{js}; \sigma_e) \; N^{*}_{js}.
-  $$
-- **Competition kernel in trait space** is: <a id="def-alpha"></a> $$
-  \alpha_{ij} \;=\; \exp\!\left(-\frac{d_{ij}^2}{2\sigma_t^2}\right)
-  $$ with <a id="def-dij"></a>$d_{ij} \in [0,1]$ as the trait
-  dissimilarity (e.g., Gower) and <a id="def-sigmat"></a>$\sigma_t > 0$
-  as the trait bandwidth. While, the **generalised trait
-  distance/similarity**  <a id="def-gall"></a> $g^{\mathrm{(all)}}_{ij}$
-  is calculated as the the pairwise trait relationship (distance,
-  similarity, or kernel value, depending on `kernel` choice) between
-  species $i$ and $j$ across the entire species set, not restricted to
-  invader-resident pairs.  
-- **Environmental filtering kernel** is: <a id="def-Ke"></a>
-  <a id="def-delta"></a> <a id="def-sigmae"></a> <a id="def-E"></a>
-  <a id="def-theta"></a> $$
-  K_e(\Delta_{js}; \sigma_e) \;=\; \exp\!\left(-\frac{\Delta_{js}^2}{2\sigma_e^2}\right), 
-  \quad \Delta_{js} \;=\; \mathrm{Gower}\!\big(\mathbf{E}_s, \theta_j\big),$$
-  where  $\mathbf{E}_s$ is the site environment vector and $\theta_j$ is
-  the abundance-weighted environmental optimum of resident
-  $j$.  $\sigma_e > 0$ is the environmental bandwidth.  
-- In the **resident context**, <a id="def-Nstar"></a>$N^{*}_{js}$ is the
-  predicted equilibrium or typical abundance of resident $j$ at site
-  $s$, obtained from the fitted trait-environment model: $$
-  N^{*}_{js} \;=\; f_{\text{env}}\!\left(\mathbf{E}_s, \theta_j, \mathbf{z}_j\right),
-  $$ where $f_{\text{env}}$ denotes the fitted response function (e.g.,
-  GLMM/GAM), $\mathbf{E}_s$ are site covariates, $\theta_j$ summarizes
-  species-level optima/traits, and $\mathbf{z}_j$ are any additional
-  predictors.  
-   
-- Site-level **invasibility** and species-level **invasiveness**
-  summaries of the fitness matrix [$\lambda_{is}$](#def-lambda) are
-  derived as follows:
-  - The proportion of invaders with positive fitness at site $s$
-    is:  <a id="def-Vs"></a> $$
-    V_s \;=\; \frac{1}{I}\sum_{i} \mathbb{I}\{\lambda_{is} > 0\}
-    $$
+### 2.3. Components of $\lambda_{is}$
 
-  - The total invasion fitness of invader $i$ across sites
-    is:  <a id="def-Ii"></a> $$
-    I_i \;=\; \sum_{s} \lambda_{is}
-    $$
+#### 2.3.1. Intrinsic growth (predicted growth potential)
 
-> **Note**: Different summaries can be applied - for example,
-> [$V_s$](#def-Vs) can be the mean of [$\lambda_{is}$](#def-lambda) over
-> species $i$, and/or [$I_i$](#def-Ii) can be the mean over sites or a
-> sum over positive values only, depending on management emphasis.  
+This is the growth or abundance a species is expected to achieve at site
+$s$ **without competitors**, derived from the trait-environment model.
+It captures environmental suitability and any trait effects independent
+of competition.
+
+<a id="def-r"></a> $r_{is}$
+
+*Interpretation:* high $r_{is}$ signals a good abiotic match; low
+$r_{is}$ signals environmental mismatch.
 
 ------------------------------------------------------------------------
 
-## 2. Overview of the `invasimapr` R package conceptual workflow
+#### 2.3.2. Competitive pressure (penalty from residents)
 
-This tutorial walks through the full `invasimapr` workflow for
+The penalty sums how strongly all residents suppress the invader at a
+site:
+
+<a id="def-Craw"></a>
+
+$$
+C^{\mathrm{(raw)}}_{is} \;=\; \sum_{j \neq i} I_{ijs}
+$$
+
+It is built from three ideas: **similarity in trait space**,
+**environmental match of residents**, and **how common residents are**.
+
+##### i) Functional trait space → competition
+
+Species are positioned in a **functional trait space** where distances
+reflect ecological similarity. Two summaries help interpret residents:
+
+- **Trait centrality**: how close a species is to the centre of the
+  resident trait cloud; central residents typically overlap more with
+  others.
+- **Trait dispersion**: how spread out residents are; greater spread
+  often means less average overlap and weaker competition.
+
+Similarity is translated into a competition coefficient with a Gaussian
+kernel:
+
+<a id="def-alpha"></a>
+
+$$
+\alpha_{ij} \;=\; \exp\!\left(-\frac{d_{ij}^2}{2\sigma_t^2}\right)
+$$
+
+Here <a id="def-dij"></a>$d_{ij}$ is trait dissimilarity (0 = identical,
+1 = very different) and <a id="def-sigmat"></a>$\sigma_t$ controls how
+quickly competition fades as species diverge. The general relation
+<a id="def-gall"></a>$g^{\mathrm{(all)}}_{ij}$ is computed over the full
+species set to provide consistent distances.
+
+##### ii) Environmental filtering of residents
+
+Residents suppress invaders most where **they** perform well. We
+quantify the match between site conditions and each resident’s optimum
+with a kernel in environmental space:
+
+<a id="def-Ke"></a> <a id="def-delta"></a> <a id="def-sigmae"></a>
+<a id="def-E"></a> <a id="def-theta"></a>
+
+$$
+K_e(\Delta_{js}; \sigma_e) \;=\; \exp\!\left(-\frac{\Delta_{js}^2}{2\sigma_e^2}\right),
+\quad \Delta_{js} \;=\; \mathrm{Gower}\!\big(\mathbf{E}_s, \theta_j\big),
+$$
+
+where $\theta_j$ is resident $j$’s abundance-weighted environmental
+optimum. Small $\Delta_{js}$ (good match) yields large $K_e$; large
+mismatch down-weights that resident’s effect.
+
+##### iii) Resident abundance (context)
+
+Abundant residents exert more pressure. Typical resident abundance at
+each site comes from the same trait–environment model:
+
+<a id="def-Nstar"></a>
+
+$$
+N^{*}_{js} \;=\; f_{\text{env}}\!\left(\mathbf{E}_s, \theta_j, \mathbf{z}_j\right),
+$$
+
+where $f_{\text{env}}$ is a fitted response (e.g., GLMM/GAM) and
+$\mathbf{z}_j$ are any extra predictors.
+
+------------------------------------------------------------------------
+
+#### 2.3.3. Interaction strength (impact tensor)
+
+The **impact tensor** combines trait overlap, resident suitability, and
+resident abundance into pairwise effects:
+
+<a id="def-I"></a>
+
+$$
+I_{ijs} \;=\; \alpha_{ij} \; K_e(\Delta_{js}; \sigma_e) \; N^{*}_{js}.
+$$
+
+Summing $I_{ijs}$ over residents creates the site-level penalty
+$C^{\mathrm{(raw)}}_{is}$.
+
+*Reading:* large $\alpha_{ij}$ (similar species), large $K_e$ (resident
+well-matched), and large $N^{*}_{js}$ (resident common) all increase
+suppression of the invader.
+
+------------------------------------------------------------------------
+
+### 2.4. Aggregated outputs
+
+#### 2.4.1. Invasibility (site openness)
+
+How open a site is to new species. We aggregate the fitness matrix over
+invaders to a site-level score that can be mapped or tracked through
+time.
+
+<a id="def-Vs"></a>
+
+$$
+V_s \;=\; \frac{1}{I}\sum_{i} \mathbb{I}\{\lambda_{is} > 0\}
+$$
+
+*Interpretation:* higher $V_s$ = more invaders expected to establish at
+site $s$.
+
+#### 2.4.1. Invasiveness (species propensity)
+
+How readily a species establishes across sites. We aggregate fitness
+over space to rank potential invaders.
+
+<a id="def-Ii"></a>
+
+$$
+I_i \;=\; \sum_{s} \lambda_{is}
+$$
+
+*Interpretation:* higher $I_i$ = species $i$ tends to find many
+suitable, weakly resistant sites.
+
+> **Note.** This section provides a high-level map of the **invasimapr**
+> pipeline. Each arrow denotes either a fitted relationship (from
+> traits/environments to predictions) or a deterministic transformation
+> (from distances to kernels to impacts). The modules are
+> interchangeable and auditable: you can inspect intermediate objects,
+> swap modelling choices (e.g., GLMM vs. GAM), and run sensitivity
+> analyses for key scales ($\sigma_t, \sigma_e$). Aggregates such as
+> $V_s$ and $I_i$ are flexible (sum, mean, or thresholded counts) and
+> should be chosen to match management goals. Because every quantity
+> derives from observed traits, environments, and resident data, the
+> workflow remains transparent, reproducible, and ready for mapping and
+> scenario testing.
+
+------------------------------------------------------------------------
+
+## 3. Overview of the `invasimapr` R package conceptual workflow
+
+This tutorial walks through the full **invasimapr** workflow for
 quantifying, mapping, and interpreting **invasion fitness**
-[$\lambda_{is}$](#def-lambda) (`fitness$lambda[i, s]` in `lambda_mat`)
-in ecological communities, from raw data to actionable visualisations.
-The steps operationalise key ecological concepts: **trait centrality**
-(`tdp$scores$centrality`); **trait dispersion** (`tdp$metrics_df`);
-**interaction strength** [$I_{ijs}$](#def-I) (`am$I_raw`);
-**competition** [$\alpha_{ij}$](#def-alpha) (`comp$a_ij`);
-**environmental filtering** [$K_e$](#def-Ke) (`ek$K_env`); and summaries
-of **invasion fitness** [$\lambda_{is}$](#def-lambda) including
-site-level **invasibility** [$V_s$](#def-Vs) and species-level
-**invasiveness** [$I_i$](#def-Ii).
+[$\lambda_{is}$](#def-lambda). The pipeline integrates information from
+traits, environments, and resident communities, returning explicit
+intermediate objects so you can inspect, audit, and reuse results.
 
-All computations use site-level environmental data (`site_env`), species
-occurrence or abundance (`site_spp_pa` / `site_spp_ab`) at coordinates
-(`site_xy`), and species functional traits (`spp_trait`) to parameterise
-trait–environment–interaction models consistent with invasion theory
-(Hui & Richardson, 2017; Hui et al., 2016, 2021).
+1)  **Inputs and setup**  
+    Provide site environments [$\mathbf{E}_s$](#def-E), resident
+    occurrence or abundance, species traits, and consistent species and
+    site identifiers. Load packages, set seeds, and ensure that tables
+    align on IDs so later steps can estimate intrinsic growth
+    [$\;r_{is}$](#def-r), trait similarity [$\;d_{ij}$](#def-dij), and
+    resident context [$\;N^{*}_{js}$](#def-Nstar).
 
-The workflow is modular, with each step implemented by targeted
-functions in `invasimapr`:
+2)  **Data preparation**  
+    Clean and standardise trait variables, harmonise units, resolve
+    missing values, and align dimensions across sites and species. The
+    output is a tidy trait table and matched site × species matrices
+    ready for analysis.
 
-1.  **Setup & Dependencies** Initialise the R environment, load
-    packages, source helper functions, and set reproducibility controls.
+3)  **Trait space to competition**  
+    Build a functional trait space and compute pairwise trait distances
+    [$\;d_{ij}$](#def-dij). Convert distances to competition
+    coefficients [$\alpha_{ij}$](#def-alpha) with a Gaussian kernel
+    whose bandwidth [$\sigma_t$](#def-sigmat) can be estimated from
+    resident dispersion or set explicitly. The result is an invader ×
+    resident matrix of $\alpha_{ij}$ that reflects how strongly species
+    compete as a function of trait similarity.
 
-2.  **Data Preparation** Collect, clean, and standardise trait datasets
-    (`spp_trait`), including automated web-scraping with
-    **`get_trait_data()`**, merging with trait tables, and type
-    conversion. Produces a standardised trait data frame suitable for
-    downstream analyses.
+4)  **Environment and resident context**  
+    Estimate each resident’s environmental optimum
+    [$\theta_j$](#def-theta), compute site–resident mismatch
+    $\Delta_{js} = \mathrm{Gower}(\mathbf{E}_s, \theta_j)$ (see
+    [$\mathbf{E}_s$](#def-E) and [$\theta_j$](#def-theta)), and
+    transform mismatch into an environmental weight
+    [$K_e(\Delta_{js};\sigma_e)$](#def-Ke) with bandwidth
+    [$\sigma_e$](#def-sigmae). Obtain resident context
+    [$N^{*}_{js}$](#def-Nstar) as predicted or typical abundance per
+    site, so resident effects are strongest where they are well matched
+    and common.
 
-3.  **Functional Trait Space** Characterise species in a
-    multidimensional trait space with **`compute_trait_space()`**,
-    calculating:
+5)  **Trait–environment response for intrinsic growth**  
+    Fit a trait–environment model to predict intrinsic growth or an
+    abundance proxy for candidate invaders at each site. This yields the
+    invader × site matrix [$\;r_{is}$](#def-r), representing expected
+    performance in the absence of competition.
 
-    - **Trait centrality** \[link TBD\] — `tdp$scores$centrality` via
-      **`compute_trait_similarity()`**.
-    - **Trait dispersion** \[link TBD\] — `tdp$metrics_df` via
-      **`compute_trait_dispersion()`**.
-    - Pairwise trait distances [$d_{ij}$](#def-dij) stored as
-      `trait_dist` or `comp$d_ij`.
+6)  **Assemble impacts and penalties**  
+    Combine competition [$\alpha_{ij}$](#def-alpha), environmental
+    weight [$K_e$](#def-Ke), and resident context
+    [$\;N^{*}_{js}$](#def-Nstar) into the impact tensor
+    [$I_{ijs}$](#def-I). Sum impacts over residents to obtain the total
+    competitive penalty [$C^{\mathrm{(raw)}}_{is}$](#def-Craw) for each
+    invader at each site.
 
-4.  **Trait–Environment Response** Fit generalised linear mixed models
-    linking traits and environmental covariates:
+7)  **Compute invasion fitness and variants**  
+    Calculate invasion fitness as intrinsic growth minus penalty,
+    [$\lambda_{is} = r_{is} - C^{\mathrm{(raw)}}_{is}$](#def-lambda).
+    Optionally report scaled fitness that divides the penalty by
+    richness, a relative-abundance version that emphasises composition,
+    and a logistic-capped version that smoothly limits extreme
+    penalties.
 
-    - Build GLMM formula with **`build_glmm_formula()`**.
-    - Simulate invader traits with **`simulate_invaders()`**.
-    - Predict intrinsic growth rates [$r_{is}$](#def-r) per site using
-      **`predict_invader_response()`**, returning `fitness$r_mat`.
+8)  **Summaries, maps, and interpretation**  
+    Aggregate the fitness matrix to site-level **invasibility**
+    [$V_s$](#def-Vs) and species-level **invasiveness**
+    [$I_i$](#def-Ii). Map $\lambda_{is}$, $V_s$, and $I_i$, explore
+    uncertainty and sensitivity, and create concise products for
+    management and reporting.
 
-5.  **Interaction Strength** Estimate pairwise biotic influence
-    potentials:
-
-    - Compute [$I_{ijs}$](#def-I) (`am$I_raw`) from [$d_{ij}$](#def-dij)
-      via **`compute_interaction_strength()`**.
-    - Store general interaction distances
-      [$g^{\mathrm{(all)}}_{ij}$](#def-gall) (`cis$g_all`).
-    - Extract resident abundance context [$N^{*}_{js}$](#def-Nstar)
-      (`cis$Nstar`).
-
-6.  **Competition** Transform distances into competition coefficients
-    [$\alpha_{ij}$](#def-alpha) using the Gaussian trait kernel
-    $K_t(d_{ij};\sigma_t)$ with bandwidth [$\sigma_t$](#def-sigmat)
-    (`comp$sigma_t`) via **`compute_competition_kernel()`**.
-
-7.  **Environmental Filtering** Quantify match between species and site
-    environments:
-
-    - Estimate environmental optima [$\theta_j$](#def-theta)
-      (`ek$env_opt`).
-    - Compute mismatch [$\Delta_{js}$](#def-delta) (`ek$env_dist`) from
-      site conditions $\mathbf{E}_s$ (`site_env`).
-    - Transform to environmental weights
-      [$K_e(\Delta_{js};\sigma_e)$](#def-Ke) using bandwidth
-      [$\sigma_e$](#def-sigmae) (`ek$sigma_e`) via
-      **`compute_environment_kernel()`**.
-
-8.  **Invasion Fitness** Computes low-density per-capita growth rates
-    [$\lambda_{is}$](#def-lambda) by integrating competition,
-    environmental filtering, and intrinsic growth:
-
-    - **Matrix assembly** — **`assemble_matrices()`** collates:
-
-      - Invader-resident competition coefficients
-        [$\alpha_{ij}$](#def-alpha)
-      - Site-resident environmental weights
-        [$K_e(\Delta_{js};\sigma_e)$](#def-Ke)
-      - Resident equilibrium abundances [$N^{*}_{js}$](#def-Nstar)
-      - Predicted intrinsic growth rates [$r_{is}$](#def-r)
-      - Returns the impact tensor [$I_{ijs}$](#def-I) and total
-        penalties [$C^{\mathrm{(raw)}}_{is}$](#def-Craw)
-
-    - **Fitness calculation** — **`compute_invasion_fitness()`**
-      applies:
-      $\lambda_{is} \;=\; r_{is} \;-\; C^{\mathrm{(raw)}}_{is}$, where
-      the penalty [$C^{\mathrm{(raw)}}_{is}$](#def-Craw) is the sum of
-      all resident impacts [$I_{ijs}$](#def-I) on invader $i$ at site
-      $s$.
-
-    - **Variants** — Optional penalty formulations include
-      richness-scaled $(C^{\mathrm{(rich)}}_{is})$, abundance-weighted
-      $(C^{\mathrm{(abun)}}_{is})$, and logistic-capped
-      $(C^{\mathrm{(logis)}}_{is})$.
-
-9.  **Visualisation & Interpretation** Summarise $\lambda_{is}$ into:
-
-    - **Invasibility** [$V_s$](#def-Vs) (`summary$Vs`): mean or
-      proportion of positive $\lambda_{is}$ over invaders at site $s$.
-    - **Invasiveness** [$I_i$](#def-Ii) (`summary$Ii`): mean or sum of
-      $\lambda_{is}$ over sites for species $i$.
-    - Optional trait-level invasiveness summaries.
-
-> **Note:** Each module can be run independently if inputs are
-> available, or sequentially to reproduce the full pipeline from data
-> acquisition to invasion fitness mapping.  
-
-------------------------------------------------------------------------
+> **Note.** Different summaries can be used. For example, $V_s$ (see
+> [definition](#def-Vs)) can be the mean of $\lambda_{is}$ (see
+> [definition](#def-lambda)) over species $i$; and $I_i$ (see
+> [definition](#def-Ii)) can be the mean across sites or a sum over
+> positive values only, depending on management goals.
 
 # Step-by-step Workflow
 
@@ -240,7 +377,7 @@ library(invasimapr)
 sessionInfo()$otherPkgs$invasimapr$Version
 
 # Make sure all the functions are loaded
-# devtools::load_all() # alternative during local development
+devtools::load_all() # alternative during local development
 ```
 
 ### 2. Load other R libraries
@@ -252,36 +389,36 @@ visualization required across the `invasimapr` analysis pipeline.
 # Load essential packages
 # library(tidyverse)
 # --- Data Wrangling and Manipulation ---
-library(dplyr)       # Tidy data manipulation verbs (mutate, select, filter, etc.)
-library(tidyr)       # Reshape data (wide ↔ long, pivot functions)
-library(tibble)      # Modern lightweight data frames (tibble objects)
-library(purrr)       # Functional iteration (map(), etc.)
+library(dplyr) # Tidy data manipulation verbs (mutate, select, filter, etc.)
+library(tidyr) # Reshape data (wide ↔ long, pivot functions)
+library(tibble) # Modern lightweight data frames (tibble objects)
+library(purrr) # Functional iteration (map(), etc.)
 
 # --- String and Factor Utilities ---
-library(stringr)     # String pattern matching and manipulation (str_detect, etc.)
+library(stringr) # String pattern matching and manipulation (str_detect, etc.)
 library(fastDummies) # Quickly create dummy/one-hot variables for factors
 
 # --- Data Visualization ---
-library(ggplot2)     # Grammar-of-graphics plotting
-library(viridis)     # Colorblind-friendly palettes for ggplot2
-library(lattice)     # Trellis (multi-panel) graphics
-library(factoextra)  # Visualize clustering and multivariate analyses, fviz_nbclust / silhouettes
-library(RColorBrewer)
+library(ggplot2) # Grammar-of-graphics plotting
+library(viridis) # Colorblind-friendly palettes for ggplot2
+# library(lattice)     # Trellis (multi-panel) graphics
+library(factoextra) # Visualize clustering and multivariate analyses, fviz_nbclust / silhouettes
+# library(RColorBrewer)
 
 # --- Spatial Data ---
-library(sf)          # Handling and plotting spatial vector data (simple features)
-library(terra)       # Raster and spatial data operations
+library(sf) # Handling and plotting spatial vector data (simple features)
+library(terra) # Raster and spatial data operations
 
 # --- Statistical and Ecological Modelling ---
-library(glmmTMB)     # Fit GLMMs (Generalized Linear Mixed Models), e.g., Tweedie, NB, Poisson
-library(MASS)        # Statistical functions and kernel density estimation (kde2d, etc.)
-library(cluster)     # Clustering algorithms, Gower distance, diagnostics
-library(vegan)       # Community ecology, ordination (PCoA, diversity metrics)
-library(geometry)    # Convex hulls, volumes, and related geometry calculations
-library(ClustGeo)    # for spatially constrained clustering
+library(glmmTMB) # Fit GLMMs (Generalized Linear Mixed Models), e.g., Tweedie, NB, Poisson
+library(MASS) # Statistical functions and kernel density estimation (kde2d, etc.)
+library(cluster) # Clustering algorithms, Gower distance, diagnostics
+# library(vegan)       # Community ecology, ordination (PCoA, diversity metrics)
+library(geometry) # Convex hulls, volumes, and related geometry calculations
+library(ClustGeo) # for spatially constrained clustering
 
 # --- Model Performance and Diagnostics ---
-library(performance) # Model checking, diagnostics, and performance metrics
+# library(performance) # Model checking, diagnostics, and performance metrics
 # options(warn = -1)
 ```
 
@@ -322,38 +459,31 @@ and site-by-species matrices in presence-absence or abundance form.
 
 ``` r
 # Use local GBIF data
-bfly_data = dissmapr::get_occurrence_data(
+bfly_data <- dissmapr::get_occurrence_data(
   data = system.file("extdata", "gbif_butterflies.csv", package = "invasimapr"),
-  source_type = 'local_csv',
-  sep = '\t'
+  source_type = "local_csv",
+  sep = "\t"
 )
 
 # Check results but only a subset of columns to fit in console
 dim(bfly_data)
 #> [1] 81825    52
 # str(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
-head(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
-#>   site_id pa         y        x    gbifID             verbatimScientificName
-#> 1       1  1 -34.42086 19.24410 923051749                   Pieris brassicae
-#> 2       2  1 -33.96044 18.75564 922985630                   Pieris brassicae
-#> 3       3  1 -33.91651 18.40321 922619348 Papilio demodocus subsp. demodocus
-#> 4       1  1 -34.42086 19.24410 922426210 Mylothris agathina subsp. agathina
-#> 5       4  1 -34.35024 18.47488 921650584                  Eutricha capensis
-#> 6       5  1 -33.58570 25.65097 921485695            Drepanogynis bifasciata
-#>   countryCode                                          locality
-#> 1          ZA                                          Hermanus
-#> 2          ZA                                   Polkadraai Road
-#> 3          ZA                                       Signal Hill
-#> 4          ZA                                          Hermanus
-#> 5          ZA Cape of Good Hope / Cape Point Area, South Africa
-#> 6          ZA                             Kudu Ridge Game Lodge
-#>          eventDate
-#> 1 2012-10-13T00:00
-#> 2 2012-11-01T00:00
-#> 3 2012-10-31T00:00
-#> 4 2012-10-13T00:00
-#> 5 2012-10-30T00:00
-#> 6 2012-10-23T00:00
+head(bfly_data[, c(51, 52, 22, 23, 1, 14, 16, 17, 30)])
+#>   site_id pa         y        x    gbifID             verbatimScientificName countryCode
+#> 1       1  1 -34.42086 19.24410 923051749                   Pieris brassicae          ZA
+#> 2       2  1 -33.96044 18.75564 922985630                   Pieris brassicae          ZA
+#> 3       3  1 -33.91651 18.40321 922619348 Papilio demodocus subsp. demodocus          ZA
+#> 4       1  1 -34.42086 19.24410 922426210 Mylothris agathina subsp. agathina          ZA
+#> 5       4  1 -34.35024 18.47488 921650584                  Eutricha capensis          ZA
+#> 6       5  1 -33.58570 25.65097 921485695            Drepanogynis bifasciata          ZA
+#>                                            locality        eventDate
+#> 1                                          Hermanus 2012-10-13T00:00
+#> 2                                   Polkadraai Road 2012-11-01T00:00
+#> 3                                       Signal Hill 2012-10-31T00:00
+#> 4                                          Hermanus 2012-10-13T00:00
+#> 5 Cape of Good Hope / Cape Point Area, South Africa 2012-10-30T00:00
+#> 6                             Kudu Ridge Game Lodge 2012-10-23T00:00
 
 # Use local data loaded into the environment as a data.frame
 # local_df = read.csv(system.file("extdata", "site_species.csv", package = "dissmapr")
@@ -366,10 +496,10 @@ head(bfly_data[,c(51,52,22,23,1,14,16,17,30)])
 # bfly_data = get_occurrence_data(
 #   data = system.file("extdata", "site_species.csv", package = "invasimapr"),
 #   source_type = 'local_csv')
-# 
+#
 # # Check results but only a subset of columns to fit in console
 # dim(bfly_data)
-# # str(bfly_data) 
+# # str(bfly_data)
 # head(bfly_data)
 ```
 
@@ -385,12 +515,12 @@ analysis).
 
 ``` r
 # Continue from GBIF data
-bfly_result = dissmapr::format_df(
+bfly_result <- dissmapr::format_df(
   data        = bfly_data, # A `data.frame` of biodiversity records
-  species_col = 'verbatimScientificName', # Name of species column (required for `"long"`)
-  value_col   = 'pa', # Name of value column (e.g. presence/abundance; for `"long"`)
+  species_col = "verbatimScientificName", # Name of species column (required for `"long"`)
+  value_col   = "pa", # Name of value column (e.g. presence/abundance; for `"long"`)
   extra_cols  = NULL, # Character vector of other columns to keep
-  format      = 'long' # Either`"long"` or `"wide"`
+  format      = "long" # Either`"long"` or `"wide"`
 )
 
 # # Continue using local data
@@ -407,8 +537,8 @@ str(bfly_result, max.level = 1)
 #>  $ site_spp: tibble [56,090 × 2,871] (S3: tbl_df/tbl/data.frame)
 
 # Optional: Create new objects from list items
-site_obs = bfly_result$site_obs
-site_spp = bfly_result$site_spp
+site_obs <- bfly_result$site_obs
+site_spp <- bfly_result$site_spp
 
 # Check results
 dim(site_obs)
@@ -424,25 +554,25 @@ head(site_obs)
 
 dim(site_spp)
 #> [1] 56090  2871
-head(site_spp[,1:6])
+head(site_spp[, 1:6])
 #> # A tibble: 6 × 6
-#>   site_id     x     y `Mylothris agathina subsp. agathina` `Pieris brassicae`
-#>     <int> <dbl> <dbl>                                <dbl>              <dbl>
-#> 1       1  19.2 -34.4                                    1                  1
-#> 2       2  18.8 -34.0                                    0                  1
-#> 3       3  18.4 -33.9                                    0                  0
-#> 4       4  18.5 -34.4                                    0                  0
-#> 5       5  25.7 -33.6                                    0                  0
-#> 6       6  22.2 -33.6                                    0                  0
-#> # ℹ 1 more variable: `Tarucus thespis` <dbl>
+#>   site_id     x     y Mylothris agathina subsp. agathi…¹ `Pieris brassicae` `Tarucus thespis`
+#>     <int> <dbl> <dbl>                              <dbl>              <dbl>             <dbl>
+#> 1       1  19.2 -34.4                                  1                  1                 1
+#> 2       2  18.8 -34.0                                  0                  1                 0
+#> 3       3  18.4 -33.9                                  0                  0                 0
+#> 4       4  18.5 -34.4                                  0                  0                 0
+#> 5       5  25.7 -33.6                                  0                  0                 0
+#> 6       6  22.2 -33.6                                  0                  0                 0
+#> # ℹ abbreviated name: ¹​`Mylothris agathina subsp. agathina`
 
 #### Get parameters from processed data to use later
 # Number of species
-(n_sp = dim(site_spp)[2] - 3)
+(n_sp <- dim(site_spp)[2] - 3)
 #> [1] 2868
 
 # Species names
-sp_cols = names(site_spp)[-c(1:3)]
+sp_cols <- names(site_spp)[-c(1:3)]
 sp_cols[1:10]
 #>  [1] "Mylothris agathina subsp. agathina" "Pieris brassicae"                  
 #>  [3] "Tarucus thespis"                    "Acraea horta"                      
@@ -463,8 +593,8 @@ gridded species matrices (`grid_spp`, `grid_spp_pa`), a spatial polygon
 modelling.
 
 ``` r
-# 1. Load the national boundary 
-rsa = sf::st_read(system.file("extdata", "rsa.shp", package = "invasimapr"))
+# 1. Load the national boundary
+rsa <- sf::st_read(system.file("extdata", "rsa.shp", package = "invasimapr"))
 #> Reading layer `rsa' from data source 
 #>   `D:\Methods\R\myR_Packages\myCompletePks\invasimapr\inst\extdata\rsa.shp' 
 #>   using driver `ESRI Shapefile'
@@ -474,32 +604,32 @@ rsa = sf::st_read(system.file("extdata", "rsa.shp", package = "invasimapr"))
 #> Bounding box:  xmin: 16.45189 ymin: -34.83417 xmax: 32.94498 ymax: -22.12503
 #> Geodetic CRS:  WGS 84
 
-# 2. Choose a working resolution 
-res = 0.5   # decimal degrees° (≈ 55 km at the equator)
+# 2. Choose a working resolution
+res <- 0.5 # decimal degrees° (≈ 55 km at the equator)
 
-# 3. Convert the AoI to a 'terra' vector 
-rsa_vect = terra::vect(rsa)
+# 3. Convert the AoI to a 'terra' vector
+rsa_vect <- terra::vect(rsa)
 
-# 4. Initialise a blank raster template 
-grid = terra::rast(rsa_vect, resolution = res, crs = terra::crs(rsa_vect))
+# 4. Initialise a blank raster template
+grid <- terra::rast(rsa_vect, resolution = res, crs = terra::crs(rsa_vect))
 
-# 5. Populate the raster with placeholder values 
-terra::values(grid) = 1
+# 5. Populate the raster with placeholder values
+terra::values(grid) <- 1
 
-# 6. Clip the raster to the AoI 
-grid_masked = terra::mask(grid, rsa_vect)
+# 6. Clip the raster to the AoI
+grid_masked <- terra::mask(grid, rsa_vect)
 
 # 7. Generate a 0.5° grid summary for the point dataset `site_spp`
-grid_list = dissmapr::generate_grid(
-  data          = site_spp,           # point data with x/y + species columns
-  x_col         = "x",                # longitude column
-  y_col         = "y",                # latitude  column
-  grid_size     = 0.5,                # cell size in degrees
-  sum_cols      = 4:ncol(site_spp),   # columns to aggregate * could also use `names(site_spp)[4:ncol(site_spp)]`
-  crs_epsg      = 4326                # WGS84
+grid_list <- dissmapr::generate_grid(
+  data          = site_spp, # point data with x/y + species columns
+  x_col         = "x", # longitude column
+  y_col         = "y", # latitude  column
+  grid_size     = 0.5, # cell size in degrees
+  sum_cols      = 4:ncol(site_spp), # columns to aggregate * could also use `names(site_spp)[4:ncol(site_spp)]`
+  crs_epsg      = 4326 # WGS84
 )
 
-# Inspect the returned list 
+# Inspect the returned list
 str(grid_list, max.level = 1)
 #> List of 4
 #>  $ grid_r     :S4 class 'SpatRaster' [package "terra"]
@@ -510,35 +640,40 @@ str(grid_list, max.level = 1)
 #>  $ grid_spp   : tibble [415 × 2,874] (S3: tbl_df/tbl/data.frame)
 #>  $ grid_spp_pa: tibble [415 × 2,874] (S3: tbl_df/tbl/data.frame)
 
-# (Optional) Promote list items to named objects 
-grid_r = grid_list$grid_r$grid_id    # raster
-grid_sf = grid_list$grid_sf   # polygons for mapping or joins
-grid_spp = grid_list$grid_spp # tabular summary per cell
-grid_spp_pa = grid_list$grid_spp_pa # presence/absence summary
+# (Optional) Promote list items to named objects
+grid_r <- grid_list$grid_r$grid_id # raster
+grid_sf <- grid_list$grid_sf # polygons for mapping or joins
+grid_spp <- grid_list$grid_spp # tabular summary per cell
+grid_spp_pa <- grid_list$grid_spp_pa # presence/absence summary
 
-# Quick checks 
-dim(grid_sf) #; head(grid_sf)
+# Quick checks
+dim(grid_sf) # ; head(grid_sf)
 #> [1] 1110    8
-dim(grid_spp) #; head(grid_spp[, 1:8])
+dim(grid_spp) # ; head(grid_spp[, 1:8])
 #> [1]  415 2874
-dim(grid_spp_pa) #; head(grid_spp_pa[, 1:8])
+dim(grid_spp_pa) # ; head(grid_spp_pa[, 1:8])
 #> [1]  415 2874
 
-# 1. Extract & stretch the layers 
-effRich_r = sqrt(grid_list$grid_r[[c("obs_sum", "spp_rich")]])
+# 1. Extract & stretch the layers
+effRich_r <- sqrt(grid_list$grid_r[[c("obs_sum", "spp_rich")]])
 
-# 2. Open a 1×2 layout and plot each layer + outline 
-old_par = par(mfrow = c(1, 2), # multi‐figure by row: 1 row and 2 columns 
-              mar = c(1, 1, 1, 2))  # margins sizes: bottom (1 lines)|left (1)|top (1)|right (2)
+# 2. Open a 1×2 layout and plot each layer + outline
+old_par <- par(
+  mfrow = c(1, 2), # multi‐figure by row: 1 row and 2 columns
+  mar = c(1, 1, 1, 2)
+) # margins sizes: bottom (1 lines)|left (1)|top (1)|right (2)
 
 for (i in 1:2) {
   plot(effRich_r[[i]],
-       col   = viridisLite::turbo(100),
-       colNA = NA,
-       axes  = FALSE,
-       main  = c("Sampling effort (√obs count)",
-                 "Species richness (√unique count)")[i],
-       cex.main = 0.8)          # ← smaller title)
+    col = viridisLite::turbo(100),
+    colNA = NA,
+    axes = FALSE,
+    main = c(
+      "Sampling effort (√obs count)",
+      "Species richness (√unique count)"
+    )[i],
+    cex.main = 0.8
+  ) # ← smaller title)
   plot(terra::vect(rsa), add = TRUE, border = "black", lwd = 0.4)
 }
 ```
@@ -547,7 +682,7 @@ for (i in 1:2) {
 
 ``` r
 
-par(old_par)  # reset plotting parameters
+par(old_par) # reset plotting parameters
 ```
 
 #### 3.5. Retrieve, crop, resample, and link environmental rasters to sampling sites
@@ -568,28 +703,29 @@ wide-format site-by-species matrix (`grid_spp`).
 
 ``` r
 # Read in target species list
-species = read.csv(system.file("extdata", 
-                               "rsa_butterfly_species_names_n27_100plus.csv", 
-                               package = "invasimapr"), stringsAsFactors = FALSE)$species
+species <- read.csv(system.file("extdata",
+  "rsa_butterfly_species_names_n27_100plus.csv",
+  package = "invasimapr"
+), stringsAsFactors = FALSE)$species
 
 # Filter `grid_spp` and convert to long-format
-grid_obs = grid_spp %>%
-  dplyr::select(-mapsheet) %>%                              # Drop mapsheet metadata
+grid_obs <- grid_spp %>%
+  dplyr::select(-mapsheet) %>% # Drop mapsheet metadata
   pivot_longer(
     cols = -c(grid_id, centroid_lon, centroid_lat, obs_sum, spp_rich), # Keep core metadata columns only
-    names_to  = "species",
+    names_to = "species",
     values_to = "count",
     values_drop_na = TRUE
   ) %>%
   filter(
     # obs_sum > 100,                                   # Only high-observation sites
-    count > 0,                                       # Remove absent species
-    species %in% !!species                           # Keep only target species
+    count > 0, # Remove absent species
+    species %in% !!species # Keep only target species
   ) %>%
   rename(
-    site_id = grid_id,    # Change 'grid_id' to 'site_id'
-    x = centroid_lon,     # Change 'centroid_lon' to 'x'
-    y = centroid_lat      # Change 'centroid_lat' to 'y'
+    site_id = grid_id, # Change 'grid_id' to 'site_id'
+    x = centroid_lon, # Change 'centroid_lon' to 'x'
+    y = centroid_lat # Change 'centroid_lat' to 'y'
   ) %>%
   relocate(site_id, x, y, obs_sum, spp_rich, species, count)
 
@@ -611,11 +747,11 @@ length(unique(grid_obs$site_id))
 #> [1] 314
 
 # Reshape site-by-species matrix to wide format and clean
-grid_spp = grid_obs %>%
+grid_spp <- grid_obs %>%
   pivot_wider(
     names_from = species,
     values_from = count,
-    values_fill = 0  # Replace missing counts with 0
+    values_fill = 0 # Replace missing counts with 0
   )
 
 dim(grid_spp)
@@ -636,17 +772,17 @@ WorldClim v2.1 (≈10 km resolution) for all site centroids in the
 
 ``` r
 # Retrieve 19 bioclim layers (≈10-km, WorldClim v2.1) for all grid centroids
-data_path = "inst/extdata"               # cache folder for rasters
-enviro_list = dissmapr::get_enviro_data(
-  data       = grid_spp,                  # centroids + obs_sum + spp_rich
-  buffer_km  = 10,                        # pad the AOI slightly
-  source     = "geodata",                 # WorldClim/SoilGrids interface
-  var        = "bio",                     # bioclim variable set
-  res        = 5,                         # 5-arc-min ≈ 10 km
-  grid_r     = grid_r,                      # To set resampling resolution, if necessary
+data_path <- "inst/extdata" # cache folder for rasters
+enviro_list <- dissmapr::get_enviro_data(
+  data       = grid_spp, # centroids + obs_sum + spp_rich
+  buffer_km  = 10, # pad the AOI slightly
+  source     = "geodata", # WorldClim/SoilGrids interface
+  var        = "bio", # bioclim variable set
+  res        = 5, # 5-arc-min ≈ 10 km
+  grid_r     = grid_r, # To set resampling resolution, if necessary
   path       = data_path,
-  sp_cols    = 7:ncol(grid_spp),          # ignore species columns
-  ext_cols   = c("obs_sum", "spp_rich")   # carry effort & richness through
+  sp_cols    = 7:ncol(grid_spp), # ignore species columns
+  ext_cols   = c("obs_sum", "spp_rich") # carry effort & richness through
 )
 
 # Quick checks
@@ -661,18 +797,20 @@ str(enviro_list, max.level = 1)
 
 # (Optional) Assign concise layer names for readability
 # Find names here https://www.worldclim.org/data/bioclim.html
-names_env = c("temp_mean","mdr","iso","temp_sea","temp_max","temp_min",
-              "temp_range","temp_wetQ","temp_dryQ","temp_warmQ",
-              "temp_coldQ","rain_mean","rain_wet","rain_dry",
-              "rain_sea","rain_wetQ","rain_dryQ","rain_warmQ","rain_coldQ")
-names(enviro_list$env_rast) = names_env
+names_env <- c(
+  "temp_mean", "mdr", "iso", "temp_sea", "temp_max", "temp_min",
+  "temp_range", "temp_wetQ", "temp_dryQ", "temp_warmQ",
+  "temp_coldQ", "rain_mean", "rain_wet", "rain_dry",
+  "rain_sea", "rain_wetQ", "rain_dryQ", "rain_warmQ", "rain_coldQ"
+)
+names(enviro_list$env_rast) <- names_env
 
 # (Optional) Promote frequently-used objects
-env_r = enviro_list$env_rast    # cropped climate stack
-env_df = enviro_list$env_df      # site × environment data-frame
+env_r <- enviro_list$env_rast # cropped climate stack
+env_df <- enviro_list$env_df # site × environment data-frame
 
 # Quick checks
-env_r; dim(env_df); head(env_df)
+env_r
 #> class       : SpatRaster 
 #> size        : 30, 37, 19  (nrow, ncol, nlyr)
 #> resolution  : 0.5, 0.5  (x, y)
@@ -682,45 +820,48 @@ env_r; dim(env_df); head(env_df)
 #> names       : temp_mean,       mdr,      iso, temp_sea, temp_max,  temp_min, ... 
 #> min values  :  9.779773,  8.977007, 47.10606, 228.9986, 19.92147, -4.110302, ... 
 #> max values  : 24.406433, 18.352308, 64.92966, 653.4167, 36.19497, 12.005042, ...
+dim(env_df)
 #> [1] 314  24
+head(env_df)
 #> # A tibble: 6 × 24
-#>   site_id     x     y bio01 bio02 bio03 bio04 bio05 bio06 bio07 bio08 bio09
-#>   <chr>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#> 1 1027     29.2 -22.3  21.8 14.5   55.1  430.  32.6  6.30  26.3  26.2  15.9
-#> 2 1029     30.3 -22.3  22.8 13.9   58.0  359.  32.7  8.79  23.9  26.5  17.8
-#> 3 1031     31.3 -22.3  24.2 14.2   61.3  326.  34.2 10.9   23.2  27.5  19.7
-#> 4 117      18.2 -34.3  20.2 11.8   56.8  317.  29.8  9.29  20.5  19.9  19.8
-#> 5 118      18.7 -34.3  16.2  9.28  52.3  309.  25.4  7.65  17.7  12.4  19.8
-#> 6 119      19.3 -34.3  15.8 10.2   53.5  321.  25.8  6.67  19.2  11.8  19.6
-#> # ℹ 12 more variables: bio10 <dbl>, bio11 <dbl>, bio12 <dbl>, bio13 <dbl>,
-#> #   bio14 <dbl>, bio15 <dbl>, bio16 <dbl>, bio17 <dbl>, bio18 <dbl>,
-#> #   bio19 <dbl>, obs_sum <dbl>, spp_rich <dbl>
+#>   site_id     x     y bio01 bio02 bio03 bio04 bio05 bio06 bio07 bio08 bio09 bio10 bio11 bio12
+#>   <chr>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1 1027     29.2 -22.3  21.8 14.5   55.1  430.  32.6  6.30  26.3  26.2  15.9  26.2  15.9  358.
+#> 2 1029     30.3 -22.3  22.8 13.9   58.0  359.  32.7  8.79  23.9  26.5  17.8  26.5  17.8  451.
+#> 3 1031     31.3 -22.3  24.2 14.2   61.3  326.  34.2 10.9   23.2  27.5  19.7  27.5  19.7  467.
+#> 4 117      18.2 -34.3  20.2 11.8   56.8  317.  29.8  9.29  20.5  19.9  19.8  23.7  16.0  583.
+#> 5 118      18.7 -34.3  16.2  9.28  52.3  309.  25.4  7.65  17.7  12.4  19.8  19.9  12.4  700.
+#> 6 119      19.3 -34.3  15.8 10.2   53.5  321.  25.8  6.67  19.2  11.8  19.6  19.6  11.8  701.
+#> # ℹ 9 more variables: bio13 <dbl>, bio14 <dbl>, bio15 <dbl>, bio16 <dbl>, bio17 <dbl>,
+#> #   bio18 <dbl>, bio19 <dbl>, obs_sum <dbl>, spp_rich <dbl>
 
 # Build the final site × environment table
-grid_env = env_df %>%
-  dplyr::select(site_id, x, y,
-                obs_sum, spp_rich, dplyr::everything()) %>%
+grid_env <- env_df %>%
+  dplyr::select(
+    site_id, x, y,
+    obs_sum, spp_rich, dplyr::everything()
+  ) %>%
   mutate(across(
-    .cols = -c(site_id, x, y, obs_sum, spp_rich),  # all other columns
-    .fns  = ~ as.numeric(scale(.x)), # Scale bio
-    .names = "{.col}"  # keep same names
+    .cols = -c(site_id, x, y, obs_sum, spp_rich), # all other columns
+    .fns = ~ as.numeric(scale(.x)), # Scale bio
+    .names = "{.col}" # keep same names
   ))
 
 str(grid_env, max.level = 1)
 #> tibble [314 × 24] (S3: tbl_df/tbl/data.frame)
 head(grid_env)
 #> # A tibble: 6 × 24
-#>   site_id     x     y obs_sum spp_rich  bio01   bio02  bio03  bio04  bio05 bio06
-#>   <chr>   <dbl> <dbl>   <dbl>    <dbl>  <dbl>   <dbl>  <dbl>  <dbl>  <dbl> <dbl>
-#> 1 1027     29.2 -22.3      41       31  1.75   0.274  -0.309  0.272  1.24  0.605
-#> 2 1029     30.3 -22.3       7        7  2.20  -0.0315  0.616 -0.450  1.27  1.28 
-#> 3 1031     31.3 -22.3     107       76  2.78   0.150   1.68  -0.792  1.79  1.87 
-#> 4 117      18.2 -34.3    4246      231  1.08  -1.05    0.236 -0.883  0.241 1.42 
-#> 5 118      18.7 -34.3    2202      215 -0.628 -2.25   -1.21  -0.975 -1.30  0.973
-#> 6 119      19.3 -34.3     989      173 -0.799 -1.79   -0.838 -0.842 -1.15  0.706
-#> # ℹ 13 more variables: bio07 <dbl>, bio08 <dbl>, bio09 <dbl>, bio10 <dbl>,
-#> #   bio11 <dbl>, bio12 <dbl>, bio13 <dbl>, bio14 <dbl>, bio15 <dbl>,
-#> #   bio16 <dbl>, bio17 <dbl>, bio18 <dbl>, bio19 <dbl>
+#>   site_id     x     y obs_sum spp_rich  bio01   bio02  bio03  bio04  bio05 bio06  bio07
+#>   <chr>   <dbl> <dbl>   <dbl>    <dbl>  <dbl>   <dbl>  <dbl>  <dbl>  <dbl> <dbl>  <dbl>
+#> 1 1027     29.2 -22.3      41       31  1.75   0.274  -0.309  0.272  1.24  0.605  0.292
+#> 2 1029     30.3 -22.3       7        7  2.20  -0.0315  0.616 -0.450  1.27  1.28  -0.239
+#> 3 1031     31.3 -22.3     107       76  2.78   0.150   1.68  -0.792  1.79  1.87  -0.391
+#> 4 117      18.2 -34.3    4246      231  1.08  -1.05    0.236 -0.883  0.241 1.42  -1.00 
+#> 5 118      18.7 -34.3    2202      215 -0.628 -2.25   -1.21  -0.975 -1.30  0.973 -1.61 
+#> 6 119      19.3 -34.3     989      173 -0.799 -1.79   -0.838 -0.842 -1.15  0.706 -1.30 
+#> # ℹ 12 more variables: bio08 <dbl>, bio09 <dbl>, bio10 <dbl>, bio11 <dbl>, bio12 <dbl>,
+#> #   bio13 <dbl>, bio14 <dbl>, bio15 <dbl>, bio16 <dbl>, bio17 <dbl>, bio18 <dbl>,
+#> #   bio19 <dbl>
 ```
 
 #### 3.6. Remove highly correlated predictors (optional)
@@ -736,7 +877,7 @@ spatial analysis.
 ``` r
 # # (Optional) Rename BIO
 # names(env_df) = c("grid_id", "centroid_lon", "centroid_lat", names_env, "obs_sum", "spp_rich")
-#   
+#
 # # Run the filter and compare dimensions
 # # Filter environmental predictors for |r| > 0.70
 # env_vars_reduced = dissmapr::rm_correlated(
@@ -745,7 +886,7 @@ spatial analysis.
 #   threshold  = 0.70,
 #   plot       = TRUE                   # show heat-map of retained vars
 # )
-# 
+#
 # # Before vs after
 # c(original = ncol(env_df[, c(4, 6:24)]),
 #   reduced  = ncol(env_vars_reduced))
@@ -787,25 +928,25 @@ community ecology, macroecology, and biodiversity informatics projects.
 # btfly_traits1 = read.csv(system.file("extdata", "Middleton_etal_2020_traits.csv", package = "invasimapr"))
 # str(btfly_traits1)
 # length(unique(btfly_traits1$Species))
-# 
+#
 # # Github trait data.frame
 # git_url = "https://raw.githubusercontent.com/RiesLabGU/LepTraits/main/consensus/consensus.csv"
 # # Make sure inst/extdata exists then define destination
 # dir.create("inst/extdata", recursive = TRUE, showWarnings = FALSE)
 # destfile = file.path("inst", "extdata", "consensus.csv")
-# 
+#
 # # Download the raw CSV
 # download.file(
 #   url = git_url,
 #   destfile = destfile,
 #   mode = "wb"    # important on Windows
 # )
-# 
+#
 # # 4. Read it from disk
 # btfly_traits2 = read.csv(destfile, stringsAsFactors = FALSE)
 # str(btfly_traits2)
 # length(unique(btfly_traits2$Species))
-# 
+#
 # # Retrieve and join trait/metadata for all species in the observation set
 # spp_traits = purrr::map_dfr(
 #   unique(grid_obs$species),
@@ -830,7 +971,7 @@ community ecology, macroecology, and biodiversity informatics projects.
 # )
 
 # Local trait data.frame version 2
-btfly_traits3 = read.csv(system.file("extdata", "species_traits.csv", package = "invasimapr"))
+btfly_traits3 <- read.csv(system.file("extdata", "species_traits.csv", package = "invasimapr"))
 # btfly_traits3 = read.csv(system.file("extdata", "species_traits_sim.csv", package = "invasimapr"))
 str(btfly_traits3)
 #> 'data.frame':    27 obs. of  21 variables:
@@ -858,9 +999,9 @@ str(btfly_traits3)
 # length(unique(btfly_traits3$species))
 
 # Retrieve and join trait/metadata for all species in the observation set
-spp_traits = purrr::map_dfr(
+spp_traits <- purrr::map_dfr(
   unique(grid_obs$species),
-  ~get_trait_data(
+  ~ get_trait_data(
     species = .x,
     n_palette = 5,
     preview = FALSE,
@@ -869,7 +1010,7 @@ spp_traits = purrr::map_dfr(
     do_image = TRUE,
     do_palette = TRUE,
     local_trait_df = btfly_traits3,
-    local_species_col = 'species',
+    local_species_col = "species",
     max_dist = 1
   )
 )
@@ -879,19 +1020,19 @@ spp_traits = purrr::map_dfr(
 str(spp_traits)
 #> tibble [27 × 29] (S3: tbl_df/tbl/data.frame)
 #>  $ species     : chr [1:27] "Utetheisa pulchella" "Danaus chrysippus orientis" "Telchinia serena" "Vanessa cardui" ...
-#>  $ summary     : logi [1:27] NA NA NA NA NA NA ...
-#>  $ Kingdom     : Named chr [1:27] NA NA NA NA ...
+#>  $ summary     : chr [1:27] "Utetheisa pulchella, the crimson-speckled flunkey, crimson-speckled footman, or crimson-speckled moth, is a mot"| __truncated__ NA "Acraea serena, the dancing acraea, is a butterfly of the family Nymphalidae. It is found throughout Africa sout"| __truncated__ "Vanessa cardui is the most widespread of all butterfly species. It is commonly called the painted lady, or form"| __truncated__ ...
+#>  $ Kingdom     : Named chr [1:27] "Animalia" NA "Animalia" "Animalia" ...
 #>   ..- attr(*, "names")= chr [1:27] "Kingdom" "Kingdom" "Kingdom" "Kingdom" ...
-#>  $ Phylum      : Named chr [1:27] NA NA NA NA ...
+#>  $ Phylum      : Named chr [1:27] "Arthropoda" NA "Arthropoda" "Arthropoda" ...
 #>   ..- attr(*, "names")= chr [1:27] "Phylum" "Phylum" "Phylum" "Phylum" ...
-#>  $ Class       : Named chr [1:27] NA NA NA NA ...
+#>  $ Class       : Named chr [1:27] "Insecta" NA "Insecta" "Insecta" ...
 #>   ..- attr(*, "names")= chr [1:27] "Class" "Class" "Class" "Class" ...
-#>  $ Order       : Named chr [1:27] NA NA NA NA ...
+#>  $ Order       : Named chr [1:27] "Lepidoptera" NA "Lepidoptera" "Lepidoptera" ...
 #>   ..- attr(*, "names")= chr [1:27] "Order" "Order" "Order" "Order" ...
-#>  $ Family      : Named chr [1:27] NA NA NA NA ...
+#>  $ Family      : Named chr [1:27] "Erebidae" NA "Nymphalidae" "Nymphalidae" ...
 #>   ..- attr(*, "names")= chr [1:27] "Family" "Family" "Family" "Family" ...
-#>  $ img_url     : logi [1:27] NA NA NA NA NA NA ...
-#>  $ palette     : logi [1:27] NA NA NA NA NA NA ...
+#>  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Arctiidae_-_Utetheisa_pulchella.JPG/250px-Arctiidae_-"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Dancing_acraea_%28Acraea_serena%29_underside_Maputo.j"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/0_Belle-dame_%28Vanessa_cardui%29_-_Echinacea_purpure"| __truncated__ ...
+#>  $ palette     : chr [1:27] "#CCBF98, #535509, #1D220C, #A59A47, #8C8012" NA "#534832, #86885D, #B4862D, #9C9C6D, #E8E6CE" "#CC8242, #C65D9B, #EA8FD3, #6A5C42, #3A311F" ...
 #>  $ trait_cont1 : num [1:27] 0.0284 0.0382 -0.8351 -0.2196 0.314 ...
 #>  $ trait_cont2 : num [1:27] -0.203 -0.224 -0.307 0.569 0.666 ...
 #>  $ trait_cont3 : num [1:27] -0.9969 0.0288 0.0288 0.1632 0.5191 ...
@@ -914,20 +1055,19 @@ str(spp_traits)
 #>  $ trait_ord20 : chr [1:27] "small" "medium" "large" "large" ...
 head(spp_traits)
 #> # A tibble: 6 × 29
-#>   species  summary Kingdom Phylum Class Order Family img_url palette trait_cont1
-#>   <chr>    <lgl>   <chr>   <chr>  <chr> <chr> <chr>  <lgl>   <lgl>         <dbl>
-#> 1 Utethei… NA      <NA>    <NA>   <NA>  <NA>  <NA>   NA      NA           0.0284
-#> 2 Danaus … NA      <NA>    <NA>   <NA>  <NA>  <NA>   NA      NA           0.0382
-#> 3 Telchin… NA      <NA>    <NA>   <NA>  <NA>  <NA>   NA      NA          -0.835 
-#> 4 Vanessa… NA      <NA>    <NA>   <NA>  <NA>  <NA>   NA      NA          -0.220 
-#> 5 Hypolim… NA      <NA>    <NA>   <NA>  <NA>  <NA>   NA      NA           0.314 
-#> 6 Pieris … NA      <NA>    <NA>   <NA>  <NA>  <NA>   NA      NA          -0.765 
-#> # ℹ 19 more variables: trait_cont2 <dbl>, trait_cont3 <dbl>, trait_cont4 <dbl>,
-#> #   trait_cont5 <dbl>, trait_cont6 <dbl>, trait_cont7 <dbl>, trait_cont8 <dbl>,
-#> #   trait_cont9 <dbl>, trait_cont10 <dbl>, trait_cat11 <chr>,
-#> #   trait_cat12 <chr>, trait_cat13 <chr>, trait_cat14 <chr>, trait_cat15 <chr>,
-#> #   trait_ord16 <int>, trait_ord17 <int>, trait_bin18 <int>, trait_bin19 <int>,
-#> #   trait_ord20 <chr>
+#>   species   summary Kingdom Phylum Class Order Family img_url palette trait_cont1 trait_cont2
+#>   <chr>     <chr>   <chr>   <chr>  <chr> <chr> <chr>  <chr>   <chr>         <dbl>       <dbl>
+#> 1 Utetheis… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #CCBF9…      0.0284      -0.203
+#> 2 Danaus c… <NA>    <NA>    <NA>   <NA>  <NA>  <NA>   <NA>    <NA>         0.0382      -0.224
+#> 3 Telchini… Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #53483…     -0.835       -0.307
+#> 4 Vanessa … Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #CC824…     -0.220        0.569
+#> 5 Hypolimn… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #A29B7…      0.314        0.666
+#> 6 Pieris b… Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #6C6E4…     -0.765       -0.136
+#> # ℹ 18 more variables: trait_cont3 <dbl>, trait_cont4 <dbl>, trait_cont5 <dbl>,
+#> #   trait_cont6 <dbl>, trait_cont7 <dbl>, trait_cont8 <dbl>, trait_cont9 <dbl>,
+#> #   trait_cont10 <dbl>, trait_cat11 <chr>, trait_cat12 <chr>, trait_cat13 <chr>,
+#> #   trait_cat14 <chr>, trait_cat15 <chr>, trait_ord16 <int>, trait_ord17 <int>,
+#> #   trait_bin18 <int>, trait_bin19 <int>, trait_ord20 <chr>
 
 # Count how many non‐NA IDs
 length(unique(btfly_traits3$species))
@@ -942,7 +1082,7 @@ sum(!is.na(spp_traits$species))
 
 ``` r
 # Read GBIF species occurrence with simulated traits and enviro data (one row per site-species combination)
-site_env_spp = read.csv(system.file("extdata", "site_env_spp_simulated.csv", package = "invasimapr"))
+site_env_spp <- read.csv(system.file("extdata", "site_env_spp_simulated.csv", package = "invasimapr"))
 # site_env_spp = read.csv(system.file("extdata", "site_env_spp_trt_sim.csv", package = "invasimapr"))
 dim(site_env_spp)
 #> [1] 11205    36
@@ -1007,7 +1147,7 @@ metrics with precise locations.
 
 ``` r
 # Create site coordinate table i.e. # Unique site coordinates
-site_xy = site_env_spp %>%
+site_xy <- site_env_spp %>%
   dplyr::select(site_id, x, y) %>%
   distinct() %>%
   mutate(.site_id_rn = site_id) %>%
@@ -1031,16 +1171,18 @@ drivers of community composition, and covariate modeling.
 
 ``` r
 # Site-by-environment matrix
-site_env = site_env_spp %>%
-  dplyr::select(site_id, x, y,
-                env1:env10) %>%
-  mutate(site_id = as.character(site_id)) %>%  # ensure character
+site_env <- site_env_spp %>%
+  dplyr::select(
+    site_id, x, y,
+    env1:env10
+  ) %>%
+  mutate(site_id = as.character(site_id)) %>% # ensure character
   distinct() %>%
   mutate(.site_id_rn = site_id) %>%
   column_to_rownames(var = ".site_id_rn")
 dim(site_env)
 #> [1] 415  13
-head(site_env[1:6,1:6])
+head(site_env[1:6, 1:6])
 #>      site_id     x         y     env1      env2       env3
 #> 1026    1026 28.75 -22.25004 2.203029 0.6471631 -0.4910981
 #> 1027    1027 29.25 -22.25004 2.086006 1.4025519 -0.4471106
@@ -1056,7 +1198,7 @@ head(site_env[1:6,1:6])
 #   distinct() %>%
 #   mutate(.site_id_rn = site_id) %>%
 #   column_to_rownames(var = ".site_id_rn")
-# 
+#
 # dim(site_env)
 # head(site_env[1:6,1:6])
 ```
@@ -1072,7 +1214,7 @@ patterns.
 ``` r
 # Site-by-species abundance matrix (wide format)
 # site_spp_ab = grid_obs %>%
-site_spp_ab = site_env_spp %>% # 
+site_spp_ab <- site_env_spp %>% #
   dplyr::select(site_id, x, y, species, count) %>%
   pivot_wider(
     names_from  = species,
@@ -1083,25 +1225,18 @@ site_spp_ab = site_env_spp %>% #
   column_to_rownames(var = ".site_id_rn")
 dim(site_spp_ab)
 #> [1] 415  30
-head(site_spp_ab[1:6,1:6])
-#>      site_id     x         y Acraea horta Amata cerbera
-#> 1026    1026 28.75 -22.25004           10             0
-#> 1027    1027 29.25 -22.25004            0             7
-#> 1028    1028 29.75 -22.25004            0             0
-#> 1029    1029 30.25 -22.25004            0            31
-#> 1030    1030 30.75 -22.25004            0            12
-#> 1031    1031 31.25 -22.25004            0             7
-#>      Bicyclus safitza safitza
-#> 1026                        0
-#> 1027                        0
-#> 1028                        0
-#> 1029                        0
-#> 1030                        3
-#> 1031                        0
+head(site_spp_ab[1:6, 1:6])
+#>      site_id     x         y Acraea horta Amata cerbera Bicyclus safitza safitza
+#> 1026    1026 28.75 -22.25004           10             0                        0
+#> 1027    1027 29.25 -22.25004            0             7                        0
+#> 1028    1028 29.75 -22.25004            0             0                        0
+#> 1029    1029 30.25 -22.25004            0            31                        0
+#> 1030    1030 30.75 -22.25004            0            12                        3
+#> 1031    1031 31.25 -22.25004            0             7                        0
 
 # Site-by-species presence/absence matrix (wide format)
 # site_spp_pa = grid_obs %>%
-site_spp_pa = site_env_spp %>% 
+site_spp_pa <- site_env_spp %>%
   mutate(pa = as.integer(count > 0)) %>%
   dplyr::select(site_id, x, y, species, pa) %>%
   pivot_wider(
@@ -1113,21 +1248,14 @@ site_spp_pa = site_env_spp %>%
   column_to_rownames(var = ".site_id_rn")
 dim(site_spp_pa)
 #> [1] 415  30
-head(site_spp_pa[1:6,1:6])
-#>      site_id     x         y Acraea horta Amata cerbera
-#> 1026    1026 28.75 -22.25004            1             0
-#> 1027    1027 29.25 -22.25004            0             1
-#> 1028    1028 29.75 -22.25004            0             0
-#> 1029    1029 30.25 -22.25004            0             1
-#> 1030    1030 30.75 -22.25004            0             1
-#> 1031    1031 31.25 -22.25004            0             1
-#>      Bicyclus safitza safitza
-#> 1026                        0
-#> 1027                        0
-#> 1028                        0
-#> 1029                        0
-#> 1030                        1
-#> 1031                        0
+head(site_spp_pa[1:6, 1:6])
+#>      site_id     x         y Acraea horta Amata cerbera Bicyclus safitza safitza
+#> 1026    1026 28.75 -22.25004            1             0                        0
+#> 1027    1027 29.25 -22.25004            0             1                        0
+#> 1028    1028 29.75 -22.25004            0             0                        0
+#> 1029    1029 30.25 -22.25004            0             1                        0
+#> 1030    1030 30.75 -22.25004            0             1                        1
+#> 1031    1031 31.25 -22.25004            0             1                        0
 ```
 
 #### 5.4. Format **species-trait** values
@@ -1140,10 +1268,12 @@ assembly, functional diversity, and invasion processes.
 ``` r
 # Species-by-trait matrix (wide)
 # Extract and process continuous, categorical, and ordinal trait data
-spp_trait = spp_traits %>% # site_env_spp
-  dplyr::select(species, trait_cont1:trait_cont10,
-                trait_cat11:trait_cat15,
-                trait_ord16:trait_ord20) %>%
+spp_trait <- spp_traits %>% # site_env_spp
+  dplyr::select(
+    species, trait_cont1:trait_cont10,
+    trait_cat11:trait_cat15,
+    trait_ord16:trait_ord20
+  ) %>%
   distinct() %>%
   mutate(.species_rn = species) %>%
   column_to_rownames(var = ".species_rn") %>%
@@ -1158,21 +1288,21 @@ spp_trait = spp_traits %>% # site_env_spp
 
 dim(spp_trait)
 #> [1] 27 21
-head(spp_trait[1:6,1:6])
-#>                                               species trait_cont1 trait_cont2
-#> Utetheisa pulchella               Utetheisa pulchella  0.02842357  -0.2030292
-#> Danaus chrysippus orientis Danaus chrysippus orientis  0.03819190  -0.2237834
-#> Telchinia serena                     Telchinia serena -0.83512488  -0.3065035
-#> Vanessa cardui                         Vanessa cardui -0.21959307   0.5693856
-#> Hypolimnas misippus               Hypolimnas misippus  0.31398458   0.6658322
-#> Pieris brassicae                     Pieris brassicae -0.76502528  -0.1364975
-#>                            trait_cont3 trait_cont4 trait_cont5
-#> Utetheisa pulchella        -0.99685889   0.4797106  0.87477170
-#> Danaus chrysippus orientis  0.02882587  -0.5325932 -0.09453685
-#> Telchinia serena            0.02881542   0.9252160  0.26301460
-#> Vanessa cardui              0.16320801   0.4664918  0.70096550
-#> Hypolimnas misippus         0.51908854  -0.3895633 -0.99723831
-#> Pieris brassicae           -0.71904181   0.4879493 -0.21005391
+head(spp_trait[1:6, 1:6])
+#>                                               species trait_cont1 trait_cont2 trait_cont3
+#> Utetheisa pulchella               Utetheisa pulchella  0.02842357  -0.2030292 -0.99685889
+#> Danaus chrysippus orientis Danaus chrysippus orientis  0.03819190  -0.2237834  0.02882587
+#> Telchinia serena                     Telchinia serena -0.83512488  -0.3065035  0.02881542
+#> Vanessa cardui                         Vanessa cardui -0.21959307   0.5693856  0.16320801
+#> Hypolimnas misippus               Hypolimnas misippus  0.31398458   0.6658322  0.51908854
+#> Pieris brassicae                     Pieris brassicae -0.76502528  -0.1364975 -0.71904181
+#>                            trait_cont4 trait_cont5
+#> Utetheisa pulchella          0.4797106  0.87477170
+#> Danaus chrysippus orientis  -0.5325932 -0.09453685
+#> Telchinia serena             0.9252160  0.26301460
+#> Vanessa cardui               0.4664918  0.70096550
+#> Hypolimnas misippus         -0.3895633 -0.99723831
+#> Pieris brassicae             0.4879493 -0.21005391
 ```
 
 ------------------------------------------------------------------------
@@ -1197,7 +1327,7 @@ low-diversity areas across the study landscape.
 
 ``` r
 # Calculate site-level diversity metrics from the species-by-abundance matrix:
-spp_rich_obs = site_spp_ab %>%
+spp_rich_obs <- site_spp_ab %>%
   mutate(
     spp_rich = rowSums(dplyr::select(., -site_id, -x, -y) > 0), # Species richness: number of species present
     obs_sum = rowSums(dplyr::select(., -site_id, -x, -y)), # Total abundance: sum of all individuals
@@ -1205,7 +1335,7 @@ spp_rich_obs = site_spp_ab %>%
   ) %>%
   # Keep summary metrics and site coordinates
   dplyr::select(site_id, x, y, spp_rich, obs_sum, obs_mean) %>%
-    mutate(site_id = as.character(site_id))  # Ensure site_id` is a
+  mutate(site_id = as.character(site_id)) # Ensure site_id` is a
 head(spp_rich_obs)
 #>      site_id     x         y spp_rich obs_sum obs_mean
 #> 1026    1026 28.75 -22.25004       17     172 6.370370
@@ -1216,7 +1346,7 @@ head(spp_rich_obs)
 #> 1031    1031 31.25 -22.25004       13      99 3.666667
 
 # Define a custom color palette for richness mapping (blue = low, dark red = high)
-col_pal = colorRampPalette(c("blue", "green", "yellow", "orange", "red", "darkred"))
+col_pal <- colorRampPalette(c("blue", "green", "yellow", "orange", "red", "darkred"))
 
 # Visualize spatial distribution of site-level species richness
 ggplot(spp_rich_obs, aes(x = x, y = y, fill = sqrt(spp_rich))) +
@@ -1224,7 +1354,7 @@ ggplot(spp_rich_obs, aes(x = x, y = y, fill = sqrt(spp_rich))) +
   # Use custom color gradient, reversed so high richness is warm/dark, low is cool/blue
   scale_fill_gradientn(colors = rev(col_pal(10)), name = "√(Richness)") +
   geom_text(aes(label = spp_rich), color = "grey80", size = 2) + # Overlay actual richness values
-  geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.4) +  # Plot boundary
+  geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.4) + # Plot boundary
   labs(
     x = "Longitude",
     y = "Latitude",
@@ -1262,7 +1392,7 @@ direct comparison of conservation vs. lability across traits.
 
 ``` r
 # Compute Trait Similarity for Numeric and Categorical Variables
-df_traits = compute_trait_similarity(spp_trait[,-1])
+df_traits <- compute_trait_similarity(spp_trait[, -1])
 head(df_traits)
 #> # A tibble: 6 × 2
 #>   Trait       Similarity
@@ -1277,7 +1407,7 @@ head(df_traits)
 # Barplot: trait-level similarity (percent identity or scaled distance)
 ggplot(df_traits, aes(x = reorder(Trait, Similarity), y = Similarity, fill = Similarity)) +
   geom_col(show.legend = FALSE) +
-  scale_fill_viridis_c(option = "inferno") +  # ramp color scale
+  scale_fill_viridis_c(option = "inferno") + # ramp color scale
   # ylim(0,100) +
   labs(
     title = "Average Trait Similarity (%)",
@@ -1308,8 +1438,8 @@ similarity structure within the community.
 
 ``` r
 # Compute Gower dissimilarity matrix (excluding species column)
-sbt_gower = cluster::daisy(spp_trait[,-1], metric = "gower")
-trait_dist = as.matrix(sbt_gower)
+sbt_gower <- cluster::daisy(spp_trait[, -1], metric = "gower")
+trait_dist <- as.matrix(sbt_gower)
 ```
 
 #### 7.2.2. Hierarchical clustering (visualise trait-based groupings)
@@ -1325,17 +1455,18 @@ functional trait space and examine density and clustering patterns.
 
 ``` r
 # PCoA ordination
-pcoa = cmdscale(sbt_gower, eig = TRUE)
-scores_species = as.data.frame(pcoa$points)[,1:2]
-colnames(scores_species) = c("PCoA1", "PCoA2")
+pcoa <- cmdscale(sbt_gower, eig = TRUE)
+scores_species <- as.data.frame(pcoa$points)[, 1:2]
+colnames(scores_species) <- c("PCoA1", "PCoA2")
 
 # Visualize trait space density using kernel density estimation
-xlims = range(scores_species$PCoA1) + c(-1, 1) * 0.1 * diff(range(scores_species$PCoA1))
-ylims = range(scores_species$PCoA2) + c(-1, 1) * 0.1 * diff(range(scores_species$PCoA2))
-grid_density = MASS::kde2d(scores_species$PCoA1, 
-                           scores_species$PCoA2, 
-                           n = 100, 
-                           lims = c(xlims, ylims))
+xlims <- range(scores_species$PCoA1) + c(-1, 1) * 0.1 * diff(range(scores_species$PCoA1))
+ylims <- range(scores_species$PCoA2) + c(-1, 1) * 0.1 * diff(range(scores_species$PCoA2))
+grid_density <- MASS::kde2d(scores_species$PCoA1,
+  scores_species$PCoA2,
+  n = 100,
+  lims = c(xlims, ylims)
+)
 filled.contour(
   grid_density,
   color.palette = viridis,
@@ -1346,7 +1477,8 @@ filled.contour(
     ylab = "PCoA2"
   ),
   plot.axes = {
-    axis(1); axis(2)
+    axis(1)
+    axis(2)
     points(scores_species, pch = 19, cex = 0.5)
     # Draw all contours (thin)
     contour(
@@ -1357,7 +1489,7 @@ filled.contour(
     contour(
       x = grid_density$x, y = grid_density$y, z = grid_density$z,
       add = TRUE, drawlabels = FALSE,
-      levels = max(grid_density$z) * 0.5,  # 50% of max density
+      levels = max(grid_density$z) * 0.5, # 50% of max density
       lwd = 2, col = "black"
     )
   },
@@ -1383,21 +1515,23 @@ biotic resistance.
 
 ``` r
 # Calculate the community trait centroid in reduced trait-space (PCoA axes)
-centroid = colMeans(scores_species)
+centroid <- colMeans(scores_species)
 
 # Compute each species' Euclidean distance to the centroid (trait centrality)
-scores_species$centrality = sqrt(rowSums((scores_species - centroid)^2))
+scores_species$centrality <- sqrt(rowSums((scores_species - centroid)^2))
 
 # Add centrality to the main trait data frame for further analysis/plotting
-spp_trt_cent = spp_trait
-spp_trt_cent$centrality = scores_species$centrality
+spp_trt_cent <- spp_trait
+spp_trt_cent$centrality <- scores_species$centrality
 
 # Histogram of distribution of trait centrality (core vs peripheral species)
 ggplot(spp_trt_cent, aes(x = centrality)) +
   geom_histogram(bins = 20, fill = "steelblue", color = "white") +
   theme_bw() +
-  labs(x = "Distance to community-centroid", y = "Number of species",
-       title = "Trait Centrality (Community Edge vs Core)")
+  labs(
+    x = "Distance to community-centroid", y = "Number of species",
+    title = "Trait Centrality (Community Edge vs Core)"
+  )
 ```
 
 <div class="figure" style="text-align: center">
@@ -1433,7 +1567,7 @@ Distribution of trait centrality (distance to centroid) among species.
 >   (~0.18-0.22), meaning their traits are moderately similar to the
 >   community average.
 > - A few species are **very close** to the centroid (low distances) -
->   these are “core” species with typical trait values.  
+>   these are “core” species with typical trait values.
 > - Others lie **further out** (higher distances) - these are
 >   “peripheral” species with more unusual trait combinations, which
 >   might indicate unique ecological roles or specialisations.
@@ -1456,20 +1590,20 @@ community.
 
 ``` r
 # FDis: Functional dispersion (mean distance to centroid in trait space)
-FDis = mean(scores_species$centrality)
+FDis <- mean(scores_species$centrality)
 
 # FRic: Functional richness (convex hull volume in PCoA space)
-hull = convhulln(scores_species, options = "FA")
-FRic = hull$vol
+hull <- convhulln(scores_species, options = "FA")
+FRic <- hull$vol
 
 # Rao's Q: Rao's quadratic entropy (abundance-weighted pairwise trait diversity)
-n = nrow(scores_species)
-dmat = as.matrix(dist(scores_species))
-p = rep(1/n, n)
-RaoQ = 0.5 * sum(outer(p, p) * dmat)
+n <- nrow(scores_species)
+dmat <- as.matrix(dist(scores_species))
+p <- rep(1 / n, n)
+RaoQ <- 0.5 * sum(outer(p, p) * dmat)
 
 # Assemble all community-level trait dispersion metrics for comparison
-dispersion_df = data.frame(
+dispersion_df <- data.frame(
   Metric = c("FDis", "FRic", "RaoQ"),
   Value = c(FDis, FRic, RaoQ)
 )
@@ -1569,16 +1703,16 @@ community-level dispersion outputs as follows:
 #                                show_plots = TRUE,                    # combined patchwork output
 #                                show_density_plot = FALSE,
 #                                seed = NULL)
-# 
+#
 # str(res, max.level=1)
 
 # same inputs and space as your manual pipeline
-res = compute_trait_space(
+res <- compute_trait_space(
   trait_df = spp_trait,
   species_col = 1,
-  do_similarity = FALSE,         # you don't need per-trait similarity here
-  k = 4,                         # only affects dendrogram; metrics don’t use k
-  pcoa_dims = 2,                 # keep 2 axes
+  do_similarity = FALSE, # you don't need per-trait similarity here
+  k = 4, # only affects dendrogram; metrics don’t use k
+  pcoa_dims = 2, # keep 2 axes
   abundance = rep(1, nrow(spp_trait)), # equal weights ⇒ unweighted centroid
   show_density_plot = FALSE,
   show_plots = TRUE
@@ -1589,13 +1723,13 @@ res = compute_trait_space(
 
 ``` r
 
-str(res, max.level=1)
+str(res, max.level = 1)
 #> List of 1
 #>  $ dispersion:List of 7
 
 head(res$similarity)
 #> NULL
-str(res$dispersion, max.level=1)
+str(res$dispersion, max.level = 1)
 #> List of 7
 #>  $ distance_matrix: num [1:27, 1:27] 0 0.398 0.416 0.534 0.607 ...
 #>   ..- attr(*, "dimnames")=List of 2
@@ -1621,7 +1755,7 @@ the combined layout used when `show_plot = TRUE`, but omits the base
 `filled.contour()` plot for simplicity.
 
 ``` r
-str(res$dispersion, max.level=1)
+str(res$dispersion, max.level = 1)
 #> List of 7
 #>  $ distance_matrix: num [1:27, 1:27] 0 0.398 0.416 0.534 0.607 ...
 #>   ..- attr(*, "dimnames")=List of 2
@@ -1638,14 +1772,16 @@ str(res$dispersion, max.level=1)
 #   (res$dispersion$plots$centrality_hist | res$dispersion$plots$metrics_bar) /
 #   res$dispersion$plots$density_gg +
 #   patchwork::plot_layout(heights = c(1, 2, 1))
-# 
+#
 # print(combined)  # display in console
 ```
 
-> **Note**: - In this way you can change the order or arrangement of
-> panels - Replace individual plots with customised versions (e.g.,
-> change themes or colours) - Combine them with other figures in your
-> workflow  
+> **Note**:
+>
+> - In this way you can change the order or arrangement of panels
+> - Replace individual plots with customised versions (e.g., change
+>   themes or colours)
+> - Combine them with other figures in your workflow  
 
 ------------------------------------------------------------------------
 
@@ -1685,13 +1821,13 @@ handled by the model.
 ``` r
 # Prepare long-format data
 # Use simulated traits
-longDF = site_env_spp %>%
+longDF <- site_env_spp %>%
   dplyr::select(
-    site_id, x, y, species, count,           # Metadata + response
-    env1:env10,                              # Environment variables
-    trait_cont1:trait_cont10,                # Continuous traits
-    trait_cat11:trait_cat15,                 # Categorical traits
-    trait_ord16:trait_ord20                  # Ordinal traits
+    site_id, x, y, species, count, # Metadata + response
+    env1:env10, # Environment variables
+    trait_cont1:trait_cont10, # Continuous traits
+    trait_cat11:trait_cat15, # Categorical traits
+    trait_ord16:trait_ord20 # Ordinal traits
   ) %>%
   mutate(across(where(is.character), as.factor))
 
@@ -1709,9 +1845,9 @@ longDF = site_env_spp %>%
 # # Use `grid_obs` from `dissmapr` imports instead
 # longDF = grid_obs %>%
 #   mutate(site_id = as.character(site_id)) %>%
-#   left_join(site_env %>% dplyr::select(-x, -y) %>% 
+#   left_join(site_env %>% dplyr::select(-x, -y) %>%
 #               mutate(site_id = as.character(site_id)), by = "site_id") %>%
-#   left_join(spp_trait %>% 
+#   left_join(spp_trait %>%
 #               mutate(species = as.character(species)), by = "species") %>%
 #   mutate(across(where(is.character), as.factor))  # Ensure all character fields are treated as factors
 # # head(longDF)
@@ -1740,13 +1876,13 @@ trait-environment structure without hard-coding variable names.
 
 ``` r
 # Automatically build the GLMM formula
-fml = build_glmm_formula(
+fml <- build_glmm_formula(
   data                 = longDF,
-  response             = "count",            # Response variable
-  species_col          = "species",          # Random effect grouping
-  site_col             = "site_id",          # Random effect grouping
+  response             = "count", # Response variable
+  species_col          = "species", # Random effect grouping
+  site_col             = "site_id", # Random effect grouping
   # env_cols             = names(longDF[,6:24]),
-  include_interactions = TRUE,               # Add all trait × environment terms
+  include_interactions = TRUE, # Add all trait × environment terms
   random_effects       = c("(1 | species)", "(1 | site_id)")
 )
 
@@ -1763,7 +1899,7 @@ fml
 #>     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + 
 #>     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + 
 #>     (1 | species) + (1 | site_id)
-#> <environment: 0x0000023d41640e40>
+#> <environment: 0x0000024ffb7c0618>
 # Example output:
 # count ~ trait_cont1 + trait_cont2 + ... + env1 + env2 + ... +
 #         (trait_cont1 + ... + trait_cat15):(env1 + ... + env10) +
@@ -1793,7 +1929,7 @@ variance components for the random effects.
 ``` r
 # Fit Tweedie GLMM
 set.seed(123)
-mod = glmmTMB::glmmTMB(
+mod <- glmmTMB::glmmTMB(
   formula = fml,
   data    = longDF,
   family  = glmmTMB::tweedie(link = "log")
@@ -1801,8 +1937,7 @@ mod = glmmTMB::glmmTMB(
 
 summary(mod)
 #>  Family: tweedie  ( log )
-#> Formula:          
-#> count ~ trait_cont1 + trait_cont2 + trait_cont3 + trait_cont4 +  
+#> Formula:          count ~ trait_cont1 + trait_cont2 + trait_cont3 + trait_cont4 +  
 #>     trait_cont5 + trait_cont6 + trait_cont7 + trait_cont8 + trait_cont9 +  
 #>     trait_cont10 + trait_cat11 + trait_cat12 + trait_cat13 +  
 #>     trait_cat14 + trait_cat15 + trait_ord16 + trait_ord17 + trait_bin18 +  
@@ -2031,81 +2166,7 @@ summary(mod)
 #> trait_cat14generalist:env7     0.3523372  0.9512120   0.370 0.711078    
 #> trait_cat14nectarivore:env7    0.2099320  0.6256045   0.336 0.737198    
 #> trait_cat14generalist:env8    -0.0441667  1.1089876  -0.040 0.968232    
-#> trait_cat14nectarivore:env8   -0.2024453  0.7254215  -0.279 0.780189    
-#> trait_cat14generalist:env9     0.0889186  1.1459615   0.078 0.938152    
-#> trait_cat14nectarivore:env9    0.0925423  0.7521012   0.123 0.902071    
-#> trait_cat14generalist:env10   -0.2991912  1.2222034  -0.245 0.806614    
-#> trait_cat14nectarivore:env10   0.0601482  0.8030205   0.075 0.940292    
-#> trait_cat15resident:env1      -0.1558773  0.2696314  -0.578 0.563188    
-#> trait_cat15resident:env2       0.0972675  0.2779438   0.350 0.726373    
-#> trait_cat15resident:env3       0.0959809  0.4010530   0.239 0.810856    
-#> trait_cat15resident:env4      -0.1433718  0.3026179  -0.474 0.635663    
-#> trait_cat15resident:env5       0.0713967  0.3360772   0.212 0.831763    
-#> trait_cat15resident:env6      -0.0006126  0.3434115  -0.002 0.998577    
-#> trait_cat15resident:env7      -0.2809555  0.4952511  -0.567 0.570511    
-#> trait_cat15resident:env8       0.1465885  0.5809911   0.252 0.800803    
-#> trait_cat15resident:env9      -0.1148045  0.6007147  -0.191 0.848437    
-#> trait_cat15resident:env10      0.3813862  0.6369512   0.599 0.549327    
-#> trait_ord16:env1               0.0443858  0.0967309   0.459 0.646336    
-#> trait_ord16:env2               0.1264998  0.0999672   1.265 0.205723    
-#> trait_ord16:env3               0.0089911  0.1434370   0.063 0.950018    
-#> trait_ord16:env4              -0.1249036  0.1092007  -1.144 0.252708    
-#> trait_ord16:env5              -0.0327199  0.1190084  -0.275 0.783364    
-#> trait_ord16:env6              -0.1532371  0.1232035  -1.244 0.213583    
-#> trait_ord16:env7               0.0864534  0.1769544   0.489 0.625151    
-#> trait_ord16:env8               0.0561132  0.2077514   0.270 0.787085    
-#> trait_ord16:env9               0.0409145  0.2138390   0.191 0.848265    
-#> trait_ord16:env10             -0.1615596  0.2272823  -0.711 0.477188    
-#> trait_ord17:env1              -0.0508782  0.0650626  -0.782 0.434221    
-#> trait_ord17:env2               0.0673156  0.0678696   0.992 0.321277    
-#> trait_ord17:env3               0.0981880  0.0966602   1.016 0.309722    
-#> trait_ord17:env4               0.0150704  0.0720106   0.209 0.834230    
-#> trait_ord17:env5              -0.0461649  0.0803691  -0.574 0.565690    
-#> trait_ord17:env6               0.0522241  0.0822010   0.635 0.525218    
-#> trait_ord17:env7              -0.1098775  0.1196980  -0.918 0.358642    
-#> trait_ord17:env8              -0.0805842  0.1399392  -0.576 0.564715    
-#> trait_ord17:env9               0.1282283  0.1437985   0.892 0.372542    
-#> trait_ord17:env10              0.1133910  0.1545754   0.734 0.463214    
-#> trait_bin18:env1              -0.1179621  0.1877592  -0.628 0.529832    
-#> trait_bin18:env2               0.0410970  0.1953517   0.210 0.833375    
-#> trait_bin18:env3              -0.1774229  0.2786485  -0.637 0.524303    
-#> trait_bin18:env4               0.2552379  0.2089121   1.222 0.221803    
-#> trait_bin18:env5               0.1704284  0.2339985   0.728 0.466411    
-#> trait_bin18:env6              -0.1018293  0.2381233  -0.428 0.668919    
-#> trait_bin18:env7              -0.1197166  0.3440251  -0.348 0.727849    
-#> trait_bin18:env8               0.2359866  0.4016228   0.588 0.556812    
-#> trait_bin18:env9              -0.2244515  0.4160808  -0.539 0.589582    
-#> trait_bin18:env10              0.1134193  0.4424246   0.256 0.797674    
-#> trait_bin19:env1              -0.1452246  0.2360668  -0.615 0.538433    
-#> trait_bin19:env2               0.0131558  0.2494912   0.053 0.957946    
-#> trait_bin19:env3               0.1914155  0.3544992   0.540 0.589224    
-#> trait_bin19:env4              -0.2372310  0.2625524  -0.904 0.366231    
-#> trait_bin19:env5              -0.0486417  0.2962394  -0.164 0.869576    
-#> trait_bin19:env6               0.0364531  0.2983436   0.122 0.902753    
-#> trait_bin19:env7               0.1866480  0.4367544   0.427 0.669123    
-#> trait_bin19:env8               0.0871527  0.5111420   0.171 0.864612    
-#> trait_bin19:env9               0.1295414  0.5262485   0.246 0.805558    
-#> trait_bin19:env10              0.0354184  0.5621364   0.063 0.949761    
-#> trait_ord20medium:env1        -0.1718096  0.5230806  -0.328 0.742566    
-#> trait_ord20small:env1          0.2169684  0.3054409   0.710 0.477490    
-#> trait_ord20medium:env2        -0.1134164  0.5411585  -0.210 0.833995    
-#> trait_ord20small:env2          0.1796733  0.3127285   0.575 0.565606    
-#> trait_ord20medium:env3        -0.0666643  0.7776583  -0.086 0.931685    
-#> trait_ord20small:env3         -0.0540712  0.4546263  -0.119 0.905327    
-#> trait_ord20medium:env4        -0.2657073  0.5851281  -0.454 0.649756    
-#> trait_ord20small:env4         -0.3051708  0.3432778  -0.889 0.374008    
-#> trait_ord20medium:env5        -0.0077351  0.6507966  -0.012 0.990517    
-#> trait_ord20small:env5         -0.2466345  0.3796726  -0.650 0.515952    
-#> trait_ord20medium:env6         0.4155222  0.6624804   0.627 0.530514    
-#> trait_ord20small:env6          0.0448119  0.3876854   0.116 0.907979    
-#> trait_ord20medium:env7        -0.0706120  0.9624806  -0.073 0.941516    
-#> trait_ord20small:env7          0.0312668  0.5610285   0.056 0.955556    
-#> trait_ord20medium:env8         0.1203152  1.1207031   0.107 0.914506    
-#> trait_ord20small:env8          0.2136062  0.6563351   0.325 0.744838    
-#> trait_ord20medium:env9         0.0828510  1.1587777   0.071 0.943001    
-#> trait_ord20small:env9          0.0302249  0.6752415   0.045 0.964297    
-#> trait_ord20medium:env10        0.0412495  1.2358430   0.033 0.973373    
-#> trait_ord20small:env10        -0.3558163  0.7188480  -0.495 0.620613    
+#>  [ reached 'max' / getOption("max.print") -- omitted 75 rows ]
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 ```
@@ -2150,44 +2211,37 @@ profiles, preserving observed cross-trait covariance.
 ``` r
 # Example: simulate 10 invaders from the resident trait table
 set.seed(42)
-inv_traits = simulate_invaders(
-  resident_traits = spp_trait,  # your resident species traits table
-  n_inv           = 10,         # number of invaders to create
-  species_col     = "species",  # ID column for species
-  mode            = "columnwise",   # or "rowwise"
-  numeric_method  = "bootstrap",    # or "normal", "uniform"
+inv_traits <- simulate_invaders(
+  resident_traits = spp_trait, # your resident species traits table
+  n_inv           = 10, # number of invaders to create
+  species_col     = "species", # ID column for species
+  mode            = "columnwise", # or "rowwise"
+  numeric_method  = "bootstrap", # or "normal", "uniform"
   seed            = 42
 )
 
 head(inv_traits)
-#>      species trait_cont1 trait_cont2 trait_cont3 trait_cont4 trait_cont5
-#> inv1    inv1  0.47317663  -0.9853317  0.02881542  -0.8287759  0.07475339
-#> inv2    inv2  0.31398458   0.8114763  0.65631697   0.9252160  0.70096550
-#> inv3    inv3  0.02842357   0.5693856  0.69937944   0.1272937  0.70096550
-#> inv4    inv4 -0.08451645  -0.5846821  0.43871168   0.4797106  0.20694817
-#> inv5    inv5  0.86934449   0.6658322  0.16320801   0.8660683  0.65788426
-#> inv6    inv6 -0.21959307  -0.1060607  0.51908854   0.3348530  0.14695180
-#>      trait_cont6 trait_cont7 trait_cont8 trait_cont9 trait_cont10 trait_cat11
-#> inv1  -0.6596750  -0.3658933  0.06374887   0.9931054 -0.001454239      forest
-#> inv2   0.3603284   0.8361128 -0.77538352  -0.5086517 -0.957099543      forest
-#> inv3   0.4670559   0.8358081 -0.09737830  -0.8268388 -0.460567643     wetland
-#> inv4   0.3571857   0.4947222 -0.89374103  -0.8647264  0.881129756   grassland
-#> inv5  -0.8394711   0.4845329 -0.42450050  -0.6819552 -0.957099543   grassland
-#> inv6  -0.9418284  -0.3658933  0.67751007  -0.3726324 -0.623131341     wetland
-#>      trait_cat12  trait_cat13 trait_cat14 trait_cat15 trait_ord16 trait_ord17
-#> inv1   nocturnal multivoltine detritivore   migratory           1           2
-#> inv2   nocturnal   univoltine detritivore   migratory           3           2
-#> inv3   nocturnal    bivoltine nectarivore   migratory           1           2
-#> inv4   nocturnal multivoltine  generalist   migratory           1           2
-#> inv5     diurnal    bivoltine nectarivore    resident           2           1
-#> inv6     diurnal   univoltine  generalist   migratory           1           3
-#>      trait_bin18 trait_bin19 trait_ord20
-#> inv1           1           1       large
-#> inv2           0           1       small
-#> inv3           1           1      medium
-#> inv4           1           1      medium
-#> inv5           0           1      medium
-#> inv6           0           1       large
+#>      species trait_cont1 trait_cont2 trait_cont3 trait_cont4 trait_cont5 trait_cont6
+#> inv1    inv1  0.47317663  -0.9853317  0.02881542  -0.8287759  0.07475339  -0.6596750
+#> inv2    inv2  0.31398458   0.8114763  0.65631697   0.9252160  0.70096550   0.3603284
+#> inv3    inv3  0.02842357   0.5693856  0.69937944   0.1272937  0.70096550   0.4670559
+#> inv4    inv4 -0.08451645  -0.5846821  0.43871168   0.4797106  0.20694817   0.3571857
+#> inv5    inv5  0.86934449   0.6658322  0.16320801   0.8660683  0.65788426  -0.8394711
+#> inv6    inv6 -0.21959307  -0.1060607  0.51908854   0.3348530  0.14695180  -0.9418284
+#>      trait_cont7 trait_cont8 trait_cont9 trait_cont10 trait_cat11 trait_cat12  trait_cat13
+#> inv1  -0.3658933  0.06374887   0.9931054 -0.001454239      forest   nocturnal multivoltine
+#> inv2   0.8361128 -0.77538352  -0.5086517 -0.957099543      forest   nocturnal   univoltine
+#> inv3   0.8358081 -0.09737830  -0.8268388 -0.460567643     wetland   nocturnal    bivoltine
+#> inv4   0.4947222 -0.89374103  -0.8647264  0.881129756   grassland   nocturnal multivoltine
+#> inv5   0.4845329 -0.42450050  -0.6819552 -0.957099543   grassland     diurnal    bivoltine
+#> inv6  -0.3658933  0.67751007  -0.3726324 -0.623131341     wetland     diurnal   univoltine
+#>      trait_cat14 trait_cat15 trait_ord16 trait_ord17 trait_bin18 trait_bin19 trait_ord20
+#> inv1 detritivore   migratory           1           2           1           1       large
+#> inv2 detritivore   migratory           3           2           0           1       small
+#> inv3 nectarivore   migratory           1           2           1           1      medium
+#> inv4  generalist   migratory           1           2           1           1      medium
+#> inv5 nectarivore    resident           2           1           0           1      medium
+#> inv6  generalist   migratory           1           3           0           1       large
 ```
 
 > **Note**: Use `mode = "rowwise"` when you want to preserve realistic
@@ -2202,71 +2256,66 @@ function to generate expected abundances (our performance proxy) for
 every **species-site** combination.
 
 This function:  
-- Takes a fitted model (e.g., from **glmmTMB**, **lme4**, **glm**, or
+\* Takes a fitted model (e.g., from **glmmTMB**, **lme4**, **glm**, or
 **gam**)  
-- Crosses the **species traits table** (residents + simulated invaders)
+\* Crosses the **species traits table** (residents + simulated invaders)
 with the **site environment table**  
-- Harmonizes factor levels with the model’s training data  
-- Calls the model’s native `predict()` method to return: - The full
-prediction grid (`newdata`) - A long table of predictions
-(`predictions`) - A wide **site × species** prediction matrix
+\* Harmonizes factor levels with the model’s training data  
+\* Calls the model’s native `predict()` method to return: \* The full
+prediction grid (`newdata`) \* A long table of predictions
+(`predictions`) \* A wide **site × species** prediction matrix
 (`prediction_matrix`)
 
-> **Note**: Why use population-level (fixed-effects) predictions? - For
-> novel invaders, the random-effect levels (e.g., species- or
-> site-specific intercepts) are unknown. - Accordingly,
-> `predict_invader_response()` defaults to setting random effects to
-> zero, producing *population-level* predictions driven solely by
-> traits, environmental covariates, and their interactions. This is the
-> appropriate scale for invasion screening and comparative risk
-> assessment. - Set `include_random = TRUE` only if you require
-> conditional predictions that incorporate known random-effect levels
-> from the fitted model (and, where supported, allow estimation for new
-> levels).  
->  
+> **Note**: Why use population-level (fixed-effects) predictions?
+>
+> - For novel invaders, the random-effect levels (e.g., species- or
+>   site-specific intercepts) are unknown.
+> - Accordingly, `predict_invader_response()` defaults to setting random
+>   effects to zero, producing *population-level* predictions driven
+>   solely by traits, environmental covariates, and their interactions.
+>   This is the appropriate scale for invasion screening and comparative
+>   risk assessment.
+> - Set `include_random = TRUE` only if you require conditional
+>   predictions that incorporate known random-effect levels from the
+>   fitted model (and, where supported, allow estimation for new
+>   levels).  
+>    
 
 ``` r
 # Combine residents and invaders into a single trait table
-all_traits = bind_rows(
-  spp_trait,      # Resident species traits (must include 'species' column)
-  inv_traits      # Output from simulate_invaders()
-) 
+all_traits <- bind_rows(
+  spp_trait, # Resident species traits (must include 'species' column)
+  inv_traits # Output from simulate_invaders()
+)
 head(all_traits)
-#>                                               species trait_cont1 trait_cont2
-#> Utetheisa pulchella               Utetheisa pulchella  0.02842357  -0.2030292
-#> Danaus chrysippus orientis Danaus chrysippus orientis  0.03819190  -0.2237834
-#> Telchinia serena                     Telchinia serena -0.83512488  -0.3065035
-#> Vanessa cardui                         Vanessa cardui -0.21959307   0.5693856
-#> Hypolimnas misippus               Hypolimnas misippus  0.31398458   0.6658322
-#> Pieris brassicae                     Pieris brassicae -0.76502528  -0.1364975
-#>                            trait_cont3 trait_cont4 trait_cont5 trait_cont6
-#> Utetheisa pulchella        -0.99685889   0.4797106  0.87477170   0.8696459
-#> Danaus chrysippus orientis  0.02882587  -0.5325932 -0.09453685  -0.7031068
-#> Telchinia serena            0.02881542   0.9252160  0.26301460   0.3603284
-#> Vanessa cardui              0.16320801   0.4664918  0.70096550   0.1009882
-#> Hypolimnas misippus         0.51908854  -0.3895633 -0.99723831   0.5587363
-#> Pieris brassicae           -0.71904181   0.4879493 -0.21005391   0.5576190
-#>                            trait_cont7 trait_cont8 trait_cont9 trait_cont10
-#> Utetheisa pulchella          0.5863824  -0.0973783   0.1228759  0.850091782
-#> Danaus chrysippus orientis  -0.3658933  -0.8554938  -0.6567358 -0.001454239
-#> Telchinia serena             0.8358081  -0.8781005  -0.8647264 -0.589900776
-#> Vanessa cardui              -0.7333408   0.6775101  -0.8585562  0.773507196
-#> Hypolimnas misippus          0.4594602  -0.7753835  -0.3726324 -0.623131341
-#> Pieris brassicae             0.5380649   0.9354673  -0.9649034  0.429707387
-#>                            trait_cat11 trait_cat12  trait_cat13 trait_cat14
-#> Utetheisa pulchella            wetland     diurnal multivoltine detritivore
-#> Danaus chrysippus orientis   grassland     diurnal   univoltine detritivore
-#> Telchinia serena                forest   nocturnal multivoltine  generalist
-#> Vanessa cardui                  forest     diurnal   univoltine  generalist
-#> Hypolimnas misippus             forest     diurnal   univoltine nectarivore
-#> Pieris brassicae             grassland   nocturnal   univoltine  generalist
-#>                            trait_cat15 trait_ord16 trait_ord17 trait_bin18
-#> Utetheisa pulchella          migratory           3           4           1
-#> Danaus chrysippus orientis   migratory           1           4           1
-#> Telchinia serena             migratory           2           5           1
-#> Vanessa cardui                resident           3           3           0
-#> Hypolimnas misippus           resident           1           4           0
-#> Pieris brassicae              resident           1           2           0
+#>                                               species trait_cont1 trait_cont2 trait_cont3
+#> Utetheisa pulchella               Utetheisa pulchella  0.02842357  -0.2030292 -0.99685889
+#> Danaus chrysippus orientis Danaus chrysippus orientis  0.03819190  -0.2237834  0.02882587
+#> Telchinia serena                     Telchinia serena -0.83512488  -0.3065035  0.02881542
+#> Vanessa cardui                         Vanessa cardui -0.21959307   0.5693856  0.16320801
+#> Hypolimnas misippus               Hypolimnas misippus  0.31398458   0.6658322  0.51908854
+#> Pieris brassicae                     Pieris brassicae -0.76502528  -0.1364975 -0.71904181
+#>                            trait_cont4 trait_cont5 trait_cont6 trait_cont7 trait_cont8
+#> Utetheisa pulchella          0.4797106  0.87477170   0.8696459   0.5863824  -0.0973783
+#> Danaus chrysippus orientis  -0.5325932 -0.09453685  -0.7031068  -0.3658933  -0.8554938
+#> Telchinia serena             0.9252160  0.26301460   0.3603284   0.8358081  -0.8781005
+#> Vanessa cardui               0.4664918  0.70096550   0.1009882  -0.7333408   0.6775101
+#> Hypolimnas misippus         -0.3895633 -0.99723831   0.5587363   0.4594602  -0.7753835
+#> Pieris brassicae             0.4879493 -0.21005391   0.5576190   0.5380649   0.9354673
+#>                            trait_cont9 trait_cont10 trait_cat11 trait_cat12  trait_cat13
+#> Utetheisa pulchella          0.1228759  0.850091782     wetland     diurnal multivoltine
+#> Danaus chrysippus orientis  -0.6567358 -0.001454239   grassland     diurnal   univoltine
+#> Telchinia serena            -0.8647264 -0.589900776      forest   nocturnal multivoltine
+#> Vanessa cardui              -0.8585562  0.773507196      forest     diurnal   univoltine
+#> Hypolimnas misippus         -0.3726324 -0.623131341      forest     diurnal   univoltine
+#> Pieris brassicae            -0.9649034  0.429707387   grassland   nocturnal   univoltine
+#>                            trait_cat14 trait_cat15 trait_ord16 trait_ord17 trait_bin18
+#> Utetheisa pulchella        detritivore   migratory           3           4           1
+#> Danaus chrysippus orientis detritivore   migratory           1           4           1
+#> Telchinia serena            generalist   migratory           2           5           1
+#> Vanessa cardui              generalist    resident           3           3           0
+#> Hypolimnas misippus        nectarivore    resident           1           4           0
+#> Pieris brassicae            generalist    resident           1           2           0
 #>                            trait_bin19 trait_ord20
 #> Utetheisa pulchella                  1       small
 #> Danaus chrysippus orientis           1      medium
@@ -2275,40 +2324,33 @@ head(all_traits)
 #> Hypolimnas misippus                  0       large
 #> Pieris brassicae                     0       large
 tail(all_traits)
-#>       species trait_cont1 trait_cont2 trait_cont3 trait_cont4 trait_cont5
-#> inv5     inv5   0.8693445   0.6658322  0.16320801   0.8660683  0.65788426
-#> inv6     inv6  -0.2195931  -0.1060607  0.51908854   0.3348530  0.14695180
-#> inv7     inv7   0.4382245   0.9151532  0.38640964  -0.5656846 -0.99723831
-#> inv8     inv8   0.2834910   0.6221103  0.51908854   0.5516467  0.70096550
-#> inv9     inv9   0.4731766   0.8132028 -0.56722917   0.8849114 -0.09453685
-#> inv10   inv10   0.6608953   0.4751912  0.02882587   0.1272937 -0.28866809
-#>       trait_cont6 trait_cont7 trait_cont8 trait_cont9 trait_cont10 trait_cat11
-#> inv5   -0.8394711  0.48453290 -0.42450050  -0.6819552  -0.95709954   grassland
-#> inv6   -0.9418284 -0.36589330  0.67751007  -0.3726324  -0.62313134     wetland
-#> inv7    0.2472269  0.72525955 -0.11440746   0.6410291   0.09924083      forest
-#> inv8   -0.6596750  0.53806485  0.03422211  -0.2932992  -0.33153735      forest
-#> inv9    0.5576190 -0.09622701  0.70386197  -0.3726324  -0.37790076   grassland
-#> inv10   0.5576190 -0.14501107 -0.11535072  -0.1572432  -0.33153735     wetland
-#>       trait_cat12  trait_cat13 trait_cat14 trait_cat15 trait_ord16 trait_ord17
-#> inv5      diurnal    bivoltine nectarivore    resident           2           1
-#> inv6      diurnal   univoltine  generalist   migratory           1           3
-#> inv7    nocturnal multivoltine  generalist    resident           4           4
-#> inv8      diurnal    bivoltine detritivore    resident           1           5
-#> inv9      diurnal    bivoltine nectarivore   migratory           1           2
-#> inv10     diurnal multivoltine detritivore    resident           1           4
-#>       trait_bin18 trait_bin19 trait_ord20
-#> inv5            0           1      medium
-#> inv6            0           1       large
-#> inv7            1           0       large
-#> inv8            0           1       small
-#> inv9            0           1      medium
-#> inv10           1           1      medium
+#>       species trait_cont1 trait_cont2 trait_cont3 trait_cont4 trait_cont5 trait_cont6
+#> inv5     inv5   0.8693445   0.6658322  0.16320801   0.8660683  0.65788426  -0.8394711
+#> inv6     inv6  -0.2195931  -0.1060607  0.51908854   0.3348530  0.14695180  -0.9418284
+#> inv7     inv7   0.4382245   0.9151532  0.38640964  -0.5656846 -0.99723831   0.2472269
+#> inv8     inv8   0.2834910   0.6221103  0.51908854   0.5516467  0.70096550  -0.6596750
+#> inv9     inv9   0.4731766   0.8132028 -0.56722917   0.8849114 -0.09453685   0.5576190
+#> inv10   inv10   0.6608953   0.4751912  0.02882587   0.1272937 -0.28866809   0.5576190
+#>       trait_cont7 trait_cont8 trait_cont9 trait_cont10 trait_cat11 trait_cat12  trait_cat13
+#> inv5   0.48453290 -0.42450050  -0.6819552  -0.95709954   grassland     diurnal    bivoltine
+#> inv6  -0.36589330  0.67751007  -0.3726324  -0.62313134     wetland     diurnal   univoltine
+#> inv7   0.72525955 -0.11440746   0.6410291   0.09924083      forest   nocturnal multivoltine
+#> inv8   0.53806485  0.03422211  -0.2932992  -0.33153735      forest     diurnal    bivoltine
+#> inv9  -0.09622701  0.70386197  -0.3726324  -0.37790076   grassland     diurnal    bivoltine
+#> inv10 -0.14501107 -0.11535072  -0.1572432  -0.33153735     wetland     diurnal multivoltine
+#>       trait_cat14 trait_cat15 trait_ord16 trait_ord17 trait_bin18 trait_bin19 trait_ord20
+#> inv5  nectarivore    resident           2           1           0           1      medium
+#> inv6   generalist   migratory           1           3           0           1       large
+#> inv7   generalist    resident           4           4           1           0       large
+#> inv8  detritivore    resident           1           5           0           1       small
+#> inv9  nectarivore   migratory           1           2           0           1      medium
+#> inv10 detritivore    resident           1           4           1           1      medium
 
 # Predict across all sites × all species using predict_invader_response()
-pred = predict_invader_response(
+pred <- predict_invader_response(
   model          = mod,
-  species_traits = all_traits,   # residents + invaders (traits)
-  site_env       = site_env,     # base site predictors
+  species_traits = all_traits, # residents + invaders (traits)
+  site_env       = site_env, # base site predictors
   species_col    = "species",
   site_col       = "site_id",
   response_type  = "response",
@@ -2323,7 +2365,7 @@ str(pred, max.level = 1)
 #>  $ predictions      :'data.frame':   15355 obs. of  3 variables:
 #>  $ prediction_matrix: num [1:415, 1:37] 2.27 1.77 2.99 2.08 1.78 ...
 #>   ..- attr(*, "dimnames")=List of 2
-names(pred$newdata)      # long table: site_id, species, pred
+names(pred$newdata) # long table: site_id, species, pred
 #>  [1] "species"      "site_id"      "trait_cont1"  "trait_cont2"  "trait_cont3" 
 #>  [6] "trait_cont4"  "trait_cont5"  "trait_cont6"  "trait_cont7"  "trait_cont8" 
 #> [11] "trait_cont9"  "trait_cont10" "trait_cat11"  "trait_cat12"  "trait_cat13" 
@@ -2332,7 +2374,7 @@ names(pred$newdata)      # long table: site_id, species, pred
 #> [26] "env2"         "env3"         "env4"         "env5"         "env6"        
 #> [31] "env7"         "env8"         "env9"         "env10"        "obs_sum"     
 #> [36] "spp_rich"
-head(pred$predictions)      # long table: site_id, species, pred
+head(pred$predictions) # long table: site_id, species, pred
 #>   site_id             species     pred
 #> 1    1026 Utetheisa pulchella 1.761536
 #> 2    1027 Utetheisa pulchella 1.561990
@@ -2380,36 +2422,36 @@ equilibrium abundance of resident species $j$ at site $s$.
 
 ``` r
 # Identify all resident species (excluding invaders)
-residents = rownames(spp_trait)
+residents <- rownames(spp_trait)
 
 # Compute interaction strengths and resident abundance matrix
-cis = compute_interaction_strength(
-  traits      = all_traits,        # residents + invaders
-  predDF      = pred$predictions,  # predictions from predict_invader_response()
-  method      = "gower",           # mixed traits
-  kernel      = "distance",        # keep as dissimilarity
-  standardise = FALSE,             # Gower is already [0,1]
-  sparsify_k  = NULL               # no sparsification for now
+cis <- compute_interaction_strength(
+  traits      = all_traits, # residents + invaders
+  predDF      = pred$predictions, # predictions from predict_invader_response()
+  method      = "gower", # mixed traits
+  kernel      = "distance", # keep as dissimilarity
+  standardise = FALSE, # Gower is already [0,1]
+  sparsify_k  = NULL # no sparsification for now
 )
 
 # site × resident abundance matrix
 # - Nstar is built from predictions and restricted to resident species.
-Nstar  = cis$Nstar      # site × residents
-head(Nstar[1:2,1:4])
+Nstar <- cis$Nstar # site × residents
+head(Nstar[1:2, 1:4])
 #>                                1026     1027     1028     1029
 #> Utetheisa pulchella        1.761536 1.561990 1.771892 1.364692
 #> Danaus chrysippus orientis 3.239507 3.001678 3.677266 3.446281
 
 # trait-based distances/dissimilarities (interaction strengths)
 # - g_all[i, j] is the trait dissimilarity between species i and j.
-g_all  = cis$g_all      # species × species
-tail(g_all[1:2,1:4])
-#>                            Utetheisa pulchella Danaus chrysippus orientis
-#> Utetheisa pulchella                   0.000000                   0.398072
-#> Danaus chrysippus orientis            0.398072                   0.000000
-#>                            Telchinia serena Vanessa cardui
-#> Utetheisa pulchella               0.4164589      0.5341222
-#> Danaus chrysippus orientis        0.4409018      0.5248909
+g_all <- cis$g_all # species × species
+tail(g_all[1:2, 1:4])
+#>                            Utetheisa pulchella Danaus chrysippus orientis Telchinia serena
+#> Utetheisa pulchella                   0.000000                   0.398072        0.4164589
+#> Danaus chrysippus orientis            0.398072                   0.000000        0.4409018
+#>                            Vanessa cardui
+#> Utetheisa pulchella             0.5341222
+#> Danaus chrysippus orientis      0.5248909
 ```
 
 ### 10.2 Competition
@@ -2428,42 +2470,32 @@ derive **trait-based competition coefficients**
 
 ``` r
 # --- Competition coefficients from trait distances ---
-comp = compute_competition_kernel(
-  g_all     = g_all,            # trait distance matrix (e.g., Gower)
-  residents = residents,        # resident IDs
+comp <- compute_competition_kernel(
+  g_all = g_all, # trait distance matrix (e.g., Gower)
+  residents = residents, # resident IDs
   # invaders = paste0("inv", 1:n_inv),  # optional; default = non-residents
   # sigma_t  = NULL,             # optional; auto from resident-resident distances
-  sigma_method = "sd"           # or "median", "iqr"
+  sigma_method = "sd" # or "median", "iqr"
 )
 
-sigma_t = comp$sigma_t        # bandwidth used
-d_ij = comp$d_ij   # invader-resident distances
-a_ij = comp$a_ij   # Gaussian competition coefficients
+sigma_t <- comp$sigma_t # bandwidth used
+d_ij <- comp$d_ij # invader-resident distances
+a_ij <- comp$a_ij # Gaussian competition coefficients
 
 sigma_t
 #> [1] 0.08758267
-head(d_ij[1:4,1:4])
-#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena
-#> inv1           0.4428054                  0.3371734        0.3626310
-#> inv2           0.4224789                  0.4655103        0.3639053
-#> inv3           0.4136122                  0.4075364        0.3784909
-#> inv4           0.3899103                  0.3182808        0.2564511
-#>      Vanessa cardui
-#> inv1      0.5756327
-#> inv2      0.4594073
-#> inv3      0.5894313
-#> inv4      0.5408265
-head(a_ij[1:4,1:4])
-#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena
-#> inv1        2.814174e-06               6.049429e-04     1.894032e-04
-#> inv2        8.856219e-06               7.337331e-07     1.783117e-04
-#> inv3        1.435855e-05               1.987671e-05     8.803305e-05
-#> inv4        4.968745e-05               1.356017e-03     1.374756e-02
-#>      Vanessa cardui
-#> inv1   4.167436e-10
-#> inv2   1.060064e-06
-#> inv3   1.461412e-10
-#> inv4   5.247268e-09
+head(d_ij[1:4, 1:4])
+#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena Vanessa cardui
+#> inv1           0.4428054                  0.3371734        0.3626310      0.5756327
+#> inv2           0.4224789                  0.4655103        0.3639053      0.4594073
+#> inv3           0.4136122                  0.4075364        0.3784909      0.5894313
+#> inv4           0.3899103                  0.3182808        0.2564511      0.5408265
+head(a_ij[1:4, 1:4])
+#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena Vanessa cardui
+#> inv1        2.814174e-06               6.049429e-04     1.894032e-04   4.167436e-10
+#> inv2        8.856219e-06               7.337331e-07     1.783117e-04   1.060064e-06
+#> inv3        1.435855e-05               1.987671e-05     8.803305e-05   1.461412e-10
+#> inv4        4.968745e-05               1.356017e-03     1.374756e-02   5.247268e-09
 
 # Example use with N* (from Section 7.1):
 # For invader i at site s, total expected competitive pressure (scalar) could be:
@@ -2471,12 +2503,17 @@ head(a_ij[1:4,1:4])
 # which combines trait overlap (a_ij) with resident context (N*).
 ```
 
-> **Note:** \* High trait similarity (low $d_{ij}$) → strong competition
-> (high $\alpha_{ij}$) \* High trait difference (high $d_{ij}$) → weak
-> competition (low $\alpha_{ij}$) \* Lowering $\sigma_t$ sharpens niche
-> separation; useful for sensitivity tests \* Ensure `g_all` is a
-> *distance* matrix before applying the Gaussian kernel; if it’s already
-> kernelised, retrieve the original $d_{ij}$ first  
+> **Note:**
+>
+> - High trait similarity (low $d_{ij}$) → strong competition (high
+>   $\alpha_{ij}$)
+> - High trait difference (high $d_{ij}$) → weak competition (low
+>   $\alpha_{ij}$)
+> - Lowering $\sigma_t$ sharpens niche separation; useful for
+>   sensitivity tests
+> - Ensure `g_all` is a *distance* matrix before applying the Gaussian
+>   kernel; if it’s already kernelised, retrieve the original $d_{ij}$
+>   first  
 
 ### 10.3 Environmental Filtering
 
@@ -2495,50 +2532,40 @@ to the Gaussian environmental similarity kernel
 
 ``` r
 # Build environmental kernel and distances
-ek = compute_environment_kernel(
-  site_env    = site_env,            # site_id, x, y, env1:env10, ...
-  predictions = pred$predictions,    # species, site_id, pred (from predict_invader_response)
-  site_col    = "site_id",
-  method      = "gower",
-  kernel      = "gaussian",          # "distance" or "similarity" also supported
-  sigma_method= "sd"                 # or "median", "iqr"
+ek <- compute_environment_kernel(
+  site_env = site_env, # site_id, x, y, env1:env10, ...
+  predictions = pred$predictions, # species, site_id, pred (from predict_invader_response)
+  site_col = "site_id",
+  method = "gower",
+  kernel = "gaussian", # "distance" or "similarity" also supported
+  sigma_method = "sd" # or "median", "iqr"
 )
 
-sigma_e = ek$sigma_e     # bandwidth used for Gaussian kernel
-env_opt  = ek$env_opt    # species × env (optima)
-env_dist = ek$env_dist   # sites × species (distance)
-g_env    = ek$K_env      # sites × species (Gaussian similarity), if requested
+sigma_e <- ek$sigma_e # bandwidth used for Gaussian kernel
+env_opt <- ek$env_opt # species × env (optima)
+env_dist <- ek$env_dist # sites × species (distance)
+g_env <- ek$K_env # sites × species (Gaussian similarity), if requested
 
 sigma_e
 #> [1] 0.0495915
-head(env_opt[1:4,1:4])
+head(env_opt[1:4, 1:4])
 #>                                   env1        env2        env3       env4
 #> Utetheisa pulchella        -0.45572568 -0.25326724 -0.05813116  0.1956375
 #> Danaus chrysippus orientis -0.09139371 -0.19942460  0.22554528  0.1762052
 #> Telchinia serena           -0.15295732 -0.10760847  0.16373671  0.2630910
 #> Vanessa cardui              0.17546879 -0.03901351  0.02578274 -0.1113054
-head(env_dist[1:4,1:4])
-#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena
-#> 1026           0.2919083                  0.2901035        0.2891394
-#> 1027           0.3004139                  0.2986090        0.2976450
-#> 1028           0.3051308                  0.3033259        0.3023619
-#> 1029           0.3230038                  0.3211989        0.3202349
-#>      Vanessa cardui
-#> 1026      0.2443649
-#> 1027      0.2528705
-#> 1028      0.2575874
-#> 1029      0.2754604
-head(g_env[1:4,1:4])
-#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena
-#> 1026        2.994181e-08               3.707048e-08     4.152730e-08
-#> 1027        1.075079e-08               1.339372e-08     1.505410e-08
-#> 1028        6.015103e-09               7.519820e-09     8.467670e-09
-#> 1029        6.137287e-10               7.773871e-10     8.815289e-10
-#>      Vanessa cardui
-#> 1026   5.339339e-06
-#> 1027   2.259750e-06
-#> 1028   1.385049e-06
-#> 1029   1.996438e-07
+head(env_dist[1:4, 1:4])
+#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena Vanessa cardui
+#> 1026           0.2919083                  0.2901035        0.2891394      0.2443649
+#> 1027           0.3004139                  0.2986090        0.2976450      0.2528705
+#> 1028           0.3051308                  0.3033259        0.3023619      0.2575874
+#> 1029           0.3230038                  0.3211989        0.3202349      0.2754604
+head(g_env[1:4, 1:4])
+#>      Utetheisa pulchella Danaus chrysippus orientis Telchinia serena Vanessa cardui
+#> 1026        2.994181e-08               3.707048e-08     4.152730e-08   5.339339e-06
+#> 1027        1.075079e-08               1.339372e-08     1.505410e-08   2.259750e-06
+#> 1028        6.015103e-09               7.519820e-09     8.467670e-09   1.385049e-06
+#> 1029        6.137287e-10               7.773871e-10     8.815289e-10   1.996438e-07
 ```
 
 > **Note**: For environmental kernel context, these matrices are
@@ -2569,17 +2596,17 @@ For site $s$, invader $i$, resident $j$, the **impact tensor**
 
 ``` r
 # Assemble site- and species-specific competition/impact matrices
-am = assemble_matrices(
-  a_ij            = comp$a_ij,          # invader × resident competition coefficients
-  Nstar           = cis$Nstar,          # resident abundances (residents × sites)
-  predictions     = pred$predictions,   # provides invader r_is (sites × invaders) if needed
-  K_env           = ek$K_env            # environmental kernel (sites × residents), or env_dist + sigma_e
+am <- assemble_matrices(
+  a_ij            = comp$a_ij, # invader × resident competition coefficients
+  Nstar           = cis$Nstar, # resident abundances (residents × sites)
+  predictions     = pred$predictions, # provides invader r_is (sites × invaders) if needed
+  K_env           = ek$K_env # environmental kernel (sites × residents), or env_dist + sigma_e
   # env_dist        = ek$env_dist,      # OR Pass distances and σ to compute the Gaussian kernel internally
   # sigma_e         = ek$sigma_e
 )
 
 # Check results
-str(am, max.level=1)
+str(am, max.level = 1)
 #> List of 3
 #>  $ I_raw            : num [1:10, 1:27, 1:415] 1.35e-12 1.06e-11 3.40e-12 7.14e-12 2.01e-16 ...
 #>   ..- attr(*, "dimnames")=List of 3
@@ -2592,8 +2619,8 @@ dim(am$I_raw)
 #> [1]  10  27 415
 
 # Total competitive pressure per invader × site (sum over residents)
-pressure = am$pressure_inv_site
-dim(pressure)         # invaders × sites
+pressure <- am$pressure_inv_site
+dim(pressure) # invaders × sites
 #> [1]  10 415
 ```
 
@@ -2605,8 +2632,7 @@ computed following the definition in Section 1, with possible scaling or
 transformation variants:
 
 - **Raw penalty**:
-  $\lambda^{(\mathrm{raw})}_{is} = r_{is} - C^{(\mathrm{raw})}_{is}$  
-   
+  $\lambda^{(\mathrm{raw})}_{is} = r_{is} - C^{(\mathrm{raw})}_{is}$  
 - **Richness-scaled**:
   $\lambda^{(\mathrm{scaled})}_{is} = r_{is} - \frac{C^{(\mathrm{raw})}_{is}}{J_s}$,
   where $J_s$ is resident richness at site $s$.  
@@ -2625,19 +2651,19 @@ transformation variants:
 
 ``` r
 # Compute invasion fitness (uses am$I_raw from assemble_matrices and pred$predictions)
-fitness = compute_invasion_fitness(
-  I_raw        = am$I_raw,          # or pressure_inv_site = am$pressure_inv_site
-  predictions  = pred$predictions,  # builds r_mat internally
-  a_ij         = comp$a_ij,         # needed for lambda_rel / logistic_on = "rel"
+fitness <- compute_invasion_fitness(
+  I_raw        = am$I_raw, # or pressure_inv_site = am$pressure_inv_site
+  predictions  = pred$predictions, # builds r_mat internally
+  a_ij         = comp$a_ij, # needed for lambda_rel / logistic_on = "rel"
   Nstar        = cis$Nstar,
-  logistic_on  = "rel",             # cap the A %*% N_rel penalty
+  logistic_on  = "rel", # cap the A %*% N_rel penalty
   k            = 1,
-  x0           = NULL,              # auto: median penalty
-  prefer       = "logis"            # returned as $lambda
+  x0           = NULL, # auto: median penalty
+  prefer       = "logis" # returned as $lambda
 )
 
 # Check results
-str(fitness, max.level=1)
+str(fitness, max.level = 1)
 #> List of 8
 #>  $ C_raw        : num [1:10, 1:415] 5.39e-07 1.45e-06 1.23e-06 5.49e-07 1.57e-05 ...
 #>   ..- attr(*, "dimnames")=List of 2
@@ -2656,11 +2682,11 @@ str(fitness, max.level=1)
 #>  $ meta         :List of 5
 
 # Key outputs
-C_raw  = fitness$C_raw                    # invader × site penalty
-lambda_mat = fitness$lambda                   # final invasion fitness (invader × site)
+C_raw <- fitness$C_raw # invader × site penalty
+lambda_mat <- fitness$lambda # final invasion fitness (invader × site)
 
 # Inspect invasion fitness matrix
-dim(lambda_mat)   # invaders × sites
+dim(lambda_mat) # invaders × sites
 #> [1]  10 415
 ```
 
@@ -2715,13 +2741,13 @@ Ecological interpretation:
 
 ``` r
 # Convert the invasion fitness matrix to long format for ggplot and attach spatial coordinates
-lambda_df = as_tibble(lambda_mat, rownames = "invader") %>%
+lambda_df <- as_tibble(lambda_mat, rownames = "invader") %>%
   # Reshape from wide (invader × site) to long (invader, site, fitness value)
   pivot_longer(-invader, names_to = "site_id", values_to = "lambda") %>%
   # Add spatial coordinates for each site, matched by site_id
   mutate(
-    x = site_xy$x[match(site_id, site_xy$site_id)],  # Longitude/Easting
-    y = site_xy$y[match(site_id, site_xy$site_id)]   # Latitude/Northing
+    x = site_xy$x[match(site_id, site_xy$site_id)], # Longitude/Easting
+    y = site_xy$y[match(site_id, site_xy$site_id)] # Latitude/Northing
   )
 
 # # Visualize the full invader × site invasion fitness matrix as a heatmap
@@ -2740,32 +2766,34 @@ lambda_df = as_tibble(lambda_mat, rownames = "invader") %>%
 #   )
 
 # Orders: sites by space; invaders by mean lambda
-site_order = site_xy$site_id[order(site_xy$x, site_xy$y)]
-inv_order  = lambda_df |>
+site_order <- site_xy$site_id[order(site_xy$x, site_xy$y)]
+inv_order <- lambda_df |>
   group_by(invader) |>
   summarise(mu = mean(lambda, na.rm = TRUE), .groups = "drop") |>
   arrange(desc(mu)) |>
   pull(invader)
 
-lambda_df = lambda_df |>
+lambda_df <- lambda_df |>
   mutate(
     site_id = factor(site_id, levels = site_order),
     invader = factor(invader, levels = inv_order)
   )
 
 # 2) Color scaling: winsorize high tail (or set trans = "sqrt")
-cap = quantile(lambda_df$lambda, 0.99, na.rm = TRUE)
+cap <- quantile(lambda_df$lambda, 0.99, na.rm = TRUE)
 
 # library(scales)
 ggplot(lambda_df, aes(x = site_id, y = invader, fill = pmin(lambda, cap))) +
-  geom_raster() +  # faster, cleaner than geom_tile with borders
+  geom_raster() + # faster, cleaner than geom_tile with borders
   scale_fill_viridis_c(
     option = "magma", direction = -1,
     limits = c(0, cap), oob = scales::squish,
-    name = expression("Invasion fitness" ~ lambda[i*k])
+    name = expression("Invasion fitness" ~ lambda[i * k])
   ) +
-  labs(title = "Invasion Fitness Matrix: Invaders Across Sites",
-       x = "Site", y = "Invader") +
+  labs(
+    title = "Invasion Fitness Matrix: Invaders Across Sites",
+    x = "Site", y = "Invader"
+  ) +
   theme_minimal(base_size = 10) +
   theme(
     panel.grid = element_blank(),
@@ -2776,9 +2804,11 @@ ggplot(lambda_df, aes(x = site_id, y = invader, fill = pmin(lambda, cap))) +
   scale_x_discrete(
     breaks = function(x) x[seq(1, length(x), by = 10)]
   ) +
-  guides(fill = guide_colorbar(title.position = "top",
-                               barheight = unit(40, "mm"),
-                               barwidth  = unit(4, "mm")))
+  guides(fill = guide_colorbar(
+    title.position = "top",
+    barheight = unit(40, "mm"),
+    barwidth = unit(4, "mm")
+  ))
 ```
 
 <img src="man/figures/README-plot-fitness-1.png" width="100%" style="display: block; margin: auto;" />
@@ -2814,25 +2844,32 @@ to lowest [$I_i$](#def-Ii).
 
 ``` r
 # Sum invasion fitness across sites for each invader and order from highest to lowest
-rank_df = lambda_df %>%
+rank_df <- lambda_df %>%
   group_by(invader) %>%
   summarise(total_lambda = sum(lambda, na.rm = TRUE)) %>%
   arrange(desc(total_lambda)) %>%
   mutate(invader = factor(invader, levels = invader))
 
 # Bar plot of total invasion fitness by invader
-ggplot(rank_df, 
-       aes(x = invader, y = sqrt(total_lambda), fill = sqrt(total_lambda))) +
+ggplot(
+  rank_df,
+  aes(x = invader, y = sqrt(total_lambda), fill = sqrt(total_lambda))
+) +
   geom_col(width = 0.7, color = "grey50") +
-  scale_fill_viridis_c(option = "inferno", 
-                       name = expression("Total fitness"~sum(lambda[i]))) +
-  labs(title = "Invader Ranking by Total Growth Potential",
-       x = "Invader",
-       y = expression("Total invasion fitness " * sum(lambda[i*k]))) +
+  scale_fill_viridis_c(
+    option = "inferno",
+    name = expression("Total fitness" ~ sum(lambda[i]))
+  ) +
+  labs(
+    title = "Invader Ranking by Total Growth Potential",
+    x = "Invader",
+    y = expression("Total invasion fitness " * sum(lambda[i * k]))
+  ) +
   theme_minimal(base_size = 12) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
-        panel.grid.major.x = element_blank(),
-        legend.position = "top"
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1),
+    panel.grid.major.x = element_blank(),
+    legend.position = "top"
   )
 ```
 
@@ -2866,13 +2903,13 @@ proportional risk with absolute numbers.
 
 ``` r
 # Summarize invasion fitness at each site:
-site_sum = lambda_df %>%
+site_sum <- lambda_df %>%
   group_by(site_id, x, y) %>%
   summarize(
-    mean_l   = mean(lambda),             # Mean invasion fitness across invaders
-    prop_pos = mean(lambda > 0),         # Proportion of invaders with positive fitness
-    cnt_pos  = sum(lambda > 0),          # Number of successful invaders
-    cnt_neg  = sum(lambda < 0)           # Number of unsuccessful invaders
+    mean_l   = mean(lambda), # Mean invasion fitness across invaders
+    prop_pos = mean(lambda > 0), # Proportion of invaders with positive fitness
+    cnt_pos  = sum(lambda > 0), # Number of successful invaders
+    cnt_neg  = sum(lambda < 0) # Number of unsuccessful invaders
   ) %>%
   ungroup()
 
@@ -2880,13 +2917,17 @@ site_sum = lambda_df %>%
 ggplot(site_sum, aes(x = x, y = y, fill = prop_pos)) +
   geom_tile(color = NA) +
   geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.5) +
-  scale_fill_viridis_c(option = "rocket", 
-                       labels = scales::percent_format(accuracy = 1),
-                       name = "% Invaders with\nPositive Fitness") +
-  geom_text(aes(label = cnt_pos), color = "white", size = 2.5) + 
+  scale_fill_viridis_c(
+    option = "rocket",
+    labels = scales::percent_format(accuracy = 1),
+    name = "% Invaders with\nPositive Fitness"
+  ) +
+  geom_text(aes(label = cnt_pos), color = "white", size = 2.5) +
   coord_sf() +
-  labs(title = "Site-level Invasibility (Proportion of Successful Invaders)", 
-       x = "Longitude", y = "Latitude") +
+  labs(
+    title = "Site-level Invasibility (Proportion of Successful Invaders)",
+    x = "Longitude", y = "Latitude"
+  ) +
   theme_minimal(base_size = 12) +
   theme(panel.grid = element_blank())
 ```
@@ -2920,9 +2961,11 @@ ggplot(site_sum, aes(x = x, y = y, fill = mean_l)) +
   # Optional: annotate with number of successful invaders
   # geom_text(aes(label = cnt_pos), color = "white", size = 1.5) +
   coord_sf() +
-  labs(title = "Mean Species Invasiveness by Site (All Invaders)", 
-       x = "Longitude",
-       y = "Latitude") +
+  labs(
+    title = "Mean Species Invasiveness by Site (All Invaders)",
+    x = "Longitude",
+    y = "Latitude"
+  ) +
   theme_minimal(base_size = 12) +
   theme(panel.grid = element_blank())
 ```
@@ -2964,20 +3007,23 @@ library(pheatmap)
 
 # Remove invaders (rows) and sites (columns) with all NA values (if present)
 # This ensures only meaningful data are visualized and clustered
-lambda_mat_noNA = lambda_mat[rowSums(is.na(lambda_mat)) < ncol(lambda_mat),
-                             colSums(is.na(lambda_mat)) < nrow(lambda_mat)]
+lambda_mat_noNA <- lambda_mat[
+  rowSums(is.na(lambda_mat)) < ncol(lambda_mat),
+  colSums(is.na(lambda_mat)) < nrow(lambda_mat)
+]
 
 # Clustered heatmap of invasion fitness matrix (invader × site)
 # - Each cell shows the invasion fitness (lambda) for a given invader-site pair
 # - Hierarchical clustering groups similar invaders and similar sites
 pheatmap(lambda_mat_noNA,
-         color = rev(viridis::viridis(100, option = "viridis")),
-         clustering_distance_rows = "euclidean",
-         clustering_distance_cols = "euclidean",
-         clustering_method = "complete",
-         fontsize_row = 8, fontsize_col = 8,
-         main = "Clustered Invasion Fitness Matrix (Invader × Site)",
-         angle_col = 45)
+  color = rev(viridis::viridis(100, option = "viridis")),
+  clustering_distance_rows = "euclidean",
+  clustering_distance_cols = "euclidean",
+  clustering_method = "complete",
+  fontsize_row = 8, fontsize_col = 8,
+  main = "Clustered Invasion Fitness Matrix (Invader × Site)",
+  angle_col = 45
+)
 ```
 
 <img src="man/figures/README-fitness-cluster-1.png" width="100%" style="display: block; margin: auto;" />
@@ -2987,25 +3033,25 @@ pheatmap(lambda_mat_noNA,
 # Assign invaders and sites to discrete clusters (syndromes) for downstream visualization
 # Sites: cluster by invasion fitness profile (columns)
 # Don’t force equal-width bands (let the data pick k) -->
-site_dist = dist(t(scale(lambda_mat_noNA))) # standardize first then compute pairwise distances between sites
-site_clust = hclust(site_dist, method = "ward.D2")      # Hierarchical clustering
-kj = factoextra::fviz_nbclust(t(scale(lambda_mat_noNA)), kmeans, method="silhouette") # or gap
-site_groups = cutree(site_clust, k = 5)                 # Assign each site to one of 5 clusters
+site_dist <- dist(t(scale(lambda_mat_noNA))) # standardize first then compute pairwise distances between sites
+site_clust <- hclust(site_dist, method = "ward.D2") # Hierarchical clustering
+kj <- factoextra::fviz_nbclust(t(scale(lambda_mat_noNA)), kmeans, method = "silhouette") # or gap
+site_groups <- cutree(site_clust, k = 5) # Assign each site to one of 5 clusters
 
 # Invaders: cluster by fitness profile across sites (rows)
-invader_dist = dist(scale(lambda_mat_noNA))                    # Scale then compute pairwise distances between invaders
-invader_clust = hclust(invader_dist, method = "ward.D2")
-ki  = factoextra::fviz_nbclust(t(scale(lambda_mat_noNA)), kmeans, method="silhouette") # or gap
-invader_groups = cutree(invader_clust, k = 5)           # Assign each invader to one of 5 clusters
+invader_dist <- dist(scale(lambda_mat_noNA)) # Scale then compute pairwise distances between invaders
+invader_clust <- hclust(invader_dist, method = "ward.D2")
+ki <- factoextra::fviz_nbclust(t(scale(lambda_mat_noNA)), kmeans, method = "silhouette") # or gap
+invader_groups <- cutree(invader_clust, k = 5) # Assign each invader to one of 5 clusters
 
 # Attach cluster labels to site and invader summary dataframes
 # Add site cluster group to site summary dataframe (site_sum)
 # site_id must match the column names of lambda_mat_noNA
-site_sum$site_cluster = factor(site_groups[site_sum$site_id])
+site_sum$site_cluster <- factor(site_groups[site_sum$site_id])
 
 # Add invader cluster group to long-form fitness dataframe (lambda_df)
 # invader must match the row names of lambda_mat_noNA
-lambda_df$invader_cluster = factor(invader_groups[lambda_df$invader])
+lambda_df$invader_cluster <- factor(invader_groups[lambda_df$invader])
 
 # These cluster assignments can be used for:
 # - Color-coding sites and invaders in subsequent plots
@@ -3033,25 +3079,27 @@ high-risk sites for targeted management scenarios.
 # -------------------------------
 # 1) INVADER CATEGORIES (unchanged)
 # -------------------------------
-invader_summary = lambda_df %>%
+invader_summary <- lambda_df %>%
   dplyr::group_by(invader, invader_cluster) %>%
   dplyr::summarise(mean_lambda = mean(lambda, na.rm = TRUE), .groups = "drop")
 
-cluster_means = invader_summary %>%
+cluster_means <- invader_summary %>%
   dplyr::group_by(invader_cluster) %>%
   dplyr::summarise(cluster_mean = mean(mean_lambda, na.rm = TRUE)) %>%
   dplyr::arrange(dplyr::desc(cluster_mean))
 
-category_labels = c("very-high", "high", "medium", "low", "very-low")[1:nrow(cluster_means)]
-cluster_map = stats::setNames(category_labels, cluster_means$invader_cluster)
+category_labels <- c("very-high", "high", "medium", "low", "very-low")[1:nrow(cluster_means)]
+cluster_map <- stats::setNames(category_labels, cluster_means$invader_cluster)
 
-invader_summary = invader_summary %>%
+invader_summary <- invader_summary %>%
   dplyr::mutate(invader_category = factor(cluster_map[as.character(invader_cluster)],
-                                          levels = category_labels))
+    levels = category_labels
+  ))
 
-lambda_df = lambda_df %>%
+lambda_df <- lambda_df %>%
   dplyr::mutate(invader_category = factor(cluster_map[as.character(invader_cluster)],
-                                          levels = category_labels))
+    levels = category_labels
+  ))
 
 # -------------------------------------------------------------
 # 2) SITE GROUPING: pick *one* method to reduce "stripey" maps
@@ -3061,25 +3109,29 @@ lambda_df = lambda_df %>%
 #      "clustgeo"   – spatially-constrained Ward clustering (needs ClustGeo)
 #      "hc_sil"     – Ward hierarchical on standardized λ with k via silhouette
 # -------------------------------------------------------------
-site_grouping_method = "quantile"   # = change to "pca_kmeans", "clustgeo", or "hc_sil"
+site_grouping_method <- "quantile" # = change to "pca_kmeans", "clustgeo", or "hc_sil"
 
 # Build λ matrix with aligned columns = site_id, rows = invaders
 # (Assumes you have lambda_mat already; otherwise widen lambda_df)
-lambda_mat_noNA = lambda_mat[rowSums(is.na(lambda_mat)) < ncol(lambda_mat),
-                              colSums(is.na(lambda_mat)) < nrow(lambda_mat)]
+lambda_mat_noNA <- lambda_mat[
+  rowSums(is.na(lambda_mat)) < ncol(lambda_mat),
+  colSums(is.na(lambda_mat)) < nrow(lambda_mat)
+]
 
 # Utility: safe match coords for columns (sites)
-site_coords = site_sum[match(colnames(lambda_mat_noNA), site_sum$site_id), c("x", "y")]
+site_coords <- site_sum[match(colnames(lambda_mat_noNA), site_sum$site_id), c("x", "y")]
 
 # -------------------
 # A) Quantile method
 # -------------------
 if (site_grouping_method == "quantile") {
-  brks = quantile(site_sum$mean_l, probs = seq(0, 1, 0.2), na.rm = TRUE)
-  labs = c("very-low", "low", "medium", "high", "very-high")
-  site_sum = site_sum %>%
-    dplyr::mutate(site_category = cut(mean_l, breaks = brks,
-                                      include.lowest = TRUE, labels = labs))
+  brks <- quantile(site_sum$mean_l, probs = seq(0, 1, 0.2), na.rm = TRUE)
+  labs <- c("very-low", "low", "medium", "high", "very-high")
+  site_sum <- site_sum %>%
+    dplyr::mutate(site_category = cut(mean_l,
+      breaks = brks,
+      include.lowest = TRUE, labels = labs
+    ))
 }
 
 # ------------------------------
@@ -3087,37 +3139,44 @@ if (site_grouping_method == "quantile") {
 # ------------------------------
 if (site_grouping_method == "pca_kmeans") {
   # standardize λ columns (sites) across invaders before PCA
-  X = scale(t(lambda_mat_noNA))                     # sites × invaders
-  pcs = stats::prcomp(X, center = TRUE, scale. = TRUE)$x[, 1:3, drop = FALSE]
+  X <- scale(t(lambda_mat_noNA)) # sites × invaders
+  pcs <- stats::prcomp(X, center = TRUE, scale. = TRUE)$x[, 1:3, drop = FALSE]
 
   # choose k via silhouette (2..8); fall back to k=4 if package missing
-  choose_k = function(Z) {
+  choose_k <- function(Z) {
     if (requireNamespace("factoextra", quietly = TRUE)) {
-      sil = sapply(2:8, function(k) {
-        cl = stats::kmeans(Z, centers = k, nstart = 50)$cluster
+      sil <- sapply(2:8, function(k) {
+        cl <- stats::kmeans(Z, centers = k, nstart = 50)$cluster
         mean(cluster::silhouette(cl, dist(Z))[, 3])
       })
       which.max(sil) + 1
-    } else 4
+    } else {
+      4
+    }
   }
-  k = choose_k(pcs)
-  site_groups = stats::kmeans(pcs, centers = k, nstart = 50)$cluster
+  k <- choose_k(pcs)
+  site_groups <- stats::kmeans(pcs, centers = k, nstart = 50)$cluster
 
   # Order clusters by *mean site fitness* so labels match risk gradient
-  tmp = data.frame(site_id = colnames(lambda_mat_noNA),
-                    cluster = site_groups) |>
+  tmp <- data.frame(
+    site_id = colnames(lambda_mat_noNA),
+    cluster = site_groups
+  ) |>
     dplyr::left_join(site_sum[, c("site_id", "mean_l")], by = "site_id") |>
     dplyr::group_by(cluster) |>
     dplyr::summarise(mu = mean(mean_l, na.rm = TRUE), .groups = "drop") |>
     dplyr::arrange(dplyr::desc(mu))
 
-  site_labels = c("very-high","high","medium","low","very-low")[seq_len(nrow(tmp))]
-  remap = setNames(site_labels, tmp$cluster)
+  site_labels <- c("very-high", "high", "medium", "low", "very-low")[seq_len(nrow(tmp))]
+  remap <- setNames(site_labels, tmp$cluster)
 
-  site_sum = site_sum %>%
-    dplyr::mutate(site_cluster = factor(remap[as.character(site_groups[match(site_id, colnames(lambda_mat_noNA))])],
-                                        levels = site_labels),
-                  site_category = site_cluster)
+  site_sum <- site_sum %>%
+    dplyr::mutate(
+      site_cluster = factor(remap[as.character(site_groups[match(site_id, colnames(lambda_mat_noNA))])],
+        levels = site_labels
+      ),
+      site_category = site_cluster
+    )
 }
 
 # --------------------------------------------
@@ -3127,78 +3186,92 @@ if (site_grouping_method == "clustgeo") {
   if (!requireNamespace("ClustGeo", quietly = TRUE)) {
     stop("ClustGeo not installed. Install it or choose another method.")
   }
-  X  = scale(t(lambda_mat_noNA))                          # sites × invaders
-  D1 = dist(X)                                           # λ-profile distance
-  D0 = dist(as.matrix(site_coords))                      # geographic distance
+  X <- scale(t(lambda_mat_noNA)) # sites × invaders
+  D1 <- dist(X) # λ-profile distance
+  D0 <- dist(as.matrix(site_coords)) # geographic distance
 
   # alpha controls trade-off (0 = spatial only, 1 = λ only)
-  alpha = 0.3
-  tree  = ClustGeo::hclustgeo(D0, D1, alpha = alpha)
+  alpha <- 0.3
+  tree <- ClustGeo::hclustgeo(D0, D1, alpha = alpha)
 
   # choose k via silhouette on D1 for guidance; fallback k=5
-  choose_k_hc = function(tree, D) {
+  choose_k_hc <- function(tree, D) {
     if (requireNamespace("cluster", quietly = TRUE)) {
-      ks = 2:8
-      sil = sapply(ks, function(k) {
-        cl = cutree(tree, k = k)
+      ks <- 2:8
+      sil <- sapply(ks, function(k) {
+        cl <- cutree(tree, k = k)
         mean(cluster::silhouette(cl, D)[, 3])
       })
       ks[which.max(sil)]
-    } else 5
+    } else {
+      5
+    }
   }
-  k = choose_k_hc(tree, D1)
-  site_groups = cutree(tree, k = k)
+  k <- choose_k_hc(tree, D1)
+  site_groups <- cutree(tree, k = k)
 
-  tmp = data.frame(site_id = colnames(lambda_mat_noNA),
-                    cluster = site_groups) |>
+  tmp <- data.frame(
+    site_id = colnames(lambda_mat_noNA),
+    cluster = site_groups
+  ) |>
     dplyr::left_join(site_sum[, c("site_id", "mean_l")], by = "site_id") |>
     dplyr::group_by(cluster) |>
     dplyr::summarise(mu = mean(mean_l, na.rm = TRUE), .groups = "drop") |>
     dplyr::arrange(dplyr::desc(mu))
 
-  site_labels = c("very-high","high","medium","low","very-low")[seq_len(nrow(tmp))]
-  remap = setNames(site_labels, tmp$cluster)
+  site_labels <- c("very-high", "high", "medium", "low", "very-low")[seq_len(nrow(tmp))]
+  remap <- setNames(site_labels, tmp$cluster)
 
-  site_sum = site_sum %>%
-    dplyr::mutate(site_cluster = factor(remap[as.character(site_groups[match(site_id, colnames(lambda_mat_noNA))])],
-                                        levels = site_labels),
-                  site_category = site_cluster)
+  site_sum <- site_sum %>%
+    dplyr::mutate(
+      site_cluster = factor(remap[as.character(site_groups[match(site_id, colnames(lambda_mat_noNA))])],
+        levels = site_labels
+      ),
+      site_category = site_cluster
+    )
 }
 
 # -------------------------------------------
 # D) Ward HC with k via silhouette (no PCA)
 # -------------------------------------------
 if (site_grouping_method == "hc_sil") {
-  X  = scale(t(lambda_mat_noNA))
-  hc = stats::hclust(dist(X), method = "ward.D2")
+  X <- scale(t(lambda_mat_noNA))
+  hc <- stats::hclust(dist(X), method = "ward.D2")
 
-  choose_k_hc = function(hc, X) {
+  choose_k_hc <- function(hc, X) {
     if (requireNamespace("cluster", quietly = TRUE)) {
-      ks = 2:8
-      sil = sapply(ks, function(k) {
-        cl = cutree(hc, k = k)
+      ks <- 2:8
+      sil <- sapply(ks, function(k) {
+        cl <- cutree(hc, k = k)
         mean(cluster::silhouette(cl, dist(X))[, 3])
       })
       ks[which.max(sil)]
-    } else 4
+    } else {
+      4
+    }
   }
-  k = choose_k_hc(hc, X)
-  site_groups = cutree(hc, k = k)
+  k <- choose_k_hc(hc, X)
+  site_groups <- cutree(hc, k = k)
 
-  tmp = data.frame(site_id = colnames(lambda_mat_noNA),
-                    cluster = site_groups) |>
+  tmp <- data.frame(
+    site_id = colnames(lambda_mat_noNA),
+    cluster = site_groups
+  ) |>
     dplyr::left_join(site_sum[, c("site_id", "mean_l")], by = "site_id") |>
     dplyr::group_by(cluster) |>
     dplyr::summarise(mu = mean(mean_l, na.rm = TRUE), .groups = "drop") |>
     dplyr::arrange(dplyr::desc(mu))
 
-  site_labels = c("very-high","high","medium","low","very-low")[seq_len(nrow(tmp))]
-  remap = setNames(site_labels, tmp$cluster)
+  site_labels <- c("very-high", "high", "medium", "low", "very-low")[seq_len(nrow(tmp))]
+  remap <- setNames(site_labels, tmp$cluster)
 
-  site_sum = site_sum %>%
-    dplyr::mutate(site_cluster = factor(remap[as.character(site_groups[match(site_id, colnames(lambda_mat_noNA))])],
-                                        levels = site_labels),
-                  site_category = site_cluster)
+  site_sum <- site_sum %>%
+    dplyr::mutate(
+      site_cluster = factor(remap[as.character(site_groups[match(site_id, colnames(lambda_mat_noNA))])],
+        levels = site_labels
+      ),
+      site_category = site_cluster
+    )
 }
 
 # ---------------------------------------
@@ -3221,15 +3294,19 @@ ggplot(site_sum, aes(x = x, y = y, fill = site_category)) +
   geom_sf(data = rsa, inherit.aes = FALSE, fill = NA, color = "black", size = 0.5) +
   scale_fill_brewer(palette = "RdYlBu", direction = 1, name = "Site invasibility") +
   coord_sf() +
-  labs(title = paste0(
-         "Spatial Invasion Risk (",
-         switch(site_grouping_method,
-                quantile   = "Quantile Bins of Mean \u03BB",
-                pca_kmeans = "PCA + k-means",
-                clustgeo   = "Spatially Constrained ClustGeo",
-                hc_sil     = "Ward HC + Silhouette"),
-         ")"),
-       x = "Longitude", y = "Latitude") +
+  labs(
+    title = paste0(
+      "Spatial Invasion Risk (",
+      switch(site_grouping_method,
+        quantile   = "Quantile Bins of Mean \u03BB",
+        pca_kmeans = "PCA + k-means",
+        clustgeo   = "Spatially Constrained ClustGeo",
+        hc_sil     = "Ward HC + Silhouette"
+      ),
+      ")"
+    ),
+    x = "Longitude", y = "Latitude"
+  ) +
   theme_minimal(base_size = 12) +
   theme(panel.grid = element_blank())
 ```
@@ -3267,7 +3344,7 @@ ggplot(lambda_df, aes(x = lambda, fill = ..x..)) +
   scale_fill_viridis_c(option = "magma", guide = "none") +
   labs(
     title = "Distribution of Invasion Fitness Values (All Invader × Site)",
-    x = expression("Invasion Fitness"~lambda[i*k]),
+    x = expression("Invasion Fitness" ~ lambda[i * k]),
     y = "Frequency"
   ) +
   theme_minimal(base_size = 12)
@@ -3353,10 +3430,10 @@ invasion risk in an interpretable, management-relevant format.
 
 ``` r
 # Identify the top 3 and bottom 3 invaders by mean fitness
-key_invaders = c(top3_inv$invader, bottom3_inv$invader) # select 3 best/worst
+key_invaders <- c(top3_inv$invader, bottom3_inv$invader) # select 3 best/worst
 
 # Filter df amd ensure facet order matches ranking (top first, then bottom)
-lambda_key = lambda_df %>%
+lambda_key <- lambda_df %>%
   filter(invader %in% key_invaders) %>%
   mutate(invader = factor(invader, levels = key_invaders)) # enforce desired order
 
@@ -3377,11 +3454,13 @@ ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
 
 <img src="man/figures/README-key-invaders-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Note:** \* Sections 12–13 together move from **raw $\lambda_{is}$**
-> values → **clustered patterns** → **functional correlates** → **site-
-> and invader-specific rankings**. \* This progression enables scaling
-> from **broad ecological syndromes** to **actionable risk profiles**
-> for specific species and sites.  
+> **Note:**
+>
+> - Sections 12–13 together move from **raw $\lambda_{is}$** values →
+>   **clustered patterns** → **functional correlates** → **site- and
+>   invader-specific rankings**.
+> - This progression enables scaling from **broad ecological syndromes**
+>   to **actionable risk profiles** for specific species and sites.  
 
 ------------------------------------------------------------------------
 
@@ -3400,7 +3479,7 @@ ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
 | [$\sigma_e$](#def-sigmae)              | Environmental kernel bandwidth                                         | Controls width of Gaussian environment kernel $K_e$                                                          | `ek$sigma_e`                                                           | User-defined or estimated                                         |
 | [$r_{is}$](#def-r)                     | Predicted intrinsic growth rate                                        | Growth rate of invader $i$ at site $s$ without biotic/abiotic penalties                                      | `fitness$r_mat[i, s]`                                                  | `predict_invader_response()`                                      |
 | [$I_{ijs}$](#def-I)                    | $I_{ijs} = \alpha_{ij} \cdot K_e(\Delta_{js}) \cdot N^{*}_{js}$        | Impact tensor: per-site, per-resident contribution to invader’s penalty                                      | `am$I_raw[i, j, s]`                                                    | `assemble_matrices()` / `compute_interaction_strength()`          |
-| [$C^{\mathrm{(raw)}}_{is}$](#def-Craw) | $C^{\mathrm{(raw)}}_{is} = \sum_{j} I_{ijs}$                           | Total competitive + environmental penalty experienced by invader $i$ at site $s$                             | `fitness$C_raw[i, s]`                                                  | `compute_invasion_fitness()`                                      |
+| [$C^{\mathrm{(raw)}}_{is}$](#def-Craw) | $C^{\mathrm{(raw)}}*{is} = \sum*{j} I_{ijs}$                           | Total competitive + environmental penalty experienced by invader $i$ at site $s$                             | `fitness$C_raw[i, s]`                                                  | `compute_invasion_fitness()`                                      |
 | [$\lambda_{is}$](#def-lambda)          | $\lambda_{is} = r_{is} - C^{\mathrm{(raw)}}_{is}$                      | Low-density per-capita growth rate of invader $i$ at site $s$                                                | `fitness$lambda[i, s]` (also in `lambda_mat`)                          | `compute_invasion_fitness()`                                      |
 | [$V_s$](#def-Vs)                       | $V_s = \frac{1}{n_\mathrm{inv}} \sum_{i} \mathbb{1}[\lambda_{is} > 0]$ | Invasibility: mean or proportion of invaders with positive $\lambda_{is}$ at site $s$                        | `summary$Vs[s]`                                                        | Post-processing / summary functions                               |
 | [$I_i$](#def-Ii)                       | $I_i = \frac{1}{n_\mathrm{sites}} \sum_{s} \lambda_{is}$               | Invasiveness: mean or sum of $\lambda_{is}$ over sites for species $i$                                       | `summary$Ii[i]`                                                        | Post-processing / summary functions                               |
