@@ -76,7 +76,7 @@ assembled into an **impact tensor** $I_{ijs}$, aggregated to a
 $\lambda_{is}$. Site- and species-level summaries (**invasibility**
 $V_s$ and **invasiveness** $I_i$) support mapping and prioritisation.
 
-<img src="tools/invasimapr_flowchart.png" style="width:80.0%" />
+<img src="/invasimapr/tools/invasimapr_flowchart.png" style="width:80%">
 <!-- for crisp scaling. ​:contentReference[oaicite:0]{index=0}​ -->
 
 > **Figure 1**: Traits and environment feed two tracks - (1)
