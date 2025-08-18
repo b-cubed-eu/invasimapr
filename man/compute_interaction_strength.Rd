@@ -30,12 +30,12 @@ compute_interaction_strength(
 \item{sparsify_k}{integer. If non-NULL, retain only k-nearest neighbours per species (symmetrised).}
 }
 \value{
-A list with:
-\itemize{
-\item \code{g_all}: processed interaction matrix (distance or similarity).
-\item \code{raw_distance}: unscaled Gower (or chosen) distance matrix.
-\item \code{Nstar}: site × resident abundance matrix.
-\item \code{sigma}: bandwidth used (if Gaussian kernel).
+A list with components:
+\describe{
+\item{g_all}{Processed interaction matrix (distance / similarity / Gaussian kernel).}
+\item{raw_distance}{Unscaled pairwise distance matrix (e.g., Gower).}
+\item{Nstar}{Site × resident abundance matrix (rows = residents, cols = sites).}
+\item{sigma}{Bandwidth used when \code{kernel = "gaussian"}; otherwise \code{NULL}.}
 }
 }
 \description{
@@ -64,4 +64,69 @@ for resident species at each site, based on predictions from the fitted abundanc
 \item \code{"gaussian"}: Gaussian kernel \eqn{K = exp(-D^2 / (2\sigma^2))}, with automatic
 \eqn{\sigma} as the median non-zero distance if not supplied.
 }
+}
+\examples{
+# --- Minimal, reproducible examples ---------------------------------------
+set.seed(1)
+
+# Toy trait table: first column is species name (3 residents + 2 invaders)
+traits <- data.frame(
+  species = c("sp1","sp2","sp3","inv1","inv2"),
+  body_size = c(10, 12, 8, 11, 9),                # numeric
+  diet      = factor(c("herb","herb","omn","omn","herb")),  # factor
+  activity  = c(0.2, 0.8, 0.5, 0.6, 0.4)          # numeric
+)
+
+# Long table of predicted resident abundances across 4 sites
+sites <- paste0("s", 1:4)
+predDF <- expand.grid(site_id = sites, species = traits$species,
+                      KEEP.OUT.ATTRS = FALSE, stringsAsFactors = FALSE)
+predDF$pred <- rexp(nrow(predDF), rate = 1)
+
+# --- 1) Plain distance (default): Gower dissimilarities --------------------
+res_dist <- compute_interaction_strength(
+  traits  = traits,
+  predDF  = predDF,
+  method  = "gower",
+  kernel  = "distance"
+)
+# Inspect
+round(res_dist$raw_distance, 3)
+round(res_dist$g_all, 3)       # same as raw distances for kernel = "distance"
+res_dist$Nstar[, 1:2]          # first two sites (residents x sites)
+
+# --- 2) Similarity in [0,1] (1 - scaled distance) --------------------------
+res_sim <- compute_interaction_strength(
+  traits      = traits,
+  predDF      = predDF,
+  kernel      = "similarity",
+  standardise = TRUE            # scale distances to [0,1] before 1 - D
+)
+round(res_sim$g_all, 3)        # higher = more similar (stronger interaction)
+
+# --- 3) Gaussian kernel on distances ---------------------------------------
+#      sigma chosen automatically as median non-zero distance
+res_gauss <- compute_interaction_strength(
+  traits = traits,
+  predDF = predDF,
+  kernel = "gaussian"          # K = exp(-D^2 / (2*sigma^2))
+)
+round(res_gauss$g_all, 3)
+res_gauss$sigma                # bandwidth actually used
+
+# --- 4) Sparsify to a k-NN graph (here k = 2), symmetrised -----------------
+res_sparse <- compute_interaction_strength(
+  traits     = traits,
+  predDF     = predDF,
+  kernel     = "similarity",
+  standardise = TRUE,
+  sparsify_k = 2
+)
+round(res_sparse$g_all, 3)     # only each species' 2 strongest links retained
+
+# Notes:
+# - Residents are inferred as species whose names do NOT start with "inv".
+# - For mixed traits, Gower ("gower") is recommended; keep `standardise = TRUE`
+#   when converting to similarity or when kernelising.
+
 }

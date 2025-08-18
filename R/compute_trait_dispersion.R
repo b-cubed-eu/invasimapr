@@ -86,6 +86,9 @@
 #' @importFrom geometry convhulln
 #' @importFrom viridisLite viridis
 #' @importFrom patchwork plot_layout
+#' @importFrom ggplot2 stat_density_2d_filled geom_point
+#' @importFrom graphics filled.contour title points contour
+#' @importFrom factoextra fviz_dend
 #' @export
 compute_trait_dispersion <- function(trait_df,
                                      species_col = 1,

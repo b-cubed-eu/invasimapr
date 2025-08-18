@@ -103,7 +103,6 @@
 #' # fit_raw    <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "raw")
 #' # fit_scaled <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "scaled")
 #'
-#' @importFrom stats median
 #' @export
 compute_invasion_fitness <- function(
     I_raw = NULL,

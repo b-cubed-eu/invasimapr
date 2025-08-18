@@ -114,11 +114,20 @@ using Gower distance (default) or another dissimilarity metric, with options for
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with:</p><ul><li><p><code>g_all</code>: processed interaction matrix (distance or similarity).</p></li>
-<li><p><code>raw_distance</code>: unscaled Gower (or chosen) distance matrix.</p></li>
-<li><p><code>Nstar</code>: site × resident abundance matrix.</p></li>
-<li><p><code>sigma</code>: bandwidth used (if Gaussian kernel).</p></li>
-</ul></div>
+    <p>A list with components:</p><dl><dt>g_all</dt>
+<dd><p>Processed interaction matrix (distance / similarity / Gaussian kernel).</p></dd>
+
+<dt>raw_distance</dt>
+<dd><p>Unscaled pairwise distance matrix (e.g., Gower).</p></dd>
+
+<dt>Nstar</dt>
+<dd><p>Site × resident abundance matrix (rows = residents, cols = sites).</p></dd>
+
+<dt>sigma</dt>
+<dd><p>Bandwidth used when <code>kernel = "gaussian"</code>; otherwise <code>NULL</code>.</p></dd>
+
+
+</dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The trait-based interaction strength matrix (<code>g_all</code>) is used in community assembly
@@ -132,6 +141,84 @@ for resident species at each site, based on predictions from the fitted abundanc
 \(\sigma\) as the median non-zero distance if not supplied.</p></li>
 </ul></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># --- Minimal, reproducible examples ---------------------------------------</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Toy trait table: first column is species name (3 residents + 2 invaders)</span></span></span>
+<span class="r-in"><span><span class="va">traits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sp1"</span>,<span class="st">"sp2"</span>,<span class="st">"sp3"</span>,<span class="st">"inv1"</span>,<span class="st">"inv2"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  body_size <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">12</span>, <span class="fl">8</span>, <span class="fl">11</span>, <span class="fl">9</span><span class="op">)</span>,                <span class="co"># numeric</span></span></span>
+<span class="r-in"><span>  diet      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"herb"</span>,<span class="st">"herb"</span>,<span class="st">"omn"</span>,<span class="st">"omn"</span>,<span class="st">"herb"</span><span class="op">)</span><span class="op">)</span>,  <span class="co"># factor</span></span></span>
+<span class="r-in"><span>  activity  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.2</span>, <span class="fl">0.8</span>, <span class="fl">0.5</span>, <span class="fl">0.6</span>, <span class="fl">0.4</span><span class="op">)</span>          <span class="co"># numeric</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Long table of predicted resident abundances across 4 sites</span></span></span>
+<span class="r-in"><span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">predDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>site_id <span class="op">=</span> <span class="va">sites</span>, species <span class="op">=</span> <span class="va">traits</span><span class="op">$</span><span class="va">species</span>,</span></span>
+<span class="r-in"><span>                      KEEP.OUT.ATTRS <span class="op">=</span> <span class="cn">FALSE</span>, stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">predDF</span><span class="op">$</span><span class="va">pred</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">rexp</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/dimensions.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">predDF</span><span class="op">)</span>, rate <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># --- 1) Plain distance (default): Gower dissimilarities --------------------</span></span></span>
+<span class="r-in"><span><span class="va">res_dist</span> <span class="op">&lt;-</span> <span class="fu">compute_interaction_strength</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  traits  <span class="op">=</span> <span class="va">traits</span>,</span></span>
+<span class="r-in"><span>  predDF  <span class="op">=</span> <span class="va">predDF</span>,</span></span>
+<span class="r-in"><span>  method  <span class="op">=</span> <span class="st">"gower"</span>,</span></span>
+<span class="r-in"><span>  kernel  <span class="op">=</span> <span class="st">"distance"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in predDF %&gt;% dplyr::filter(species %in% residents) %&gt;% dplyr::select(species,     site_id, pred) %&gt;% tidyr::pivot_wider(names_from = site_id,     values_from = pred) %&gt;% tibble::column_to_rownames("species") %&gt;%     as.matrix():</span> could not find function "%&gt;%"</span>
+<span class="r-in"><span><span class="co"># Inspect</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="va">res_dist</span><span class="op">$</span><span class="va">raw_distance</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res_dist' not found</span>
+<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="va">res_dist</span><span class="op">$</span><span class="va">g_all</span>, <span class="fl">3</span><span class="op">)</span>       <span class="co"># same as raw distances for kernel = "distance"</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res_dist' not found</span>
+<span class="r-in"><span><span class="va">res_dist</span><span class="op">$</span><span class="va">Nstar</span><span class="op">[</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">]</span>          <span class="co"># first two sites (residents x sites)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res_dist' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># --- 2) Similarity in [0,1] (1 - scaled distance) --------------------------</span></span></span>
+<span class="r-in"><span><span class="va">res_sim</span> <span class="op">&lt;-</span> <span class="fu">compute_interaction_strength</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  traits      <span class="op">=</span> <span class="va">traits</span>,</span></span>
+<span class="r-in"><span>  predDF      <span class="op">=</span> <span class="va">predDF</span>,</span></span>
+<span class="r-in"><span>  kernel      <span class="op">=</span> <span class="st">"similarity"</span>,</span></span>
+<span class="r-in"><span>  standardise <span class="op">=</span> <span class="cn">TRUE</span>            <span class="co"># scale distances to [0,1] before 1 - D</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in predDF %&gt;% dplyr::filter(species %in% residents) %&gt;% dplyr::select(species,     site_id, pred) %&gt;% tidyr::pivot_wider(names_from = site_id,     values_from = pred) %&gt;% tibble::column_to_rownames("species") %&gt;%     as.matrix():</span> could not find function "%&gt;%"</span>
+<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="va">res_sim</span><span class="op">$</span><span class="va">g_all</span>, <span class="fl">3</span><span class="op">)</span>        <span class="co"># higher = more similar (stronger interaction)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res_sim' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># --- 3) Gaussian kernel on distances ---------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">#      sigma chosen automatically as median non-zero distance</span></span></span>
+<span class="r-in"><span><span class="va">res_gauss</span> <span class="op">&lt;-</span> <span class="fu">compute_interaction_strength</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  traits <span class="op">=</span> <span class="va">traits</span>,</span></span>
+<span class="r-in"><span>  predDF <span class="op">=</span> <span class="va">predDF</span>,</span></span>
+<span class="r-in"><span>  kernel <span class="op">=</span> <span class="st">"gaussian"</span>          <span class="co"># K = exp(-D^2 / (2*sigma^2))</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in predDF %&gt;% dplyr::filter(species %in% residents) %&gt;% dplyr::select(species,     site_id, pred) %&gt;% tidyr::pivot_wider(names_from = site_id,     values_from = pred) %&gt;% tibble::column_to_rownames("species") %&gt;%     as.matrix():</span> could not find function "%&gt;%"</span>
+<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="va">res_gauss</span><span class="op">$</span><span class="va">g_all</span>, <span class="fl">3</span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res_gauss' not found</span>
+<span class="r-in"><span><span class="va">res_gauss</span><span class="op">$</span><span class="va">sigma</span>                <span class="co"># bandwidth actually used</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res_gauss' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># --- 4) Sparsify to a k-NN graph (here k = 2), symmetrised -----------------</span></span></span>
+<span class="r-in"><span><span class="va">res_sparse</span> <span class="op">&lt;-</span> <span class="fu">compute_interaction_strength</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  traits     <span class="op">=</span> <span class="va">traits</span>,</span></span>
+<span class="r-in"><span>  predDF     <span class="op">=</span> <span class="va">predDF</span>,</span></span>
+<span class="r-in"><span>  kernel     <span class="op">=</span> <span class="st">"similarity"</span>,</span></span>
+<span class="r-in"><span>  standardise <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>  sparsify_k <span class="op">=</span> <span class="fl">2</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in predDF %&gt;% dplyr::filter(species %in% residents) %&gt;% dplyr::select(species,     site_id, pred) %&gt;% tidyr::pivot_wider(names_from = site_id,     values_from = pred) %&gt;% tibble::column_to_rownames("species") %&gt;%     as.matrix():</span> could not find function "%&gt;%"</span>
+<span class="r-in"><span><span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="va">res_sparse</span><span class="op">$</span><span class="va">g_all</span>, <span class="fl">3</span><span class="op">)</span>     <span class="co"># only each species' 2 strongest links retained</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'res_sparse' not found</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Notes:</span></span></span>
+<span class="r-in"><span><span class="co"># - Residents are inferred as species whose names do NOT start with "inv".</span></span></span>
+<span class="r-in"><span><span class="co"># - For mixed traits, Gower ("gower") is recommended; keep `standardise = TRUE`</span></span></span>
+<span class="r-in"><span><span class="co">#   when converting to similarity or when kernelising.</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

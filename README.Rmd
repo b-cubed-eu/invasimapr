@@ -75,10 +75,10 @@ Practically, the package is modular and reproducible. Each step can be run indep
 
 ## 2. Context and model overview
 
-The figure below summarizes the **invasimapr** pipeline from inputs to decision-ready outputs. Starting with species **traits** (T), **site environments** $\mathbf{E}_s$, and **resident communities** (Y), the workflow derives intermediate quantities in two coordinated tracks: a **trait track** that yields pairwise distances and a competition kernel $\alpha_{ij}$, and an **environment track** that yields resident optima $\theta_j$, site-resident mismatch $\Delta_{js}$, an environmental kernel $K_e$, and resident context $N^{*}_{js}$. These parts are assembled into an **impact tensor** $I_{ijs}$, aggregated to a **penalty** $C^{\mathrm{(raw)}}_{is}$, and combined with predicted **intrinsic growth** $r_{is}$ to produce **invasion fitness** $\lambda_{is}$. Site- and species-level summaries (**invasibility** $V_s$ and **invasiveness** $I_i$) support mapping and prioritisation.   
+The figure below summarizes the **invasimapr** pipeline from inputs to decision-ready outputs. Starting with species **traits**, **site environments** $\mathbf{E}_s$, and **resident communities**, the workflow derives intermediate quantities in two coordinated tracks: a **trait track** that yields pairwise distances and a competition kernel $\alpha_{ij}$, and an **environment track** that yields resident optima $\theta_j$, site-resident mismatch $\Delta_{js}$, an environmental kernel $K_e$, and resident context $N^{*}_{js}$. These parts are assembled into an **impact tensor** $I_{ijs}$, aggregated to a **penalty** $C^{\mathrm{(raw)}}_{is}$, and combined with predicted **intrinsic growth** $r_{is}$ to produce **invasion fitness** $\lambda_{is}$. Site- and species-level summaries (**invasibility** $V_s$ and **invasiveness** $I_i$) support mapping and prioritisation.   
 &nbsp;
 
-![](docs/reference/figures/invasimapr_flowchart.png){width=80%}
+![](reference/figures/invasimapr_flowchart.png){width=80%}
 <!-- for crisp scaling. ​:contentReference[oaicite:0]{index=0}​ -->
 
 > **Figure 1**: Traits and environment feed two tracks - (1) **competition** via trait distances → $\alpha_{ij}$, and (2) **environmental filtering** via optima and mismatch → $K_e(\Delta_{js};\sigma_e)$ plus **resident context** $N^{*}_{js}$. These combine into an **impact tensor** $I_{ijs}$, which sums to the **penalty** $C^{\mathrm{(raw)}}_{is}$. Subtracting this from the **intrinsic growth** $r_{is}$ gives **invasion fitness** $\lambda_{is}$, which aggregates to **invasibility** $V_s$ and **invasiveness** $I_i$ and can be mapped.
@@ -1199,7 +1199,8 @@ head(inv_traits)
 
 ### 9.2. Predict abundances across all sites
 
-With simulated invaders in hand, we use the `predict_invader_response()` function to generate expected abundances (our performance proxy) for every **species-site** combination as follows:  
+With simulated invaders in hand, we use the `predict_invader_response()` function to generate expected abundances (our performance proxy) for every **species-site** combination as follows:   
+
 * Takes a fitted model (e.g., from **glmmTMB**, **lme4**, **glm**, or **gam**)  
 * Crosses the **species traits table** (residents + simulated invaders) with the **site environment table**  
 * Harmonizes factor levels with the model’s training data  
@@ -1260,8 +1261,8 @@ When $g^{\mathrm{(all)}}$ is computed as a Gower distance, it is numerically ide
 
 **`compute_interaction_strength()` outputs:**
 
-* `d_ij` and/or `g_all` — trait dissimilarity matrix (residents + invaders)
-* `Nstar` — resident × site abundance matrix from `pred$predictions`
+* `d_ij` and/or `g_all` — trait dissimilarity matrix (residents + invaders) [$g^{\mathrm{(all)}}_{ij}$](#def-gall)
+* `Nstar` — resident × site abundance matrix from `pred$predictions` [$N^{*}_{js}$](#def-Nstar)
 
 ```{r interact-test}
 # Identify all resident species (excluding invaders)
@@ -1532,7 +1533,7 @@ ggplot(lambda_df, aes(x = site_id, y = invader, fill = pmin(lambda, cap))) +
   ))
 ```
   
-> **Note**: This figure serves as a diagnostic map of invasibility and invader performance, feeding into later steps like risk ranking, vulnerability hotspot mapping, or scenario testing.
+> **Note**: This figure shows the **raw invasion fitness matrix** ([$\lambda_{is}$](#def-lambda)) for each invader (rows) across all sites (columns). The colour scale ranges from low fitness (light orange) to high fitness (dark purple), allowing direct comparison of how well each invader performs across the landscape. Some invaders, such as *inv3* and *inv4*, exhibit consistently high fitness across many sites, while others (e.g. *inv7*, *inv10*) show lower and more spatially restricted establishment potential. The heterogeneity of colour patterns along the site axis highlights spatial variation in community resistance and environmental conditions, while differences among rows reflect interspecific variation in invasiveness. This unclustered view provides the baseline data structure from which rankings and clustering analyses are derived.
 
 ---
 
@@ -1581,7 +1582,7 @@ ggplot(
   )
 ```
 
-> **Note**: This figure ranks invaders by their **total invasion fitness** (\$\sum\_s \lambda\_{is}\$) across all sites, providing a measure of each species’ overall growth potential within the landscape. Invaders such as *inv3* and *inv4* exhibit the highest cumulative fitness, indicating consistently strong establishment potential across sites, while *inv7* and *inv10* have the lowest totals, suggesting limited success or strong constraints on establishment. The colour gradient reinforces this ranking by visually mapping higher total fitness to lighter shades. Together, the bar heights and colours highlight which invaders pose the greatest broad-scale invasion risk.
+> **Note**: This figure ranks invaders by their **total invasion fitness** ([$\lambda_{is}$](#def-lambda)) across all sites, providing a measure of each species’ overall growth potential within the landscape. Invaders such as *inv3* and *inv4* exhibit the highest cumulative fitness, indicating consistently strong establishment potential across sites, while *inv7* and *inv10* have the lowest totals, suggesting limited success or strong constraints on establishment. The colour gradient reinforces this ranking by visually mapping higher total fitness to lighter shades. Together, the bar heights and colours highlight which invaders pose the greatest broad-scale invasion risk.
 
 ---
 
@@ -1634,7 +1635,8 @@ ggplot(site_sum, aes(x = x, y = y, fill = prop_pos)) +
   theme(panel.grid = element_blank())
 ```
 
-> **Note**: The proportion of invaders with positive fitness is only informative when some [\(\lambda_{is}\)](#def-lambda) values are negative (i.e. establishment failure is possible); otherwise it trivially saturates at 1.   
+> **Note**: This figure maps the **site-level invasibility** of South Africa, expressed as the **proportion of invaders with positive fitness** ([\(\lambda_{is}\)](#def-lambda) $> 0$). Darker cells indicate sites where most invaders are successful, highlighting hotspots of low biotic resistance or favourable abiotic conditions, while lighter cells indicate sites where fewer invaders establish successfully. Tile labels show the absolute number of successful invaders at each site, complementing proportional risk with absolute counts. 
+> IMPORTANT: *The proportion of invaders with positive fitness is only informative when some [\(\lambda_{is}\)](#def-lambda) values are negative (i.e. establishment failure is possible); otherwise it trivially saturates at 1. This example uses the `logis` variant of invasion fitness, which allows both positive and negative values and thus provides meaningful variation in this metric.*   
 
 ---
 
@@ -1667,7 +1669,8 @@ ggplot(site_sum, aes(x = x, y = y, fill = mean_l)) +
   theme(panel.grid = element_blank())
 ```
 
-> **Note**: Mean invasion fitness remains informative even if all [\(\lambda_{is}\)](#def-lambda) are positive, as it reflects the magnitude of establishment success rather than just its occurrence.   
+> **Note**: This figure shows the **mean invasion fitness** of all invaders at each site, providing a continuous measure of **community openness to invasion**. Warmer colours (yellow-red) highlight sites where invaders generally achieve high fitness, while cooler colours (blue-purple) indicate sites with low average performance, reflecting stronger biotic resistance or environmental filtering. This metric complements the proportion-based invasibility map by capturing not only whether invaders establish, but also **how strongly** they tend to succeed. 
+> IMPORTANT: *Mean invasion fitness remains informative even if all [$\lambda_{is}$](#def-lambda) are positive, as it reflects the magnitude of establishment success rather than just its occurrence.*
 
 ---
 
@@ -1741,7 +1744,7 @@ pheatmap(lambda_mat_noNA,
 # - Mapping spatial patterns of invasion risk by ecological “scenario”
 ```
 
-> Note: This figure presents a **clustered heatmap of invasion fitness ([\(\lambda_{is}\)](#def-lambda)) across invaders (rows) and sites (columns)**, with hierarchical clustering applied to both dimensions to reveal patterns of similarity. The colour scale indicates invasion fitness, ranging from low (dark purple) to high (bright yellow). Distinct vertical and horizontal bands highlight groups of sites that impose similar levels of biotic resistance, and groups of invaders that perform similarly across the landscape. For example, invaders such as *inv3* and *inv4* form a cluster with generally high fitness values across many sites, while other invaders (e.g. *inv7*, *inv10*) show patchier, more constrained success. This matrix view complements the ranking analysis by exposing **patterns of invasibility** and identifying potential clusters of high-risk invaders and vulnerable sites.
+> **Note**: This figure presents a **clustered heatmap of invasion fitness ([\(\lambda_{is}\)](#def-lambda)) across invaders (rows) and sites (columns)**, with hierarchical clustering applied to both dimensions to reveal patterns of similarity. The colour scale indicates invasion fitness, ranging from low (dark purple) to high (bright yellow). Distinct vertical and horizontal bands highlight groups of sites that impose similar levels of biotic resistance, and groups of invaders that perform similarly across the landscape. For example, invaders such as *inv3* and *inv4* form a cluster with generally high fitness values across many sites, while other invaders (e.g. *inv7*, *inv10*) show patchier, more constrained success. This matrix view complements the ranking analysis by exposing **patterns of invasibility** and identifying potential clusters of high-risk invaders and vulnerable sites.
 
 
 #### 12.5.2 Mapping Site-level Risk Categories
