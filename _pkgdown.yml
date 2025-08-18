@@ -1,5 +1,6 @@
 url: https://macsands.github.io/invasimapr/
 template:
+  math-rendering: mathjax   # or "katex"
   bootstrap: 5
   bslib:
     bg: '#ffffff'

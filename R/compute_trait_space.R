@@ -237,13 +237,14 @@ compute_trait_space <- function(trait_df,
       ggplot2::theme_bw() +
       ggplot2::labs(
         x = "Distance to community centroid", y = "Number of species",
-        title = "Trait Centrality (Community Edge vs Core)"
-      )
+        title = "Trait Centrality (Community Edge vs Core)") +
+      ggplot2::theme(plot.title = ggplot2::element_text(size = 10))
 
     metrics_bar <- ggplot2::ggplot(metrics_df, ggplot2::aes(x = Metric, y = Value)) +
       ggplot2::geom_col(width = 0.6, fill = "firebrick") +
       ggplot2::theme_classic() +
-      ggplot2::labs(title = "Community-Level Trait Dispersion", y = "Metric value")
+      ggplot2::labs(title = "Community-Level Trait Dispersion", y = "Metric value") +
+      ggplot2::theme(plot.title = ggplot2::element_text(size = 10))
 
     plots <- list(
       dend = dend_gg,
