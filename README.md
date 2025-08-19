@@ -723,6 +723,13 @@ for (i in 1:2) {
 par(old_par) # reset plotting parameters
 ```
 
+> **Figure 3**: Spatial distribution of sampling effort and species
+> richness across the study area. Each grid cell shows the square
+> root–transformed values for (left) total observation counts (sampling
+> effort) and (right) unique species counts (species richness). Both
+> maps use the `viridisLite::turbo` color palette for comparability and
+> are overlaid with the study area outline to provide spatial context.
+
 #### 3.5. Retrieve, crop, resample, and link environmental rasters to sampling sites
 
 Environmental predictors are appended using
@@ -1021,7 +1028,7 @@ str(spp_traits)
 #>  $ Family      : Named chr [1:27] "Erebidae" NA "Nymphalidae" "Nymphalidae" ...
 #>   ..- attr(*, "names")= chr [1:27] "Family" "Family" "Family" "Family" ...
 #>  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Arctiidae_-_Utetheisa_pulchella.JPG/250px-Arctiidae_-"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Dancing_acraea_%28Acraea_serena%29_underside_Maputo.j"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/0_Belle-dame_%28Vanessa_cardui%29_-_Echinacea_purpure"| __truncated__ ...
-#>  $ palette     : chr [1:27] "#A59A47, #8C8012, #CCBF98, #1D220C, #535509" NA "#3C3220, #E8E6CF, #8E8F60, #A2A070, #736745" "#3A311F, #CC8242, #695C41, #EA8FD3, #C55C9B" ...
+#>  $ palette     : chr [1:27] "#1D220C, #8C8012, #535509, #CCBF98, #A59A47" NA "#736745, #A2A070, #3C3220, #8E8F60, #E8E6CF" "#6A5C42, #C65D9B, #3A311F, #CC8242, #EA8FD3" ...
 #>  $ trait_cont1 : num [1:27] 0.0284 0.0382 -0.8351 -0.2196 0.314 ...
 #>  $ trait_cont2 : num [1:27] -0.203 -0.224 -0.307 0.569 0.666 ...
 #>  $ trait_cont3 : num [1:27] -0.9969 0.0288 0.0288 0.1632 0.5191 ...
@@ -1046,12 +1053,12 @@ head(spp_traits)
 #> # A tibble: 6 × 29
 #>   species          summary Kingdom Phylum Class Order Family img_url palette trait_cont1 trait_cont2
 #>   <chr>            <chr>   <chr>   <chr>  <chr> <chr> <chr>  <chr>   <chr>         <dbl>       <dbl>
-#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #A59A4…      0.0284      -0.203
+#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #1D220…      0.0284      -0.203
 #> 2 Danaus chrysipp… <NA>    <NA>    <NA>   <NA>  <NA>  <NA>   <NA>    <NA>         0.0382      -0.224
-#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #3C322…     -0.835       -0.307
-#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #3A311…     -0.220        0.569
-#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #27201…      0.314        0.666
-#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #6C6E4…     -0.765       -0.136
+#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #73674…     -0.835       -0.307
+#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #6A5C4…     -0.220        0.569
+#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B2A79…      0.314        0.666
+#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #ECEFE…     -0.765       -0.136
 #> # ℹ 18 more variables: trait_cont3 <dbl>, trait_cont4 <dbl>, trait_cont5 <dbl>, trait_cont6 <dbl>,
 #> #   trait_cont7 <dbl>, trait_cont8 <dbl>, trait_cont9 <dbl>, trait_cont10 <dbl>, trait_cat11 <chr>,
 #> #   trait_cat12 <chr>, trait_cat13 <chr>, trait_cat14 <chr>, trait_cat15 <chr>, trait_ord16 <int>,
@@ -1294,7 +1301,7 @@ ggplot(spp_rich_obs, aes(x = x, y = y, fill = sqrt(spp_rich))) +
 
 <img src="man/figures/README-site-richness-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Figure 3**: Spatial distribution of site-level species richness
+> **Figure 4**: Spatial distribution of site-level species richness
 > across South Africa, derived from a species-by-abundance matrix. Each
 > grid cell indicates the number of species observed (numeric labels),
 > with colours representing the square-root–transformed richness
@@ -1363,7 +1370,7 @@ Trait-level functional similarity across species.
 
 </div>
 
-> **Figure 4**: Average trait similarity across species, measured as
+> **Figure 5**: Average trait similarity across species, measured as
 > percent similarity for each categorical or continuous trait. Bars
 > represent trait-level functional similarity, ordered from lowest to
 > highest, with colour intensity indicating the degree of similarity.
@@ -1414,7 +1421,7 @@ Species clustering by functional traits (Gower distance)
 
 </div>
 
-> Figure 5: Hierarchical clustering of species based on functional
+> **Figure 6**: Hierarchical clustering of species based on functional
 > traits using Gower dissimilarity. The dendrogram partitions species
 > into four distinct functional groups (coloured branches), reflecting
 > shared trait combinations that may underlie ecological similarity.
@@ -1479,7 +1486,7 @@ Kernel density in trait space (PCoA axes 1-2).
 
 </div>
 
-> **Figure 6**: Principal Coordinates Analysis (PCoA) of species in
+> **Figure 7**: Principal Coordinates Analysis (PCoA) of species in
 > reduced-dimensional trait space, based on Gower dissimilarity. Kernel
 > density contours highlight regions of high species density (hotspots
 > of trait similarity) and illustrate the overall structure of the
@@ -1534,7 +1541,7 @@ Distribution of trait centrality (distance to centroid) among species.
 
 </div>
 
-> **Figure 7**: Distribution of trait centrality (distance to the
+> **Figure 8**: Distribution of trait centrality (distance to the
 > community centroid) among species. The histogram shows how far each
 > species lies from the centroid, representing the average trait
 > combination of the community. The x-axis indicates distance to the
@@ -1597,7 +1604,7 @@ Community-level functional diversity metrics.
 
 </div>
 
-> **Figure 8**: Community-level trait dispersion. Bar chart of three
+> **Figure 9**: Community-level trait dispersion. Bar chart of three
 > functional diversity metrics summarising the community’s functional
 > structure. FDis (Functional Dispersion; ~0.20) indicates moderate
 > spread of species around the trait centroid, reflecting variation in
@@ -1690,7 +1697,7 @@ str(res$dispersion, max.level = 1)
 #>  $ plots          :List of 4
 ```
 
-> **Figure 9**: Combined functional trait space workflow. Outputs from
+> **Figure 10**: Combined functional trait space workflow. Outputs from
 > the compute_trait_space() function, which integrates multiple
 > trait-based analyses into a unified framework. Shown are: (top left)
 > hierarchical clustering of species by Gower trait distance; (top
@@ -1871,7 +1878,7 @@ fml
 #>     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + 
 #>     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + 
 #>     (1 | species) + (1 | site_id)
-#> <environment: 0x000001e6772aa568>
+#> <environment: 0x000001e5c9fd0500>
 ```
 
 ### 8.3. Fit the GLMM
@@ -2698,7 +2705,7 @@ ggplot(lambda_df, aes(x = site_id, y = invader, fill = pmin(lambda, cap))) +
 
 <img src="man/figures/README-plot-fitness-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Figure 10**: Invasion fitness matrix (invader × site). Heatmap of
+> **Figure 11**: Invasion fitness matrix (invader × site). Heatmap of
 > low-density per-capita growth rates ([$\lambda_{is}$](#def-lambda))
 > for each invader (rows) across sites (columns). Higher fitness values
 > (yellow-orange) indicate favourable conditions or weak competitive
@@ -2770,7 +2777,7 @@ ggplot(
 
 <img src="man/figures/README-invader-rank-1.png" width="100%" style="display: block; margin: auto;" />
 
-## \> **Figure 11**: Invader invasiveness ranking by total growth potential. Bar plot of total invasion fitness ([\$ \_{is}\$](#def-lambda)) across all sites, providing a landscape-integrated measure of each invader’s establishment potential. Higher bars and lighter colours indicate stronger overall invasiveness. Invaders such as inv3 and inv4 emerge as “super-invaders,” with consistently high growth potential across the landscape, while inv7 and inv10 show the lowest cumulative fitness, suggesting they are unlikely to establish broadly. This ranking highlights which species pose the greatest invasion risk and thus merit prioritisation in monitoring and management.
+## \> **Figure 12**: Invader invasiveness ranking by total growth potential. Bar plot of total invasion fitness ([\$ \_{is}\$](#def-lambda)) across all sites, providing a landscape-integrated measure of each invader’s establishment potential. Higher bars and lighter colours indicate stronger overall invasiveness. Invaders such as inv3 and inv4 emerge as “super-invaders,” with consistently high growth potential across the landscape, while inv7 and inv10 show the lowest cumulative fitness, suggesting they are unlikely to establish broadly. This ranking highlights which species pose the greatest invasion risk and thus merit prioritisation in monitoring and management.
 
 ### 12.3 Site-level Invasibility Metrics
 
@@ -2833,7 +2840,7 @@ ggplot(site_sum, aes(x = x, y = y, fill = prop_pos)) +
 
 <img src="man/figures/README-site-invasibility-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Figure 12**: *Site-level Invasibility Metrics* - This map depicts
+> **Figure 13**: *Site-level Invasibility Metrics* - This map depicts
 > the site-level invasibility $V_s$, defined as the proportion of
 > invaders with positive invasion fitness ($\lambda_{is} > 0$) at each
 > site. Darker cells indicate invasion “hotspots” where a high fraction
@@ -2891,7 +2898,7 @@ ggplot(site_sum, aes(x = x, y = y, fill = mean_l)) +
 
 <img src="man/figures/README-spp-invasiness-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Figure 13**: *Mean invasion fitness by site* - This map shows the
+> **Figure 14**: *Mean invasion fitness by site* - This map shows the
 > mean invasion fitness ($\overline{\lambda}_{\cdot s}$) across all
 > invaders at each site, providing a continuous measure of community
 > openness to invasion. Warmer colours (yellow–orange) indicate sites
@@ -2993,7 +3000,7 @@ pheatmap(lambda_mat_noNA,
 # - Mapping spatial patterns of invasion risk by ecological “scenario”
 ```
 
-> **Figure 14**: Clustered invasion fitness matrix (invader × site) -
+> **Figure 15**: Clustered invasion fitness matrix (invader × site) -
 > This clustered heatmap displays invasion fitness values
 > ([$\lambda_{is}$](#def-lambda)) for each invader–site pair, with
 > hierarchical clustering applied to both invaders (rows) and sites
@@ -3126,7 +3133,7 @@ ggplot(site_sum, aes(x = x, y = y, fill = site_category)) +
 
 <img src="man/figures/README-map-risk-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Figure 15: Mapping site-level invasion risk categories (spatially
+> **Figure 16: Mapping site-level invasion risk categories (spatially
 > constrained ClustGeo clustering)** Sites are assigned to invasibility
 > categories (very-high, high, medium, low, very-low) based on the mean
 > invasion fitness ($\lambda_{is}$) of invaders establishing within each
@@ -3185,7 +3192,7 @@ ggplot(lambda_df, aes(x = lambda, fill = ..x..)) +
 
 <img src="man/figures/README-fitness-dist-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Figure 16: Distribution of invasion fitness values across all
+> **Figure 17: Distribution of invasion fitness values across all
 > invader–site combinations** Histogram of invasion fitness
 > ($\lambda_{is}$) values summarising the system-wide distribution of
 > establishment success. The distribution is strongly right-skewed,
@@ -3301,7 +3308,7 @@ ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
 
 <img src="man/figures/README-key-invaders-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Figure 17: Spatial invasion fitness patterns for top- and
+> **Figure 18: Spatial invasion fitness patterns for top- and
 > bottom-ranked invaders** Faceted maps of invasion fitness
 > ($\lambda_{is}$) for the three invaders with the highest mean fitness
 > (top row) and the three with the lowest (bottom row). Top-performing
