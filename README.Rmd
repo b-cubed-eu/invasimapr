@@ -120,7 +120,7 @@ This is the growth or abundance a species is expected to achieve at site $s$ **w
 
 <a id="def-r"></a> $r_{is}$
 
-Thus a high $r_{is}$ signals a good abiotic match,while a low $r_{is}$ signals environmental mismatch.
+Thus a high $r_{is}$ signals a good abiotic match, while a low $r_{is}$ signals environmental mismatch.
 
 ---
 
@@ -227,7 +227,7 @@ $$
 I_{ijs} \;=\; \alpha_{ij} \; K_e(\Delta_{js}; \sigma_e) \; N^{*}_{js}.
 $$
 
-Thus the supression of invader $j$ at site $s$ will increase when:
+Thus the suppression of invader $j$ at site $s$ will increase when:
 1. Species $i$ and $j$ are very similar = large $\alpha_{ij}$
 2. Residents $j$ are well-matched with environment $\mathbf{E}_s$ = large $K_e$
 3. Residents $j$ are very common/thriving = large $N^{*}_{js}$
@@ -248,7 +248,7 @@ $$
 V_i \;=\; \sum_{s} \lambda_{is}
 $$
 
-Thus higher $V_i$ suggests species $i$ tends to be more invasive across all sites i.e. many sites are suitableand/ore less resistant to invasion by species $i$.
+Thus higher $V_i$ suggests species $i$ tends to be more invasive across all sites i.e. many sites are suitable and/or less resistant to invasion by species $i$.
 
 #### 2.4.2. Invasibility of sites (openness)
 
@@ -943,6 +943,8 @@ ggplot(spp_rich_obs, aes(x = x, y = y, fill = sqrt(spp_rich))) +
   theme(panel.grid = element_blank())
 ```
 
+> **Figure 3**: Spatial distribution of site-level species richness across South Africa, derived from a species-by-abundance matrix. Each grid cell indicates the number of species observed (numeric labels), with colours representing the square-root–transformed richness (√richness) to emphasize variation across the landscape. Warmer colours denote higher richness, while cooler colours denote lower richness. National boundaries are shown for geographic reference.
+
 ---
 
 ## 7. Functional Trait Space
@@ -976,6 +978,9 @@ ggplot(df_traits, aes(x = reorder(Trait, Similarity), y = Similarity, fill = Sim
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
+> **Figure 4**: Average trait similarity across species, measured as percent similarity for each categorical or continuous trait. Bars represent trait-level functional similarity, ordered from lowest to highest, with colour intensity indicating the degree of similarity. Traits with higher similarity values reflect more conserved characteristics across species, whereas lower values indicate greater differentiation.
+
+
 ### 7.2. Gower distance, clustering, and trait space mapping (PCoA)
 
 #### 7.2.1. Compute Gower distance (handles mixed trait types)
@@ -987,7 +992,6 @@ Trait-based approaches require robust dissimilarity measures for mixed data type
 sbt_gower = cluster::daisy(spp_trait[, -1], metric = "gower")
 trait_dist = as.matrix(sbt_gower)
 ```
-
 
 #### 7.2.2. Hierarchical clustering (visualise trait-based groupings)
 
@@ -1006,6 +1010,9 @@ fviz_dend(
   main = "Gower Cluster Dendrogram") + 
   guides(scale = "none")
 ```
+
+> Figure 5: Hierarchical clustering of species based on functional traits using Gower dissimilarity. The dendrogram partitions species into four distinct functional groups (coloured branches), reflecting shared trait combinations that may underlie ecological similarity.
+
 
 #### 7.2.3. PCoA ordination (map species into a reduced-dimensional trait space)
 
@@ -1055,6 +1062,9 @@ filled.contour(
 )
 ```
 
+> **Figure 6**: Principal Coordinates Analysis (PCoA) of species in reduced-dimensional trait space, based on Gower dissimilarity. Kernel density contours highlight regions of high species density (hotspots of trait similarity) and illustrate the overall structure of the functional trait space.
+
+
 ### 7.3. Trait centrality
 
 Trait **centrality** quantifies how close each species is to the “core” of the community’s trait space. Peripheral species may be ecologically distinct and potentially more likely to become invaders or to escape biotic resistance.
@@ -1092,18 +1102,7 @@ ggplot(spp_trt_cent, aes(x = centrality)) +
   )
 ```
 
-> This histogram shows how far each species is from the **center** of the community’s trait space.
->
-> * The **x-axis** is *distance to the centroid* (central trait combination of the community).
-> * The **y-axis** is the number of species at each distance.
->
-> **Interpretation:**
->
-> * Most species are clustered at **intermediate distances** (\~0.18 - 0.22), meaning their traits are moderately similar to the community average.
-> * A few species are **very close** to the centroid (low distances) - these are “core” species with typical trait values.
-> * Others lie **further out** (higher distances) - these are “peripheral” species with more unusual trait combinations, which might indicate unique ecological roles or specialisations.
->
-> **Summary**: the community is centred around a typical trait set, but also includes a handful of species that are either very similar or quite distinct from that average.
+> **Figure 7**: Distribution of trait centrality (distance to the community centroid) among species. The histogram shows how far each species lies from the centroid, representing the average trait combination of the community. The x-axis indicates distance to the centroid, while the y-axis gives the number of species at each distance. Most species are clustered at intermediate distances (~0.18–0.22), reflecting moderately typical trait values. A few species occur very close to the centroid, representing “core” species with common trait profiles, whereas others are more distant “peripheral” species with unusual trait combinations that may indicate specialized ecological roles. Overall, the community is centred on a typical trait set but also contains species that are either strongly representative or markedly distinct from that average.
 > &nbsp;
 
 ### 7.4. Trait dispersion
@@ -1144,18 +1143,7 @@ ggplot(dispersion_df, aes(x = Metric, y = Value)) +
   labs(title = "Community-Level Trait Dispersion", y = "Metric value")
 ```
 
-> This bar chart summarises three ways of describing the community’s overall functional diversity:
->
-> * **FDis (Functional Dispersion)** – Moderate value (\~0.20).
->   Indicates that species are fairly spread out from the community’s trait centroid, reflecting a moderate amount of variation in trait combinations.
->
-> * **FRic (Functional Richness)** – Highest value (\~0.21).
->   Suggests that the community occupies a relatively broad portion of the available trait space, i.e. species collectively use a wide range of possible trait combinations.
->
-> * **RaoQ (Rao’s Quadratic Entropy)** – Lowest value (\~0.13).
->   Measures total abundance-weighted trait dissimilarity. The lower value implies that, despite trait differences among species, much of the community’s abundance is concentrated in species that are relatively similar.
->
-> **Summary**: The community shows a **broad trait space coverage** (FRic), **moderate trait dispersion** (FDis), but **lower abundance-weighted diversity** (RaoQ). This pattern suggests that while trait space is well filled, dominant species are clustered functionally.
+> **Figure 8**: Community-level trait dispersion. Bar chart of three functional diversity metrics summarising the community’s functional structure. FDis (Functional Dispersion; ~0.20) indicates moderate spread of species around the trait centroid, reflecting variation in trait combinations. FRic (Functional Richness; ~0.21) is highest, showing that the community spans a broad portion of trait space, i.e. species collectively cover a wide range of trait combinations. RaoQ (Rao’s Quadratic Entropy; ~0.13) is lowest, suggesting that although trait space is well filled, community abundance is concentrated in functionally similar species. Together, these metrics suggest a community with broad trait coverage and moderate dispersion but dominated by clusters of functionally alike species.
 > &nbsp;
 
 ### 7.5. Combined functional trait space workflow
@@ -1197,6 +1185,8 @@ str(res, max.level = 1)
 head(res$similarity)
 str(res$dispersion, max.level = 1)
 ```
+
+> **Figure 9**: Combined functional trait space workflow. Outputs from the compute_trait_space() function, which integrates multiple trait-based analyses into a unified framework. Shown are: (top left) hierarchical clustering of species by Gower trait distance; (top right) community-level functional diversity metrics (FDis, FRic, RaoQ); (bottom left) species centrality histogram (distance to centroid); and (bottom right) trait space ordination (PCoA with kernel density). Together, these visualisations capture trait similarity, trait-space structure, species’ functional positions, and overall community-level functional diversity.
 
 > **Note**: By pairing `compute_trait_similarity()` (per-trait conservation/lability) with `compute_trait_dispersion()` (whole-community functional structure), you get a complete, repeatable workflow for trait-based invasion and coexistence studies. All plots are stored in `res$plots` for flexible reuse, while `res$metrics_df` provides ready-to-use numerical summaries for statistical modelling.
 > &nbsp;
@@ -1683,7 +1673,7 @@ ggplot(lambda_df, aes(x = site_id, y = invader, fill = pmin(lambda, cap))) +
   ))
 ```
   
-> **Note**: This figure shows the **raw invasion fitness matrix** ([$\lambda_{is}$](#def-lambda)) for each invader (rows) across all sites (columns). The colour scale ranges from low fitness (light orange) to high fitness (dark purple), allowing direct comparison of how well each invader performs across the landscape. Some invaders, such as *inv3* and *inv4*, exhibit consistently high fitness across many sites, while others (e.g. *inv7*, *inv10*) show lower and more spatially restricted establishment potential. The heterogeneity of colour patterns along the site axis highlights spatial variation in community resistance and environmental conditions, while differences among rows reflect interspecific variation in invasiveness. This unclustered view provides the baseline data structure from which rankings and clustering analyses are derived.
+> **Figure 10**: Invasion fitness matrix (invader × site). Heatmap of low-density per-capita growth rates ([$\lambda_{is}$](#def-lambda)) for each invader (rows) across sites (columns). Higher fitness values (yellow-orange) indicate favourable conditions or weak competitive exclusion, while lower values (dark purple) reflect strong exclusion or poor environmental match. This matrix enables direct comparison of invader performance, highlighting both broadly adapted invaders (e.g. inv3, inv4) and more restricted specialists (e.g. inv7, inv10). The heterogeneous site-wise patterns underscore spatial variation in invasion potential, while inter-row differences reveal trait-driven variation in invasiveness. This unclustered baseline provides the foundation for subsequent ranking and clustering analyses.
 
 ---
 
@@ -1732,8 +1722,7 @@ ggplot(
   )
 ```
 
-> **Note**: This figure ranks invaders by their **total invasion fitness** ([$\lambda_{is}$](#def-lambda)) across all sites, providing a measure of each species’ overall growth potential within the landscape. Invaders such as *inv3* and *inv4* exhibit the highest cumulative fitness, indicating consistently strong establishment potential across sites, while *inv7* and *inv10* have the lowest totals, suggesting limited success or strong constraints on establishment. The colour gradient reinforces this ranking by visually mapping higher total fitness to lighter shades. Together, the bar heights and colours highlight which invaders pose the greatest broad-scale invasion risk.
-
+> **Figure 11**: Invader invasiveness ranking by total growth potential. Bar plot of total invasion fitness ([$ \sum \lambda_{is}$](#def-lambda)) across all sites, providing a landscape-integrated measure of each invader’s establishment potential. Higher bars and lighter colours indicate stronger overall invasiveness. Invaders such as inv3 and inv4 emerge as “super-invaders,” with consistently high growth potential across the landscape, while inv7 and inv10 show the lowest cumulative fitness, suggesting they are unlikely to establish broadly. This ranking highlights which species pose the greatest invasion risk and thus merit prioritisation in monitoring and management.
 ---
 
 ### 12.3 Site-level Invasibility Metrics
@@ -1741,8 +1730,8 @@ ggplot(
 We summarise `lambda_mat` across invaders to quantify **site-level invasibility** [$V_s$](#def-Vs) — the openness of each community to establishment.
 For each site $s$, we compute:
 
-* **Proportion of invaders with positive fitness** — fraction of invaders with [\$\lambda\_{is} > 0\$](#def-lambda).
-  *This metric only has ecological meaning if some \$\lambda\_{is}\$ can be negative (i.e. invaders that fail to establish). If all values are positive, the proportion saturates at 1 and becomes redundant.*
+* **Proportion of invaders with positive fitness** — fraction of invaders with [$\lambda_{is} > 0$](#def-lambda).
+  *This metric only has ecological meaning if some [$\lambda_{is}$](#def-lambda) can be negative (i.e. invaders that fail to establish). If all values are positive, the proportion saturates at 1 and becomes redundant.*
 * **Count of successful invaders** — number of $i$ with [$\lambda_{is} > 0$](#def-lambda).
 * **Mean invasion fitness** — average [$\lambda_{is}$](#def-lambda) across invaders, indicating general establishment potential.
 
@@ -1785,8 +1774,9 @@ ggplot(site_sum, aes(x = x, y = y, fill = prop_pos)) +
   theme(panel.grid = element_blank())
 ```
 
-> **Note**: This figure maps the **site-level invasibility** of South Africa, expressed as the **proportion of invaders with positive fitness** ([\(\lambda_{is}\)](#def-lambda) $> 0$). Darker cells indicate sites where most invaders are successful, highlighting hotspots of low biotic resistance or favourable abiotic conditions, while lighter cells indicate sites where fewer invaders establish successfully. Tile labels show the absolute number of successful invaders at each site, complementing proportional risk with absolute counts. 
-> IMPORTANT: *The proportion of invaders with positive fitness is only informative when some [\(\lambda_{is}\)](#def-lambda) values are negative (i.e. establishment failure is possible); otherwise it trivially saturates at 1. This example uses the `logis` variant of invasion fitness, which allows both positive and negative values and thus provides meaningful variation in this metric.*   
+> **Figure 12**: *Site-level Invasibility Metrics* - This map depicts the site-level invasibility $V_s$, defined as the proportion of invaders with positive invasion fitness ($\lambda_{is} > 0$) at each site. Darker cells indicate invasion “hotspots” where a high fraction of invaders succeed, reflecting weak biotic resistance and/or favourable abiotic conditions. Lighter cells indicate sites with stronger resistance or limiting environments, where fewer invaders can establish. Numbers within cells denote the absolute count of successful invaders, complementing proportional risk with absolute richness of potential invaders.
+
+**Important note:** The proportion of positive fitness values is only ecologically meaningful if some $\lambda_{is}$ are negative (i.e. invaders can fail to establish). If all $\lambda_{is} > 0$, the metric saturates at 1 and loses discriminatory power. Here we use the *logis* variant of invasion fitness, which yields both positive and negative values and thus provides informative spatial variation.
 
 ---
 
@@ -1819,14 +1809,15 @@ ggplot(site_sum, aes(x = x, y = y, fill = mean_l)) +
   theme(panel.grid = element_blank())
 ```
 
-> **Note**: This figure shows the **mean invasion fitness** of all invaders at each site, providing a continuous measure of **community openness to invasion**. Warmer colours (yellow-red) highlight sites where invaders generally achieve high fitness, while cooler colours (blue-purple) indicate sites with low average performance, reflecting stronger biotic resistance or environmental filtering. This metric complements the proportion-based invasibility map by capturing not only whether invaders establish, but also **how strongly** they tend to succeed. 
-> IMPORTANT: *Mean invasion fitness remains informative even if all [$\lambda_{is}$](#def-lambda) are positive, as it reflects the magnitude of establishment success rather than just its occurrence.*
+> **Figure 13**: *Mean invasion fitness by site* - This map shows the mean invasion fitness ($\overline{\lambda}_{\cdot s}$) across all invaders at each site, providing a continuous measure of community openness to invasion. Warmer colours (yellow–orange) indicate sites where invaders tend to achieve higher fitness, reflecting low biotic resistance and/or favourable abiotic conditions. Cooler colours (purple–black) mark sites where invaders perform poorly on average, indicating stronger resistance or environmental filtering.
+
+**Important note:** Unlike the proportion-based invasibility metric ($V_s$), which saturates at 1 if all $\lambda_{is} > 0$, the mean remains informative even in such cases because it reflects *magnitude* rather than mere occurrence of establishment. Importantly, sites with moderately high mean fitness but low proportions of successful invaders may signal selective vulnerability—open to only a few highly adapted invaders rather than broadly permissive.
 
 ---
 
 ### 12.5 Clustering and Risk Scenarios
 
-We identify **clusters of sites and invaders** with similar invasion fitness patterns using hierarchical clustering of [$\lambda_{is}$](#def-lambda) from `lambda_mat`. This reveals ecological “syndromes” — types of sites most at risk, or types of invaders most threatening — enabling targeted surveillance and intervention.
+We identify **clusters of sites and invaders** with similar invasion fitness patterns using hierarchical clustering of [$\lambda_{is}$](#def-lambda) from `lambda_mat`. This reveals ecological profiles or invasion signatures — types of sites most at risk, or types of invaders most threatening — enabling targeted surveillance and intervention.
 
 #### 12.5.1 Hierarchical Clustering of Invaders and Sites
 
@@ -1838,8 +1829,8 @@ Hierarchical clustering groups:
 The heatmap displays [$\lambda_{is}$](#def-lambda) values as cells, with dendrograms indicating clusters.
 This approach distinguishes:
 
-* **Invader types** — e.g., broad-spectrum high-risk vs. site-specialists.
-* **Site types** — e.g., broadly open vs. strongly resistant communities.
+* **Invader types** — Broad-spectrum high-risk vs. site-specialists.
+* **Site types** — Broadly open vs. strongly resistant communities.
 
 These groups can be used for categorical risk classification and scenario exploration in downstream analyses.
 
@@ -1851,7 +1842,7 @@ lambda_mat_noNA = lambda_mat[
   colSums(is.na(lambda_mat)) < nrow(lambda_mat)
 ]
 
-# Assign invaders and sites to discrete clusters (syndromes) for downstream visualization
+# Assign invaders and sites to discrete clusters (profiles) for downstream visualization
 # Sites: cluster by invasion fitness profile (columns)
 site_dist = dist(t(scale(lambda_mat_noNA))) # standardize first then compute pairwise distances between sites
 site_clust = hclust(site_dist, method = "ward.D2") # Hierarchical clustering
@@ -1894,7 +1885,10 @@ pheatmap(lambda_mat_noNA,
 # - Mapping spatial patterns of invasion risk by ecological “scenario”
 ```
 
-> **Note**: This figure presents a **clustered heatmap of invasion fitness ([\(\lambda_{is}\)](#def-lambda)) across invaders (rows) and sites (columns)**, with hierarchical clustering applied to both dimensions to reveal patterns of similarity. The colour scale indicates invasion fitness, ranging from low (dark purple) to high (bright yellow). Distinct vertical and horizontal bands highlight groups of sites that impose similar levels of biotic resistance, and groups of invaders that perform similarly across the landscape. For example, invaders such as *inv3* and *inv4* form a cluster with generally high fitness values across many sites, while other invaders (e.g. *inv7*, *inv10*) show patchier, more constrained success. This matrix view complements the ranking analysis by exposing **patterns of invasibility** and identifying potential clusters of high-risk invaders and vulnerable sites.
+> **Figure 14**: Clustered invasion fitness matrix (invader × site) - This clustered heatmap displays invasion fitness values ([\(\lambda_{is}\)](#def-lambda)) for each invader–site pair, with hierarchical clustering applied to both invaders (rows) and sites (columns). The colour scale ranges from low (purple) to high (yellow) invasion fitness, while dendrograms identify groups of invaders with similar performance profiles and sites with similar resistance/openness syndromes. The analysis distinguishes: i) **Invader types**: Broad-spectrum, high-fitness invaders (e.g., *inv3*, *inv4*) versus specialists with patchy or constrained success (e.g., *inv7*, *inv10*); and ii) **Site types**: Broadly open communities permissive to many invaders versus strongly resistant communities that suppress invasion success. 
+
+**Important note:** This two-way clustering highlights joint structure in invader performance and community susceptibility, providing a basis for categorical risk classification and ecological “scenario” analysis. These groupings can inform both strategic monitoring (e.g., targeting clusters of high-risk invaders) and management planning (e.g., identifying site clusters most vulnerable to invasion).
+
 
 #### 12.5.2 Mapping Site-level Risk Categories
 
@@ -1904,7 +1898,7 @@ Cluster assignments are converted into **descriptive invasibility categories** (
 * **High-risk site categories** — clusters with generally high [$V_s$](#def-Vs) and high mean $\lambda_{is}$.
 * **Low-risk site categories** — clusters with low $V_s$ and consistently negative or low $\lambda_{is}$.
 
-Mapping these categories provides a spatial overview of invasibility syndromes, highlighting geographic concentrations of risk.
+Mapping these categories provides a spatial overview of invasibility profiles, highlighting geographic concentrations of risk.
 Parallel invader-category assignments allow alignment of high-risk invaders with high-risk sites for targeted management scenarios.
 
 ```{r map-risk}
@@ -1998,7 +1992,8 @@ ggplot(site_sum, aes(x = x, y = y, fill = site_category)) +
   theme(panel.grid = element_blank())
 ```
 
-> **Note**: Clustering on mean invasion fitness captures not only whether invaders establish, but also the overall strength of establishment success across sites.
+> **Figure 15: Mapping site-level invasion risk categories (spatially constrained ClustGeo clustering)**
+Sites are assigned to invasibility categories (very-high, high, medium, low, very-low) based on the mean invasion fitness ($\lambda_{is}$) of invaders establishing within each cluster. By using the mean, categories capture both the likelihood of establishment and the overall strength of invasion success across sites. High-risk categories (very-high, high) reflect communities with consistently high site openness ($V_s$) and elevated mean $\lambda_{is}$, indicating broad vulnerability to invasion. Low-risk categories (low, very-low) are characterised by low $V_s$ and suppressed $\lambda_{is}$, reflecting resistant communities. The spatially constrained clustering (ClustGeo) ensures that these risk categories respect both ecological similarity in invasion profiles and geographic proximity. This mapping provides a spatial overview of invasibility syndromes across South Africa, highlighting regional hotspots of invasion risk. When coupled with invader-category assignments, the framework enables alignment of high-risk invaders with high-risk sites, supporting targeted monitoring and management scenario development.
 
 ---
 
@@ -2028,6 +2023,10 @@ ggplot(lambda_df, aes(x = lambda, fill = ..x..)) +
   ) +
   theme_minimal(base_size = 12)
 ```
+
+> **Figure 16: Distribution of invasion fitness values across all invader–site combinations**
+Histogram of invasion fitness ($\lambda_{is}$) values summarising the system-wide distribution of establishment success. The distribution is strongly right-skewed, indicating that while many invader-site combinations experience exclusionary or marginal conditions, a substantial subset encounter highly favourable environments for establishment. This pattern complements site- and invader- level clustering (Figures 12-15), providing an overall view of community openness to invasion and highlighting the prevalence of rare but extreme invasion opportunities.
+
 
 ### 13.2 Top and Bottom Invaders and Sites
 
@@ -2116,7 +2115,7 @@ cat(
 To explore trait–fitness relationships, we join [$\lambda_{is}$](#def-lambda) summaries with invader trait data:
 
 * **Continuous traits** — correlation coefficients with mean [\(\lambda_{is}\)](#def-lambda) identify traits most positively or negatively associated with invasion success.
-* **Categorical traits** — mean [\(\lambda_{is}\)](#def-lambda) per trait level identifies functional syndromes linked to high or low establishment.
+* **Categorical traits** — mean [\(\lambda_{is}\)](#def-lambda) per trait level identifies functional profiles linked to high or low establishment.
 
 This supports hypothesis generation about **mechanistic drivers** of invasion potential, complementing the purely spatial and compositional analyses of Section 12.
 
@@ -2225,13 +2224,36 @@ ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
   theme(panel.grid = element_blank())
 ```
 
+> **Figure 17: Spatial invasion fitness patterns for top- and bottom-ranked invaders**
+Faceted maps of invasion fitness ($\lambda_{is}$) for the three invaders with the highest mean fitness (top row) and the three with the lowest (bottom row). Top-performing invaders show clear spatial “hotspots” of establishment potential, often corresponding to particular regions with trait–environment matches. In contrast, poorly performing invaders show consistently low fitness values, indicating mismatches between their traits and local community or environmental conditions. Together, these maps link trait-based predictions to spatial risk assessments, providing an interpretable basis for identifying regions of high invasion susceptibility and guiding management prioritisation.
+
 > **Note:**
-> Together, sections 12–13 move from **raw $\lambda_{is}$** values → **clustered patterns** → **functional correlates** → **site- and invader- specific rankings**. This progression enables scaling from **broad ecological syndromes** to **actionable risk profiles** for specific species and sites.
+> Together, sections 12–13 move from **raw $\lambda_{is}$** values → **clustered patterns** → **functional correlates** → **site- and invader- specific rankings**. This progression enables scaling from **broad ecological profiles** to **actionable risk profiles** for specific species and sites.
 > &nbsp;
 
 ---
 
-## 14. Glossary of definitions
+## 14. Discussion and Conclusion
+
+The code test demonstrates that the `invasimapr` package provides a practical and transparent framework for quantifying both trait dispersion and site-level invasibility. By linking species-level traits with community-level invasion outcomes, the framework moves beyond binary assessments of invasion success and instead quantifies the relative strength of establishment. This refinement improves ecological interpretation by allowing users to identify not only whether invasion is possible, but also how strongly invaders are likely to establish under given trait and environmental contexts. Importantly, the integration of trait-based analyses with invasion fitness metrics creates a mechanistic and scalable approach that can be applied in conservation management and policy settings.
+The findings indicate that trait dispersion may function as an early-warning signal of invasion risk, while site-level invasibility metrics highlight areas of ecological susceptibility. Such outputs have clear conservation value, providing managers with repeatable and evidence-based tools to prioritise surveillance, allocate resources, and design interventions before invasive species impacts become entrenched.
+Some limitations remain. The utility of the package is currently constrained by the availability and consistency of trait data across species and sites, and by assumptions embedded within the modelling framework that may simplify complex ecological interactions. Further development will focus on incorporating phylogenetic relationships, environmental gradients, and spatial heterogeneity to improve predictive accuracy. In addition, broader testing across ecosystems with different invasion histories will be essential for evaluating transferability. However, with continued refinement, `invasimapr` has strong potential to become a central tool for proactive biodiversity management. Its ability to deliver rapid, repeatable assessments of invasibility is particularly relevant for large, protected landscapes where early detection and prevention of invasive species are critical for long-term conservation outcomes.
+
+---
+
+## 15. References
+
+* Hui, C., Pyšek, P., & Richardson, D.M. (2023). Disentangling the relationships among abundance, invasiveness, and invasibility in trait space. npj Biodiversity, 2, 13. https://doi.org/10.1038/s44185-023-00019-1
+* Hui, C., Richardson, D.M., Landi, P., Minoarivelo, H.O., & Roy, H.E. (2016). Defining invasiveness and invasibility in ecological networks. Biological Invasions. https://doi.org/10.1007/s10530-016-1076-7
+* Hui, C., Richardson, D.M., Landi, P., Minoarivelo, H.O., & Roy, H.E. (2021). Trait positions for elevated invasiveness in adaptive ecological networks. Biological Invasions, 23, 1965–1985. https://doi.org/10.1007/s10530-021-02484-w
+* Kattge, J., Bönisch, G., Díaz, S., Lavorel, S., Prentice, I. C., Leadley, P., Tautenhahn, S., Werner, G., et al. (2020). TRY plant trait database - enhanced coverage and open access. Global Change Biology, 26(1), 119-188. doi:10.1111/gcb.14904)
+* Wang, Y, U Naumann, ST Wright & DI Warton (2012) mvabund - an R package for model-based analysis of multivariate abundance data. Methods in Ecology and Evolution 3: 471-474. (help: Multivariate Analysis with mvabund :: Environmental Computing)
+* Hui C, Richardson DM (2017). Invasion Dynamics. Oxford University Press.
+* Hui C et al. (2021). Trait-mediated ecological networks: mechanisms and consequences of invasion. Trends in Ecology & Evolution.
+
+---
+
+## 16. Glossary of definitions
 
 | Term | Symbol | Definition |
 |------|--------|------------|
@@ -2250,29 +2272,15 @@ ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
 | **Site Invasibility Metrics** | [\(V_s\)](#def-Vs) | Measures of how open a community is to invasion, reflecting ecological “vacancies.” |
 
 
-**Note**:
 * `a_ij[i, j]` = invader × resident
 * `K_env[s, j]` = sites × residents
 * `Nstar[j, s]` = residents × sites
 * `r_mat[i, s]` = invader × site
 
----
-
-## 15. References
-
-* Hui, C., Pyšek, P., & Richardson, D.M. (2023). Disentangling the relationships among abundance, invasiveness, and invasibility in trait space. npj Biodiversity, 2, 13. https://doi.org/10.1038/s44185-023-00019-1
-* Hui, C., Richardson, D.M., Landi, P., Minoarivelo, H.O., & Roy, H.E. (2016). Defining invasiveness and invasibility in ecological networks. Biological Invasions. https://doi.org/10.1007/s10530-016-1076-7
-* Hui, C., Richardson, D.M., Landi, P., Minoarivelo, H.O., & Roy, H.E. (2021). Trait positions for elevated invasiveness in adaptive ecological networks. Biological Invasions, 23, 1965–1985. https://doi.org/10.1007/s10530-021-02484-w
-* Kattge, J., Bönisch, G., Díaz, S., Lavorel, S., Prentice, I. C., Leadley, P., Tautenhahn, S., Werner, G., et al. (2020). TRY plant trait database - enhanced coverage and open access. Global Change Biology, 26(1), 119-188. doi:10.1111/gcb.14904)
-* Wang, Y, U Naumann, ST Wright & DI Warton (2012) mvabund - an R package for model-based analysis of multivariate abundance data. Methods in Ecology and Evolution 3: 471-474. (help: Multivariate Analysis with mvabund :: Environmental Computing)
-* Hui C, Richardson DM (2017). Invasion Dynamics. Oxford University Press.
-* Hui C et al. (2021). Trait-mediated ecological networks: mechanisms and consequences of invasion. Trends in Ecology & Evolution.
-
 
 ---
 
 ---
-
 
 # Appendices
 
@@ -2301,6 +2309,5 @@ ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
 * `K_env[s, j]` = **sites × residents**  
 * `Nstar[j, s]` = **residents × sites**  
 * `r_mat[i, s]` = **invader × site**
-
 
 ---

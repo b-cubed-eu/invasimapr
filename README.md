@@ -149,7 +149,7 @@ of competition.
 
 <a id="def-r"></a> $r_{is}$
 
-Thus a high $r_{is}$ signals a good abiotic match,while a low $r_{is}$
+Thus a high $r_{is}$ signals a good abiotic match, while a low $r_{is}$
 signals environmental mismatch.
 
 ------------------------------------------------------------------------
@@ -279,7 +279,7 @@ $$
 I_{ijs} \;=\; \alpha_{ij} \; K_e(\Delta_{js}; \sigma_e) \; N^{*}_{js}.
 $$
 
-Thus the supression of invader $j$ at site $s$ will increase when: 1.
+Thus the suppression of invader $j$ at site $s$ will increase when: 1.
 Species $i$ and $j$ are very similar = large $\alpha_{ij}$ 2. Residents
 $j$ are well-matched with environment $\mathbf{E}_s$ = large $K_e$ 3.
 Residents $j$ are very common/thriving = large $N^{*}_{js}$
@@ -303,7 +303,7 @@ V_i \;=\; \sum_{s} \lambda_{is}
 $$
 
 Thus higher $V_i$ suggests species $i$ tends to be more invasive across
-all sites i.e. many sites are suitableand/ore less resistant to invasion
+all sites i.e. many sites are suitable and/or less resistant to invasion
 by species $i$.
 
 #### 2.4.2. Invasibility of sites (openness)
@@ -1021,7 +1021,7 @@ str(spp_traits)
 #>  $ Family      : Named chr [1:27] "Erebidae" NA "Nymphalidae" "Nymphalidae" ...
 #>   ..- attr(*, "names")= chr [1:27] "Family" "Family" "Family" "Family" ...
 #>  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Arctiidae_-_Utetheisa_pulchella.JPG/250px-Arctiidae_-"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Dancing_acraea_%28Acraea_serena%29_underside_Maputo.j"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/0_Belle-dame_%28Vanessa_cardui%29_-_Echinacea_purpure"| __truncated__ ...
-#>  $ palette     : chr [1:27] "#1D220C, #8C8012, #535509, #CCBF98, #A59A47" NA "#736745, #A2A070, #3C3220, #8E8F60, #E8E6CF" "#6A5C42, #C65D9B, #3A311F, #CC8242, #EA8FD3" ...
+#>  $ palette     : chr [1:27] "#A59A47, #8C8012, #CCBF98, #1D220C, #535509" NA "#3C3220, #E8E6CF, #8E8F60, #A2A070, #736745" "#3A311F, #CC8242, #695C41, #EA8FD3, #C55C9B" ...
 #>  $ trait_cont1 : num [1:27] 0.0284 0.0382 -0.8351 -0.2196 0.314 ...
 #>  $ trait_cont2 : num [1:27] -0.203 -0.224 -0.307 0.569 0.666 ...
 #>  $ trait_cont3 : num [1:27] -0.9969 0.0288 0.0288 0.1632 0.5191 ...
@@ -1046,12 +1046,12 @@ head(spp_traits)
 #> # A tibble: 6 × 29
 #>   species          summary Kingdom Phylum Class Order Family img_url palette trait_cont1 trait_cont2
 #>   <chr>            <chr>   <chr>   <chr>  <chr> <chr> <chr>  <chr>   <chr>         <dbl>       <dbl>
-#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #1D220…      0.0284      -0.203
+#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #A59A4…      0.0284      -0.203
 #> 2 Danaus chrysipp… <NA>    <NA>    <NA>   <NA>  <NA>  <NA>   <NA>    <NA>         0.0382      -0.224
-#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #73674…     -0.835       -0.307
-#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #6A5C4…     -0.220        0.569
-#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B2A79…      0.314        0.666
-#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #ECEFE…     -0.765       -0.136
+#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #3C322…     -0.835       -0.307
+#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #3A311…     -0.220        0.569
+#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #27201…      0.314        0.666
+#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #6C6E4…     -0.765       -0.136
 #> # ℹ 18 more variables: trait_cont3 <dbl>, trait_cont4 <dbl>, trait_cont5 <dbl>, trait_cont6 <dbl>,
 #> #   trait_cont7 <dbl>, trait_cont8 <dbl>, trait_cont9 <dbl>, trait_cont10 <dbl>, trait_cat11 <chr>,
 #> #   trait_cat12 <chr>, trait_cat13 <chr>, trait_cat14 <chr>, trait_cat15 <chr>, trait_ord16 <int>,
@@ -1294,6 +1294,14 @@ ggplot(spp_rich_obs, aes(x = x, y = y, fill = sqrt(spp_rich))) +
 
 <img src="man/figures/README-site-richness-1.png" width="100%" style="display: block; margin: auto;" />
 
+> **Figure 3**: Spatial distribution of site-level species richness
+> across South Africa, derived from a species-by-abundance matrix. Each
+> grid cell indicates the number of species observed (numeric labels),
+> with colours representing the square-root–transformed richness
+> (√richness) to emphasize variation across the landscape. Warmer
+> colours denote higher richness, while cooler colours denote lower
+> richness. National boundaries are shown for geographic reference.
+
 ------------------------------------------------------------------------
 
 ## 7. Functional Trait Space
@@ -1355,6 +1363,14 @@ Trait-level functional similarity across species.
 
 </div>
 
+> **Figure 4**: Average trait similarity across species, measured as
+> percent similarity for each categorical or continuous trait. Bars
+> represent trait-level functional similarity, ordered from lowest to
+> highest, with colour intensity indicating the degree of similarity.
+> Traits with higher similarity values reflect more conserved
+> characteristics across species, whereas lower values indicate greater
+> differentiation.
+
 ### 7.2. Gower distance, clustering, and trait space mapping (PCoA)
 
 #### 7.2.1. Compute Gower distance (handles mixed trait types)
@@ -1397,6 +1413,11 @@ Species clustering by functional traits (Gower distance)
 </p>
 
 </div>
+
+> Figure 5: Hierarchical clustering of species based on functional
+> traits using Gower dissimilarity. The dendrogram partitions species
+> into four distinct functional groups (coloured branches), reflecting
+> shared trait combinations that may underlie ecological similarity.
 
 #### 7.2.3. PCoA ordination (map species into a reduced-dimensional trait space)
 
@@ -1458,6 +1479,12 @@ Kernel density in trait space (PCoA axes 1-2).
 
 </div>
 
+> **Figure 6**: Principal Coordinates Analysis (PCoA) of species in
+> reduced-dimensional trait space, based on Gower dissimilarity. Kernel
+> density contours highlight regions of high species density (hotspots
+> of trait similarity) and illustrate the overall structure of the
+> functional trait space.
+
 ### 7.3. Trait centrality
 
 Trait **centrality** quantifies how close each species is to the “core”
@@ -1507,27 +1534,19 @@ Distribution of trait centrality (distance to centroid) among species.
 
 </div>
 
-> This histogram shows how far each species is from the **center** of
-> the community’s trait space.
->
-> - The **x-axis** is *distance to the centroid* (central trait
->   combination of the community).
-> - The **y-axis** is the number of species at each distance.
->
-> **Interpretation:**
->
-> - Most species are clustered at **intermediate distances** (~0.18 -
->   0.22), meaning their traits are moderately similar to the community
->   average.
-> - A few species are **very close** to the centroid (low distances) -
->   these are “core” species with typical trait values.
-> - Others lie **further out** (higher distances) - these are
->   “peripheral” species with more unusual trait combinations, which
->   might indicate unique ecological roles or specialisations.
->
-> **Summary**: the community is centred around a typical trait set, but
-> also includes a handful of species that are either very similar or
-> quite distinct from that average.  
+> **Figure 7**: Distribution of trait centrality (distance to the
+> community centroid) among species. The histogram shows how far each
+> species lies from the centroid, representing the average trait
+> combination of the community. The x-axis indicates distance to the
+> centroid, while the y-axis gives the number of species at each
+> distance. Most species are clustered at intermediate distances
+> (~0.18–0.22), reflecting moderately typical trait values. A few
+> species occur very close to the centroid, representing “core” species
+> with common trait profiles, whereas others are more distant
+> “peripheral” species with unusual trait combinations that may indicate
+> specialized ecological roles. Overall, the community is centred on a
+> typical trait set but also contains species that are either strongly
+> representative or markedly distinct from that average.  
 
 ### 7.4. Trait dispersion
 
@@ -1578,30 +1597,18 @@ Community-level functional diversity metrics.
 
 </div>
 
-> This bar chart summarises three ways of describing the community’s
-> overall functional diversity:
->
-> - **FDis (Functional Dispersion)** – Moderate value (~0.20). Indicates
->   that species are fairly spread out from the community’s trait
->   centroid, reflecting a moderate amount of variation in trait
->   combinations.
->
-> - **FRic (Functional Richness)** – Highest value (~0.21). Suggests
->   that the community occupies a relatively broad portion of the
->   available trait space, i.e. species collectively use a wide range of
->   possible trait combinations.
->
-> - **RaoQ (Rao’s Quadratic Entropy)** – Lowest value (~0.13). Measures
->   total abundance-weighted trait dissimilarity. The lower value
->   implies that, despite trait differences among species, much of the
->   community’s abundance is concentrated in species that are relatively
->   similar.
->
-> **Summary**: The community shows a **broad trait space coverage**
-> (FRic), **moderate trait dispersion** (FDis), but **lower
-> abundance-weighted diversity** (RaoQ). This pattern suggests that
-> while trait space is well filled, dominant species are clustered
-> functionally.  
+> **Figure 8**: Community-level trait dispersion. Bar chart of three
+> functional diversity metrics summarising the community’s functional
+> structure. FDis (Functional Dispersion; ~0.20) indicates moderate
+> spread of species around the trait centroid, reflecting variation in
+> trait combinations. FRic (Functional Richness; ~0.21) is highest,
+> showing that the community spans a broad portion of trait space,
+> i.e. species collectively cover a wide range of trait combinations.
+> RaoQ (Rao’s Quadratic Entropy; ~0.13) is lowest, suggesting that
+> although trait space is well filled, community abundance is
+> concentrated in functionally similar species. Together, these metrics
+> suggest a community with broad trait coverage and moderate dispersion
+> but dominated by clusters of functionally alike species.  
 
 ### 7.5. Combined functional trait space workflow
 
@@ -1682,6 +1689,17 @@ str(res$dispersion, max.level = 1)
 #>  $ metrics_df     :'data.frame': 3 obs. of  2 variables:
 #>  $ plots          :List of 4
 ```
+
+> **Figure 9**: Combined functional trait space workflow. Outputs from
+> the compute_trait_space() function, which integrates multiple
+> trait-based analyses into a unified framework. Shown are: (top left)
+> hierarchical clustering of species by Gower trait distance; (top
+> right) community-level functional diversity metrics (FDis, FRic,
+> RaoQ); (bottom left) species centrality histogram (distance to
+> centroid); and (bottom right) trait space ordination (PCoA with kernel
+> density). Together, these visualisations capture trait similarity,
+> trait-space structure, species’ functional positions, and overall
+> community-level functional diversity.
 
 > **Note**: By pairing `compute_trait_similarity()` (per-trait
 > conservation/lability) with `compute_trait_dispersion()`
@@ -1853,7 +1871,7 @@ fml
 #>     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + 
 #>     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + 
 #>     (1 | species) + (1 | site_id)
-#> <environment: 0x000001c938671ae0>
+#> <environment: 0x000001e6772aa568>
 ```
 
 ### 8.3. Fit the GLMM
@@ -2680,19 +2698,18 @@ ggplot(lambda_df, aes(x = site_id, y = invader, fill = pmin(lambda, cap))) +
 
 <img src="man/figures/README-plot-fitness-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Note**: This figure shows the **raw invasion fitness matrix**
-> ([$\lambda_{is}$](#def-lambda)) for each invader (rows) across all
-> sites (columns). The colour scale ranges from low fitness (light
-> orange) to high fitness (dark purple), allowing direct comparison of
-> how well each invader performs across the landscape. Some invaders,
-> such as *inv3* and *inv4*, exhibit consistently high fitness across
-> many sites, while others (e.g. *inv7*, *inv10*) show lower and more
-> spatially restricted establishment potential. The heterogeneity of
-> colour patterns along the site axis highlights spatial variation in
-> community resistance and environmental conditions, while differences
-> among rows reflect interspecific variation in invasiveness. This
-> unclustered view provides the baseline data structure from which
-> rankings and clustering analyses are derived.
+> **Figure 10**: Invasion fitness matrix (invader × site). Heatmap of
+> low-density per-capita growth rates ([$\lambda_{is}$](#def-lambda))
+> for each invader (rows) across sites (columns). Higher fitness values
+> (yellow-orange) indicate favourable conditions or weak competitive
+> exclusion, while lower values (dark purple) reflect strong exclusion
+> or poor environmental match. This matrix enables direct comparison of
+> invader performance, highlighting both broadly adapted invaders
+> (e.g. inv3, inv4) and more restricted specialists (e.g. inv7, inv10).
+> The heterogeneous site-wise patterns underscore spatial variation in
+> invasion potential, while inter-row differences reveal trait-driven
+> variation in invasiveness. This unclustered baseline provides the
+> foundation for subsequent ranking and clustering analyses.
 
 ------------------------------------------------------------------------
 
@@ -2753,19 +2770,7 @@ ggplot(
 
 <img src="man/figures/README-invader-rank-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Note**: This figure ranks invaders by their **total invasion
-> fitness** ([$\lambda_{is}$](#def-lambda)) across all sites, providing
-> a measure of each species’ overall growth potential within the
-> landscape. Invaders such as *inv3* and *inv4* exhibit the highest
-> cumulative fitness, indicating consistently strong establishment
-> potential across sites, while *inv7* and *inv10* have the lowest
-> totals, suggesting limited success or strong constraints on
-> establishment. The colour gradient reinforces this ranking by visually
-> mapping higher total fitness to lighter shades. Together, the bar
-> heights and colours highlight which invaders pose the greatest
-> broad-scale invasion risk.
-
-------------------------------------------------------------------------
+## \> **Figure 11**: Invader invasiveness ranking by total growth potential. Bar plot of total invasion fitness ([\$ \_{is}\$](#def-lambda)) across all sites, providing a landscape-integrated measure of each invader’s establishment potential. Higher bars and lighter colours indicate stronger overall invasiveness. Invaders such as inv3 and inv4 emerge as “super-invaders,” with consistently high growth potential across the landscape, while inv7 and inv10 show the lowest cumulative fitness, suggesting they are unlikely to establish broadly. This ranking highlights which species pose the greatest invasion risk and thus merit prioritisation in monitoring and management.
 
 ### 12.3 Site-level Invasibility Metrics
 
@@ -2774,10 +2779,10 @@ invasibility** [$V_s$](#def-Vs) — the openness of each community to
 establishment. For each site $s$, we compute:
 
 - **Proportion of invaders with positive fitness** — fraction of
-  invaders with [\$\_{is} \> 0\$](#def-lambda). *This metric only has
-  ecological meaning if some \$\_{is}\$ can be negative (i.e. invaders
-  that fail to establish). If all values are positive, the proportion
-  saturates at 1 and becomes redundant.*
+  invaders with [$\lambda_{is} > 0$](#def-lambda). *This metric only has
+  ecological meaning if some [$\lambda_{is}$](#def-lambda) can be
+  negative (i.e. invaders that fail to establish). If all values are
+  positive, the proportion saturates at 1 and becomes redundant.*
 - **Count of successful invaders** — number of $i$ with
   [$\lambda_{is} > 0$](#def-lambda).
 - **Mean invasion fitness** — average [$\lambda_{is}$](#def-lambda)
@@ -2828,20 +2833,23 @@ ggplot(site_sum, aes(x = x, y = y, fill = prop_pos)) +
 
 <img src="man/figures/README-site-invasibility-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Note**: This figure maps the **site-level invasibility** of South
-> Africa, expressed as the **proportion of invaders with positive
-> fitness** ([$\lambda_{is}$](#def-lambda) $> 0$). Darker cells indicate
-> sites where most invaders are successful, highlighting hotspots of low
-> biotic resistance or favourable abiotic conditions, while lighter
-> cells indicate sites where fewer invaders establish successfully. Tile
-> labels show the absolute number of successful invaders at each site,
-> complementing proportional risk with absolute counts. IMPORTANT: *The
-> proportion of invaders with positive fitness is only informative when
-> some [$\lambda_{is}$](#def-lambda) values are negative
-> (i.e. establishment failure is possible); otherwise it trivially
-> saturates at 1. This example uses the `logis` variant of invasion
-> fitness, which allows both positive and negative values and thus
-> provides meaningful variation in this metric.*
+> **Figure 12**: *Site-level Invasibility Metrics* - This map depicts
+> the site-level invasibility $V_s$, defined as the proportion of
+> invaders with positive invasion fitness ($\lambda_{is} > 0$) at each
+> site. Darker cells indicate invasion “hotspots” where a high fraction
+> of invaders succeed, reflecting weak biotic resistance and/or
+> favourable abiotic conditions. Lighter cells indicate sites with
+> stronger resistance or limiting environments, where fewer invaders can
+> establish. Numbers within cells denote the absolute count of
+> successful invaders, complementing proportional risk with absolute
+> richness of potential invaders.
+
+**Important note:** The proportion of positive fitness values is only
+ecologically meaningful if some $\lambda_{is}$ are negative
+(i.e. invaders can fail to establish). If all $\lambda_{is} > 0$, the
+metric saturates at 1 and loses discriminatory power. Here we use the
+*logis* variant of invasion fitness, which yields both positive and
+negative values and thus provides informative spatial variation.
 
 ------------------------------------------------------------------------
 
@@ -2883,17 +2891,22 @@ ggplot(site_sum, aes(x = x, y = y, fill = mean_l)) +
 
 <img src="man/figures/README-spp-invasiness-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Note**: This figure shows the **mean invasion fitness** of all
-> invaders at each site, providing a continuous measure of **community
-> openness to invasion**. Warmer colours (yellow-red) highlight sites
-> where invaders generally achieve high fitness, while cooler colours
-> (blue-purple) indicate sites with low average performance, reflecting
-> stronger biotic resistance or environmental filtering. This metric
-> complements the proportion-based invasibility map by capturing not
-> only whether invaders establish, but also **how strongly** they tend
-> to succeed. IMPORTANT: *Mean invasion fitness remains informative even
-> if all [$\lambda_{is}$](#def-lambda) are positive, as it reflects the
-> magnitude of establishment success rather than just its occurrence.*
+> **Figure 13**: *Mean invasion fitness by site* - This map shows the
+> mean invasion fitness ($\overline{\lambda}_{\cdot s}$) across all
+> invaders at each site, providing a continuous measure of community
+> openness to invasion. Warmer colours (yellow–orange) indicate sites
+> where invaders tend to achieve higher fitness, reflecting low biotic
+> resistance and/or favourable abiotic conditions. Cooler colours
+> (purple–black) mark sites where invaders perform poorly on average,
+> indicating stronger resistance or environmental filtering.
+
+**Important note:** Unlike the proportion-based invasibility metric
+($V_s$), which saturates at 1 if all $\lambda_{is} > 0$, the mean
+remains informative even in such cases because it reflects *magnitude*
+rather than mere occurrence of establishment. Importantly, sites with
+moderately high mean fitness but low proportions of successful invaders
+may signal selective vulnerability—open to only a few highly adapted
+invaders rather than broadly permissive.
 
 ------------------------------------------------------------------------
 
@@ -2902,8 +2915,9 @@ ggplot(site_sum, aes(x = x, y = y, fill = mean_l)) +
 We identify **clusters of sites and invaders** with similar invasion
 fitness patterns using hierarchical clustering of
 [$\lambda_{is}$](#def-lambda) from `lambda_mat`. This reveals ecological
-“syndromes” — types of sites most at risk, or types of invaders most
-threatening — enabling targeted surveillance and intervention.
+profiles or invasion signatures — types of sites most at risk, or types
+of invaders most threatening — enabling targeted surveillance and
+intervention.
 
 #### 12.5.1 Hierarchical Clustering of Invaders and Sites
 
@@ -2917,10 +2931,8 @@ Hierarchical clustering groups:
 The heatmap displays [$\lambda_{is}$](#def-lambda) values as cells, with
 dendrograms indicating clusters. This approach distinguishes:
 
-- **Invader types** — e.g., broad-spectrum high-risk
-  vs. site-specialists.
-- **Site types** — e.g., broadly open vs. strongly resistant
-  communities.
+- **Invader types** — Broad-spectrum high-risk vs. site-specialists.
+- **Site types** — Broadly open vs. strongly resistant communities.
 
 These groups can be used for categorical risk classification and
 scenario exploration in downstream analyses.
@@ -2933,7 +2945,7 @@ lambda_mat_noNA = lambda_mat[
   colSums(is.na(lambda_mat)) < nrow(lambda_mat)
 ]
 
-# Assign invaders and sites to discrete clusters (syndromes) for downstream visualization
+# Assign invaders and sites to discrete clusters (profiles) for downstream visualization
 # Sites: cluster by invasion fitness profile (columns)
 site_dist = dist(t(scale(lambda_mat_noNA))) # standardize first then compute pairwise distances between sites
 site_clust = hclust(site_dist, method = "ward.D2") # Hierarchical clustering
@@ -2981,20 +2993,26 @@ pheatmap(lambda_mat_noNA,
 # - Mapping spatial patterns of invasion risk by ecological “scenario”
 ```
 
-> **Note**: This figure presents a **clustered heatmap of invasion
-> fitness ([$\lambda_{is}$](#def-lambda)) across invaders (rows) and
-> sites (columns)**, with hierarchical clustering applied to both
-> dimensions to reveal patterns of similarity. The colour scale
-> indicates invasion fitness, ranging from low (dark purple) to high
-> (bright yellow). Distinct vertical and horizontal bands highlight
-> groups of sites that impose similar levels of biotic resistance, and
-> groups of invaders that perform similarly across the landscape. For
-> example, invaders such as *inv3* and *inv4* form a cluster with
-> generally high fitness values across many sites, while other invaders
-> (e.g. *inv7*, *inv10*) show patchier, more constrained success. This
-> matrix view complements the ranking analysis by exposing **patterns of
-> invasibility** and identifying potential clusters of high-risk
-> invaders and vulnerable sites.
+> **Figure 14**: Clustered invasion fitness matrix (invader × site) -
+> This clustered heatmap displays invasion fitness values
+> ([$\lambda_{is}$](#def-lambda)) for each invader–site pair, with
+> hierarchical clustering applied to both invaders (rows) and sites
+> (columns). The colour scale ranges from low (purple) to high (yellow)
+> invasion fitness, while dendrograms identify groups of invaders with
+> similar performance profiles and sites with similar
+> resistance/openness syndromes. The analysis distinguishes: i)
+> **Invader types**: Broad-spectrum, high-fitness invaders (e.g.,
+> *inv3*, *inv4*) versus specialists with patchy or constrained success
+> (e.g., *inv7*, *inv10*); and ii) **Site types**: Broadly open
+> communities permissive to many invaders versus strongly resistant
+> communities that suppress invasion success.
+
+**Important note:** This two-way clustering highlights joint structure
+in invader performance and community susceptibility, providing a basis
+for categorical risk classification and ecological “scenario” analysis.
+These groupings can inform both strategic monitoring (e.g., targeting
+clusters of high-risk invaders) and management planning (e.g.,
+identifying site clusters most vulnerable to invasion).
 
 #### 12.5.2 Mapping Site-level Risk Categories
 
@@ -3011,7 +3029,7 @@ across sites.*
   consistently negative or low $\lambda_{is}$.
 
 Mapping these categories provides a spatial overview of invasibility
-syndromes, highlighting geographic concentrations of risk. Parallel
+profiles, highlighting geographic concentrations of risk. Parallel
 invader-category assignments allow alignment of high-risk invaders with
 high-risk sites for targeted management scenarios.
 
@@ -3108,9 +3126,25 @@ ggplot(site_sum, aes(x = x, y = y, fill = site_category)) +
 
 <img src="man/figures/README-map-risk-1.png" width="100%" style="display: block; margin: auto;" />
 
-> **Note**: Clustering on mean invasion fitness captures not only
-> whether invaders establish, but also the overall strength of
-> establishment success across sites.
+> **Figure 15: Mapping site-level invasion risk categories (spatially
+> constrained ClustGeo clustering)** Sites are assigned to invasibility
+> categories (very-high, high, medium, low, very-low) based on the mean
+> invasion fitness ($\lambda_{is}$) of invaders establishing within each
+> cluster. By using the mean, categories capture both the likelihood of
+> establishment and the overall strength of invasion success across
+> sites. High-risk categories (very-high, high) reflect communities with
+> consistently high site openness ($V_s$) and elevated mean
+> $\lambda_{is}$, indicating broad vulnerability to invasion. Low-risk
+> categories (low, very-low) are characterised by low $V_s$ and
+> suppressed $\lambda_{is}$, reflecting resistant communities. The
+> spatially constrained clustering (ClustGeo) ensures that these risk
+> categories respect both ecological similarity in invasion profiles and
+> geographic proximity. This mapping provides a spatial overview of
+> invasibility syndromes across South Africa, highlighting regional
+> hotspots of invasion risk. When coupled with invader-category
+> assignments, the framework enables alignment of high-risk invaders
+> with high-risk sites, supporting targeted monitoring and management
+> scenario development.
 
 ------------------------------------------------------------------------
 
@@ -3150,6 +3184,18 @@ ggplot(lambda_df, aes(x = lambda, fill = ..x..)) +
 ```
 
 <img src="man/figures/README-fitness-dist-1.png" width="100%" style="display: block; margin: auto;" />
+
+> **Figure 16: Distribution of invasion fitness values across all
+> invader–site combinations** Histogram of invasion fitness
+> ($\lambda_{is}$) values summarising the system-wide distribution of
+> establishment success. The distribution is strongly right-skewed,
+> indicating that while many invader-site combinations experience
+> exclusionary or marginal conditions, a substantial subset encounter
+> highly favourable environments for establishment. This pattern
+> complements site- and invader- level clustering (Figures 12-15),
+> providing an overall view of community openness to invasion and
+> highlighting the prevalence of rare but extreme invasion
+> opportunities.
 
 ### 13.2 Top and Bottom Invaders and Sites
 
@@ -3193,7 +3239,7 @@ To explore trait–fitness relationships, we join
   [$\lambda_{is}$](#def-lambda) identify traits most positively or
   negatively associated with invasion success.
 - **Categorical traits** — mean [$\lambda_{is}$](#def-lambda) per trait
-  level identifies functional syndromes linked to high or low
+  level identifies functional profiles linked to high or low
   establishment.
 
 This supports hypothesis generation about **mechanistic drivers** of
@@ -3255,35 +3301,60 @@ ggplot(lambda_key, aes(x = x, y = y, fill = lambda)) +
 
 <img src="man/figures/README-key-invaders-1.png" width="100%" style="display: block; margin: auto;" />
 
+> **Figure 17: Spatial invasion fitness patterns for top- and
+> bottom-ranked invaders** Faceted maps of invasion fitness
+> ($\lambda_{is}$) for the three invaders with the highest mean fitness
+> (top row) and the three with the lowest (bottom row). Top-performing
+> invaders show clear spatial “hotspots” of establishment potential,
+> often corresponding to particular regions with trait–environment
+> matches. In contrast, poorly performing invaders show consistently low
+> fitness values, indicating mismatches between their traits and local
+> community or environmental conditions. Together, these maps link
+> trait-based predictions to spatial risk assessments, providing an
+> interpretable basis for identifying regions of high invasion
+> susceptibility and guiding management prioritisation.
+
 > **Note:** Together, sections 12–13 move from **raw $\lambda_{is}$**
 > values → **clustered patterns** → **functional correlates** → **site-
 > and invader- specific rankings**. This progression enables scaling
-> from **broad ecological syndromes** to **actionable risk profiles**
-> for specific species and sites.  
+> from **broad ecological profiles** to **actionable risk profiles** for
+> specific species and sites.  
 
 ------------------------------------------------------------------------
 
-## 14. Glossary of definitions
+## 14. Discussion and Conclusion
 
-| Term                               | Symbol                                                                                   | Definition                                                                                                                                                                                                                                                                                                                                   |
-|------------------------------------|------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **Resident Abundance Equilibrium** | [$N^{*}_{js}$](#def-Nstar)                                                               | Equilibrium abundance of resident species $j$ at site $s$ providing resident abundance context for interaction strength calculations.                                                                                                                                                                                                        |
-| **Functional Trait Space**         | [$d_{ij}$](#def-dij); [$g^{\mathrm{(all)}}_{ij}$](#def-gall)                             | The multidimensional “map” of traits that describe how species use resources and interact with their environment.                                                                                                                                                                                                                            |
-| **Trait Centrality**               | [$\pmb{\mu}$](#def-mu)                                                                   | The position of a species’ traits relative to the community average, indicating similarity or distinctiveness. We compute abundance-weighted centroid [$\pmb{\mu}$](#def-mu) and species centrality [$c_i$](#def-ci) in the same PCoA space used for [$d_{ij}$](#def-dij).                                                                   |
-| **Trait Dispersion**               | [$\mathrm{FDis}$](#def-fdis); [$\mathrm{FRic}$](#def-fric); [$\mathrm{RaoQ}$](#def-raoq) | The degree of spread in trait space among species, reflecting ecological diversity and functional complementarity. Community dispersion is summarised by [$\mathrm{FDis}$](#def-fdis), [$\mathrm{FRic}$](#def-fric) (convex hull volume), and [$\mathrm{RaoQ}$](#def-raoq) based on the Euclidean distances underlying [$d_{ij}$](#def-dij). |
-| **Hypothetical Invaders**          | $\tilde{\mathbf{T}}$                                                                     | Simulated species introduced to test how traits influence establishment success. Hypothetical invaders $\tilde{\mathbf{T}}$ are sampled from resident trait distributions and evaluated via [$r_{is}$](#def-r) and [$\lambda_{is}$](#def-lambda).                                                                                            |
-| **Predicted Intrinsic Growth**     | [$r_{is}$](#def-r)                                                                       | Estimated growth rate of an invader under specific trait-environment conditions.                                                                                                                                                                                                                                                             |
-| **Interaction Strength**           | [$I_{ijs}$](#def-I)                                                                      | A measure of how strongly species affect each other’s growth rates, capturing competition or facilitation.                                                                                                                                                                                                                                   |
-| **Competition Pressure**           | [$\alpha_{ij}$](#def-alpha)                                                              | The penalty a species experiences due to trait overlap with resident species.                                                                                                                                                                                                                                                                |
-| **Environmental Filtering**        | [$K_e(\Delta_{js};\sigma_e)$](#def-Ke)                                                   | The effect of environmental conditions in favouring or excluding certain traits.                                                                                                                                                                                                                                                             |
-| **Context-Dependent Competition**  | [$C^{\mathrm{(raw)}}_{is}$](#def-Craw)                                                   | Competitive effects modified by environmental context.                                                                                                                                                                                                                                                                                       |
-| **Invasion Fitness**               | [$\lambda_{is}$](#def-lambda)                                                            | A measure of an invader’s likelihood of successful establishment relative to residents.                                                                                                                                                                                                                                                      |
-| **Invasiveness Ranking**           | [$V_i$](#def-Vi)                                                                         | Ordering of species by their relative propensity to invade.                                                                                                                                                                                                                                                                                  |
-| **Site Invasibility Metrics**      | [$V_s$](#def-Vs)                                                                         | Measures of how open a community is to invasion, reflecting ecological “vacancies.”                                                                                                                                                                                                                                                          |
-
-**Note**: \* `a_ij[i, j]` = invader × resident \* `K_env[s, j]` = sites
-× residents \* `Nstar[j, s]` = residents × sites \* `r_mat[i, s]` =
-invader × site
+The code test demonstrates that the `invasimapr` package provides a
+practical and transparent framework for quantifying both trait
+dispersion and site-level invasibility. By linking species-level traits
+with community-level invasion outcomes, the framework moves beyond
+binary assessments of invasion success and instead quantifies the
+relative strength of establishment. This refinement improves ecological
+interpretation by allowing users to identify not only whether invasion
+is possible, but also how strongly invaders are likely to establish
+under given trait and environmental contexts. Importantly, the
+integration of trait-based analyses with invasion fitness metrics
+creates a mechanistic and scalable approach that can be applied in
+conservation management and policy settings. The findings indicate that
+trait dispersion may function as an early-warning signal of invasion
+risk, while site-level invasibility metrics highlight areas of
+ecological susceptibility. Such outputs have clear conservation value,
+providing managers with repeatable and evidence-based tools to
+prioritise surveillance, allocate resources, and design interventions
+before invasive species impacts become entrenched. Some limitations
+remain. The utility of the package is currently constrained by the
+availability and consistency of trait data across species and sites, and
+by assumptions embedded within the modelling framework that may simplify
+complex ecological interactions. Further development will focus on
+incorporating phylogenetic relationships, environmental gradients, and
+spatial heterogeneity to improve predictive accuracy. In addition,
+broader testing across ecosystems with different invasion histories will
+be essential for evaluating transferability. However, with continued
+refinement, `invasimapr` has strong potential to become a central tool
+for proactive biodiversity management. Its ability to deliver rapid,
+repeatable assessments of invasibility is particularly relevant for
+large, protected landscapes where early detection and prevention of
+invasive species are critical for long-term conservation outcomes.
 
 ------------------------------------------------------------------------
 
@@ -3312,6 +3383,31 @@ invader × site
   Press.
 - Hui C et al. (2021). Trait-mediated ecological networks: mechanisms
   and consequences of invasion. Trends in Ecology & Evolution.
+
+------------------------------------------------------------------------
+
+## 16. Glossary of definitions
+
+| Term                               | Symbol                                                                                   | Definition                                                                                                                                                                                                                                                                                                                                   |
+|------------------------------------|------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **Resident Abundance Equilibrium** | [$N^{*}_{js}$](#def-Nstar)                                                               | Equilibrium abundance of resident species $j$ at site $s$ providing resident abundance context for interaction strength calculations.                                                                                                                                                                                                        |
+| **Functional Trait Space**         | [$d_{ij}$](#def-dij); [$g^{\mathrm{(all)}}_{ij}$](#def-gall)                             | The multidimensional “map” of traits that describe how species use resources and interact with their environment.                                                                                                                                                                                                                            |
+| **Trait Centrality**               | [$\pmb{\mu}$](#def-mu)                                                                   | The position of a species’ traits relative to the community average, indicating similarity or distinctiveness. We compute abundance-weighted centroid [$\pmb{\mu}$](#def-mu) and species centrality [$c_i$](#def-ci) in the same PCoA space used for [$d_{ij}$](#def-dij).                                                                   |
+| **Trait Dispersion**               | [$\mathrm{FDis}$](#def-fdis); [$\mathrm{FRic}$](#def-fric); [$\mathrm{RaoQ}$](#def-raoq) | The degree of spread in trait space among species, reflecting ecological diversity and functional complementarity. Community dispersion is summarised by [$\mathrm{FDis}$](#def-fdis), [$\mathrm{FRic}$](#def-fric) (convex hull volume), and [$\mathrm{RaoQ}$](#def-raoq) based on the Euclidean distances underlying [$d_{ij}$](#def-dij). |
+| **Hypothetical Invaders**          | $\tilde{\mathbf{T}}$                                                                     | Simulated species introduced to test how traits influence establishment success. Hypothetical invaders $\tilde{\mathbf{T}}$ are sampled from resident trait distributions and evaluated via [$r_{is}$](#def-r) and [$\lambda_{is}$](#def-lambda).                                                                                            |
+| **Predicted Intrinsic Growth**     | [$r_{is}$](#def-r)                                                                       | Estimated growth rate of an invader under specific trait-environment conditions.                                                                                                                                                                                                                                                             |
+| **Interaction Strength**           | [$I_{ijs}$](#def-I)                                                                      | A measure of how strongly species affect each other’s growth rates, capturing competition or facilitation.                                                                                                                                                                                                                                   |
+| **Competition Pressure**           | [$\alpha_{ij}$](#def-alpha)                                                              | The penalty a species experiences due to trait overlap with resident species.                                                                                                                                                                                                                                                                |
+| **Environmental Filtering**        | [$K_e(\Delta_{js};\sigma_e)$](#def-Ke)                                                   | The effect of environmental conditions in favouring or excluding certain traits.                                                                                                                                                                                                                                                             |
+| **Context-Dependent Competition**  | [$C^{\mathrm{(raw)}}_{is}$](#def-Craw)                                                   | Competitive effects modified by environmental context.                                                                                                                                                                                                                                                                                       |
+| **Invasion Fitness**               | [$\lambda_{is}$](#def-lambda)                                                            | A measure of an invader’s likelihood of successful establishment relative to residents.                                                                                                                                                                                                                                                      |
+| **Invasiveness Ranking**           | [$V_i$](#def-Vi)                                                                         | Ordering of species by their relative propensity to invade.                                                                                                                                                                                                                                                                                  |
+| **Site Invasibility Metrics**      | [$V_s$](#def-Vs)                                                                         | Measures of how open a community is to invasion, reflecting ecological “vacancies.”                                                                                                                                                                                                                                                          |
+
+- `a_ij[i, j]` = invader × resident
+- `K_env[s, j]` = sites × residents
+- `Nstar[j, s]` = residents × sites
+- `r_mat[i, s]` = invader × site
 
 ------------------------------------------------------------------------
 
