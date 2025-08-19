@@ -92,11 +92,11 @@
 <div class="section level2">
 <h2 id="id_2-context-and-model-overview">2. Context and model overview<a class="anchor" aria-label="anchor" href="#id_2-context-and-model-overview"></a>
 </h2>
-<p>The figure below summarizes the <strong>invasimapr</strong> pipeline from inputs to decision-ready outputs. Starting with species <strong>traits</strong>, <strong>site environments</strong> <span class="math inline">\(\mathbf{E}_s\)</span>, and <strong>resident communities</strong>, the workflow derives intermediate quantities in two coordinated tracks: a <strong>trait track</strong> that yields pairwise distances and a competition kernel <span class="math inline">\(\alpha_{ij}\)</span>, and an <strong>environment track</strong> that yields resident optima <span class="math inline">\(\theta_j\)</span>, site-resident mismatch <span class="math inline">\(\Delta_{js}\)</span>, an environmental kernel <span class="math inline">\(K_e\)</span>, and resident context <span class="math inline">\(N^{*}_{js}\)</span>. These parts are assembled into an <strong>impact tensor</strong> <span class="math inline">\(I_{ijs}\)</span>, aggregated to a <strong>penalty</strong> <span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span>, and combined with predicted <strong>intrinsic growth</strong> <span class="math inline">\(r_{is}\)</span> to produce <strong>invasion fitness</strong> <span class="math inline">\(\lambda_{is}\)</span>. Site- and species-level summaries (<strong>invasibility</strong> <span class="math inline">\(V_s\)</span> and <strong>invasiveness</strong> <span class="math inline">\(I_i\)</span>) support mapping and prioritisation.<br>
+<p>The figure below summarizes the <strong>invasimapr</strong> pipeline from inputs to decision-ready outputs. Starting with species <strong>traits</strong>, <strong>site environments</strong> <span class="math inline">\(\mathbf{E}_s\)</span>, and <strong>resident communities</strong>, the workflow derives intermediate quantities in two coordinated tracks: a <strong>trait track</strong> that yields pairwise distances and a competition kernel <span class="math inline">\(\alpha_{ij}\)</span>, and an <strong>environment track</strong> that yields resident optima <span class="math inline">\(\theta_j\)</span>, site-resident mismatch <span class="math inline">\(\Delta_{js}\)</span>, an environmental kernel <span class="math inline">\(K_e\)</span>, and resident context <span class="math inline">\(N^{*}_{js}\)</span>. These parts are assembled into an <strong>impact tensor</strong> <span class="math inline">\(I_{ijs}\)</span>, aggregated to a <strong>penalty</strong> <span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span>, and combined with predicted <strong>intrinsic growth</strong> <span class="math inline">\(r_{is}\)</span> to produce <strong>invasion fitness</strong> <span class="math inline">\(\lambda_{is}\)</span>. Site- and species-level summaries (<strong>invasibility</strong> <span class="math inline">\(V_s\)</span> and <strong>invasiveness</strong> <span class="math inline">\(V_i\)</span>) support mapping and prioritisation.<br>
  </p>
 <p><img src="reference/figures/invasimapr_flowchart.png" style="width:80.0%"><!-- for crisp scaling. ​:contentReference[oaicite:0]{index=0}​ --></p>
 <blockquote>
-<p><strong>Figure 1</strong>: Traits and environment feed two tracks - (1) <strong>competition</strong> via trait distances → <span class="math inline">\(\alpha_{ij}\)</span>, and (2) <strong>environmental filtering</strong> via optima and mismatch → <span class="math inline">\(K_e(\Delta_{js};\sigma_e)\)</span> plus <strong>resident context</strong> <span class="math inline">\(N^{*}_{js}\)</span>. These combine into an <strong>impact tensor</strong> <span class="math inline">\(I_{ijs}\)</span>, which sums to the <strong>penalty</strong> <span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span>. Subtracting this from the <strong>intrinsic growth</strong> <span class="math inline">\(r_{is}\)</span> gives <strong>invasion fitness</strong> <span class="math inline">\(\lambda_{is}\)</span>, which aggregates to <strong>invasibility</strong> <span class="math inline">\(V_s\)</span> and <strong>invasiveness</strong> <span class="math inline">\(I_i\)</span> and can be mapped.</p>
+<p><strong>Figure 1</strong>: Traits and environment feed two tracks - (1) <strong>competition</strong> via trait distances → <span class="math inline">\(\alpha_{ij}\)</span>, and (2) <strong>environmental filtering</strong> via optima and mismatch → <span class="math inline">\(K_e(\Delta_{js};\sigma_e)\)</span> plus <strong>resident context</strong> <span class="math inline">\(N^{*}_{js}\)</span>. These combine into an <strong>impact tensor</strong> <span class="math inline">\(I_{ijs}\)</span>, which sums to the <strong>penalty</strong> <span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span>. Subtracting this from the <strong>intrinsic growth</strong> <span class="math inline">\(r_{is}\)</span> gives <strong>invasion fitness</strong> <span class="math inline">\(\lambda_{is}\)</span>, which aggregates to <strong>invasibility</strong> <span class="math inline">\(V_s\)</span> and <strong>invasiveness</strong> <span class="math inline">\(V_i\)</span> and can be mapped.</p>
 </blockquote>
 <div class="section level3">
 <h3 id="id_21-inputs">2.1. Inputs<a class="anchor" aria-label="anchor" href="#id_21-inputs"></a>
@@ -128,12 +128,22 @@
 <h3 id="id_23-components-of-lambda_is">2.3. Components of <span class="math inline">\(\lambda_{is}\)</span>
 <a class="anchor" aria-label="anchor" href="#id_23-components-of-lambda_is"></a>
 </h3>
+<p>The invader fitness <span class="math inline">\(\lambda_{is}\)</span> at site <span class="math inline">\(s\)</span> is built from three modules:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Intrinsic growth</strong> <span class="math inline">\(r_{is}\)</span>: the abiotic match of species <span class="math inline">\(i\)</span> to site <span class="math inline">\(s\)</span>.</li>
+<li>
+<strong>Competitive pressure</strong> <span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span>: suppression exerted by residents.</li>
+<li>
+<strong>Interaction tensor</strong> <span class="math inline">\(I_{ijs}\)</span>: trait overlap): pairwise impact combining trait similarity, environmental suitability, and resident abundance.</li>
+</ol>
+<hr>
 <div class="section level4">
 <h4 id="id_231-intrinsic-growth-predicted-growth-potential">2.3.1. Intrinsic growth (predicted growth potential)<a class="anchor" aria-label="anchor" href="#id_231-intrinsic-growth-predicted-growth-potential"></a>
 </h4>
 <p>This is the growth or abundance a species is expected to achieve at site <span class="math inline">\(s\)</span> <strong>without competitors</strong>, derived from the trait-environment model. It captures environmental suitability and any trait effects independent of competition.</p>
 <p><a id="def-r"></a> <span class="math inline">\(r_{is}\)</span></p>
-<p><em>Interpretation:</em> high <span class="math inline">\(r_{is}\)</span> signals a good abiotic match; low <span class="math inline">\(r_{is}\)</span> signals environmental mismatch.</p>
+<p>Thus a high <span class="math inline">\(r_{is}\)</span> signals a good abiotic match,while a low <span class="math inline">\(r_{is}\)</span> signals environmental mismatch.</p>
 <hr>
 </div>
 <div class="section level4">
@@ -144,28 +154,58 @@
 <p><span class="math display">\[
 C^{\mathrm{(raw)}}_{is} \;=\; \sum_{j \neq i} I_{ijs}
 \]</span></p>
-<p>It is built from three ideas: <strong>similarity in trait space</strong>, <strong>environmental match of residents</strong>, and <strong>how common residents are</strong>.</p>
+<p>This penalty integrates <strong>competition</strong> (trait similarity), <strong>environmental suitability/filtering</strong> (resident suitability), and <strong>resident abundance</strong> (how common residents are).</p>
 <div class="section level5">
 <h5 id="i-functional-trait-space--competition">i) Functional trait space → competition<a class="anchor" aria-label="anchor" href="#i-functional-trait-space--competition"></a>
 </h5>
-<p>Species are positioned in a <strong>functional trait space</strong> where distances reflect ecological similarity. Two summaries help interpret residents:</p>
-<ul>
-<li>
-<strong>Trait centrality</strong>: how close a species is to the centre of the resident trait cloud; central residents typically overlap more with others.</li>
-<li>
-<strong>Trait dispersion</strong>: how spread out residents are; greater spread often means less average overlap and weaker competition.</li>
-</ul>
-<p>Similarity is translated into a competition coefficient with a Gaussian kernel:</p>
+<p>Species are positioned in a <strong>functional trait space</strong> (e.g. PCoA) where distances (e.g. Euclidean) reflect ecological similarity. Two summaries help interpret residents:</p>
+<div class="section level6">
+<h6 id="pairwise-similarity">
+<strong>Pairwise similarity</strong>:<a class="anchor" aria-label="anchor" href="#pairwise-similarity"></a>
+</h6>
 <p><a id="def-alpha"></a></p>
 <p><span class="math display">\[
-\alpha_{ij} \;=\; \exp\!\left(-\frac{d_{ij}^2}{2\sigma_t^2}\right)
+\alpha_{ij} \;=\; \exp\!\left(-\frac{d_{ij}^2}{2\sigma_t^2}\right),
+\quad d_{ij}=\|\mathbf{z}_i-\mathbf{z}_j\|_2.
 \]</span></p>
-<p>Here <a id="def-dij"></a><span class="math inline">\(d_{ij}\)</span> is trait dissimilarity (0 = identical, 1 = very different) and <a id="def-sigmat"></a><span class="math inline">\(\sigma_t\)</span> controls how quickly competition fades as species diverge. The general relation <a id="def-gall"></a><span class="math inline">\(g^{\mathrm{(all)}}_{ij}\)</span> is computed over the full species set to provide consistent distances.</p>
+<p>In this way, similarity is translated into a competition coefficient with a Gaussian kernel. Here <a id="def-dij"></a><span class="math inline">\(d_{ij}\)</span> is trait dissimilarity (0 = identical, 1 = very different) and <a id="def-sigmat"></a><span class="math inline">\(\sigma_t\)</span> controls how quickly competition fades as species diverge. The general relation <a id="def-gall"></a><span class="math inline">\(g^{\mathrm{(all)}}_{ij}\)</span> is computed over the full species set to provide consistent distances.</p>
+</div>
+<div class="section level6">
+<h6 id="centrality-formal-definition">
+<strong>Centrality (formal definition)</strong>:<a class="anchor" aria-label="anchor" href="#centrality-formal-definition"></a>
+</h6>
+<p>Let <span class="math inline">\(p_{i}\)</span> be normalised abundances, <span class="math inline">\(\mathbf{z}_i\)</span> the coordinates in PCoA space, and</p>
+<p><a id="def-mu"></a><a id="def-ci"></a></p>
+<p><span class="math display">\[
+\pmb{\mu} = \sum_i p_i \mathbf{z}_i,
+\quad c_i = \|\mathbf{z}_i - \pmb{\mu}\|_2.
+\]</span></p>
+<p>Thus <strong>trait centrality</strong> is how close a species is to the centre of the resident trait cloud; central residents typically overlap more with others.</p>
+</div>
+<div class="section level6">
+<h6 id="dispersion-metrics-community-level">
+<strong>Dispersion metrics (community-level)</strong>:<a class="anchor" aria-label="anchor" href="#dispersion-metrics-community-level"></a>
+</h6>
+<p><a id="def-fdis"></a></p>
+<p><span class="math display">\[
+\mathrm{FDis} = \sum_i p_i c_i,
+\]</span></p>
+<p><a id="def-fric"></a></p>
+<p><span class="math display">\[
+\mathrm{FRic} = \mathrm{Vol}(\mathrm{ConvHull}\{\mathbf{z}_i\}),
+\]</span></p>
+<p><a id="def-raoq"></a></p>
+<p><span class="math display">\[
+\mathrm{RaoQ} = \tfrac{1}{2}\sum_i\sum_j p_i p_j\, d_{ij}.
+\]</span></p>
+<p>Thus <strong>trait dispersion</strong> is how spread out residents are. Greater spread often means less average overlap and weaker competition.</p>
+<p><em>All together, similarity, trait centrality and dispersion, quantify the “shape” of the trait cloud influencing overlap and competition.</em></p>
+</div>
 </div>
 <div class="section level5">
 <h5 id="ii-environmental-filtering-of-residents">ii) Environmental filtering of residents<a class="anchor" aria-label="anchor" href="#ii-environmental-filtering-of-residents"></a>
 </h5>
-<p>Residents suppress invaders most where <strong>they</strong> perform well. We quantify the match between site conditions and each resident’s optimum with a kernel in environmental space:</p>
+<p>Residents suppress invaders most where they perform well. We quantify the match between site conditions and each resident’s optimum with a kernel in environmental space:</p>
 <p><a id="def-Ke"></a> <a id="def-delta"></a> <a id="def-sigmae"></a> <a id="def-E"></a> <a id="def-theta"></a></p>
 <p><span class="math display">\[
 K_e(\Delta_{js}; \sigma_e) \;=\; \exp\!\left(-\frac{\Delta_{js}^2}{2\sigma_e^2}\right),
@@ -176,7 +216,7 @@ K_e(\Delta_{js}; \sigma_e) \;=\; \exp\!\left(-\frac{\Delta_{js}^2}{2\sigma_e^2}\
 <div class="section level5">
 <h5 id="iii-resident-abundance-context">iii) Resident abundance (context)<a class="anchor" aria-label="anchor" href="#iii-resident-abundance-context"></a>
 </h5>
-<p>Abundant residents exert more pressure. Typical resident abundance at each site comes from the same trait-environment model:</p>
+<p>Abundant residents exert more pressure. Typical abundance of resident <span class="math inline">\(j\)</span> at site <span class="math inline">\(s\)</span> is predicted from the trait-environment model:</p>
 <p><a id="def-Nstar"></a></p>
 <p><span class="math display">\[
 N^{*}_{js} \;=\; f_{\text{env}}\!\left(\mathbf{E}_s, \theta_j, \mathbf{z}_j\right),
@@ -188,13 +228,13 @@ N^{*}_{js} \;=\; f_{\text{env}}\!\left(\mathbf{E}_s, \theta_j, \mathbf{z}_j\righ
 <div class="section level4">
 <h4 id="id_233-interaction-strength-impact-tensor">2.3.3. Interaction strength (impact tensor)<a class="anchor" aria-label="anchor" href="#id_233-interaction-strength-impact-tensor"></a>
 </h4>
-<p>The <strong>impact tensor</strong> combines trait overlap, resident suitability, and resident abundance into pairwise effects:</p>
+<p>The impact tensor combines trait overlap, resident suitability, and resident abundance into pairwise effects:</p>
 <p><a id="def-I"></a></p>
 <p><span class="math display">\[
 I_{ijs} \;=\; \alpha_{ij} \; K_e(\Delta_{js}; \sigma_e) \; N^{*}_{js}.
 \]</span></p>
-<p>Summing <span class="math inline">\(I_{ijs}\)</span> over residents creates the site-level penalty <span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span>.</p>
-<p><em>Reading:</em> large <span class="math inline">\(\alpha_{ij}\)</span> (similar species), large <span class="math inline">\(K_e\)</span> (resident well-matched), and large <span class="math inline">\(N^{*}_{js}\)</span> (resident common) all increase suppression of the invader.</p>
+<p>Thus the supression of invader <span class="math inline">\(j\)</span> at site <span class="math inline">\(s\)</span> will increase when: 1. Species <span class="math inline">\(i\)</span> and <span class="math inline">\(j\)</span> are very similar = large <span class="math inline">\(\alpha_{ij}\)</span> 2. Residents <span class="math inline">\(j\)</span> are well-matched with environment <span class="math inline">\(\mathbf{E}_s\)</span> = large <span class="math inline">\(K_e\)</span> 3. Residents <span class="math inline">\(j\)</span> are very common/thriving = large <span class="math inline">\(N^{*}_{js}\)</span></p>
+<p>Note: Summing <span class="math inline">\(I_{ijs}\)</span> over residents <span class="math inline">\(j\)</span> creates the site-level penalty <span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span>.</p>
 <hr>
 </div>
 </div>
@@ -202,27 +242,24 @@ I_{ijs} \;=\; \alpha_{ij} \; K_e(\Delta_{js}; \sigma_e) \; N^{*}_{js}.
 <h3 id="id_24-aggregated-outputs">2.4. Aggregated outputs<a class="anchor" aria-label="anchor" href="#id_24-aggregated-outputs"></a>
 </h3>
 <div class="section level4">
-<h4 id="id_241-invasibility-site-openness">2.4.1. Invasibility (site openness)<a class="anchor" aria-label="anchor" href="#id_241-invasibility-site-openness"></a>
+<h4 id="id_241-invasiveness-of-species-propensity-to-invade">2.4.1. Invasiveness of species (propensity to invade)<a class="anchor" aria-label="anchor" href="#id_241-invasiveness-of-species-propensity-to-invade"></a>
+</h4>
+<p>How readily a species establishes across sites. We aggregate fitness over space to rank potential invaders.</p>
+<p><a id="def-Vi"></a></p>
+<p><span class="math display">\[
+V_i \;=\; \sum_{s} \lambda_{is}
+\]</span></p>
+<p>Thus higher <span class="math inline">\(V_i\)</span> suggests species <span class="math inline">\(i\)</span> tends to be more invasive across all sites i.e. many sites are suitableand/ore less resistant to invasion by species <span class="math inline">\(i\)</span>.</p>
+</div>
+<div class="section level4">
+<h4 id="id_242-invasibility-of-sites-openness">2.4.2. Invasibility of sites (openness)<a class="anchor" aria-label="anchor" href="#id_242-invasibility-of-sites-openness"></a>
 </h4>
 <p>How open a site is to new species. We aggregate the fitness matrix over invaders to a site-level score that can be mapped or tracked through time.</p>
 <p><a id="def-Vs"></a></p>
 <p><span class="math display">\[
 V_s \;=\; \frac{1}{I}\sum_{i} \mathbb{I}\{\lambda_{is} &gt; 0\}
 \]</span></p>
-<p><em>Interpretation:</em> higher <span class="math inline">\(V_s\)</span> = more invaders expected to establish at site <span class="math inline">\(s\)</span>.</p>
-</div>
-<div class="section level4">
-<h4 id="id_241-invasiveness-species-propensity">2.4.1. Invasiveness (species propensity)<a class="anchor" aria-label="anchor" href="#id_241-invasiveness-species-propensity"></a>
-</h4>
-<p>How readily a species establishes across sites. We aggregate fitness over space to rank potential invaders.</p>
-<p><a id="def-Ii"></a></p>
-<p><span class="math display">\[
-I_i \;=\; \sum_{s} \lambda_{is}
-\]</span></p>
-<p><em>Interpretation:</em> higher <span class="math inline">\(I_i\)</span> = species <span class="math inline">\(i\)</span> tends to find many suitable, weakly resistant sites.</p>
-<blockquote>
-<p><strong>Note.</strong> This section provides a high-level map of the <strong><code>invasimapr</code></strong> pipeline. Each arrow denotes either a fitted relationship (from traits/environments to predictions) or a deterministic transformation (from distances to kernels to impacts). The modules are interchangeable and auditable: you can inspect intermediate objects, swap modelling choices (e.g., GLMM vs. GAM), and run sensitivity analyses for key scales (<span class="math inline">\(\sigma_t, \sigma_e\)</span>). Aggregates such as <span class="math inline">\(V_s\)</span> and <span class="math inline">\(I_i\)</span> are flexible (sum, mean, or thresholded counts) and should be chosen to match management goals. Because every quantity derives from observed traits, environments, and resident data, the workflow remains transparent, reproducible, and ready for mapping and scenario testing.</p>
-</blockquote>
+<p>Thus higher <span class="math inline">\(V_s\)</span> suggests more invaders are expected to establish at site <span class="math inline">\(s\)</span>.</p>
 <hr>
 </div>
 </div>
@@ -231,6 +268,11 @@ I_i \;=\; \sum_{s} \lambda_{is}
 <h2 id="id_3-overview-of-the-invasimapr-r-package-conceptual-workflow">3. Overview of the <code>invasimapr</code> R package conceptual workflow<a class="anchor" aria-label="anchor" href="#id_3-overview-of-the-invasimapr-r-package-conceptual-workflow"></a>
 </h2>
 <p>This tutorial walks through the full <strong><code>invasimapr</code></strong> workflow for quantifying, mapping, and interpreting <strong>invasion fitness</strong> <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a>. The pipeline integrates information from traits, environments, and resident communities, returning explicit intermediate objects so you can inspect, audit, and reuse results.</p>
+<p><img src="reference/figures/README-plot-overview-1.png" width="100%" style="display: block; margin: auto;"></p>
+<blockquote>
+<p><strong>Figure 2</strong>: Conceptual overview of the invasimapr framework: Intrinsic growth potential (<span class="math inline">\(r_{is}\)</span>) derives from trait-environment matching in the absence of competitors. Resident communities impose competitive pressure (<span class="math inline">\(C_{is}\)</span>) through trait similarity, resident environmental matching, and resident abundance. These components combine into invasion fitness (<span class="math inline">\(\lambda_{is}\)</span>), which aggregates to species-level invasiveness (<span class="math inline">\(V_i\)</span>) and site-level invasibility (<span class="math inline">\(V_s\)</span>).</p>
+</blockquote>
+<hr>
 <ol style="list-style-type: decimal">
 <li><p><strong>Inputs and setup</strong><br>
 Provide site environments <a href="#def-E"><span class="math inline">\(\mathbf{E}_s\)</span></a>, resident occurrence or abundance, species traits, and consistent species and site identifiers. Load packages, set seeds, and ensure that tables align on IDs so later steps can estimate intrinsic growth <a href="#def-r"><span class="math inline">\(\;r_{is}\)</span></a>, trait similarity <a href="#def-dij"><span class="math inline">\(\;d_{ij}\)</span></a>, and resident context <a href="#def-Nstar"><span class="math inline">\(\;N^{*}_{js}\)</span></a>.</p></li>
@@ -247,10 +289,10 @@ Estimate pairwise biotic influence potentials by computing interaction strengths
 <li><p><strong>Compute invasion fitness and variants</strong><br>
 Calculate invasion fitness as intrinsic growth minus penalty, <a href="#def-lambda"><span class="math inline">\(\lambda_{is} = r_{is} - C^{\mathrm{(raw)}}_{is}\)</span></a> using <code><a href="reference/compute_invasion_fitness.html">compute_invasion_fitness()</a></code>. Optionally report scaled fitness that divides the penalty by richness, a relative-abundance version that emphasises composition, and a logistic-capped version that smoothly limits extreme penalties.</p></li>
 <li><p><strong>Summaries, maps, and interpretation</strong><br>
-Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href="#def-Vs"><span class="math inline">\(V_s\)</span></a> and species-level <strong>invasiveness</strong> <a href="#def-Ii"><span class="math inline">\(I_i\)</span></a>. Map <span class="math inline">\(\lambda_{is}\)</span>, <span class="math inline">\(V_s\)</span>, and <span class="math inline">\(I_i\)</span>, explore uncertainty and sensitivity, and create concise products for management and reporting.</p></li>
+Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href="#def-Vs"><span class="math inline">\(V_s\)</span></a> and species-level <strong>invasiveness</strong> <a href="#def-Vi"><span class="math inline">\(V_i\)</span></a>. Map <span class="math inline">\(\lambda_{is}\)</span>, <span class="math inline">\(V_s\)</span>, and <span class="math inline">\(V_i\)</span>, explore uncertainty and sensitivity, and create concise products for management and reporting.</p></li>
 </ol>
 <blockquote>
-<p><strong>Note.</strong> Different summaries can be used. For example, <a href="#def-Vs"><span class="math inline">\(V_s\)</span></a> can be the mean of <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a> over species <span class="math inline">\(i\)</span>; and <a href="#def-Ii"><span class="math inline">\(I_i\)</span></a> can be the mean across sites or a sum over positive values only, depending on management goals.</p>
+<p><strong>Note.</strong> Different summaries can be used. For example, <a href="#def-Vs"><span class="math inline">\(V_s\)</span></a> can be the mean of <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a> over species <span class="math inline">\(i\)</span>; and <a href="#def-Vi"><span class="math inline">\(V_i\)</span></a> can be the mean across sites or a sum over positive values only, depending on management goals.</p>
 </blockquote>
 </div>
 </div>
@@ -295,6 +337,7 @@ Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://sjmgarnier.github.io/viridis/" class="external-link">viridis</a></span><span class="op">)</span>        <span class="co"># Colorblind-friendly palettes for ggplot2</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.sthda.com/english/rpkgs/factoextra" class="external-link">factoextra</a></span><span class="op">)</span>     <span class="co"># Visualize clustering e.g. fviz_nbclust, silhouettes</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">pheatmap</span><span class="op">)</span>       <span class="co"># Pretty Heatmaps</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">grid</span><span class="op">)</span>           <span class="co"># Grid Graphics Package</span></span>
 <span></span>
 <span><span class="co"># --- Spatial Data ---</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/" class="external-link">sf</a></span><span class="op">)</span>             <span class="co"># Spatial vector data (simple features)</span></span>
@@ -713,7 +756,7 @@ Plot square root transformed sampling effort and species richness, in a 1x2 side
 <p>This utility provides an automated pipeline for extracting and joining both biological trait data and rich metadata for any focal species. The function integrates several steps:</p>
 <ol style="list-style-type: decimal">
 <li>
-<strong>Trait Table Lookup</strong>: Retrieves species’ trait data from a local trait table (CSV) or a <a href="https://www.try-db.org/TryWeb/Home.php" class="external-link">TRY</a>-style database, using fuzzy matching to ensure robust linkage even when there are minor naming inconsistencies.</li>
+<strong>Trait Table Lookup</strong>: Retrieves species’ trait data from a local trait table (CSV) or a <a href="https://www.try-db.org/TryWeb/Home.php" class="external-link">TRY</a> (Kattge et al 2020) style database, using fuzzy matching to ensure robust linkage even when there are minor naming inconsistencies.</li>
 <li>
 <strong>Wikipedia Metadata Scraping</strong>: Optionally augments each species entry with a taxonomic summary, higher taxonomy, and representative images scraped directly from <a href="https://www.wikipedia.org/" class="external-link">Wikipedia</a>.</li>
 <li>
@@ -1285,7 +1328,7 @@ Community-level functional diversity metrics.
 <p>Trait-based community analyses often require multiple sequential steps: computing per-trait similarity, calculating trait dissimilarities across species, ordination, mapping trait space, quantifying species centrality, and summarising community-level diversity metrics.</p>
 <p>The <code><a href="reference/compute_trait_space.html">compute_trait_space()</a></code> function unifies these steps into a single call, producing <strong>both</strong> per-trait similarity summaries and community-level dispersion outputs as follows:</p>
 <ul>
-<li><p><strong>Per-Trait Similarity Table</strong>: <code>out$similarity</code> holds percentage similarity (0-100) for each trait column, computed as either i) <em>Numeric traits</em> as the scaled mean pairwise similarity; or ii) <em>Categorical traits</em> as the proportion of identical pairs.</p></li>
+<li><p><strong>Per-Trait Similarity Table</strong>: <code>out$similarity</code> holds percentage similarity (0-100) for each trait column, computed as either i) <em>Numeric traits</em> as the scaled mean pairwise similarity; or -Vi) <em>Categorical traits</em> as the proportion of identical pairs.</p></li>
 <li><p><strong>Trait Dissimilarity &amp; Clustering</strong>: <code>out$dispersion$plots$dend</code> contains hierarchical clustering results based on pairwise Gower distances across all traits, highlighting functional similarity groupings.</p></li>
 <li><p><strong>Trait Space Ordination (PCoA)</strong>: <code>out$dispersion$plots$density_gg</code> shows species positioned in reduced-dimensional trait space using PCoA, with kernel density contours to reveal clusters and gaps.</p></li>
 <li><p><strong>Species Centrality</strong>: <code>out$dispersion$plots$centrality_hist</code> displays each species’ Euclidean distance from the trait-space centroid. Shorter distances indicate core species; longer distances indicate peripheral, functionally distinct species.</p></li>
@@ -1482,7 +1525,7 @@ Community-level functional diversity metrics.
 <span><span class="co">#&gt;     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + </span></span>
 <span><span class="co">#&gt;     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + </span></span>
 <span><span class="co">#&gt;     (1 | species) + (1 | site_id)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x000001c8961bedb0&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;environment: 0x000001c938671ae0&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="id_83-fit-the-glmm">8.3. Fit the GLMM<a class="anchor" aria-label="anchor" href="#id_83-fit-the-glmm"></a>
@@ -2250,8 +2293,8 @@ Community-level functional diversity metrics.
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guides.html" class="external-link">guides</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_colourbar.html" class="external-link">guide_colorbar</a></span><span class="op">(</span></span>
 <span>    title.position <span class="op">=</span> <span class="st">"top"</span>,</span>
-<span>    barheight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">40</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
-<span>    barwidth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"mm"</span><span class="op">)</span></span>
+<span>    barheight <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">40</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
+<span>    barwidth <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html" class="external-link">unit</a></span><span class="op">(</span><span class="fl">4</span>, <span class="st">"mm"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-plot-fitness-1.png" width="100%" style="display: block; margin: auto;"></p>
 <blockquote>
@@ -2262,15 +2305,15 @@ Community-level functional diversity metrics.
 <div class="section level3">
 <h3 id="id_122-invader-invasiveness-ranking">12.2 Invader Invasiveness Ranking<a class="anchor" aria-label="anchor" href="#id_122-invader-invasiveness-ranking"></a>
 </h3>
-<p>From the invasion fitness matrix <code>lambda_mat</code>, we derive the <strong>species-level invasiveness</strong> <a href="#def-Ii"><span class="math inline">\(I_i\)</span></a>, defined as the mean (or sum) of <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a> over all sites for invader <span class="math inline">\(i\)</span>. This integrates both <strong>biotic resistance</strong> and <strong>environmental filtering</strong> across the full landscape, producing a single quantitative measure of establishment potential.</p>
-<p>Ranking invaders by <a href="#def-Ii"><span class="math inline">\(I_i\)</span></a> reveals:</p>
+<p>From the invasion fitness matrix <code>lambda_mat</code>, we derive the <strong>species-level invasiveness</strong> <a href="#def-Vi"><span class="math inline">\(V_i\)</span></a>, defined as the mean (or sum) of <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a> over all sites for invader <span class="math inline">\(i\)</span>. This integrates both <strong>biotic resistance</strong> and <strong>environmental filtering</strong> across the full landscape, producing a single quantitative measure of establishment potential.</p>
+<p>Ranking invaders by <a href="#def-Vi"><span class="math inline">\(V_i\)</span></a> reveals:</p>
 <ul>
 <li>
 <strong>High-risk “super-invaders”</strong> — species with high and geographically broad <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a>, posing widespread establishment potential.</li>
 <li>
 <strong>Low-risk invaders</strong> — species predicted to be strongly excluded in most or all sites.</li>
 </ul>
-<p>Such rankings are valuable for <strong>risk prioritisation</strong>, focusing management and surveillance on species most likely to succeed under current conditions. In plots, bar height represents cumulative <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a> (summed over sites), ordered from highest to lowest <a href="#def-Ii"><span class="math inline">\(I_i\)</span></a>.</p>
+<p>Such rankings are valuable for <strong>risk prioritisation</strong>, focusing management and surveillance on species most likely to succeed under current conditions. In plots, bar height represents cumulative <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a> (summed over sites), ordered from highest to lowest <a href="#def-Vi"><span class="math inline">\(V_i\)</span></a>.</p>
 <div class="sourceCode" id="cb39"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Sum invasion fitness across sites for each invader and order from highest to lowest</span></span>
 <span><span class="va">rank_df</span> <span class="op">=</span> <span class="va">lambda_df</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
@@ -2702,17 +2745,124 @@ Community-level functional diversity metrics.
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>panel.grid <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-key-invaders-1.png" width="100%" style="display: block; margin: auto;"></p>
 <blockquote>
-<p><strong>Note:</strong></p>
-<ul>
-<li>Sections 12–13 together move from <strong>raw <span class="math inline">\(\lambda_{is}\)</span></strong> values → <strong>clustered patterns</strong> → <strong>functional correlates</strong> → <strong>site- and invader-specific rankings</strong>.</li>
-<li>This progression enables scaling from <strong>broad ecological syndromes</strong> to <strong>actionable risk profiles</strong> for specific species and sites.  </li>
-</ul>
+<p><strong>Note:</strong> Together, sections 12–13 move from <strong>raw <span class="math inline">\(\lambda_{is}\)</span></strong> values → <strong>clustered patterns</strong> → <strong>functional correlates</strong> → <strong>site- and invader- specific rankings</strong>. This progression enables scaling from <strong>broad ecological syndromes</strong> to <strong>actionable risk profiles</strong> for specific species and sites.  </p>
 </blockquote>
 <hr>
 </div>
 </div>
 <div class="section level2">
-<h2 id="id_14-glossary-table-symbols-r-objects-meaning-units-source">14. Glossary table (symbols, R objects, meaning, units, source)<a class="anchor" aria-label="anchor" href="#id_14-glossary-table-symbols-r-objects-meaning-units-source"></a>
+<h2 id="id_14-glossary-of-definitions">14. Glossary of definitions<a class="anchor" aria-label="anchor" href="#id_14-glossary-of-definitions"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="7%">
+<col width="19%">
+<col width="72%">
+</colgroup>
+<thead><tr class="header">
+<th>Term</th>
+<th>Symbol</th>
+<th>Definition</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>Resident Abundance Equilibrium</strong></td>
+<td><a href="#def-Nstar"><span class="math inline">\(N^{*}_{js}\)</span></a></td>
+<td>Equilibrium abundance of resident species <span class="math inline">\(j\)</span> at site <span class="math inline">\(s\)</span> providing resident abundance context for interaction strength calculations.</td>
+</tr>
+<tr class="even">
+<td><strong>Functional Trait Space</strong></td>
+<td>
+<a href="#def-dij"><span class="math inline">\(d_{ij}\)</span></a>; <a href="#def-gall"><span class="math inline">\(g^{\mathrm{(all)}}_{ij}\)</span></a>
+</td>
+<td>The multidimensional “map” of traits that describe how species use resources and interact with their environment.</td>
+</tr>
+<tr class="odd">
+<td><strong>Trait Centrality</strong></td>
+<td><a href="#def-mu"><span class="math inline">\(\pmb{\mu}\)</span></a></td>
+<td>The position of a species’ traits relative to the community average, indicating similarity or distinctiveness. We compute abundance-weighted centroid <a href="#def-mu"><span class="math inline">\(\pmb{\mu}\)</span></a> and species centrality <a href="#def-ci"><span class="math inline">\(c_i\)</span></a> in the same PCoA space used for <a href="#def-dij"><span class="math inline">\(d_{ij}\)</span></a>.</td>
+</tr>
+<tr class="even">
+<td><strong>Trait Dispersion</strong></td>
+<td>
+<a href="#def-fdis"><span class="math inline">\(\mathrm{FDis}\)</span></a>; <a href="#def-fric"><span class="math inline">\(\mathrm{FRic}\)</span></a>; <a href="#def-raoq"><span class="math inline">\(\mathrm{RaoQ}\)</span></a>
+</td>
+<td>The degree of spread in trait space among species, reflecting ecological diversity and functional complementarity. Community dispersion is summarised by <a href="#def-fdis"><span class="math inline">\(\mathrm{FDis}\)</span></a>, <a href="#def-fric"><span class="math inline">\(\mathrm{FRic}\)</span></a> (convex hull volume), and <a href="#def-raoq"><span class="math inline">\(\mathrm{RaoQ}\)</span></a> based on the Euclidean distances underlying <a href="#def-dij"><span class="math inline">\(d_{ij}\)</span></a>.</td>
+</tr>
+<tr class="odd">
+<td><strong>Hypothetical Invaders</strong></td>
+<td><span class="math inline">\(\tilde{\mathbf{T}}\)</span></td>
+<td>Simulated species introduced to test how traits influence establishment success. Hypothetical invaders <span class="math inline">\(\tilde{\mathbf{T}}\)</span> are sampled from resident trait distributions and evaluated via <a href="#def-r"><span class="math inline">\(r_{is}\)</span></a> and <a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a>.</td>
+</tr>
+<tr class="even">
+<td><strong>Predicted Intrinsic Growth</strong></td>
+<td><a href="#def-r"><span class="math inline">\(r_{is}\)</span></a></td>
+<td>Estimated growth rate of an invader under specific trait-environment conditions.</td>
+</tr>
+<tr class="odd">
+<td><strong>Interaction Strength</strong></td>
+<td><a href="#def-I"><span class="math inline">\(I_{ijs}\)</span></a></td>
+<td>A measure of how strongly species affect each other’s growth rates, capturing competition or facilitation.</td>
+</tr>
+<tr class="even">
+<td><strong>Competition Pressure</strong></td>
+<td><a href="#def-alpha"><span class="math inline">\(\alpha_{ij}\)</span></a></td>
+<td>The penalty a species experiences due to trait overlap with resident species.</td>
+</tr>
+<tr class="odd">
+<td><strong>Environmental Filtering</strong></td>
+<td><a href="#def-Ke"><span class="math inline">\(K_e(\Delta_{js};\sigma_e)\)</span></a></td>
+<td>The effect of environmental conditions in favouring or excluding certain traits.</td>
+</tr>
+<tr class="even">
+<td><strong>Context-Dependent Competition</strong></td>
+<td><a href="#def-Craw"><span class="math inline">\(C^{\mathrm{(raw)}}_{is}\)</span></a></td>
+<td>Competitive effects modified by environmental context.</td>
+</tr>
+<tr class="odd">
+<td><strong>Invasion Fitness</strong></td>
+<td><a href="#def-lambda"><span class="math inline">\(\lambda_{is}\)</span></a></td>
+<td>A measure of an invader’s likelihood of successful establishment relative to residents.</td>
+</tr>
+<tr class="even">
+<td><strong>Invasiveness Ranking</strong></td>
+<td><a href="#def-Vi"><span class="math inline">\(V_i\)</span></a></td>
+<td>Ordering of species by their relative propensity to invade.</td>
+</tr>
+<tr class="odd">
+<td><strong>Site Invasibility Metrics</strong></td>
+<td><a href="#def-Vs"><span class="math inline">\(V_s\)</span></a></td>
+<td>Measures of how open a community is to invasion, reflecting ecological “vacancies.”</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note</strong>: * <code>a_ij[i, j]</code> = invader × resident * <code>K_env[s, j]</code> = sites × residents * <code>Nstar[j, s]</code> = residents × sites * <code>r_mat[i, s]</code> = invader × site</p>
+<hr>
+</div>
+<div class="section level2">
+<h2 id="id_15-references">15. References<a class="anchor" aria-label="anchor" href="#id_15-references"></a>
+</h2>
+<ul>
+<li>Hui, C., Pyšek, P., &amp; Richardson, D.M. (2023). Disentangling the relationships among abundance, invasiveness, and invasibility in trait space. npj Biodiversity, 2, 13. <a href="https://doi.org/10.1038/s44185-023-00019-1" class="external-link uri">https://doi.org/10.1038/s44185-023-00019-1</a>
+</li>
+<li>Hui, C., Richardson, D.M., Landi, P., Minoarivelo, H.O., &amp; Roy, H.E. (2016). Defining invasiveness and invasibility in ecological networks. Biological Invasions. <a href="https://doi.org/10.1007/s10530-016-1076-7" class="external-link uri">https://doi.org/10.1007/s10530-016-1076-7</a>
+</li>
+<li>Hui, C., Richardson, D.M., Landi, P., Minoarivelo, H.O., &amp; Roy, H.E. (2021). Trait positions for elevated invasiveness in adaptive ecological networks. Biological Invasions, 23, 1965–1985. <a href="https://doi.org/10.1007/s10530-021-02484-w" class="external-link uri">https://doi.org/10.1007/s10530-021-02484-w</a>
+</li>
+<li>Kattge, J., Bönisch, G., Díaz, S., Lavorel, S., Prentice, I. C., Leadley, P., Tautenhahn, S., Werner, G., et al. (2020). TRY plant trait database - enhanced coverage and open access. Global Change Biology, 26(1), 119-188. <a href="doi:10.1111/gcb.14904" class="uri">doi:10.1111/gcb.14904</a>)</li>
+<li>Wang, Y, U Naumann, ST Wright &amp; DI Warton (2012) mvabund - an R package for model-based analysis of multivariate abundance data. Methods in Ecology and Evolution 3: 471-474. (help: Multivariate Analysis with mvabund :: Environmental Computing)</li>
+<li>Hui C, Richardson DM (2017). Invasion Dynamics. Oxford University Press.</li>
+<li>Hui C et al. (2021). Trait-mediated ecological networks: mechanisms and consequences of invasion. Trends in Ecology &amp; Evolution.</li>
+</ul>
+<hr>
+<hr>
+</div>
+</div>
+<div class="section level1">
+<h1 id="appendices">Appendices<a class="anchor" aria-label="anchor" href="#appendices"></a>
+</h1>
+<div class="section level2">
+<h2 id="s1-glossary-table-of-symbols">S1. Glossary table of symbols<a class="anchor" aria-label="anchor" href="#s1-glossary-table-of-symbols"></a>
 </h2>
 <table class="table">
 <colgroup>
@@ -2845,41 +2995,20 @@ Community-level functional diversity metrics.
 <td>Post-processing / summary functions</td>
 </tr>
 <tr class="odd">
-<td><a href="#def-Ii"><span class="math inline">\(I_i\)</span></a></td>
-<td><span class="math inline">\(I_i = \frac{1}{n_\mathrm{sites}} \sum_{s} \lambda_{is}\)</span></td>
+<td><a href="#def-Vi"><span class="math inline">\(V_i\)</span></a></td>
+<td><span class="math inline">\(V_i = \frac{1}{n_\mathrm{sites}} \sum_{s} \lambda_{is}\)</span></td>
 <td>Invasiveness: mean or sum of <span class="math inline">\(\lambda_{is}\)</span> over sites for species <span class="math inline">\(i\)</span>
 </td>
-<td><code>summary$Ii[i]</code></td>
+<td><code>summary$-Vi[i]</code></td>
 <td>Post-processing / summary functions</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Notes (index orientation you’ll care about in code):</strong></p>
-<ul>
-<li>
-<code>a_ij[i, j]</code> = <strong>invader × resident</strong><br>
-</li>
-<li>
-<code>K_env[s, j]</code> = <strong>sites × residents</strong><br>
-</li>
-<li>
-<code>Nstar[j, s]</code> = <strong>residents × sites</strong><br>
-</li>
-<li>
-<code>prediction_matrix[s, i]</code> = <strong>sites × species</strong>; in <code>fitness$r_mat</code> we use <strong>invader × site</strong> ordering: <code>r_mat[i, s]</code>.</li>
-</ul>
+<p><strong>Note:</strong> * <code>a_ij[i, j]</code> = <strong>invader × resident</strong><br>
+* <code>K_env[s, j]</code> = <strong>sites × residents</strong><br>
+* <code>Nstar[j, s]</code> = <strong>residents × sites</strong><br>
+* <code>r_mat[i, s]</code> = <strong>invader × site</strong></p>
 <hr>
-</div>
-<div class="section level2">
-<h2 id="id_15-references">15. References<a class="anchor" aria-label="anchor" href="#id_15-references"></a>
-</h2>
-<ul>
-<li>Hui C, Richardson DM (2017). Invasion Dynamics. Oxford University Press.</li>
-<li>Hui C, Richardson DM, Landi P. et al. (2016). Defining invasiveness and invasibility in ecological networks. Biological Invasions.</li>
-<li>Hui C et al. (2021). Trait-mediated ecological networks: mechanisms and consequences of invasion. Trends in Ecology &amp; Evolution.</li>
-<li><em>Hui C et al. (2023). [Title of relevant work, update as needed.]</em></li>
-</ul>
-<p>This RMarkdown document implements a reproducible, extensible workflow for trait-based invasion ecology, integrating best practices for data wrangling, statistical modeling, and scientific visualization. Please cite the original data and framework sources as appropriate.</p>
 </div>
 </div>
 
