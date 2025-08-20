@@ -6,12 +6,17 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml)
-[![test-coverage](https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml/badge.svg)](https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml)
-[![codecov](https://codecov.io/gh/macSands/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/macSands/invasimapr)
-[![lifecycle](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
-[![License:
+[![repo status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Release](https://img.shields.io/github/release/b-cubed-eu/invasimapr.svg)](https://github.com/b-cubed-eu/invasimapr/releases)
+[![invasimapr status
+badge](https://b-cubed-eu.r-universe.dev/invasimapr/badges/version)](https://b-cubed-eu.r-universe.dev/invasimapr)
+[![CRAN status](https://www.r-pkg.org/badges/version/invasimapr)](https://CRAN.R-project.org/package=invasimapr)
+[![R-CMD-check](https://github.com/b-cubed-eu/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/b-cubed-eu/invasimapr/actions/workflows/R-CMD-check.yaml)
+[![Codecov test coverage](https://codecov.io/gh/b-cubed-eu/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/b-cubed-eu/invasimapr)
+[![DOI](https://img.shields.io/badge/DOI-awaiting_upload_to_zenodo-orange)](https://zenodo.org)
+[![name status badge](https://b-cubed-eu.r-universe.dev/badges/:name?color=6CDDB4)](https://b-cubed-eu.r-universe.dev/)
 MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
+
 <!-- badges: end -->
 
 ------------------------------------------------------------------------
