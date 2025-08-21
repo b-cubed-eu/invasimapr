@@ -5,12 +5,12 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Predict site-level responses for residents and simulated invaders — predict_invader_response"><meta name="description" content="Builds a complete site × species prediction grid by crossing a species-trait table
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Predict site-level responses for residents and simulated invaders — predict_invader_response"><meta name="description" content="Builds a complete site x species prediction grid by crossing a species-trait table
 (residents + simulated invaders) with a site-environment table, then calls the fitted
-model’s predict() to obtain expected responses (e.g., abundance). The function is
-robust to factor level issues and mirrors a typical expand_grid() + left-join workflow."><meta property="og:description" content="Builds a complete site × species prediction grid by crossing a species-trait table
+model's predict() to obtain expected responses (e.g., abundance). The function is
+robust to factor level issues and mirrors a typical expand_grid() + left-join workflow."><meta property="og:description" content="Builds a complete site x species prediction grid by crossing a species-trait table
 (residents + simulated invaders) with a site-environment table, then calls the fitted
-model’s predict() to obtain expected responses (e.g., abundance). The function is
+model's predict() to obtain expected responses (e.g., abundance). The function is
 robust to factor level issues and mirrors a typical expand_grid() + left-join workflow."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
@@ -52,9 +52,9 @@ robust to factor level issues and mirrors a typical expand_grid() + left-join wo
     </div>
 
     <div class="ref-description section level2">
-    <p>Builds a complete <strong>site × species</strong> prediction grid by crossing a species-trait table
+    <p>Builds a complete <strong>site x species</strong> prediction grid by crossing a species-trait table
 (residents + simulated invaders) with a site-environment table, then calls the fitted
-model’s <code><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict()</a></code> to obtain expected responses (e.g., abundance). The function is
+model's <code><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict()</a></code> to obtain expected responses (e.g., abundance). The function is
 robust to factor level issues and mirrors a typical <code><a href="https://tidyr.tidyverse.org/reference/expand_grid.html" class="external-link">expand_grid()</a></code> + left-join workflow.</p>
     </div>
 
@@ -83,12 +83,12 @@ robust to factor level issues and mirrors a typical <code><a href="https://tidyr
 
 <dt id="arg-species-traits">species_traits<a class="anchor" aria-label="anchor" href="#arg-species-traits"></a></dt>
 <dd><p><code>data.frame</code>. Species traits (one row per species) containing
-<code>species_col</code> and all trait variables referenced in the model’s fixed effects.</p></dd>
+<code>species_col</code> and all trait variables referenced in the model's fixed effects.</p></dd>
 
 
 <dt id="arg-site-env">site_env<a class="anchor" aria-label="anchor" href="#arg-site-env"></a></dt>
 <dd><p><code>data.frame</code>. Site predictors (one row per site) containing
-<code>site_col</code> and all environmental variables referenced in the model’s fixed effects.</p></dd>
+<code>site_col</code> and all environmental variables referenced in the model's fixed effects.</p></dd>
 
 
 <dt id="arg-species-col">species_col<a class="anchor" aria-label="anchor" href="#arg-species-col"></a></dt>
@@ -122,9 +122,9 @@ predictions (exclude random effects). If <code>TRUE</code>, compute conditional 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with:</p><ul><li><p><code>newdata</code>: the site × species table used in <code><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict()</a></code>.</p></li>
+    <p>A list with:</p><ul><li><p><code>newdata</code>: the site x species table used in <code><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict()</a></code>.</p></li>
 <li><p><code>predictions</code>: long table with columns <code>site_col</code>, <code>species_col</code>, and <code>pred</code>.</p></li>
-<li><p><code>prediction_matrix</code>: wide matrix (sites × species) of predicted values
+<li><p><code>prediction_matrix</code>: wide matrix (sites x species) of predicted values
 (rows ordered by site ID, columns by species ID).</p></li>
 </ul></div>
     <div class="section level2">
@@ -138,7 +138,7 @@ conditional uses <code>re.form = NULL</code> with <code>allow.new.levels = TRUE<
 <li><p><strong>stats::glm</strong> / <strong>stats::lm</strong>: standard <code><a href="https://rspatial.github.io/terra/reference/predict.html" class="external-link">predict()</a></code>; <code>type</code> for GLM, none for LM.</p></li>
 </ul><p><strong>Why population-level predictions by default?</strong> For novel invaders, random-effect
 levels (e.g., species/site intercepts) are unknown. Excluding random effects yields
-fixed-effects expectations driven by traits, environments, and their interactions —
+fixed-effects expectations driven by traits, environments, and their interactions -
 appropriate for invasion screening and ranking.</p>
 <p><strong>Augmentation inputs.</strong> <code>site_aug</code> and/or <code>species_aug</code> let you add extra predictors
 (e.g., <code>obs_sum</code>, <code>spp_rich</code>) prior to prediction, replicating the common

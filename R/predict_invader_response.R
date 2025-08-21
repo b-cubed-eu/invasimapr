@@ -1,9 +1,9 @@
 #' Predict site-level responses for residents and simulated invaders
 #'
 #' @description
-#' Builds a complete **site × species** prediction grid by crossing a species-trait table
+#' Builds a complete **site x species** prediction grid by crossing a species-trait table
 #' (residents + simulated invaders) with a site-environment table, then calls the fitted
-#' model’s `predict()` to obtain expected responses (e.g., abundance). The function is
+#' model's `predict()` to obtain expected responses (e.g., abundance). The function is
 #' robust to factor level issues and mirrors a typical `expand_grid()` + left-join workflow.
 #'
 #' @details
@@ -20,7 +20,7 @@
 #'
 #' **Why population-level predictions by default?** For novel invaders, random-effect
 #' levels (e.g., species/site intercepts) are unknown. Excluding random effects yields
-#' fixed-effects expectations driven by traits, environments, and their interactions —
+#' fixed-effects expectations driven by traits, environments, and their interactions -
 #' appropriate for invasion screening and ranking.
 #'
 #' **Augmentation inputs.** `site_aug` and/or `species_aug` let you add extra predictors
@@ -29,9 +29,9 @@
 #'
 #' @param model Fitted model object (\pkg{glmmTMB}, \pkg{lme4}, \pkg{mgcv}, or base \pkg{stats}).
 #' @param species_traits \code{data.frame}. Species traits (one row per species) containing
-#'   \code{species_col} and all trait variables referenced in the model’s fixed effects.
+#'   \code{species_col} and all trait variables referenced in the model's fixed effects.
 #' @param site_env \code{data.frame}. Site predictors (one row per site) containing
-#'   \code{site_col} and all environmental variables referenced in the model’s fixed effects.
+#'   \code{site_col} and all environmental variables referenced in the model's fixed effects.
 #' @param species_col \code{character}. Species ID column in \code{species_traits}. Default \code{"species"}.
 #' @param site_col \code{character}. Site ID column in \code{site_env}. Default \code{"site_id"}.
 #' @param response_type \code{character}. Prediction scale for \code{predict()} where applicable
@@ -46,9 +46,9 @@
 #'
 #' @return A list with:
 #' \itemize{
-#'   \item \code{newdata}: the site × species table used in \code{predict()}.
+#'   \item \code{newdata}: the site x species table used in \code{predict()}.
 #'   \item \code{predictions}: long table with columns \code{site_col}, \code{species_col}, and \code{pred}.
-#'   \item \code{prediction_matrix}: wide matrix (sites × species) of predicted values
+#'   \item \code{prediction_matrix}: wide matrix (sites x species) of predicted values
 #'         (rows ordered by site ID, columns by species ID).
 #' }
 #'
@@ -103,7 +103,7 @@ predict_invader_response <- function(
     species_traits <- dplyr::left_join(species_traits, species_aug, by = species_col)
   }
 
-  # ---- Construct site × species grid robustly --------------------------------
+  # ---- Construct site x species grid robustly --------------------------------
   sp_vals <- unique(species_traits[[species_col]])
   site_vals <- unique(site_env[[site_col]])
 
@@ -246,7 +246,7 @@ predict_invader_response <- function(
     predictions <- predictions[keep, , drop = FALSE]
   }
 
-  # Construct wide matrix (sites × species)
+  # Construct wide matrix (sites x species)
   site_levels <- sort(unique(as.character(predictions[[site_col]])))
   species_levels <- sort(unique(as.character(predictions[[species_col]])))
   prediction_matrix <- matrix(

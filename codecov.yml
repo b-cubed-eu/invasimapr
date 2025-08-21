@@ -8,7 +8,7 @@ comment:
   show_carryforward_flags: false
 coverage:
   precision: 2
-  range: range: "60...80"
+  range: "60...80"
   round: down
   status:
     changes: false

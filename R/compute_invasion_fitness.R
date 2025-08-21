@@ -60,7 +60,7 @@
 #' residents <- paste0("r", 1:4)   # 4 residents
 #' sites    <- paste0("s", 1:5)    # 5 sites
 #'
-#' # Competition coefficients a_ij (invader × resident), e.g. from a Gaussian of
+#' # Competition coefficients a_ij (invader x resident), e.g. from a Gaussian of
 #' # synthetic distances. Values in (0,1].
 #' n_i <- length(invaders); n_j <- length(residents); n_s <- length(sites)
 #' d_ij  <- matrix(runif(n_i * n_j), nrow = n_i,
@@ -68,7 +68,7 @@
 #' sigma <- 0.4
 #' a_ij  <- exp(-(d_ij^2) / (2 * sigma^2))
 #'
-#' # Resident abundances per site Nstar (resident × site), positive numbers
+#' # Resident abundances per site Nstar (resident x site), positive numbers
 #' Nstar <- matrix(rexp(n_j * n_s, rate = 1), nrow = n_j,
 #'                 dimnames = list(residents, sites))
 #'
@@ -96,7 +96,7 @@
 #'   prefer      = "logis"
 #' )
 #'
-#' # Inspect the final fitness matrix [invader × site]
+#' # Inspect the final fitness matrix [invader x site]
 #' dim(fit$lambda); range(fit$lambda, na.rm = TRUE)
 #'
 #' # Alternative variants:
@@ -118,7 +118,7 @@ compute_invasion_fitness <- function(
   logistic_on <- match.arg(logistic_on)
   prefer <- match.arg(prefer)
 
-  # --- 1) Build C_raw (invader × site): sum over residents -------------------
+  # --- 1) Build C_raw (invader x site): sum over residents -------------------
   if (!is.null(I_raw)) {
     if (length(dim(I_raw)) != 3) stop("I_raw must be a 3D array [invader, resident, site].")
     # sum over residents (dim 2)
@@ -133,12 +133,12 @@ compute_invasion_fitness <- function(
   }
   if (is.null(inv_ids) || is.null(site_ids)) stop("C_raw needs row/colnames (invaders/sites).")
 
-  # --- 2) Build r_mat (invader × site) ---------------------------------------
+  # --- 2) Build r_mat (invader x site) ---------------------------------------
   if (is.null(r_mat)) {
     if (is.null(predictions)) stop("Provide r_mat or predictions to construct r_mat.")
     need <- c("species", "site_id", "pred")
     if (!all(need %in% names(predictions))) stop("predictions must contain: species, site_id, pred.")
-    # build site × invader, then transpose to invader × site ordered by C_raw
+    # build site x invader, then transpose to invader x site ordered by C_raw
     inv_set <- unique(inv_ids)
     site_set <- unique(site_ids)
     r_wide <- matrix(NA_real_,
@@ -167,13 +167,13 @@ compute_invasion_fitness <- function(
     if (!all(rownames(a_ij) %in% inv_ids)) stop("Some invaders in a_ij not found in C_raw/r_mat.")
     # reorder to inv_ids
     a_ij <- a_ij[inv_ids, , drop = FALSE]
-    # Nstar: residents × sites, align to a_ij cols and site_ids
+    # Nstar: residents x sites, align to a_ij cols and site_ids
     if (is.null(rownames(Nstar)) || is.null(colnames(Nstar))) stop("Nstar must have row (residents) and col (sites) names.")
     if (!all(colnames(a_ij) %in% rownames(Nstar))) stop("Residents in a_ij must be rows in Nstar.")
     Nstar_use <- Nstar[colnames(a_ij), site_ids, drop = FALSE]
     # normalise by site totals
     N_rel <- sweep(Nstar_use, 2, colSums(Nstar_use, na.rm = TRUE), "/")
-    # a_ij %*% N_rel -> invader × site
+    # a_ij %*% N_rel -> invader x site
     C_rel <- a_ij %*% N_rel
   } else {
     C_rel <- NULL

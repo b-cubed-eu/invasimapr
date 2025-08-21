@@ -35,7 +35,7 @@ default = all columns except \code{species_col}.}
 
 \item{k}{integer (default = 4). Number of clusters for dendrogram.}
 
-\item{pcoa_dims}{integer (default = 2). Number of PCoA axes retained (≥ 2).}
+\item{pcoa_dims}{integer (default = 2). Number of PCoA axes retained (>= 2).}
 
 \item{abundance}{numeric vector or NULL. Optional species weights; normalized internally.}
 
@@ -62,7 +62,7 @@ A list with (present elements depend on flags):
 \description{
 A unified workflow that (1) computes within-trait similarity (numeric + categorical)
 and (2) computes community-level dispersion in trait space
-(Gower → clustering → PCoA → density → metrics).
+(Gower -> clustering -> PCoA -> density -> metrics).
 }
 \examples{
 # Simulate a small mixed-type table

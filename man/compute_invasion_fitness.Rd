@@ -88,7 +88,7 @@ invaders <- paste0("sp", 1:3)   # 3 invaders
 residents <- paste0("r", 1:4)   # 4 residents
 sites    <- paste0("s", 1:5)    # 5 sites
 
-# Competition coefficients a_ij (invader × resident), e.g. from a Gaussian of
+# Competition coefficients a_ij (invader x resident), e.g. from a Gaussian of
 # synthetic distances. Values in (0,1].
 n_i <- length(invaders); n_j <- length(residents); n_s <- length(sites)
 d_ij  <- matrix(runif(n_i * n_j), nrow = n_i,
@@ -96,7 +96,7 @@ d_ij  <- matrix(runif(n_i * n_j), nrow = n_i,
 sigma <- 0.4
 a_ij  <- exp(-(d_ij^2) / (2 * sigma^2))
 
-# Resident abundances per site Nstar (resident × site), positive numbers
+# Resident abundances per site Nstar (resident x site), positive numbers
 Nstar <- matrix(rexp(n_j * n_s, rate = 1), nrow = n_j,
                 dimnames = list(residents, sites))
 
@@ -124,7 +124,7 @@ fit <- compute_invasion_fitness(
   prefer      = "logis"
 )
 
-# Inspect the final fitness matrix [invader × site]
+# Inspect the final fitness matrix [invader x site]
 dim(fit$lambda); range(fit$lambda, na.rm = TRUE)
 
 # Alternative variants:

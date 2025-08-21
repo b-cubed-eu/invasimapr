@@ -38,7 +38,7 @@ compute_trait_similarity <- function(df) {
     }
     # scale to [0,1]
     x_scaled <- (x2 - min(x2)) / r
-    # mean pairwise distance → convert to similarity
+    # mean pairwise distance -> convert to similarity
     1 - mean(dist(x_scaled))
   }
 

@@ -15,23 +15,23 @@ assemble_matrices(
 )
 }
 \arguments{
-\item{a_ij}{numeric matrix (invaders × residents).
+\item{a_ij}{numeric matrix (invaders x residents).
 Trait-based competition coefficients (e.g., from \code{compute_competition()}).
 Row names = invader IDs; column names = resident IDs.}
 
-\item{Nstar}{numeric matrix (residents × sites).
+\item{Nstar}{numeric matrix (residents x sites).
 Resident abundances by site (e.g., from \code{compute_interaction_strength()}).
 Row names = resident IDs; column names = site IDs.}
 
-\item{invader_pred_wide}{numeric matrix (sites × invaders) or \code{NULL}.
-Site × invader abundances on the response scale.
+\item{invader_pred_wide}{numeric matrix (sites x invaders) or \code{NULL}.
+Site x invader abundances on the response scale.
 If \code{NULL}, supply \code{predictions} instead.}
 
 \item{predictions}{data.frame or \code{NULL}.
 Long table with columns \code{species}, \code{site_id}, \code{pred}.
 Used only if \code{invader_pred_wide} is \code{NULL}.}
 
-\item{env_dist}{numeric matrix (sites × residents).
+\item{env_dist}{numeric matrix (sites x residents).
 Site-resident environmental distance (e.g., from \code{compute_environment_kernel()}).
 Row names = site IDs; column names = resident IDs.}
 
@@ -40,15 +40,15 @@ Bandwidth for the Gaussian environmental kernel;
 if \code{NULL}, compute the kernel upstream (e.g., \code{compute_environment_kernel(..., kernel = "gaussian")})
 and pass it via \code{K_env}.}
 
-\item{K_env}{numeric matrix (sites × residents) or \code{NULL}.
+\item{K_env}{numeric matrix (sites x residents) or \code{NULL}.
 Optional precomputed environmental kernel (similarity) for residents by site.
 If supplied, \code{env_dist} and \code{sigma_e} are ignored.}
 }
 \value{
 A list with:
 \itemize{
-\item \code{I_raw}: 3D array (invaders × residents × sites) of per-pair impact terms.
-\item \code{pressure_inv_site}: matrix (invaders × sites) with total pressure on each invader at each site
+\item \code{I_raw}: 3D array (invaders x residents x sites) of per-pair impact terms.
+\item \code{pressure_inv_site}: matrix (invaders x sites) with total pressure on each invader at each site
 (sum over residents).
 \item \code{meta}: list with matched IDs and dimensions.
 }
@@ -74,17 +74,17 @@ inv <- paste0("inv", 1:2)
 res <- paste0("sp", 1:3)
 sites <- paste0("s", 1:4)
 
-# invader × resident Gaussian kernel (a_ij)
+# invader x resident Gaussian kernel (a_ij)
 a_ij <- matrix(runif(length(inv) * length(res), 0.1, 0.9),
   nrow = length(inv), dimnames = list(inv, res)
 )
 
-# residents × sites abundances (Nstar)
+# residents x sites abundances (Nstar)
 Nstar <- matrix(abs(rnorm(length(res) * length(sites), 5, 2)),
   nrow = length(res), dimnames = list(res, sites)
 )
 
-# site × resident environmental kernel (K_env)
+# site x resident environmental kernel (K_env)
 K_env <- matrix(runif(length(sites) * length(res), 0.3, 1),
   nrow = length(sites), dimnames = list(sites, res)
 )

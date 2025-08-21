@@ -1,4 +1,4 @@
-#' Trait Dispersion Pipeline: Gower → clustering → PCoA → density → metrics
+#' Trait Dispersion Pipeline: Gower -> clustering -> PCoA -> density -> metrics
 #'
 #' @description
 #' Computes a Gower dissimilarity matrix on mixed-type traits, performs hierarchical
@@ -8,7 +8,7 @@
 #' @param trait_df data.frame. One row per species (or unit); mixed types allowed.
 #' @param species_col integer or character (default = 1). Column to exclude from distance.
 #' @param k integer (default = 4). Number of clusters in dendrogram.
-#' @param pcoa_dims integer (default = 2). PCoA axes retained (≥ 2).
+#' @param pcoa_dims integer (default = 2). PCoA axes retained (>= 2).
 #' @param abundance numeric vector or NULL. Optional species weights; normalized internally.
 #' @param kde_n integer (default = 100). KDE grid resolution for density.
 #' @param viridis_option character (default = "D"). Palette option for \code{viridisLite::viridis}.

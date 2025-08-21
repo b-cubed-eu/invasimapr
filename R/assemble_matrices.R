@@ -14,33 +14,33 @@
 #' \eqn{a_{i j} = \exp\!\big(-d_{i j}^2/(2\,\sigma_t^2)\big)} is the trait-based competition coefficient,
 #' and \eqn{K^{(env)}_{j s}} is an environmental matching kernel for resident \eqn{j} at site \eqn{s}.
 #'
-#' @param a_ij numeric matrix (invaders × residents).
+#' @param a_ij numeric matrix (invaders x residents).
 #'   Trait-based competition coefficients (e.g., from \code{compute_competition()}).
 #'   Row names = invader IDs; column names = resident IDs.
-#' @param Nstar numeric matrix (residents × sites).
+#' @param Nstar numeric matrix (residents x sites).
 #'   Resident abundances by site (e.g., from \code{compute_interaction_strength()}).
 #'   Row names = resident IDs; column names = site IDs.
-#' @param invader_pred_wide numeric matrix (sites × invaders) or \code{NULL}.
-#'   Site × invader abundances on the response scale.
+#' @param invader_pred_wide numeric matrix (sites x invaders) or \code{NULL}.
+#'   Site x invader abundances on the response scale.
 #'   If \code{NULL}, supply \code{predictions} instead.
 #' @param predictions data.frame or \code{NULL}.
 #'   Long table with columns \code{species}, \code{site_id}, \code{pred}.
 #'   Used only if \code{invader_pred_wide} is \code{NULL}.
-#' @param env_dist numeric matrix (sites × residents).
+#' @param env_dist numeric matrix (sites x residents).
 #'   Site-resident environmental distance (e.g., from \code{compute_environment_kernel()}).
 #'   Row names = site IDs; column names = resident IDs.
 #' @param sigma_e numeric or \code{NULL}.
 #'   Bandwidth for the Gaussian environmental kernel;
 #'   if \code{NULL}, compute the kernel upstream (e.g., \code{compute_environment_kernel(..., kernel = "gaussian")})
 #'   and pass it via \code{K_env}.
-#' @param K_env numeric matrix (sites × residents) or \code{NULL}.
+#' @param K_env numeric matrix (sites x residents) or \code{NULL}.
 #'   Optional precomputed environmental kernel (similarity) for residents by site.
 #'   If supplied, \code{env_dist} and \code{sigma_e} are ignored.
 #'
 #' @return A list with:
 #' \itemize{
-#'   \item \code{I_raw}: 3D array (invaders × residents × sites) of per-pair impact terms.
-#'   \item \code{pressure_inv_site}: matrix (invaders × sites) with total pressure on each invader at each site
+#'   \item \code{I_raw}: 3D array (invaders x residents x sites) of per-pair impact terms.
+#'   \item \code{pressure_inv_site}: matrix (invaders x sites) with total pressure on each invader at each site
 #'         (sum over residents).
 #'   \item \code{meta}: list with matched IDs and dimensions.
 #' }
@@ -52,17 +52,17 @@
 #' res <- paste0("sp", 1:3)
 #' sites <- paste0("s", 1:4)
 #'
-#' # invader × resident Gaussian kernel (a_ij)
+#' # invader x resident Gaussian kernel (a_ij)
 #' a_ij <- matrix(runif(length(inv) * length(res), 0.1, 0.9),
 #'   nrow = length(inv), dimnames = list(inv, res)
 #' )
 #'
-#' # residents × sites abundances (Nstar)
+#' # residents x sites abundances (Nstar)
 #' Nstar <- matrix(abs(rnorm(length(res) * length(sites), 5, 2)),
 #'   nrow = length(res), dimnames = list(res, sites)
 #' )
 #'
-#' # site × resident environmental kernel (K_env)
+#' # site x resident environmental kernel (K_env)
 #' K_env <- matrix(runif(length(sites) * length(res), 0.3, 1),
 #'   nrow = length(sites), dimnames = list(sites, res)
 #' )
@@ -89,8 +89,8 @@ assemble_matrices <- function(
     sigma_e = NULL,
     K_env = NULL) {
   # ---- checks & alignment ----------------------------------------------------
-  if (!is.matrix(a_ij)) stop("a_ij must be a matrix (invaders × residents).")
-  if (!is.matrix(Nstar)) stop("Nstar must be a matrix (residents × sites).")
+  if (!is.matrix(a_ij)) stop("a_ij must be a matrix (invaders x residents).")
+  if (!is.matrix(Nstar)) stop("Nstar must be a matrix (residents x sites).")
   inv_ids <- rownames(a_ij)
   res_ids <- colnames(a_ij)
   if (is.null(inv_ids) || is.null(res_ids)) stop("a_ij must have row/col names (invader/resident IDs).")
@@ -100,13 +100,13 @@ assemble_matrices <- function(
   site_ids <- colnames(Nstar)
   if (is.null(site_ids)) stop("Nstar must have column names (site IDs).")
 
-  # ---- invader abundances per site (sites × invaders) -----------------------
+  # ---- invader abundances per site (sites x invaders) -----------------------
   if (is.null(invader_pred_wide)) {
     if (is.null(predictions)) stop("Provide 'invader_pred_wide' or 'predictions'.")
     need <- c("species", "site_id", "pred")
     if (!all(need %in% names(predictions))) stop("`predictions` must contain: species, site_id, pred.")
     inv_only <- predictions[predictions$species %in% inv_ids, c("species", "site_id", "pred"), drop = FALSE]
-    # build sites × invaders matrix
+    # build sites x invaders matrix
     invader_pred_wide <- matrix(NA_real_,
       nrow = length(site_ids), ncol = length(inv_ids),
       dimnames = list(site_ids, inv_ids)
@@ -130,7 +130,7 @@ assemble_matrices <- function(
     invader_pred_wide <- invader_pred_wide[site_ids, inv_ids, drop = FALSE]
   }
 
-  # ---- environmental kernel per site × resident -----------------------------
+  # ---- environmental kernel per site x resident -----------------------------
   if (is.null(K_env)) {
     if (is.null(env_dist) || is.null(sigma_e)) {
       stop("Provide either K_env, or env_dist + sigma_e for Gaussian env kernel.")
@@ -165,7 +165,7 @@ assemble_matrices <- function(
     r_i <- invader_pred_wide[sid, , drop = TRUE] # length n_inv
     r_j <- Nstar[, sid, drop = TRUE] # length n_res
     # outer product of abundances
-    A <- outer(r_i, r_j) # n_inv × n_res
+    A <- outer(r_i, r_j) # n_inv x n_res
     # environmental kernel for residents at site s (replicated down rows)
     Evec <- K_env[sid, , drop = TRUE] # length n_res
     Eker <- matrix(Evec, nrow = n_inv, ncol = n_res, byrow = TRUE)
@@ -175,7 +175,7 @@ assemble_matrices <- function(
 
   # ---- summaries: total pressure on invaders per site ------------------------
   # Sum over residents (dimension 2)
-  pressure_inv_site <- apply(I_raw, c(1, 3), sum, na.rm = TRUE) # (invaders × sites)
+  pressure_inv_site <- apply(I_raw, c(1, 3), sum, na.rm = TRUE) # (invaders x sites)
 
   list(
     I_raw = I_raw,

@@ -2,7 +2,7 @@
 #'
 #' @description
 #' Given a species-by-species **trait distance** matrix (e.g., Gower), this function
-#' extracts the **invader × resident** block of distances \eqn{d_{ij}} and transforms
+#' extracts the **invader x resident** block of distances \eqn{d_{ij}} and transforms
 #' it to a **competition coefficient** matrix \eqn{a_{ij}} using a Gaussian kernel:
 #' \deqn{a_{ij} = \exp\!\left\{ - \frac{d_{ij}^2}{2\,\sigma_t^2} \right\}.}
 #'
@@ -10,7 +10,7 @@
 #' trait difference. By default it is estimated from the **resident-resident** distances,
 #' so the decay reflects the realised dispersion of the resident pool.
 #'
-#' @param g_all matrix. Symmetric species × species **trait distance** matrix
+#' @param g_all matrix. Symmetric species x species **trait distance** matrix
 #'   with row/column names as species IDs (e.g., from Gower).
 #' @param residents character. Vector of resident species IDs (must be in \code{rownames(g_all)}).
 #' @param invaders NULL or character. Vector of invader species IDs. If \code{NULL},
@@ -24,8 +24,8 @@
 #'
 #' @return A list with:
 #' \itemize{
-#'   \item \code{d_ij} \code{(n_inv × n_res)}: invader-resident distance block (from \code{g_all}).
-#'   \item \code{a_ij} \code{(n_inv × n_res)}: competition coefficients (Gaussian kernel of distances \eqn{d_{ij}}).
+#'   \item \code{d_ij} \code{(n_inv x n_res)}: invader-resident distance block (from \code{g_all}).
+#'   \item \code{a_ij} \code{(n_inv x n_res)}: competition coefficients (Gaussian kernel of distances \eqn{d_{ij}}).
 #'   \item \code{sigma_t}: bandwidth used.
 #'   \item \code{meta}: list with estimation method and counts of invaders/residents.
 #' }
@@ -53,7 +53,7 @@
 #' residents <- spp[1:5]
 #' invaders  <- spp[6:8]
 #'
-#' # Compute competition kernel (sigma_t estimated from resident–resident distances)
+#' # Compute competition kernel (sigma_t estimated from resident-resident distances)
 #' comp <- compute_competition_kernel(
 #'   g_all     = g_all,
 #'   residents = residents,
@@ -62,7 +62,7 @@
 #' )
 #'
 #' # Inspect results
-#' str(comp$a_ij)           # (invaders × residents) competition coefficients
+#' str(comp$a_ij)           # (invaders x residents) competition coefficients
 #' comp$sigma_t             # bandwidth used
 #'
 #' # Same call without providing invaders (uses complement of residents)

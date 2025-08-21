@@ -20,10 +20,10 @@ predict_invader_response(
 \item{model}{Fitted model object (\pkg{glmmTMB}, \pkg{lme4}, \pkg{mgcv}, or base \pkg{stats}).}
 
 \item{species_traits}{\code{data.frame}. Species traits (one row per species) containing
-\code{species_col} and all trait variables referenced in the model’s fixed effects.}
+\code{species_col} and all trait variables referenced in the model's fixed effects.}
 
 \item{site_env}{\code{data.frame}. Site predictors (one row per site) containing
-\code{site_col} and all environmental variables referenced in the model’s fixed effects.}
+\code{site_col} and all environmental variables referenced in the model's fixed effects.}
 
 \item{species_col}{\code{character}. Species ID column in \code{species_traits}. Default \code{"species"}.}
 
@@ -45,16 +45,16 @@ predictions (exclude random effects). If \code{TRUE}, compute conditional predic
 \value{
 A list with:
 \itemize{
-\item \code{newdata}: the site × species table used in \code{predict()}.
+\item \code{newdata}: the site x species table used in \code{predict()}.
 \item \code{predictions}: long table with columns \code{site_col}, \code{species_col}, and \code{pred}.
-\item \code{prediction_matrix}: wide matrix (sites × species) of predicted values
+\item \code{prediction_matrix}: wide matrix (sites x species) of predicted values
 (rows ordered by site ID, columns by species ID).
 }
 }
 \description{
-Builds a complete \strong{site × species} prediction grid by crossing a species-trait table
+Builds a complete \strong{site x species} prediction grid by crossing a species-trait table
 (residents + simulated invaders) with a site-environment table, then calls the fitted
-model’s \code{predict()} to obtain expected responses (e.g., abundance). The function is
+model's \code{predict()} to obtain expected responses (e.g., abundance). The function is
 robust to factor level issues and mirrors a typical \code{expand_grid()} + left-join workflow.
 }
 \details{
@@ -71,7 +71,7 @@ conditional uses \code{re.form = NULL} with \code{allow.new.levels = TRUE}.
 
 \strong{Why population-level predictions by default?} For novel invaders, random-effect
 levels (e.g., species/site intercepts) are unknown. Excluding random effects yields
-fixed-effects expectations driven by traits, environments, and their interactions —
+fixed-effects expectations driven by traits, environments, and their interactions -
 appropriate for invasion screening and ranking.
 
 \strong{Augmentation inputs.} \code{site_aug} and/or \code{species_aug} let you add extra predictors

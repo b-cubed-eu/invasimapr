@@ -3,7 +3,7 @@
 #' @description
 #' A unified workflow that (1) computes within-trait similarity (numeric + categorical)
 #' and (2) computes community-level dispersion in trait space
-#' (Gower → clustering → PCoA → density → metrics).
+#' (Gower -> clustering -> PCoA -> density -> metrics).
 #'
 #' @param trait_df data.frame. One row per species (or unit); mixed types allowed.
 #' @param species_col integer or character (default = 1).
@@ -13,7 +13,7 @@
 #'   default = all columns except \code{species_col}.
 #' @param do_dispersion logical (default = TRUE). If TRUE, run the dispersion pipeline.
 #' @param k integer (default = 4). Number of clusters for dendrogram.
-#' @param pcoa_dims integer (default = 2). Number of PCoA axes retained (≥ 2).
+#' @param pcoa_dims integer (default = 2). Number of PCoA axes retained (>= 2).
 #' @param abundance numeric vector or NULL. Optional species weights; normalized internally.
 #' @param kde_n integer (default = 100). KDE grid resolution for density.
 #' @param viridis_option character (default = "D"). Palette for \code{viridisLite::viridis()}.
@@ -59,6 +59,7 @@
 #' @importFrom geometry convhulln
 #' @importFrom viridisLite viridis
 #' @importFrom patchwork plot_layout
+#' @importFrom graphics axis
 #' @export
 compute_trait_space <- function(trait_df,
                                 species_col = 1,

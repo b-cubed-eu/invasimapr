@@ -32,7 +32,10 @@
 #' @examples
 #' \dontrun{
 #' # Example using TRY table:
-#' get_trait_data("Acacia karroo", use_try = TRUE, try_data = try_traits, trait_species_col = "SpeciesName")
+#' get_trait_data("Acacia karroo",
+#'                use_try = TRUE,
+#'                try_data = try_traits,
+#'                trait_species_col = "SpeciesName")
 #'
 #' # Example using local trait table:
 #' get_trait_data("Acraea horta", local_trait_df = traits, local_species_col = "species")

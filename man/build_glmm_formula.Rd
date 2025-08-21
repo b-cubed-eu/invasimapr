@@ -32,13 +32,13 @@ Column name identifying sites.}
 \item{trait_cols}{\code{NULL} or \code{character} vector.
 If \code{NULL} (default), traits are auto-detected using name prefixes
 \verb{^trait_}, \verb{^t_}, or \verb{^trt_}. If not found, falls back to
-“everything not excluded” (see \code{env_exclude}). Pass explicit names
+"everything not excluded" (see \code{env_exclude}). Pass explicit names
 for full control.}
 
 \item{env_cols}{\code{NULL} or \code{character} vector.
 If \code{NULL} (default), environment variables are auto-detected using name
 prefixes \verb{^env_}, \verb{^e_}, \verb{^clim_}, \verb{^soil_}. If not found,
-falls back to “everything not in traits and not excluded”.}
+falls back to "everything not in traits and not excluded".}
 
 \item{env_exclude}{\code{character} vector.
 Columns to exclude from environment auto-detection. Defaults to
@@ -108,7 +108,7 @@ longDF <- data.frame(
   env2 = scale(runif(n))[, 1]
 )
 
-# Build a full formula with all trait × environment interactions and default REs
+# Build a full formula with all trait x environment interactions and default REs
 fml <- build_glmm_formula(longDF)
 fml
 

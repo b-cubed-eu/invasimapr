@@ -1,3 +1,9 @@
+invasimapr: A Novel Framework to visualise trait dispersion and assess
+species invasiveness or site invasibility
+================
+Sandra MacFadyen
+2025-08-08
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 # invasimapr
@@ -1037,7 +1043,7 @@ str(spp_traits)
 #>  $ Family      : Named chr [1:27] "Erebidae" NA "Nymphalidae" "Nymphalidae" ...
 #>   ..- attr(*, "names")= chr [1:27] "Family" "Family" "Family" "Family" ...
 #>  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Arctiidae_-_Utetheisa_pulchella.JPG/250px-Arctiidae_-"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Dancing_acraea_%28Acraea_serena%29_underside_Maputo.j"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/0_Belle-dame_%28Vanessa_cardui%29_-_Echinacea_purpure"| __truncated__ ...
-#>  $ palette     : chr [1:27] "#A59A47, #CCBF98, #535509, #8C8012, #1D220C" NA "#B4862D, #534832, #E8E6CE, #86885D, #9C9C6D" "#CC8242, #EA8FD3, #3A311F, #C55C9B, #695C41" ...
+#>  $ palette     : chr [1:27] "#1D220C, #535509, #A59A47, #CCBF98, #8C8012" NA "#736E50, #B88C34, #969769, #403420, #E6E4CB" "#695C41, #3A311F, #CC8242, #EA8FD3, #C55C9B" ...
 #>  $ trait_cont1 : num [1:27] 0.0284 0.0382 -0.8351 -0.2196 0.314 ...
 #>  $ trait_cont2 : num [1:27] -0.203 -0.224 -0.307 0.569 0.666 ...
 #>  $ trait_cont3 : num [1:27] -0.9969 0.0288 0.0288 0.1632 0.5191 ...
@@ -1062,12 +1068,12 @@ head(spp_traits)
 #> # A tibble: 6 × 29
 #>   species          summary Kingdom Phylum Class Order Family img_url palette trait_cont1 trait_cont2
 #>   <chr>            <chr>   <chr>   <chr>  <chr> <chr> <chr>  <chr>   <chr>         <dbl>       <dbl>
-#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #A59A4…      0.0284      -0.203
+#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #1D220…      0.0284      -0.203
 #> 2 Danaus chrysipp… <NA>    <NA>    <NA>   <NA>  <NA>  <NA>   <NA>    <NA>         0.0382      -0.224
-#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #B4862…     -0.835       -0.307
-#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #CC824…     -0.220        0.569
-#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B3A79…      0.314        0.666
-#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #6C6E4…     -0.765       -0.136
+#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #736E5…     -0.835       -0.307
+#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #695C4…     -0.220        0.569
+#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #584E4…      0.314        0.666
+#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #ECEFE…     -0.765       -0.136
 #> # ℹ 18 more variables: trait_cont3 <dbl>, trait_cont4 <dbl>, trait_cont5 <dbl>, trait_cont6 <dbl>,
 #> #   trait_cont7 <dbl>, trait_cont8 <dbl>, trait_cont9 <dbl>, trait_cont10 <dbl>, trait_cat11 <chr>,
 #> #   trait_cat12 <chr>, trait_cat13 <chr>, trait_cat14 <chr>, trait_cat15 <chr>, trait_ord16 <int>,
@@ -1886,7 +1892,7 @@ fml
 #>     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + 
 #>     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + 
 #>     (1 | species) + (1 | site_id)
-#> <environment: 0x00000236a4798b18>
+#> <environment: 0x000001e927422080>
 ```
 
 ### 8.3. Fit the GLMM

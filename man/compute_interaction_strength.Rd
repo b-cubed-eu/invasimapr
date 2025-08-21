@@ -34,7 +34,7 @@ A list with components:
 \describe{
 \item{g_all}{Processed interaction matrix (distance / similarity / Gaussian kernel).}
 \item{raw_distance}{Unscaled pairwise distance matrix (e.g., Gower).}
-\item{Nstar}{Site × resident abundance matrix (rows = residents, cols = sites).}
+\item{Nstar}{Site x resident abundance matrix (rows = residents, cols = sites).}
 \item{sigma}{Bandwidth used when \code{kernel = "gaussian"}; otherwise \code{NULL}.}
 }
 }
@@ -47,7 +47,7 @@ using Gower distance (default) or another dissimilarity metric, with options for
 \item \strong{Sparsification} (e.g., k-nearest neighbour graph)
 }
 
-Also returns \code{Nstar}, a site × resident abundance matrix from predicted values.
+Also returns \code{Nstar}, a site x resident abundance matrix from predicted values.
 }
 \details{
 The trait-based interaction strength matrix (\code{g_all}) is used in community assembly

@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_trait_dispersion.R
 \name{compute_trait_dispersion}
 \alias{compute_trait_dispersion}
-\title{Trait Dispersion Pipeline: Gower → clustering → PCoA → density → metrics}
+\title{Trait Dispersion Pipeline: Gower -> clustering -> PCoA -> density -> metrics}
 \usage{
 compute_trait_dispersion(
   trait_df,
@@ -24,7 +24,7 @@ compute_trait_dispersion(
 
 \item{k}{integer (default = 4). Number of clusters in dendrogram.}
 
-\item{pcoa_dims}{integer (default = 2). PCoA axes retained (≥ 2).}
+\item{pcoa_dims}{integer (default = 2). PCoA axes retained (>= 2).}
 
 \item{abundance}{numeric vector or NULL. Optional species weights; normalized internally.}
 

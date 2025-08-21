@@ -23,7 +23,7 @@ compute_environment_kernel(
 \item{site_env}{data.frame. One row per site; must include \code{site_col} and the
 environmental variables (numeric/factor/ordered). Coordinate columns can be present.}
 
-\item{abundance_wide}{matrix/data.frame or NULL. \strong{Sites × species} numeric
+\item{abundance_wide}{matrix/data.frame or NULL. \strong{Sites x species} numeric
 abundance/weight table (rows = sites, columns = species). If \code{NULL}, provide
 \code{predictions} instead.}
 
@@ -57,15 +57,15 @@ for non-Gower metrics only, this is applied automatically if needed.}
 \value{
 A list with:
 \itemize{
-\item \code{env_opt}: \strong{species × env} matrix of abundance-weighted optima.
-\item \code{env_dist}: \strong{sites × species} distance matrix (site ↔ species-optimum).
-\item \code{K_env}: \strong{sites × species} kernel (if \code{kernel != "distance"}).
+\item \code{env_opt}: \strong{species x env} matrix of abundance-weighted optima.
+\item \code{env_dist}: \strong{sites x species} distance matrix (site -> species-optimum).
+\item \code{K_env}: \strong{sites x species} kernel (if \code{kernel != "distance"}).
 \item \code{sigma_e}: bandwidth used (if Gaussian).
 \item \code{meta}: list of settings and detected columns.
 }
 }
 \description{
-Estimates each species’ \strong{environmental optimum} as the abundance-weighted mean of
+Estimates each species' \strong{environmental optimum} as the abundance-weighted mean of
 site-level environmental covariates, then computes the \strong{distance} (default: Gower)
 between every \strong{site} and every \strong{species optimum}. Optionally returns an
 \strong{environmental kernel} (similarity) by transforming distances (e.g., Gaussian).
@@ -103,14 +103,14 @@ site_env <- data.frame(
   check.names = FALSE
 )
 
-# Sites × species abundance/weights (any non-negative numbers)
+# Sites x species abundance/weights (any non-negative numbers)
 abundance_wide <- matrix(
   rexp(n_sites * n_spp, rate = 1),
   nrow = n_sites, ncol = n_spp,
   dimnames = list(sites, spp)
 )
 
-# Compute environmental optima and site–species distances
+# Compute environmental optima and site-species distances
 ek <- compute_environment_kernel(
   site_env       = site_env,
   abundance_wide = abundance_wide,   # avoids needing tidyr
@@ -121,8 +121,8 @@ ek <- compute_environment_kernel(
 )
 
 # Inspect results
-str(ek$env_opt)       # species × env optima
-dim(ek$env_dist)      # sites × species distance matrix
+str(ek$env_opt)       # species x env optima
+dim(ek$env_dist)      # sites x species distance matrix
 if (!is.null(ek$K_env)) range(ek$K_env, na.rm = TRUE)
 
 # (Optional) If you prefer Gower distances, set method = "gower".

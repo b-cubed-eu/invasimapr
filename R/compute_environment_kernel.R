@@ -1,7 +1,7 @@
 #' Environmental optima and site-species environmental distance (with optional kernel)
 #'
 #' @description
-#' Estimates each species’ **environmental optimum** as the abundance-weighted mean of
+#' Estimates each species' **environmental optimum** as the abundance-weighted mean of
 #' site-level environmental covariates, then computes the **distance** (default: Gower)
 #' between every **site** and every **species optimum**. Optionally returns an
 #' **environmental kernel** (similarity) by transforming distances (e.g., Gaussian).
@@ -21,7 +21,7 @@
 #'
 #' @param site_env data.frame. One row per site; must include `site_col` and the
 #'   environmental variables (numeric/factor/ordered). Coordinate columns can be present.
-#' @param abundance_wide matrix/data.frame or NULL. **Sites × species** numeric
+#' @param abundance_wide matrix/data.frame or NULL. **Sites x species** numeric
 #'   abundance/weight table (rows = sites, columns = species). If `NULL`, provide
 #'   `predictions` instead.
 #' @param predictions data.frame or NULL. Long table with columns `species`,
@@ -44,9 +44,9 @@
 #'
 #' @return A list with:
 #' \itemize{
-#'   \item `env_opt`: **species × env** matrix of abundance-weighted optima.
-#'   \item `env_dist`: **sites × species** distance matrix (site ↔ species-optimum).
-#'   \item `K_env`: **sites × species** kernel (if `kernel != "distance"`).
+#'   \item `env_opt`: **species x env** matrix of abundance-weighted optima.
+#'   \item `env_dist`: **sites x species** distance matrix (site -> species-optimum).
+#'   \item `K_env`: **sites x species** kernel (if `kernel != "distance"`).
 #'   \item `sigma_e`: bandwidth used (if Gaussian).
 #'   \item `meta`: list of settings and detected columns.
 #' }
@@ -71,14 +71,14 @@
 #'   check.names = FALSE
 #' )
 #'
-#' # Sites × species abundance/weights (any non-negative numbers)
+#' # Sites x species abundance/weights (any non-negative numbers)
 #' abundance_wide <- matrix(
 #'   rexp(n_sites * n_spp, rate = 1),
 #'   nrow = n_sites, ncol = n_spp,
 #'   dimnames = list(sites, spp)
 #' )
 #'
-#' # Compute environmental optima and site–species distances
+#' # Compute environmental optima and site-species distances
 #' ek <- compute_environment_kernel(
 #'   site_env       = site_env,
 #'   abundance_wide = abundance_wide,   # avoids needing tidyr
@@ -89,8 +89,8 @@
 #' )
 #'
 #' # Inspect results
-#' str(ek$env_opt)       # species × env optima
-#' dim(ek$env_dist)      # sites × species distance matrix
+#' str(ek$env_opt)       # species x env optima
+#' dim(ek$env_dist)      # sites x species distance matrix
 #' if (!is.null(ek$K_env)) range(ek$K_env, na.rm = TRUE)
 #'
 #' # (Optional) If you prefer Gower distances, set method = "gower".
@@ -132,7 +132,7 @@ compute_environment_kernel <- function(
   env_cols <- intersect(env_cols, names(site_env))
   if (!length(env_cols)) stop("No environmental columns detected in `site_env`.")
 
-  # ---- build abundance_wide if needed (sites × species) ----------------------
+  # ---- build abundance_wide if needed (sites x species) ----------------------
   if (is.null(abundance_wide)) {
     if (is.null(predictions)) stop("Provide either `abundance_wide` or `predictions`.")
     need <- c("species", site_col, "pred")
@@ -140,7 +140,7 @@ compute_environment_kernel <- function(
       stop("`predictions` must contain: ", paste(need, collapse = ", "))
     }
 
-    # pivot to sites × species
+    # pivot to sites x species
     if (requireNamespace("tidyr", quietly = TRUE)) {
       aw <- tidyr::pivot_wider(
         predictions,
@@ -178,8 +178,8 @@ compute_environment_kernel <- function(
   abundance_wide <- abundance_wide[common_sites, , drop = FALSE]
 
   # ---- compute species environmental optima (weighted means over sites) ------
-  E <- as.matrix(site_env_use[, env_cols, drop = FALSE]) # S × P (env)
-  W <- as.matrix(abundance_wide) # S × J (weights)
+  E <- as.matrix(site_env_use[, env_cols, drop = FALSE]) # S x P (env)
+  W <- as.matrix(abundance_wide) # S x J (weights)
   # Handle species with zero total weight: return NA row
   col_sums_W <- colSums(W, na.rm = TRUE)
   env_opt <- t(vapply(
@@ -200,7 +200,7 @@ compute_environment_kernel <- function(
   rownames(site_block) <- site_env_use[[site_col]]
   env_all <- rbind(site_block, env_opt)
 
-  # ---- compute distances (site ↔ species-optimum) ----------------------------
+  # ---- compute distances (site -> species-optimum) ----------------------------
   if (method == "gower") {
     d_all <- cluster::daisy(env_all, metric = "gower", stand = isTRUE(gower_stand))
     D <- as.matrix(d_all)
@@ -219,7 +219,7 @@ compute_environment_kernel <- function(
     D <- as.matrix(stats::dist(env_all, method = method))
   }
 
-  # extract site (rows) × species (cols) block
+  # extract site (rows) x species (cols) block
   site_ids <- rownames(site_block)
   spp_ids <- rownames(env_opt)
   env_dist <- D[site_ids, spp_ids, drop = FALSE]
@@ -257,9 +257,9 @@ compute_environment_kernel <- function(
 
   # ---- return ----------------------------------------------------------------
   list(
-    env_opt = env_opt, # species × env
-    env_dist = env_dist, # sites × species (distance)
-    K_env = K_env, # sites × species (similarity), if requested
+    env_opt = env_opt, # species x env
+    env_dist = env_dist, # sites x species (distance)
+    K_env = K_env, # sites x species (similarity), if requested
     sigma_e = if (!is.null(K_env) && kernel == "gaussian") sigma_e else NULL,
     meta = list(
       site_col = site_col,

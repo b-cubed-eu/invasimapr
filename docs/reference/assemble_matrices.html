@@ -79,20 +79,20 @@ summarising total competitive pressure on each invader at each site.</p>
 
 
 <dl><dt id="arg-a-ij">a_ij<a class="anchor" aria-label="anchor" href="#arg-a-ij"></a></dt>
-<dd><p>numeric matrix (invaders × residents).
+<dd><p>numeric matrix (invaders x residents).
 Trait-based competition coefficients (e.g., from <code>compute_competition()</code>).
 Row names = invader IDs; column names = resident IDs.</p></dd>
 
 
 <dt id="arg-nstar">Nstar<a class="anchor" aria-label="anchor" href="#arg-nstar"></a></dt>
-<dd><p>numeric matrix (residents × sites).
+<dd><p>numeric matrix (residents x sites).
 Resident abundances by site (e.g., from <code><a href="compute_interaction_strength.html">compute_interaction_strength()</a></code>).
 Row names = resident IDs; column names = site IDs.</p></dd>
 
 
 <dt id="arg-invader-pred-wide">invader_pred_wide<a class="anchor" aria-label="anchor" href="#arg-invader-pred-wide"></a></dt>
-<dd><p>numeric matrix (sites × invaders) or <code>NULL</code>.
-Site × invader abundances on the response scale.
+<dd><p>numeric matrix (sites x invaders) or <code>NULL</code>.
+Site x invader abundances on the response scale.
 If <code>NULL</code>, supply <code>predictions</code> instead.</p></dd>
 
 
@@ -103,7 +103,7 @@ Used only if <code>invader_pred_wide</code> is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-env-dist">env_dist<a class="anchor" aria-label="anchor" href="#arg-env-dist"></a></dt>
-<dd><p>numeric matrix (sites × residents).
+<dd><p>numeric matrix (sites x residents).
 Site-resident environmental distance (e.g., from <code><a href="compute_environment_kernel.html">compute_environment_kernel()</a></code>).
 Row names = site IDs; column names = resident IDs.</p></dd>
 
@@ -116,15 +116,15 @@ and pass it via <code>K_env</code>.</p></dd>
 
 
 <dt id="arg-k-env">K_env<a class="anchor" aria-label="anchor" href="#arg-k-env"></a></dt>
-<dd><p>numeric matrix (sites × residents) or <code>NULL</code>.
+<dd><p>numeric matrix (sites x residents) or <code>NULL</code>.
 Optional precomputed environmental kernel (similarity) for residents by site.
 If supplied, <code>env_dist</code> and <code>sigma_e</code> are ignored.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with:</p><ul><li><p><code>I_raw</code>: 3D array (invaders × residents × sites) of per-pair impact terms.</p></li>
-<li><p><code>pressure_inv_site</code>: matrix (invaders × sites) with total pressure on each invader at each site
+    <p>A list with:</p><ul><li><p><code>I_raw</code>: 3D array (invaders x residents x sites) of per-pair impact terms.</p></li>
+<li><p><code>pressure_inv_site</code>: matrix (invaders x sites) with total pressure on each invader at each site
 (sum over residents).</p></li>
 <li><p><code>meta</code>: list with matched IDs and dimensions.</p></li>
 </ul></div>
@@ -145,17 +145,17 @@ and \(K^{(env)}_{j s}\) is an environmental matching kernel for resident \(j\) a
 <span class="r-in"><span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"sp"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">sites</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># invader × resident Gaussian kernel (a_ij)</span></span></span>
+<span class="r-in"><span><span class="co"># invader x resident Gaussian kernel (a_ij)</span></span></span>
 <span class="r-in"><span><span class="va">a_ij</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">inv</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>, <span class="fl">0.1</span>, <span class="fl">0.9</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">inv</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">inv</span>, <span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># residents × sites abundances (Nstar)</span></span></span>
+<span class="r-in"><span><span class="co"># residents x sites abundances (Nstar)</span></span></span>
 <span class="r-in"><span><span class="va">Nstar</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span>, <span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">res</span>, <span class="va">sites</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># site × resident environmental kernel (K_env)</span></span></span>
+<span class="r-in"><span><span class="co"># site x resident environmental kernel (K_env)</span></span></span>
 <span class="r-in"><span><span class="va">K_env</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span>, <span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">sites</span><span class="op">)</span>, dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">sites</span>, <span class="va">res</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
