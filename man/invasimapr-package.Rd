@@ -13,9 +13,9 @@ Utilities for assembling invader–resident interaction tensors, computing trait
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/macSands/invasimapr}
-  \item \url{https://macsands.github.io/invasimapr/}
-  \item Report bugs at \url{https://github.com/macSands/invasimapr/issues}
+  \item \url{https://github.com/b-cubed-eu/invasimapr}
+  \item \url{https://b-cubed-eu.github.io/invasimapr/}
+  \item Report bugs at \url{https://github.com/b-cubed-eu/invasimapr/issues}
 }
 
 }

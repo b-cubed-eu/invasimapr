@@ -6,16 +6,20 @@
 
 <!-- badges: start -->
 
-[![repo status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![repo
+status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Release](https://img.shields.io/github/release/b-cubed-eu/invasimapr.svg)](https://github.com/b-cubed-eu/invasimapr/releases)
 [![invasimapr status
 badge](https://b-cubed-eu.r-universe.dev/invasimapr/badges/version)](https://b-cubed-eu.r-universe.dev/invasimapr)
-[![CRAN status](https://www.r-pkg.org/badges/version/invasimapr)](https://CRAN.R-project.org/package=invasimapr)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/invasimapr)](https://CRAN.R-project.org/package=invasimapr)
 [![R-CMD-check](https://github.com/b-cubed-eu/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/b-cubed-eu/invasimapr/actions/workflows/R-CMD-check.yaml)
-[![Codecov test coverage](https://codecov.io/gh/b-cubed-eu/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/b-cubed-eu/invasimapr)
+[![Codecov test
+coverage](https://codecov.io/gh/b-cubed-eu/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/b-cubed-eu/invasimapr)
 [![DOI](https://img.shields.io/badge/DOI-awaiting_upload_to_zenodo-orange)](https://zenodo.org)
-[![name status badge](https://b-cubed-eu.r-universe.dev/badges/:name?color=6CDDB4)](https://b-cubed-eu.r-universe.dev/)
-MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
+[![name status
+badge](https://b-cubed-eu.r-universe.dev/badges/:name?color=6CDDB4)](https://b-cubed-eu.r-universe.dev/)
+[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
 <!-- badges: end -->
 
@@ -434,7 +438,7 @@ functions are available for use in the workflow.
 ``` r
 # # install remotes if needed
 # install.packages("remotes")
-# remotes::install_github("macSands/invasimapr")
+# remotes::install_github("b-cubed-eu/invasimapr")
 
 # Ensure the package is loaded when knitting
 library(invasimapr)
@@ -501,7 +505,7 @@ functions are available for use in the workflow.
 ``` r
 # # install remotes if needed
 # install.packages("remotes")
-# remotes::install_github("macSands/dissmapr")
+# remotes::install_github("b-cubed-eu/dissmapr")
 
 # Ensure the package is loaded
 library(dissmapr)
@@ -512,7 +516,7 @@ sessionInfo()$otherPkgs$dissmapr$Version
 #### 3.2. Import and harmonise biodiversity-occurrence data
 
 The process begins with
-[`dissmapr::get_occurrence_data()`](https://macsands.github.io/dissmapr/reference/get_occurrence_data.html),
+[`dissmapr::get_occurrence_data()`](https://b-cubed-eu.github.io/dissmapr/reference/get_occurrence_data.html),
 which imports biodiversity records, such as a GBIF butterfly dataset for
 South Africa, and harmonizes them into standardised formats. Input
 sources can include local CSV files, URLs, or zipped GBIF downloads. The
@@ -551,7 +555,7 @@ head(bfly_data[, c(51, 52, 22, 23, 1, 14, 16, 17, 30)])
 #### 3.3. Format biodiversity records to long/wide formats
 
 Next,
-[`dissmapr::format_df()`](https://macsands.github.io/dissmapr/reference/format_df.html)
+[`dissmapr::format_df()`](https://b-cubed-eu.github.io/dissmapr/reference/format_df.html)
 restructures the raw records into tidy long and wide formats. This
 assigns unique site IDs, extracts key fields (coordinates, species
 names, observation values), and prepares two main outputs: `site_obs`
@@ -621,7 +625,7 @@ sp_cols[1:10]
 #### 3.4. Generate spatial grid and gridded summaries
 
 To integrate the data spatially,
-[`dissmapr::generate_grid()`](https://macsands.github.io/dissmapr/reference/generate_grid.html)
+[`dissmapr::generate_grid()`](https://b-cubed-eu.github.io/dissmapr/reference/generate_grid.html)
 overlays a user-defined spatial lattice (e.g. 0.5° grid), aggregates
 biodiversity observations per grid cell, and computes standardised
 metrics such as species richness and observation effort. Outputs include
@@ -633,7 +637,7 @@ modelling.
 # Load the national boundary
 rsa = sf::st_read(system.file("extdata", "rsa.shp", package = "invasimapr"))
 #> Reading layer `rsa' from data source 
-#>   `D:\Methods\R\myR_Packages\myCompletePks\invasimapr\inst\extdata\rsa.shp' using driver `ESRI Shapefile'
+#>   `D:\Methods\R\myR_Packages\b-cubed-versions\invasimapr\inst\extdata\rsa.shp' using driver `ESRI Shapefile'
 #> Simple feature collection with 11 features and 8 fields
 #> Geometry type: MULTIPOLYGON
 #> Dimension:     XY
@@ -738,7 +742,7 @@ par(old_par) # reset plotting parameters
 #### 3.5. Retrieve, crop, resample, and link environmental rasters to sampling sites
 
 Environmental predictors are appended using
-[`dissmapr::get_enviro_data()`](https://macsands.github.io/dissmapr/reference/get_enviro_data.html),
+[`dissmapr::get_enviro_data()`](https://b-cubed-eu.github.io/dissmapr/reference/get_enviro_data.html),
 which buffers the grid, downloads raster data (e.g. WorldClim
 bioclimatic variables), resamples it, and links values to grid-cell
 centroids. This produces both a site-by-environment data frame
@@ -810,7 +814,7 @@ dim(grid_spp)
 ```
 
 Then proceed to retrieve and process environmental data using
-[`dissmapr::get_enviro_data()`](https://macsands.github.io/dissmapr/reference/get_enviro_data.html).
+[`dissmapr::get_enviro_data()`](https://b-cubed-eu.github.io/dissmapr/reference/get_enviro_data.html).
 In the example below, 19 bioclimatic variables are downloaded from
 WorldClim v2.1 (≈10 km resolution) for all site centroids in the
 `grid_spp` dataset. It performs the following steps:
@@ -916,7 +920,7 @@ head(grid_env)
 #### 3.6. Remove highly correlated predictors (optional)
 
 Finally,
-[`dissmapr::rm_correlated()`](https://macsands.github.io/dissmapr/reference/rm_correlated.html)
+[`dissmapr::rm_correlated()`](https://b-cubed-eu.github.io/dissmapr/reference/rm_correlated.html)
 optionally reduces multicollinearity by filtering out highly correlated
 predictors based on a threshold (e.g. r \> 0.70), improving model
 stability and interpretability. Together, these functions provide a
@@ -1033,7 +1037,7 @@ str(spp_traits)
 #>  $ Family      : Named chr [1:27] "Erebidae" NA "Nymphalidae" "Nymphalidae" ...
 #>   ..- attr(*, "names")= chr [1:27] "Family" "Family" "Family" "Family" ...
 #>  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Arctiidae_-_Utetheisa_pulchella.JPG/250px-Arctiidae_-"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Dancing_acraea_%28Acraea_serena%29_underside_Maputo.j"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/0_Belle-dame_%28Vanessa_cardui%29_-_Echinacea_purpure"| __truncated__ ...
-#>  $ palette     : chr [1:27] "#1D220C, #8C8012, #535509, #CCBF98, #A59A47" NA "#736745, #A2A070, #3C3220, #8E8F60, #E8E6CF" "#6A5C42, #C65D9B, #3A311F, #CC8242, #EA8FD3" ...
+#>  $ palette     : chr [1:27] "#A59A47, #CCBF98, #535509, #8C8012, #1D220C" NA "#B4862D, #534832, #E8E6CE, #86885D, #9C9C6D" "#CC8242, #EA8FD3, #3A311F, #C55C9B, #695C41" ...
 #>  $ trait_cont1 : num [1:27] 0.0284 0.0382 -0.8351 -0.2196 0.314 ...
 #>  $ trait_cont2 : num [1:27] -0.203 -0.224 -0.307 0.569 0.666 ...
 #>  $ trait_cont3 : num [1:27] -0.9969 0.0288 0.0288 0.1632 0.5191 ...
@@ -1058,12 +1062,12 @@ head(spp_traits)
 #> # A tibble: 6 × 29
 #>   species          summary Kingdom Phylum Class Order Family img_url palette trait_cont1 trait_cont2
 #>   <chr>            <chr>   <chr>   <chr>  <chr> <chr> <chr>  <chr>   <chr>         <dbl>       <dbl>
-#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #1D220…      0.0284      -0.203
+#> 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #A59A4…      0.0284      -0.203
 #> 2 Danaus chrysipp… <NA>    <NA>    <NA>   <NA>  <NA>  <NA>   <NA>    <NA>         0.0382      -0.224
-#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #73674…     -0.835       -0.307
-#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #6A5C4…     -0.220        0.569
-#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B2A79…      0.314        0.666
-#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #ECEFE…     -0.765       -0.136
+#> 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #B4862…     -0.835       -0.307
+#> 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #CC824…     -0.220        0.569
+#> 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B3A79…      0.314        0.666
+#> 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #6C6E4…     -0.765       -0.136
 #> # ℹ 18 more variables: trait_cont3 <dbl>, trait_cont4 <dbl>, trait_cont5 <dbl>, trait_cont6 <dbl>,
 #> #   trait_cont7 <dbl>, trait_cont8 <dbl>, trait_cont9 <dbl>, trait_cont10 <dbl>, trait_cat11 <chr>,
 #> #   trait_cat12 <chr>, trait_cat13 <chr>, trait_cat14 <chr>, trait_cat15 <chr>, trait_ord16 <int>,
@@ -1681,8 +1685,18 @@ res = compute_trait_space(
 
 <img src="man/figures/README-func-space-1.png" width="100%" style="display: block; margin: auto;" />
 
-``` r
+> **Figure 10**: Combined functional trait space workflow. Outputs from
+> the compute_trait_space() function, which integrates multiple
+> trait-based analyses into a unified framework. Shown are: (top left)
+> hierarchical clustering of species by Gower trait distance; (top
+> right) community-level functional diversity metrics (FDis, FRic,
+> RaoQ); (bottom left) species centrality histogram (distance to
+> centroid); and (bottom right) trait space ordination (PCoA with kernel
+> density). Together, these visualisations capture trait similarity,
+> trait-space structure, species’ functional positions, and overall
+> community-level functional diversity.
 
+``` r
 # Check results/outputs
 str(res, max.level = 1)
 #> List of 1
@@ -1701,17 +1715,6 @@ str(res$dispersion, max.level = 1)
 #>  $ metrics_df     :'data.frame': 3 obs. of  2 variables:
 #>  $ plots          :List of 4
 ```
-
-> **Figure 10**: Combined functional trait space workflow. Outputs from
-> the compute_trait_space() function, which integrates multiple
-> trait-based analyses into a unified framework. Shown are: (top left)
-> hierarchical clustering of species by Gower trait distance; (top
-> right) community-level functional diversity metrics (FDis, FRic,
-> RaoQ); (bottom left) species centrality histogram (distance to
-> centroid); and (bottom right) trait space ordination (PCoA with kernel
-> density). Together, these visualisations capture trait similarity,
-> trait-space structure, species’ functional positions, and overall
-> community-level functional diversity.
 
 > **Note**: By pairing `compute_trait_similarity()` (per-trait
 > conservation/lability) with `compute_trait_dispersion()`
@@ -1883,7 +1886,7 @@ fml
 #>     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + 
 #>     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + 
 #>     (1 | species) + (1 | site_id)
-#> <environment: 0x000001e5c9fd0500>
+#> <environment: 0x00000236a4798b18>
 ```
 
 ### 8.3. Fit the GLMM

@@ -10,8 +10,8 @@ Description: Utilities for assembling invader–resident interaction tensors,
     and summarising trait dispersion metrics. Includes helpers to predict 
     site × species responses for residents and simulated invaders.
 License: MIT + file LICENSE
-URL: https://github.com/macSands/invasimapr, https://macsands.github.io/invasimapr/
-BugReports: https://github.com/macSands/invasimapr/issues
+URL: https://github.com/b-cubed-eu/invasimapr, https://b-cubed-eu.github.io/invasimapr/
+BugReports: https://github.com/b-cubed-eu/invasimapr/issues
 Encoding: UTF-8
 LazyData: false
 Depends:

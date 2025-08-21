@@ -25,7 +25,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Workflow to visualise trait dispersion and assess invasibility">
 <meta name="description" content="Utilities for assembling invader–resident interaction tensors, computing trait-based competition kernels from distance matrices, deriving environmental suitability kernels, calculating invasion fitness, and summarising trait dispersion metrics. Includes helpers to predict site × species responses for residents and simulated invaders.">
 <meta property="og:description" content="Utilities for assembling invader–resident interaction tensors, computing trait-based competition kernels from distance matrices, deriving environmental suitability kernels, calculating invasion fitness, and summarising trait dispersion metrics. Includes helpers to predict site × species responses for residents and simulated invaders.">
-<meta property="og:image" content="https://macsands.github.io/invasimapr/logo.png">
+<meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -60,7 +60,7 @@
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="search.json">
 </form></li>
 <li class="nav-item"><a class="external-link nav-link" href="https://b-cubed.eu/" aria-label="B-Cubed website"><span class="fa fa-cube"></span></a></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/macSands/invasimapr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+<li class="nav-item"><a class="external-link nav-link" href="https://github.com/b-cubed-eu/invasimapr/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
       </ul>
 </div>
 
@@ -78,6 +78,7 @@
 </h2>
 <!-- badges: start -->
 
+<!-- badges: end -->
 <hr>
 </div>
 <div class="section level2">
@@ -307,7 +308,7 @@ Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># # install remotes if needed</span></span>
 <span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="co"># remotes::install_github("macSands/invasimapr")</span></span>
+<span><span class="co"># remotes::install_github("b-cubed-eu/invasimapr")</span></span>
 <span></span>
 <span><span class="co"># Ensure the package is loaded when knitting</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/macSands/invasimapr" class="external-link">invasimapr</a></span><span class="op">)</span></span>
@@ -368,7 +369,7 @@ Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># # install remotes if needed</span></span>
 <span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="co"># remotes::install_github("macSands/dissmapr")</span></span>
+<span><span class="co"># remotes::install_github("b-cubed-eu/dissmapr")</span></span>
 <span></span>
 <span><span class="co"># Ensure the package is loaded</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/macSands/dissmapr" class="external-link">dissmapr</a></span><span class="op">)</span></span>
@@ -378,10 +379,10 @@ Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href
 <div class="section level4">
 <h4 id="id_32-import-and-harmonise-biodiversity-occurrence-data">3.2. Import and harmonise biodiversity-occurrence data<a class="anchor" aria-label="anchor" href="#id_32-import-and-harmonise-biodiversity-occurrence-data"></a>
 </h4>
-<p>The process begins with <a href="https://macsands.github.io/dissmapr/reference/get_occurrence_data.html" class="external-link"><code>dissmapr::get_occurrence_data()</code></a>, which imports biodiversity records, such as a GBIF butterfly dataset for South Africa, and harmonizes them into standardised formats. Input sources can include local CSV files, URLs, or zipped GBIF downloads. The function filters data by taxon and region, returning both raw records and site-by-species matrices in presence-absence or abundance form.</p>
+<p>The process begins with <a href="https://b-cubed-eu.github.io/dissmapr/reference/get_occurrence_data.html" class="external-link"><code>dissmapr::get_occurrence_data()</code></a>, which imports biodiversity records, such as a GBIF butterfly dataset for South Africa, and harmonizes them into standardised formats. Input sources can include local CSV files, URLs, or zipped GBIF downloads. The function filters data by taxon and region, returning both raw records and site-by-species matrices in presence-absence or abundance form.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use local GBIF data</span></span>
-<span><span class="va">bfly_data</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://macsands.github.io/dissmapr/reference/get_occurrence_data.html" class="external-link">get_occurrence_data</a></span><span class="op">(</span></span>
+<span><span class="va">bfly_data</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dissmapr/man/get_occurrence_data.html" class="external-link">get_occurrence_data</a></span><span class="op">(</span></span>
 <span>  data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"gbif_butterflies.csv"</span>, package <span class="op">=</span> <span class="st">"invasimapr"</span><span class="op">)</span>,</span>
 <span>  source_type <span class="op">=</span> <span class="st">"local_csv"</span>,</span>
 <span>  sep <span class="op">=</span> <span class="st">"\t"</span></span>
@@ -410,10 +411,10 @@ Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href
 <div class="section level4">
 <h4 id="id_33-format-biodiversity-records-to-longwide-formats">3.3. Format biodiversity records to long/wide formats<a class="anchor" aria-label="anchor" href="#id_33-format-biodiversity-records-to-longwide-formats"></a>
 </h4>
-<p>Next, <a href="https://macsands.github.io/dissmapr/reference/format_df.html" class="external-link"><code>dissmapr::format_df()</code></a> restructures the raw records into tidy long and wide formats. This assigns unique site IDs, extracts key fields (coordinates, species names, observation values), and prepares two main outputs: <code>site_obs</code> (long format for mapping) and <code>site_spp</code> (wide format for species-level analysis).</p>
+<p>Next, <a href="https://b-cubed-eu.github.io/dissmapr/reference/format_df.html" class="external-link"><code>dissmapr::format_df()</code></a> restructures the raw records into tidy long and wide formats. This assigns unique site IDs, extracts key fields (coordinates, species names, observation values), and prepares two main outputs: <code>site_obs</code> (long format for mapping) and <code>site_spp</code> (wide format for species-level analysis).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Continue from GBIF data</span></span>
-<span><span class="va">bfly_result</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://macsands.github.io/dissmapr/reference/format_df.html" class="external-link">format_df</a></span><span class="op">(</span></span>
+<span><span class="va">bfly_result</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dissmapr/man/format_df.html" class="external-link">format_df</a></span><span class="op">(</span></span>
 <span>  data        <span class="op">=</span> <span class="va">bfly_data</span>, <span class="co"># A `data.frame` of biodiversity records</span></span>
 <span>  species_col <span class="op">=</span> <span class="st">"verbatimScientificName"</span>, <span class="co"># Name of species column (required for `"long"`)</span></span>
 <span>  value_col   <span class="op">=</span> <span class="st">"pa"</span>, <span class="co"># Name of value column (e.g. presence/abundance; for `"long"`)</span></span>
@@ -473,12 +474,12 @@ Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href
 <div class="section level4">
 <h4 id="id_34-generate-spatial-grid-and-gridded-summaries">3.4. Generate spatial grid and gridded summaries<a class="anchor" aria-label="anchor" href="#id_34-generate-spatial-grid-and-gridded-summaries"></a>
 </h4>
-<p>To integrate the data spatially, <a href="https://macsands.github.io/dissmapr/reference/generate_grid.html" class="external-link"><code>dissmapr::generate_grid()</code></a> overlays a user-defined spatial lattice (e.g. 0.5° grid), aggregates biodiversity observations per grid cell, and computes standardised metrics such as species richness and observation effort. Outputs include gridded species matrices (<code>grid_spp</code>, <code>grid_spp_pa</code>), a spatial polygon (<code>grid_sf</code>), and raster layers (<code>grid_r</code>), enabling downstream spatial modelling.</p>
+<p>To integrate the data spatially, <a href="https://b-cubed-eu.github.io/dissmapr/reference/generate_grid.html" class="external-link"><code>dissmapr::generate_grid()</code></a> overlays a user-defined spatial lattice (e.g. 0.5° grid), aggregates biodiversity observations per grid cell, and computes standardised metrics such as species richness and observation effort. Outputs include gridded species matrices (<code>grid_spp</code>, <code>grid_spp_pa</code>), a spatial polygon (<code>grid_sf</code>), and raster layers (<code>grid_r</code>), enabling downstream spatial modelling.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load the national boundary</span></span>
 <span><span class="va">rsa</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rsa.shp"</span>, package <span class="op">=</span> <span class="st">"invasimapr"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reading layer `rsa' from data source </span></span>
-<span><span class="co">#&gt;   `D:\Methods\R\myR_Packages\myCompletePks\invasimapr\inst\extdata\rsa.shp' using driver `ESRI Shapefile'</span></span>
+<span><span class="co">#&gt;   `D:\Methods\R\myR_Packages\b-cubed-versions\invasimapr\inst\extdata\rsa.shp' using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 11 features and 8 fields</span></span>
 <span><span class="co">#&gt; Geometry type: MULTIPOLYGON</span></span>
 <span><span class="co">#&gt; Dimension:     XY</span></span>
@@ -501,7 +502,7 @@ Aggregate the fitness matrix to site-level <strong>invasibility</strong> <a href
 <span><span class="va">grid_masked</span> <span class="op">=</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html" class="external-link">mask</a></span><span class="op">(</span><span class="va">grid</span>, <span class="va">rsa_vect</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Generate a 0.5° grid summary for the point dataset `site_spp`</span></span>
-<span><span class="va">grid_list</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://macsands.github.io/dissmapr/reference/generate_grid.html" class="external-link">generate_grid</a></span><span class="op">(</span></span>
+<span><span class="va">grid_list</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dissmapr/man/generate_grid.html" class="external-link">generate_grid</a></span><span class="op">(</span></span>
 <span>  data          <span class="op">=</span> <span class="va">site_spp</span>, <span class="co"># point data with x/y + species columns</span></span>
 <span>  x_col         <span class="op">=</span> <span class="st">"x"</span>, <span class="co"># longitude column</span></span>
 <span>  y_col         <span class="op">=</span> <span class="st">"y"</span>, <span class="co"># latitude  column</span></span>
@@ -570,7 +571,7 @@ Plot square root transformed sampling effort and species richness, in a 1x2 side
 <div class="section level4">
 <h4 id="id_35-retrieve-crop-resample-and-link-environmental-rasters-to-sampling-sites">3.5. Retrieve, crop, resample, and link environmental rasters to sampling sites<a class="anchor" aria-label="anchor" href="#id_35-retrieve-crop-resample-and-link-environmental-rasters-to-sampling-sites"></a>
 </h4>
-<p>Environmental predictors are appended using <a href="https://macsands.github.io/dissmapr/reference/get_enviro_data.html" class="external-link"><code>dissmapr::get_enviro_data()</code></a>, which buffers the grid, downloads raster data (e.g. WorldClim bioclimatic variables), resamples it, and links values to grid-cell centroids. This produces both a site-by-environment data frame (<code>env_df</code>) and a SpatRaster object (<code>env_r</code>), aligning biological and environmental data.</p>
+<p>Environmental predictors are appended using <a href="https://b-cubed-eu.github.io/dissmapr/reference/get_enviro_data.html" class="external-link"><code>dissmapr::get_enviro_data()</code></a>, which buffers the grid, downloads raster data (e.g. WorldClim bioclimatic variables), resamples it, and links values to grid-cell centroids. This produces both a site-by-environment data frame (<code>env_df</code>) and a SpatRaster object (<code>env_r</code>), aligning biological and environmental data.</p>
 <p>Begin by reading in a predefined target species list, then filter a site-by-species dataset (<code>grid_spp</code>) to retain only relevant species observations, and reshape the data for further analysis. This produces both a filtered long-format dataset (<code>grid_obs</code>) and a cleaned wide-format site-by-species matrix (<code>grid_spp</code>).</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Read in target species list</span></span>
@@ -628,7 +629,7 @@ Plot square root transformed sampling effort and species richness, in a 1x2 side
 <span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">grid_spp</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 314  32</span></span>
 <span><span class="co"># head(grid_spp)</span></span></code></pre></div>
-<p>Then proceed to retrieve and process environmental data using <a href="https://macsands.github.io/dissmapr/reference/get_enviro_data.html" class="external-link"><code>dissmapr::get_enviro_data()</code></a>. In the example below, 19 bioclimatic variables are downloaded from WorldClim v2.1 (≈10 km resolution) for all site centroids in the <code>grid_spp</code> dataset. It performs the following steps:</p>
+<p>Then proceed to retrieve and process environmental data using <a href="https://b-cubed-eu.github.io/dissmapr/reference/get_enviro_data.html" class="external-link"><code>dissmapr::get_enviro_data()</code></a>. In the example below, 19 bioclimatic variables are downloaded from WorldClim v2.1 (≈10 km resolution) for all site centroids in the <code>grid_spp</code> dataset. It performs the following steps:</p>
 <ol style="list-style-type: decimal">
 <li>Retrieves WorldClim “bio” variables via the <code>geodata</code> interface.</li>
 <li>Buffers the area of interest (AOI) by 10 km.</li>
@@ -637,7 +638,7 @@ Plot square root transformed sampling effort and species richness, in a 1x2 side
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Retrieve 19 bioclim layers (≈10-km, WorldClim v2.1) for all grid centroids</span></span>
 <span><span class="va">data_path</span> <span class="op">=</span> <span class="st">"inst/extdata"</span> <span class="co"># cache folder for rasters</span></span>
-<span><span class="va">enviro_list</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://macsands.github.io/dissmapr/reference/get_enviro_data.html" class="external-link">get_enviro_data</a></span><span class="op">(</span></span>
+<span><span class="va">enviro_list</span> <span class="op">=</span> <span class="fu">dissmapr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/dissmapr/man/get_enviro_data.html" class="external-link">get_enviro_data</a></span><span class="op">(</span></span>
 <span>  data       <span class="op">=</span> <span class="va">grid_spp</span>, <span class="co"># centroids + obs_sum + spp_rich</span></span>
 <span>  buffer_km  <span class="op">=</span> <span class="fl">10</span>, <span class="co"># pad the AOI slightly</span></span>
 <span>  source     <span class="op">=</span> <span class="st">"geodata"</span>, <span class="co"># WorldClim/SoilGrids interface</span></span>
@@ -729,7 +730,7 @@ Plot square root transformed sampling effort and species richness, in a 1x2 side
 <div class="section level4">
 <h4 id="id_36-remove-highly-correlated-predictors-optional">3.6. Remove highly correlated predictors (optional)<a class="anchor" aria-label="anchor" href="#id_36-remove-highly-correlated-predictors-optional"></a>
 </h4>
-<p>Finally, <a href="https://macsands.github.io/dissmapr/reference/rm_correlated.html" class="external-link"><code>dissmapr::rm_correlated()</code></a> optionally reduces multicollinearity by filtering out highly correlated predictors based on a threshold (e.g. r &gt; 0.70), improving model stability and interpretability. Together, these functions provide a reproducible and scalable pipeline for preparing ecological datasets for spatial analysis.</p>
+<p>Finally, <a href="https://b-cubed-eu.github.io/dissmapr/reference/rm_correlated.html" class="external-link"><code>dissmapr::rm_correlated()</code></a> optionally reduces multicollinearity by filtering out highly correlated predictors based on a threshold (e.g. r &gt; 0.70), improving model stability and interpretability. Together, these functions provide a reproducible and scalable pipeline for preparing ecological datasets for spatial analysis.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># # (Optional) Rename BIO</span></span>
 <span><span class="co"># names(env_df) = c("grid_id", "centroid_lon", "centroid_lat", names_env, "obs_sum", "spp_rich")</span></span>
@@ -830,7 +831,7 @@ Plot square root transformed sampling effort and species richness, in a 1x2 side
 <span><span class="co">#&gt;  $ Family      : Named chr [1:27] "Erebidae" NA "Nymphalidae" "Nymphalidae" ...</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:27] "Family" "Family" "Family" "Family" ...</span></span>
 <span><span class="co">#&gt;  $ img_url     : chr [1:27] "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/Arctiidae_-_Utetheisa_pulchella.JPG/250px-Arctiidae_-"| __truncated__ NA "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Dancing_acraea_%28Acraea_serena%29_underside_Maputo.j"| __truncated__ "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/0_Belle-dame_%28Vanessa_cardui%29_-_Echinacea_purpure"| __truncated__ ...</span></span>
-<span><span class="co">#&gt;  $ palette     : chr [1:27] "#1D220C, #8C8012, #535509, #CCBF98, #A59A47" NA "#736745, #A2A070, #3C3220, #8E8F60, #E8E6CF" "#6A5C42, #C65D9B, #3A311F, #CC8242, #EA8FD3" ...</span></span>
+<span><span class="co">#&gt;  $ palette     : chr [1:27] "#A59A47, #CCBF98, #535509, #8C8012, #1D220C" NA "#B4862D, #534832, #E8E6CE, #86885D, #9C9C6D" "#CC8242, #EA8FD3, #3A311F, #C55C9B, #695C41" ...</span></span>
 <span><span class="co">#&gt;  $ trait_cont1 : num [1:27] 0.0284 0.0382 -0.8351 -0.2196 0.314 ...</span></span>
 <span><span class="co">#&gt;  $ trait_cont2 : num [1:27] -0.203 -0.224 -0.307 0.569 0.666 ...</span></span>
 <span><span class="co">#&gt;  $ trait_cont3 : num [1:27] -0.9969 0.0288 0.0288 0.1632 0.5191 ...</span></span>
@@ -855,12 +856,12 @@ Plot square root transformed sampling effort and species richness, in a 1x2 side
 <span><span class="co">#&gt; # A tibble: 6 × 29</span></span>
 <span><span class="co">#&gt;   species          summary Kingdom Phylum Class Order Family img_url palette trait_cont1 trait_cont2</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;            &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;         &lt;dbl&gt;       &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #1D220…      0.0284      -0.203</span></span>
+<span><span class="co">#&gt; 1 Utetheisa pulch… Utethe… Animal… Arthr… Inse… Lepi… Erebi… https:… #A59A4…      0.0284      -0.203</span></span>
 <span><span class="co">#&gt; 2 Danaus chrysipp… &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   &lt;NA&gt;  &lt;NA&gt;  &lt;NA&gt;   &lt;NA&gt;    &lt;NA&gt;         0.0382      -0.224</span></span>
-<span><span class="co">#&gt; 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #73674…     -0.835       -0.307</span></span>
-<span><span class="co">#&gt; 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #6A5C4…     -0.220        0.569</span></span>
-<span><span class="co">#&gt; 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B2A79…      0.314        0.666</span></span>
-<span><span class="co">#&gt; 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #ECEFE…     -0.765       -0.136</span></span>
+<span><span class="co">#&gt; 3 Telchinia serena Acraea… Animal… Arthr… Inse… Lepi… Nymph… https:… #B4862…     -0.835       -0.307</span></span>
+<span><span class="co">#&gt; 4 Vanessa cardui   Vaness… Animal… Arthr… Inse… Lepi… Nymph… https:… #CC824…     -0.220        0.569</span></span>
+<span><span class="co">#&gt; 5 Hypolimnas misi… Hypoli… Animal… Arthr… Inse… Lepi… Nymph… https:… #B3A79…      0.314        0.666</span></span>
+<span><span class="co">#&gt; 6 Pieris brassicae Pieris… Animal… Arthr… Inse… Lepi… Pieri… https:… #6C6E4…     -0.765       -0.136</span></span>
 <span><span class="co">#&gt; # ℹ 18 more variables: trait_cont3 &lt;dbl&gt;, trait_cont4 &lt;dbl&gt;, trait_cont5 &lt;dbl&gt;, trait_cont6 &lt;dbl&gt;,</span></span>
 <span><span class="co">#&gt; #   trait_cont7 &lt;dbl&gt;, trait_cont8 &lt;dbl&gt;, trait_cont9 &lt;dbl&gt;, trait_cont10 &lt;dbl&gt;, trait_cat11 &lt;chr&gt;,</span></span>
 <span><span class="co">#&gt; #   trait_cat12 &lt;chr&gt;, trait_cat13 &lt;chr&gt;, trait_cat14 &lt;chr&gt;, trait_cat15 &lt;chr&gt;, trait_ord16 &lt;int&gt;,</span></span>
@@ -1358,9 +1359,11 @@ Community-level functional diversity metrics.
 <span>  show_plots <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p><img src="reference/figures/README-func-space-1.png" width="100%" style="display: block; margin: auto;"></p>
+<blockquote>
+<p><strong>Figure 10</strong>: Combined functional trait space workflow. Outputs from the compute_trait_space() function, which integrates multiple trait-based analyses into a unified framework. Shown are: (top left) hierarchical clustering of species by Gower trait distance; (top right) community-level functional diversity metrics (FDis, FRic, RaoQ); (bottom left) species centrality histogram (distance to centroid); and (bottom right) trait space ordination (PCoA with kernel density). Together, these visualisations capture trait similarity, trait-space structure, species’ functional positions, and overall community-level functional diversity.</p>
+</blockquote>
 <div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span></span>
-<span><span class="co"># Check results/outputs</span></span>
+<code class="sourceCode R"><span><span class="co"># Check results/outputs</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">res</span>, max.level <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 1</span></span>
 <span><span class="co">#&gt;  $ dispersion:List of 7</span></span>
@@ -1377,9 +1380,6 @@ Community-level functional diversity metrics.
 <span><span class="co">#&gt;  $ centroid       : num [1:2] -1.44e-17 -5.42e-20</span></span>
 <span><span class="co">#&gt;  $ metrics_df     :'data.frame': 3 obs. of  2 variables:</span></span>
 <span><span class="co">#&gt;  $ plots          :List of 4</span></span></code></pre></div>
-<blockquote>
-<p><strong>Figure 10</strong>: Combined functional trait space workflow. Outputs from the compute_trait_space() function, which integrates multiple trait-based analyses into a unified framework. Shown are: (top left) hierarchical clustering of species by Gower trait distance; (top right) community-level functional diversity metrics (FDis, FRic, RaoQ); (bottom left) species centrality histogram (distance to centroid); and (bottom right) trait space ordination (PCoA with kernel density). Together, these visualisations capture trait similarity, trait-space structure, species’ functional positions, and overall community-level functional diversity.</p>
-</blockquote>
 <blockquote>
 <p><strong>Note</strong>: By pairing <code><a href="reference/compute_trait_similarity.html">compute_trait_similarity()</a></code> (per-trait conservation/lability) with <code><a href="reference/compute_trait_dispersion.html">compute_trait_dispersion()</a></code> (whole-community functional structure), you get a complete, repeatable workflow for trait-based invasion and coexistence studies. All plots are stored in <code>res$plots</code> for flexible reuse, while <code>res$metrics_df</code> provides ready-to-use numerical summaries for statistical modelling.  </p>
 </blockquote>
@@ -1526,7 +1526,7 @@ Community-level functional diversity metrics.
 <span><span class="co">#&gt;     trait_ord17 + trait_bin18 + trait_bin19 + trait_ord20):(env1 + </span></span>
 <span><span class="co">#&gt;     env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 + env10) + </span></span>
 <span><span class="co">#&gt;     (1 | species) + (1 | site_id)</span></span>
-<span><span class="co">#&gt; &lt;environment: 0x000001e5c9fd0500&gt;</span></span></code></pre></div>
+<span><span class="co">#&gt; &lt;environment: 0x00000236a4798b18&gt;</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="id_83-fit-the-glmm">8.3. Fit the GLMM<a class="anchor" aria-label="anchor" href="#id_83-fit-the-glmm"></a>
@@ -3040,8 +3040,8 @@ Community-level functional diversity metrics.
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/macSands/invasimapr/" class="external-link">Browse source code</a></li>
-<li><a href="https://github.com/macSands/invasimapr/issues" class="external-link">Report a bug</a></li>
+<li><a href="https://github.com/b-cubed-eu/invasimapr/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/b-cubed-eu/invasimapr/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
@@ -3077,11 +3077,15 @@ Community-level functional diversity metrics.
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/macSands/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml" class="external-link"><img src="https://github.com/macSands/invasimapr/actions/workflows/test-coverage.yaml/badge.svg" alt="test-coverage"></a></li>
-<li><a href="https://app.codecov.io/gh/macSands/invasimapr" class="external-link"><img src="https://codecov.io/gh/macSands/invasimapr/graph/badge.svg" alt="codecov"></a></li>
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="lifecycle"></a></li>
-<li><a href="LICENSE.html"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
+<li><a href="https://www.repostatus.org/#active" class="external-link"><img src="https://www.repostatus.org/badges/latest/active.svg" alt="repo status"></a></li>
+<li><a href="https://github.com/b-cubed-eu/invasimapr/releases" class="external-link"><img src="https://img.shields.io/github/release/b-cubed-eu/invasimapr.svg" alt="Release"></a></li>
+<li><a href="https://b-cubed-eu.r-universe.dev/invasimapr" class="external-link"><img src="https://b-cubed-eu.r-universe.dev/invasimapr/badges/version" alt="invasimapr status badge"></a></li>
+<li><a href="https://CRAN.R-project.org/package=invasimapr" class="external-link"><img src="https://www.r-pkg.org/badges/version/invasimapr" alt="CRAN status"></a></li>
+<li><a href="https://github.com/b-cubed-eu/invasimapr/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/b-cubed-eu/invasimapr/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/b-cubed-eu/invasimapr" class="external-link"><img src="https://codecov.io/gh/b-cubed-eu/invasimapr/graph/badge.svg" alt="Codecov test coverage"></a></li>
+<li><a href="https://zenodo.org" class="external-link"><img src="https://img.shields.io/badge/DOI-awaiting_upload_to_zenodo-orange" alt="DOI"></a></li>
+<li><a href="https://b-cubed-eu.r-universe.dev/" class="external-link"><img src="https://b-cubed-eu.r-universe.dev/badges/:name?color=6CDDB4" alt="name status badge"></a></li>
+<li><a href="LICENSE.html"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT"></a></li>
 </ul>
 </div>
 

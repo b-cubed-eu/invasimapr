@@ -60,7 +60,7 @@ badge](https://b-cubed-eu.r-universe.dev/invasimapr/badges/version)](https://b-c
 [![Codecov test coverage](https://codecov.io/gh/b-cubed-eu/invasimapr/graph/badge.svg)](https://app.codecov.io/gh/b-cubed-eu/invasimapr)
 [![DOI](https://img.shields.io/badge/DOI-awaiting_upload_to_zenodo-orange)](https://zenodo.org)
 [![name status badge](https://b-cubed-eu.r-universe.dev/badges/:name?color=6CDDB4)](https://b-cubed-eu.r-universe.dev/)
-MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
+[![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE.md)
 
 <!-- badges: end -->
 
@@ -419,7 +419,7 @@ Install and load the `invasimapr` package from GitHub, ensuring all functions ar
 ```{r install, eval=FALSE, include=TRUE}
 # # install remotes if needed
 # install.packages("remotes")
-# remotes::install_github("macSands/invasimapr")
+# remotes::install_github("b-cubed-eu/invasimapr")
 
 # Ensure the package is loaded when knitting
 library(invasimapr)
@@ -481,7 +481,7 @@ Install and load the `dissmapr` package from GitHub, ensuring all functions are 
 ```{r dissmapr}
 # # install remotes if needed
 # install.packages("remotes")
-# remotes::install_github("macSands/dissmapr")
+# remotes::install_github("b-cubed-eu/dissmapr")
 
 # Ensure the package is loaded
 library(dissmapr)
@@ -490,7 +490,7 @@ sessionInfo()$otherPkgs$dissmapr$Version
 
 #### 3.2. Import and harmonise biodiversity-occurrence data
 
-The process begins with [`dissmapr::get_occurrence_data()`](https://macsands.github.io/dissmapr/reference/get_occurrence_data.html), which imports biodiversity records, such as a GBIF butterfly dataset for South Africa, and harmonizes them into standardised formats. Input sources can include local CSV files, URLs, or zipped GBIF downloads. The function filters data by taxon and region, returning both raw records and site-by-species matrices in presence-absence or abundance form.
+The process begins with [`dissmapr::get_occurrence_data()`](https://b-cubed-eu.github.io/dissmapr/reference/get_occurrence_data.html), which imports biodiversity records, such as a GBIF butterfly dataset for South Africa, and harmonizes them into standardised formats. Input sources can include local CSV files, URLs, or zipped GBIF downloads. The function filters data by taxon and region, returning both raw records and site-by-species matrices in presence-absence or abundance form.
 
 ```{r get-occurrence}
 # Use local GBIF data
@@ -508,7 +508,7 @@ head(bfly_data[, c(51, 52, 22, 23, 1, 14, 16, 17, 30)])
 
 #### 3.3. Format biodiversity records to long/wide formats
 
-Next, [`dissmapr::format_df()`](https://macsands.github.io/dissmapr/reference/format_df.html) restructures the raw records into tidy long and wide formats. This assigns unique site IDs, extracts key fields (coordinates, species names, observation values), and prepares two main outputs: `site_obs` (long format for mapping) and `site_spp` (wide format for species-level analysis).
+Next, [`dissmapr::format_df()`](https://b-cubed-eu.github.io/dissmapr/reference/format_df.html) restructures the raw records into tidy long and wide formats. This assigns unique site IDs, extracts key fields (coordinates, species names, observation values), and prepares two main outputs: `site_obs` (long format for mapping) and `site_spp` (wide format for species-level analysis).
 
 ```{r format-df}
 # Continue from GBIF data
@@ -545,7 +545,7 @@ sp_cols[1:10]
 
 #### 3.4. Generate spatial grid and gridded summaries
 
-To integrate the data spatially, [`dissmapr::generate_grid()`](https://macsands.github.io/dissmapr/reference/generate_grid.html) overlays a user-defined spatial lattice (e.g. 0.5° grid), aggregates biodiversity observations per grid cell, and computes standardised metrics such as species richness and observation effort. Outputs include gridded species matrices (`grid_spp`, `grid_spp_pa`), a spatial polygon (`grid_sf`), and raster layers (`grid_r`), enabling downstream spatial modelling.
+To integrate the data spatially, [`dissmapr::generate_grid()`](https://b-cubed-eu.github.io/dissmapr/reference/generate_grid.html) overlays a user-defined spatial lattice (e.g. 0.5° grid), aggregates biodiversity observations per grid cell, and computes standardised metrics such as species richness and observation effort. Outputs include gridded species matrices (`grid_spp`, `grid_spp_pa`), a spatial polygon (`grid_sf`), and raster layers (`grid_r`), enabling downstream spatial modelling.
 
 ```{r grid}
 # Load the national boundary
@@ -626,7 +626,7 @@ par(old_par) # reset plotting parameters
 
 #### 3.5. Retrieve, crop, resample, and link environmental rasters to sampling sites
 
-Environmental predictors are appended using [`dissmapr::get_enviro_data()`](https://macsands.github.io/dissmapr/reference/get_enviro_data.html), which buffers the grid, downloads raster data (e.g. WorldClim bioclimatic variables), resamples it, and links values to grid-cell centroids. This produces both a site-by-environment data frame (`env_df`) and a SpatRaster object (`env_r`), aligning biological and environmental data.
+Environmental predictors are appended using [`dissmapr::get_enviro_data()`](https://b-cubed-eu.github.io/dissmapr/reference/get_enviro_data.html), which buffers the grid, downloads raster data (e.g. WorldClim bioclimatic variables), resamples it, and links values to grid-cell centroids. This produces both a site-by-environment data frame (`env_df`) and a SpatRaster object (`env_r`), aligning biological and environmental data.
 
 Begin by reading in a predefined target species list, then filter a site-by-species dataset (`grid_spp`) to retain only relevant species observations, and reshape the data for further analysis. This produces both a filtered long-format dataset (`grid_obs`) and a cleaned wide-format site-by-species matrix (`grid_spp`).
 
@@ -675,7 +675,7 @@ dim(grid_spp)
 # head(grid_spp)
 ```
 
-Then proceed to retrieve and process environmental data using [`dissmapr::get_enviro_data()`](https://macsands.github.io/dissmapr/reference/get_enviro_data.html). In the example below, 19 bioclimatic variables are downloaded from WorldClim v2.1 (≈10 km resolution) for all site centroids in the `grid_spp` dataset. It performs the following steps:
+Then proceed to retrieve and process environmental data using [`dissmapr::get_enviro_data()`](https://b-cubed-eu.github.io/dissmapr/reference/get_enviro_data.html). In the example below, 19 bioclimatic variables are downloaded from WorldClim v2.1 (≈10 km resolution) for all site centroids in the `grid_spp` dataset. It performs the following steps:
 
   1. Retrieves WorldClim “bio” variables via the `geodata` interface.
   2. Buffers the area of interest (AOI) by 10 km.
@@ -736,7 +736,7 @@ head(grid_env)
 
 #### 3.6. Remove highly correlated predictors (optional)
 
-Finally, [`dissmapr::rm_correlated()`](https://macsands.github.io/dissmapr/reference/rm_correlated.html) optionally reduces multicollinearity by filtering out highly correlated predictors based on a threshold (e.g. r > 0.70), improving model stability and interpretability. Together, these functions provide a reproducible and scalable pipeline for preparing ecological datasets for spatial analysis.
+Finally, [`dissmapr::rm_correlated()`](https://b-cubed-eu.github.io/dissmapr/reference/rm_correlated.html) optionally reduces multicollinearity by filtering out highly correlated predictors based on a threshold (e.g. r > 0.70), improving model stability and interpretability. Together, these functions provide a reproducible and scalable pipeline for preparing ecological datasets for spatial analysis.
 
 ```{r remove-corr, message = FALSE}
 # # (Optional) Rename BIO
