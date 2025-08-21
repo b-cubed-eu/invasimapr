@@ -29,6 +29,10 @@
 #'   \item Requires: dplyr, purrr, tibble, optionally fuzzyjoin, rvest, httr, stringr, jsonlite, magick, abind.
 #'   \item You can control which metadata are scraped for speed.
 #' }
+#'
+#' @importFrom rlang .data
+#' @importFrom dplyr first
+#'
 #' @examples
 #' \dontrun{
 #' # Example using TRY table:

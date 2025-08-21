@@ -34,7 +34,8 @@ Imports:
     magrittr,
     glmmTMB,
     lme4,
-    mgcv
+    mgcv,
+    rlang
 Suggests:
     sf,
     terra,
@@ -50,7 +51,8 @@ Suggests:
     lattice,
     RColorBrewer,
     knitr,
-    rmarkdown
+    rmarkdown,
+    testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Roxygen: list(markdown = TRUE)

@@ -1,0 +1,10 @@
+citHeader("To cite invasimapr in publications use:")
+
+citEntry(
+  entry    = "manual",
+  title    = "invasimapr: A trait- and site-specific framework for invasion fitness mapping",
+  author   = person("Your", "Name"),
+  year     = "2025",
+  note     = "R package version 0.1.0",
+  url      = "https://github.com/b-cubed-eu/invasimapr"
+)

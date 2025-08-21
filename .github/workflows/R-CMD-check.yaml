@@ -29,7 +29,7 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
 
-        steps:
+    steps:
       - uses: actions/checkout@v4
 
       - uses: r-lib/actions/setup-pandoc@v2
@@ -45,12 +45,8 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Run custom rcmdcheck
-        run: |
-          Rscript -e 'check_results <- rcmdcheck::rcmdcheck(
-            args = c("--no-manual", "--as-cran"),
-            build_args = c("--no-manual", "--compact-vignettes=gs+qpdf"),
-            error_on = "error",
-            check_dir = "check"
-          )'
-
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+          error-on: '"error"'

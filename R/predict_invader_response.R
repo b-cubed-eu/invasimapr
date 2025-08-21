@@ -52,6 +52,8 @@
 #'         (rows ordered by site ID, columns by species ID).
 #' }
 #'
+#' @importFrom stats formula predict
+#'
 #' @examples
 #' \dontrun{
 #' # Residents + invaders (traits), sites (env), fitted Tweedie glmmTMB model:
@@ -210,12 +212,12 @@ predict_invader_response <- function(
     }
   } else if (inherits(model, "merMod")) {
     pred <- if (isTRUE(include_random)) {
-      lme4::predictMerMod(model,
+      stats::predictMerMod(model,
         newdata = newdata, type = response_type,
         re.form = NULL, allow.new.levels = TRUE
       )
     } else {
-      lme4::predictMerMod(model, newdata = newdata, type = response_type, re.form = NA)
+      stats::predictMerMod(model, newdata = newdata, type = response_type, re.form = NA)
     }
   } else if (inherits(model, "gam")) {
     pred <- mgcv::predict.gam(model, newdata = newdata, type = response_type)

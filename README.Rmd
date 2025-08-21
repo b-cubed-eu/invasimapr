@@ -45,10 +45,6 @@ if (requireNamespace("devtools", quietly = TRUE)) {
 }
 ```
 
-# `invasimapr`
-
-## A Novel Framework to visualise trait dispersion and assess species invasiveness or site invasibility
-
 <!-- badges: start -->
 
 [![repo status](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
@@ -64,7 +60,13 @@ badge](https://b-cubed-eu.r-universe.dev/invasimapr/badges/version)](https://b-c
 
 <!-- badges: end -->
 
----
+------------------------------------------------------------------------
+
+# `invasimapr`
+
+## A Novel Framework to visualise trait dispersion and assess species invasiveness or site invasibility
+
+------------------------------------------------------------------------
 
 ## 1. Introduction
 
