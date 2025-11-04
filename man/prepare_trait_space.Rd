@@ -14,66 +14,103 @@ prepare_trait_space(
 )
 }
 \arguments{
-\item{fit}{An \code{invasimapr_fit} produced by \code{prepare_inputs()}. Must contain
-\code{fit$inputs$traits_res}, \code{fit$inputs$comm_res}, and (optionally) \code{fit$inputs$site_df}.}
+\item{fit}{An \code{invasimapr_fit} produced by
+\href{https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html}{\code{prepare_inputs()}/\code{assemble_matrices()}}.
+Must contain \code{fit$inputs$traits_res}, \code{fit$inputs$comm_res}, and
+(optionally) \code{fit$inputs$site_df}.}
 
-\item{traits_inv}{Data frame (or matrix) of invader traits
+\item{traits_inv}{Data frame (or matrix) of \strong{raw} invader traits
 (rows = invaders; columns aligned to resident trait columns).}
 
-\item{crowding_sigma}{Optional numeric bandwidth (Gaussian kernel) for crowding.
-If \code{NULL}, \code{compute_resident_crowding()} chooses a default/optimized value.}
+\item{crowding_sigma}{Optional numeric bandwidth for the resident crowding
+kernel. If \code{NULL}, a default/optimised value is chosen inside
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_resident_crowding.html}{\code{compute_resident_crowding()}}.}
 
-\item{show_plots}{Logical master switch. If \code{TRUE}, plots produced by helper
-functions are displayed in the console. If \code{FALSE}, plots are still computed
-and returned in the output lists but are \strong{not shown}.}
+\item{show_plots}{Logical. If \code{TRUE}, display plots as they are created.
+If \code{FALSE}, plots are still created/returned but not shown. Default \code{TRUE}.}
 
-\item{do_standardise}{Logical; if \code{TRUE} and \code{standardise_model_inputs()} is
-available, standardise resident and invader trait inputs (environmental
-predictors handled later). Default \code{TRUE}.}
+\item{do_standardise}{Logical. If \code{TRUE} and
+\href{https://b-cubed-eu.github.io/invasimapr/reference/standardise_model_inputs.html}{\code{standardise_model_inputs()}}
+exists, standardise resident \emph{and} invader trait inputs (environment handled later).
+Default \code{TRUE}.}
 
-\item{row_z}{Logical; defer site-wise z-scoring (row standardisation) to
-\code{model_residents()}. Leave \code{FALSE} here to keep \strong{raw} \code{C_js}. Default \code{FALSE}.}
+\item{row_z}{Logical. Whether to perform \strong{row-wise} (site) z-scoring inside
+\code{compute_resident_crowding()}. Leave \code{FALSE} here to keep \strong{raw} \code{C_js};
+row-z is typically applied in
+\href{https://b-cubed-eu.github.io/invasimapr/reference/model_residents.html}{\code{model_residents()}}.}
 }
 \value{
-The input \code{invasimapr_fit} with:
-\itemize{
-\item \verb{$traits}: list with Gower distances, ordinations (\code{Q_res}, \code{Q_inv}),
-hull, centroid, density, stored plots, and centrality summaries.
-\item \verb{$crowding}: list with \code{W_site}, \code{D_res}, chosen \code{sigma_alpha},
-\code{K_res_res}, and \strong{raw} \code{C_js} (no z-scoring, no mean/sd here).
-\item \verb{$meta}: residents, sites, invaders, and \code{n_invaders}.
+The input \code{invasimapr_fit} with updated components:
+\describe{
+\item{\verb{$traits}}{List with \code{gower}, \code{Q_res}, \code{Q_inv}, \code{hull}, \code{centroid},
+\code{density}, stored plots (\code{plots_ts}, \code{plots_ch}), centrality table, and
+hull vertices.}
+\item{\verb{$crowding}}{List with \code{W_site}, \code{D_res}, \code{sigma_alpha}, \code{K_res_res},
+and \strong{raw} \code{C_js} (unless \code{row_z = TRUE}).}
+\item{\verb{$meta}}{Lightweight cache of \code{residents}, \code{sites}, \code{invaders},
+and \code{n_invaders}.}
 }
 }
 \description{
-Optionally standardises trait inputs, builds the joint trait space, computes
-centrality/hull, and computes \strong{raw resident crowding \eqn{C_{js}}} (no per-site
-standardisation here). Per-site standardisation (row-z) is deferred to
-\code{\link[=model_residents]{model_residents()}}. All plots are \strong{always created} (and returned), but are
-only \strong{displayed} when \code{show_plots = TRUE}.
+Orchestrates the \emph{traits → space → centrality/hull → crowding} pipeline for
+residents and invaders. Optionally standardises trait inputs, constructs a
+joint trait space, computes convex hull / centroid / centrality, and derives
+\strong{raw} resident crowding \eqn{C_{js}} using a Gaussian kernel (no per-site
+standardisation here). Row-wise z-scoring is deferred to
+\href{https://b-cubed-eu.github.io/invasimapr/reference/model_residents.html}{\code{model_residents()}}.
+Plot objects are \emph{always} created and returned; they are only displayed when
+\code{show_plots = TRUE}.
 }
 \details{
-\strong{Display control:} To ensure plots are created but optionally hidden, when
-\code{show_plots = FALSE} this wrapper temporarily opens a null graphics device
-(\code{grDevices::pdf(file = NULL)}) around helper calls that would otherwise print
-plots, then closes it. This suppresses on-screen output without altering any
-returned plot objects.
+\strong{Pipeline}
+\enumerate{
+\item \emph{(Optional)} Standardise \code{traits_res/traits_inv} via
+\href{https://b-cubed-eu.github.io/invasimapr/reference/standardise_model_inputs.html}{\code{standardise_model_inputs()}}
+when available; otherwise pass through raw traits.
+\item Build a \strong{joint trait space} with
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_trait_space.html}{\code{compute_trait_space()}}
+(returns Gower distances, ordination scores for residents \code{Q_res} and invaders
+\code{Q_inv}, a density surface, dendrograms, etc.). Plots are requested but may
+be hidden depending on \code{show_plots}.
+\item Compute \strong{centrality & hull} (resident convex hull, centroid, centrality
+scores) using
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_centrality_hull.html}{\code{compute_centrality_hull()}}.
+\item Compute \strong{resident crowding} with
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_resident_crowding.html}{\code{compute_resident_crowding()}},
+returning kernel weights \code{K_res_res}, distances \code{D_res}, site kernels \code{W_site},
+chosen \code{sigma_alpha}, and \strong{raw} \code{C_js} (unless \code{row_z = TRUE} is requested).
+}
 
-\strong{Standardisation:} When \code{do_standardise = TRUE} \emph{and} the function
-\code{standardise_model_inputs()} exists, trait inputs are replaced by the
-standardised versions if returned; otherwise, raw traits are used with a
-message. Environmental variables (if any) are handled elsewhere.
+\strong{Display control}
+To ensure reproducible plot objects without cluttering the console,
+the function temporarily opens a null graphics device when \code{show_plots = FALSE}.
+
+\strong{Assumptions & safeguards}
+\itemize{
+\item Requires resident community and trait tables in \code{fit$inputs}.
+\item If standardisation fails or is unavailable, the function proceeds with raw traits.
+\item Site-wise z-scoring is intentionally \strong{not} applied here by default.
+}
 }
 \examples{
 \dontrun{
-# Create plots but don't display them:
+# Compute all plots but do not display them
 fit2 <- prepare_trait_space(fit, traits_inv, show_plots = FALSE)
 
-# Create and display plots:
+# Display plots during construction
 fit3 <- prepare_trait_space(fit, traits_inv, show_plots = TRUE)
+
+# Use a fixed kernel bandwidth and request row-z inside the crowding step
+fit4 <- prepare_trait_space(fit, traits_inv, crowding_sigma = 0.35, row_z = TRUE)
 }
 
 }
 \seealso{
-\code{compute_trait_space()}, \code{compute_centrality_hull()},
-\code{compute_resident_crowding()}, \code{standardise_model_inputs()}, \code{model_residents()}
+\itemize{
+\item Trait space: \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_trait_space.html}{\code{compute_trait_space()}}
+\item Centrality & hull: \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_centrality_hull.html}{\code{compute_centrality_hull()}}
+\item Resident crowding: \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_resident_crowding.html}{\code{compute_resident_crowding()}}
+\item Standardisation: \href{https://b-cubed-eu.github.io/invasimapr/reference/standardise_model_inputs.html}{\code{standardise_model_inputs()}}
+\item Downstream modelling: \href{https://b-cubed-eu.github.io/invasimapr/reference/model_residents.html}{\code{model_residents()}}
+}
 }

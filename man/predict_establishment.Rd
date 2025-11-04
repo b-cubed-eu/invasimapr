@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict_establishment.R
 \name{predict_establishment}
 \alias{predict_establishment}
-\title{Compute invasion fitness (λ) and optional establishment probability (P)}
+\title{Compute invasion fitness (\eqn{\lambda}) and optional establishment probability (\eqn{P})}
 \usage{
 predict_establishment(
   fit,
@@ -17,28 +17,95 @@ predict_establishment(
 )
 }
 \arguments{
-\item{fit}{from \code{predict_invaders()}.}
+\item{fit}{An \code{invasimapr_fit} from
+\href{https://b-cubed-eu.github.io/invasimapr/reference/predict_invaders.html}{\code{predict_invaders()}},
+containing \code{invaders$r_is_z/C_is_z/S_is_z}, resident summaries, and
+learned sensitivities.}
 
-\item{option}{character in \code{c("A","B","C","D","E")}.}
+\item{option}{Character, one of \code{c("A","B","C","D","E")} selecting the
+invasion-fitness specification:
+\describe{
+\item{A}{Baseline: \(\lambda=r^{(z)}-\alpha C^{(z)}-\beta S^{(z)}\).}
+\item{B}{Global abiotic scaling \(\theta_0\cdot r^{(z)}\).}
+\item{C}{Trait-varying abiotic scaling \(\theta_i\cdot r^{(z)}\).}
+\item{D}{Site-varying abiotic and crowding \(\Gamma_{is}, \alpha_{is}\).}
+\item{E}{Signed saturation effect (facilitation allowed via signed \(\beta_i\)).}
+}}
 
-\item{calibrate_kappa}{logical; set κ so mean resident λ ≈ 0.}
+\item{calibrate_kappa}{Logical; if \code{TRUE}, set \(\kappa\) so mean \strong{resident}
+\(\lambda \approx 0\) (scale alignment for communication/comparison).}
 
-\item{prob_method}{(legacy) NULL or one of \code{"probit","logit","hard"}.}
+\item{prob_method}{(legacy) \code{NULL} or one of \code{c("probit","logit","hard")};
+preserved for backward compatibility.}
 
-\item{prob_args}{(legacy) list of args for \code{compute_establishment_probability()}.}
+\item{prob_args}{(legacy) List of arguments passed to
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_establishment_probability.html}{\code{compute_establishment_probability()}}
+(e.g., \code{sigma}, \code{tau}, \code{predictive}, \code{sigma_mat}, \code{site_df}, \code{return_long}, \code{make_plots}).}
 
-\item{method}{(alias) same as \code{prob_method}; preferred in user code.}
+\item{method}{Alias of \code{prob_method} (preferred in user code).}
 
-\item{prob_scale}{(alias) same as \code{prob_args}; preferred in user code.}
+\item{prob_scale}{Alias of \code{prob_args} (preferred in user code).}
 
-\item{boundary_sf}{An \strong{sf} object to overlay as a boundary on map-like plots.}
+\item{boundary_sf}{Optional \strong{sf} object to overlay on map-like probability plots.}
 
-\item{boundary_params}{Named list of aesthetics for \code{ggplot2::geom_sf};
-defaults to \code{list(inherit.aes=FALSE, fill=NA, color="black", size=0.3)}.}
+\item{boundary_params}{Named list for \code{ggplot2::geom_sf()} aesthetics; default
+\code{list(inherit.aes=FALSE, fill=NA, color="black", size=0.3)}.}
 }
 \value{
-updated \code{invasimapr_fit}
+The input \code{fit} with:
+\describe{
+\item{\verb{$fitness}}{List returned by \code{compute_invasion_fitness()} (including
+\code{lambda_is}, \code{lambda_long}, \code{option}, and any plots/maps).}
+\item{\verb{$prob}}{If requested, list returned by \code{compute_establishment_probability()} with
+probability tables and plots (with boundary overlay applied when provided).}
+}
 }
 \description{
-Compute invasion fitness (λ) and optional establishment probability (P)
+Wraps
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{\code{compute_invasion_fitness()}}
+to generate invader-by-site invasion fitness \eqn{\lambda_{is}} under model
+Options \strong{A–E}, and (optionally) maps \eqn{\lambda} to probabilities via
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_establishment_probability.html}{\code{compute_establishment_probability()}}.
+Supports calibration of \eqn{\kappa} so that \strong{resident} mean \eqn{\lambda}
+is approximately zero, and can overlay an \code{sf} boundary on map-like plots.
+}
+\details{
+\strong{What this wrapper does}
+\enumerate{
+\item Chooses the appropriate sensitivity inputs for the requested \code{option}
+(e.g., \code{theta_i} for C, \code{Gamma_is}/\code{alpha_is} for D).
+\item Calls
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{\code{compute_invasion_fitness()}}
+with site-standardised inputs \((r^{(z)}, C^{(z)}, S^{(z)})\) held in \code{fit}.
+\item (Optional) Converts \(\lambda\) to probability \(\,P\,\) via probit, logit,
+or a hard threshold, forwarding \verb{prob_*} settings.
+\item (Optional) If \code{boundary_sf} is supplied and plots are available, overlays
+the boundary on map-like plots using \code{geom_sf()}.
+}
+
+\strong{Calibration (\code{calibrate_kappa = TRUE})}
+Aligns invader–resident scales by shifting \(\lambda\) so that the \strong{resident}
+mean is ~0, using resident moments and trait-plane slopes stored in \code{fit}.
+}
+\examples{
+\dontrun{
+fit <- fit |>
+  predict_invaders(traits_inv) |>
+  predict_establishment(option = "C", calibrate_kappa = TRUE,
+                        method = "probit", prob_scale = list(sigma = 1))
+
+# Overlay a boundary on probability maps
+fit <- predict_establishment(fit, option = "D", method = "logit",
+                             prob_scale = list(tau = 1),
+                             boundary_sf = rsa_boundary)
+}
+
+}
+\seealso{
+\itemize{
+\item Fitness: \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{\code{compute_invasion_fitness()}}
+\item Probabilities: \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_establishment_probability.html}{\code{compute_establishment_probability()}}
+\item Sensitivities: \href{https://b-cubed-eu.github.io/invasimapr/reference/learn_sensitivities.html}{\code{learn_sensitivities()}}
+\item Invader predictors: \href{https://b-cubed-eu.github.io/invasimapr/reference/predict_invaders.html}{\code{predict_invaders()}}
+}
 }

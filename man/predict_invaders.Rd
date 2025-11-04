@@ -2,20 +2,95 @@
 % Please edit documentation in R/predict_invaders.R
 \name{predict_invaders}
 \alias{predict_invaders}
-\title{Build standardized invader predictors}
+\title{Build standardized invader predictors (r_is_z, C_is_z, S_is_z)}
 \usage{
 predict_invaders(fit, traits_inv)
 }
 \arguments{
-\item{fit}{from learn_sensitivities()/prepare_trait_space() + model_residents()}
+\item{fit}{\code{invasimapr_fit} after
+\code{\link[=prepare_trait_space]{prepare_trait_space()}} / \code{\link[=learn_sensitivities]{learn_sensitivities()}} and resident model
+fitting (i.e., it contains resident GLMM artefacts, PCA objects/metadata,
+and resident moments such as \code{r_mu_s}, \code{r_sd_s}, \code{C_mu_s}, \code{C_sd_s}).}
 
-\item{traits_inv}{Invader trait table (raw scale; columns match resident trait names)}
+\item{traits_inv}{\strong{data.frame} of \emph{raw} invader trait values; columns must
+match the resident trait names used at training (numerics and/or factors).}
 }
 \value{
-updated invasimapr_fit
+The input \code{fit} with an updated \code{fit$invaders} list containing:
+\describe{
+\item{\code{traits_inv_raw}}{Raw (unmodified) invader trait table (as supplied).}
+\item{\code{traits_inv_glmm}}{Design-scale trait data passed to the resident model
+(post dummy-expansion, standardisation, PCA, and factor alignment).}
+\item{\code{r_is_z}, \code{C_is_z}, \code{S_is_z}}{Site-standardised matrices for invaders.}
+\item{\code{df}}{Tidy table used/returned by \code{\link[=build_invader_predictors]{build_invader_predictors()}} for joins.}
+}
 }
 \description{
-Uses resident moments and the residents-only model to produce
-r_is_z, C_is_z, S_is_z. Handles PCA projection with dummy expansion
-to match the training design used in model_residents().
+Uses resident-side moments and the residents-only model to construct
+invader-level predictors on the \strong{site-standardised} scale:
+\eqn{r^{(z)}_{is}}, \eqn{C^{(z)}_{is}}, \eqn{S^{(z)}_{is}}.
+Handles PCA projection with “dummy” factor expansion so that invader
+covariates exactly match the \strong{training design} used in
+\code{\link[=model_residents]{model_residents()}} / the stored resident GLMM.
+}
+\details{
+\strong{Pipeline}
+\enumerate{
+\item \strong{Environment}: if an environment PCA was used at training, rebuild the
+environment design matrix with the saved factor map and project using the
+stored rotation; otherwise reuse the stored \code{env_df_z}.
+\item \strong{Traits}: coerce invader raw trait factors to training levels (redirect
+unseen levels to \verb{_other_} if present); rebuild the dummy matrix and
+standardise with stored means/SDs; project via trait PCA if present; then
+append any raw factor terms that remained in the fixed-effects formula.
+\item \strong{Predictors}: call
+\href{https://b-cubed-eu.github.io/invasimapr/reference/build_invader_predictors.html}{\code{build_invader_predictors()}}
+to compute \eqn{r^{(z)}_{is}}, \eqn{C^{(z)}_{is}}, \eqn{S^{(z)}_{is}} using
+resident moments, crowding kernels, and similarity structures stored in \code{fit}.
+}
+
+\strong{Assumptions & safeguards}
+\itemize{
+\item Requires a trained resident model stored in \code{fit$residents$fit_r} and PCA
+metadata in \verb{fit$model$*_pca*} if PCA was used.
+\item Uses resident moments (\code{r_mu_s}, \code{r_sd_s}, \code{C_mu_s}, \code{C_sd_s}) and
+similarity/crowding information (\code{W_site}, \code{gower}).
+\item Site ordering is taken from \code{fit$meta$sites}; inputs are conformed to it.
+}
+}
+\section{Rationale}{
+
+Many downstream steps (e.g. invasion fitness, establishment probability)
+assume invader predictors live on the \strong{same centred/scaled basis} as the
+resident training data. This function guarantees alignment by: (i) coercing
+raw trait factor levels to training levels (with \verb{_other_} fallbacks), (ii)
+rebuilding the design matrix with the training dummy map, (iii) applying
+the stored centring/scaling, and (iv) projecting through the stored PCA
+rotations before calling \code{\link[=build_invader_predictors]{build_invader_predictors()}}.
+}
+
+\examples{
+\dontrun{
+fit <- prepare_inputs(sites = site_df, residents = resident_df,
+                      invaders = invader_df, traits = trait_df)
+fit <- learn_sensitivities(fit)
+
+# New invader trait table (raw scale, same columns as residents' traits)
+inv_traits <- data.frame(height = c(1.3, 0.9), SLA = c(12, 18),
+                         life_form = c("shrub","forb"),
+                         row.names = c("spA","spB"))
+
+fit <- predict_invaders(fit, inv_traits)
+str(fit$invaders, 1)
+dim(fit$invaders$r_is_z)  # |sites| × |invaders|
+}
+
+}
+\seealso{
+\itemize{
+\item Input assembly: \href{https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html}{\code{assemble_matrices()}}
+\item Predictor builder: \href{https://b-cubed-eu.github.io/invasimapr/reference/build_invader_predictors.html}{\code{build_invader_predictors()}}
+\item Residents GLMM: \href{https://b-cubed-eu.github.io/invasimapr/reference/fit_auxiliary_residents_glmm.html}{\code{fit_auxiliary_residents_glmm()}}
+\item Sensitivities: \href{https://b-cubed-eu.github.io/invasimapr/reference/learn_sensitivities.html}{\code{learn_sensitivities()}}
+}
 }

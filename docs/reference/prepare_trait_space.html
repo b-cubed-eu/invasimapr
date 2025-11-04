@@ -5,15 +5,21 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prepare trait space and resident crowding (no site-z) — prepare_trait_space"><meta name="description" content="Optionally standardises trait inputs, builds the joint trait space, computes
-centrality/hull, and computes raw resident crowding \(C_{js}\) (no per-site
-standardisation here). Per-site standardisation (row-z) is deferred to
-model_residents(). All plots are always created (and returned), but are
-only displayed when show_plots = TRUE."><meta property="og:description" content="Optionally standardises trait inputs, builds the joint trait space, computes
-centrality/hull, and computes raw resident crowding \(C_{js}\) (no per-site
-standardisation here). Per-site standardisation (row-z) is deferred to
-model_residents(). All plots are always created (and returned), but are
-only displayed when show_plots = TRUE."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prepare trait space and resident crowding (no site-z) — prepare_trait_space"><meta name="description" content="Orchestrates the traits → space → centrality/hull → crowding pipeline for
+residents and invaders. Optionally standardises trait inputs, constructs a
+joint trait space, computes convex hull / centroid / centrality, and derives
+raw resident crowding \(C_{js}\) using a Gaussian kernel (no per-site
+standardisation here). Row-wise z-scoring is deferred to
+model_residents().
+Plot objects are always created and returned; they are only displayed when
+show_plots = TRUE."><meta property="og:description" content="Orchestrates the traits → space → centrality/hull → crowding pipeline for
+residents and invaders. Optionally standardises trait inputs, constructs a
+joint trait space, computes convex hull / centroid / centrality, and derives
+raw resident crowding \(C_{js}\) using a Gaussian kernel (no per-site
+standardisation here). Row-wise z-scoring is deferred to
+model_residents().
+Plot objects are always created and returned; they are only displayed when
+show_plots = TRUE."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -54,11 +60,14 @@ only displayed when show_plots = TRUE."><meta property="og:image" content="https
     </div>
 
     <div class="ref-description section level2">
-    <p>Optionally standardises trait inputs, builds the joint trait space, computes
-centrality/hull, and computes <strong>raw resident crowding \(C_{js}\)</strong> (no per-site
-standardisation here). Per-site standardisation (row-z) is deferred to
-<code><a href="model_residents.html">model_residents()</a></code>. All plots are <strong>always created</strong> (and returned), but are
-only <strong>displayed</strong> when <code>show_plots = TRUE</code>.</p>
+    <p>Orchestrates the <em>traits → space → centrality/hull → crowding</em> pipeline for
+residents and invaders. Optionally standardises trait inputs, constructs a
+joint trait space, computes convex hull / centroid / centrality, and derives
+<strong>raw</strong> resident crowding \(C_{js}\) using a Gaussian kernel (no per-site
+standardisation here). Row-wise z-scoring is deferred to
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/model_residents.html"><code><a href="model_residents.html">model_residents()</a></code></a>.
+Plot objects are <em>always</em> created and returned; they are only displayed when
+<code>show_plots = TRUE</code>.</p>
     </div>
 
     <div class="section level2">
@@ -78,71 +87,105 @@ only <strong>displayed</strong> when <code>show_plots = TRUE</code>.</p>
 
 
 <dl><dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
-<dd><p>An <code>invasimapr_fit</code> produced by <code><a href="prepare_inputs.html">prepare_inputs()</a></code>. Must contain
-<code>fit$inputs$traits_res</code>, <code>fit$inputs$comm_res</code>, and (optionally) <code>fit$inputs$site_df</code>.</p></dd>
+<dd><p>An <code>invasimapr_fit</code> produced by
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html"><code><a href="prepare_inputs.html">prepare_inputs()</a></code>/<code><a href="assemble_matrices.html">assemble_matrices()</a></code></a>.
+Must contain <code>fit$inputs$traits_res</code>, <code>fit$inputs$comm_res</code>, and
+(optionally) <code>fit$inputs$site_df</code>.</p></dd>
 
 
 <dt id="arg-traits-inv">traits_inv<a class="anchor" aria-label="anchor" href="#arg-traits-inv"></a></dt>
-<dd><p>Data frame (or matrix) of invader traits
+<dd><p>Data frame (or matrix) of <strong>raw</strong> invader traits
 (rows = invaders; columns aligned to resident trait columns).</p></dd>
 
 
 <dt id="arg-crowding-sigma">crowding_sigma<a class="anchor" aria-label="anchor" href="#arg-crowding-sigma"></a></dt>
-<dd><p>Optional numeric bandwidth (Gaussian kernel) for crowding.
-If <code>NULL</code>, <code><a href="compute_resident_crowding.html">compute_resident_crowding()</a></code> chooses a default/optimized value.</p></dd>
+<dd><p>Optional numeric bandwidth for the resident crowding
+kernel. If <code>NULL</code>, a default/optimised value is chosen inside
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/compute_resident_crowding.html"><code><a href="compute_resident_crowding.html">compute_resident_crowding()</a></code></a>.</p></dd>
 
 
 <dt id="arg-show-plots">show_plots<a class="anchor" aria-label="anchor" href="#arg-show-plots"></a></dt>
-<dd><p>Logical master switch. If <code>TRUE</code>, plots produced by helper
-functions are displayed in the console. If <code>FALSE</code>, plots are still computed
-and returned in the output lists but are <strong>not shown</strong>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, display plots as they are created.
+If <code>FALSE</code>, plots are still created/returned but not shown. Default <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-do-standardise">do_standardise<a class="anchor" aria-label="anchor" href="#arg-do-standardise"></a></dt>
-<dd><p>Logical; if <code>TRUE</code> and <code><a href="standardise_model_inputs.html">standardise_model_inputs()</a></code> is
-available, standardise resident and invader trait inputs (environmental
-predictors handled later). Default <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code> and
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/standardise_model_inputs.html"><code><a href="standardise_model_inputs.html">standardise_model_inputs()</a></code></a>
+exists, standardise resident <em>and</em> invader trait inputs (environment handled later).
+Default <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-row-z">row_z<a class="anchor" aria-label="anchor" href="#arg-row-z"></a></dt>
-<dd><p>Logical; defer site-wise z-scoring (row standardisation) to
-<code><a href="model_residents.html">model_residents()</a></code>. Leave <code>FALSE</code> here to keep <strong>raw</strong> <code>C_js</code>. Default <code>FALSE</code>.</p></dd>
+<dd><p>Logical. Whether to perform <strong>row-wise</strong> (site) z-scoring inside
+<code><a href="compute_resident_crowding.html">compute_resident_crowding()</a></code>. Leave <code>FALSE</code> here to keep <strong>raw</strong> <code>C_js</code>;
+row-z is typically applied in
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/model_residents.html"><code><a href="model_residents.html">model_residents()</a></code></a>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>The input <code>invasimapr_fit</code> with:</p><ul><li><p><code>$traits</code>: list with Gower distances, ordinations (<code>Q_res</code>, <code>Q_inv</code>),
-hull, centroid, density, stored plots, and centrality summaries.</p></li>
-<li><p><code>$crowding</code>: list with <code>W_site</code>, <code>D_res</code>, chosen <code>sigma_alpha</code>,
-<code>K_res_res</code>, and <strong>raw</strong> <code>C_js</code> (no z-scoring, no mean/sd here).</p></li>
-<li><p><code>$meta</code>: residents, sites, invaders, and <code>n_invaders</code>.</p></li>
-</ul></div>
+    <p>The input <code>invasimapr_fit</code> with updated components:</p><dl><dt><code>$traits</code></dt>
+<dd><p>List with <code>gower</code>, <code>Q_res</code>, <code>Q_inv</code>, <code>hull</code>, <code>centroid</code>,
+<code>density</code>, stored plots (<code>plots_ts</code>, <code>plots_ch</code>), centrality table, and
+hull vertices.</p></dd>
+
+<dt><code>$crowding</code></dt>
+<dd><p>List with <code>W_site</code>, <code>D_res</code>, <code>sigma_alpha</code>, <code>K_res_res</code>,
+and <strong>raw</strong> <code>C_js</code> (unless <code>row_z = TRUE</code>).</p></dd>
+
+<dt><code>$meta</code></dt>
+<dd><p>Lightweight cache of <code>residents</code>, <code>sites</code>, <code>invaders</code>,
+and <code>n_invaders</code>.</p></dd>
+
+
+</dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p><strong>Display control:</strong> To ensure plots are created but optionally hidden, when
-<code>show_plots = FALSE</code> this wrapper temporarily opens a null graphics device
-(<code>grDevices::pdf(file = NULL)</code>) around helper calls that would otherwise print
-plots, then closes it. This suppresses on-screen output without altering any
-returned plot objects.</p>
-<p><strong>Standardisation:</strong> When <code>do_standardise = TRUE</code> <em>and</em> the function
-<code><a href="standardise_model_inputs.html">standardise_model_inputs()</a></code> exists, trait inputs are replaced by the
-standardised versions if returned; otherwise, raw traits are used with a
-message. Environmental variables (if any) are handled elsewhere.</p>
-    </div>
+    <p><strong>Pipeline</strong></p><ol><li><p><em>(Optional)</em> Standardise <code>traits_res/traits_inv</code> via
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/standardise_model_inputs.html"><code><a href="standardise_model_inputs.html">standardise_model_inputs()</a></code></a>
+when available; otherwise pass through raw traits.</p></li>
+<li><p>Build a <strong>joint trait space</strong> with
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/compute_trait_space.html"><code><a href="compute_trait_space.html">compute_trait_space()</a></code></a>
+(returns Gower distances, ordination scores for residents <code>Q_res</code> and invaders
+<code>Q_inv</code>, a density surface, dendrograms, etc.). Plots are requested but may
+be hidden depending on <code>show_plots</code>.</p></li>
+<li><p>Compute <strong>centrality &amp; hull</strong> (resident convex hull, centroid, centrality
+scores) using
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/compute_centrality_hull.html"><code><a href="compute_centrality_hull.html">compute_centrality_hull()</a></code></a>.</p></li>
+<li><p>Compute <strong>resident crowding</strong> with
+<a href="https://b-cubed-eu.github.io/invasimapr/reference/compute_resident_crowding.html"><code><a href="compute_resident_crowding.html">compute_resident_crowding()</a></code></a>,
+returning kernel weights <code>K_res_res</code>, distances <code>D_res</code>, site kernels <code>W_site</code>,
+chosen <code>sigma_alpha</code>, and <strong>raw</strong> <code>C_js</code> (unless <code>row_z = TRUE</code> is requested).</p></li>
+</ol><p><strong>Display control</strong>
+To ensure reproducible plot objects without cluttering the console,
+the function temporarily opens a null graphics device when <code>show_plots = FALSE</code>.</p>
+<p><strong>Assumptions &amp; safeguards</strong></p><ul><li><p>Requires resident community and trait tables in <code>fit$inputs</code>.</p></li>
+<li><p>If standardisation fails or is unavailable, the function proceeds with raw traits.</p></li>
+<li><p>Site-wise z-scoring is intentionally <strong>not</strong> applied here by default.</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="compute_trait_space.html">compute_trait_space()</a></code>, <code><a href="compute_centrality_hull.html">compute_centrality_hull()</a></code>,
-<code><a href="compute_resident_crowding.html">compute_resident_crowding()</a></code>, <code><a href="standardise_model_inputs.html">standardise_model_inputs()</a></code>, <code><a href="model_residents.html">model_residents()</a></code></p></div>
+    <div class="dont-index">
+<ul><li><p>Trait space: <a href="https://b-cubed-eu.github.io/invasimapr/reference/compute_trait_space.html"><code><a href="compute_trait_space.html">compute_trait_space()</a></code></a></p></li>
+<li><p>Centrality &amp; hull: <a href="https://b-cubed-eu.github.io/invasimapr/reference/compute_centrality_hull.html"><code><a href="compute_centrality_hull.html">compute_centrality_hull()</a></code></a></p></li>
+<li><p>Resident crowding: <a href="https://b-cubed-eu.github.io/invasimapr/reference/compute_resident_crowding.html"><code><a href="compute_resident_crowding.html">compute_resident_crowding()</a></code></a></p></li>
+<li><p>Standardisation: <a href="https://b-cubed-eu.github.io/invasimapr/reference/standardise_model_inputs.html"><code><a href="standardise_model_inputs.html">standardise_model_inputs()</a></code></a></p></li>
+<li><p>Downstream modelling: <a href="https://b-cubed-eu.github.io/invasimapr/reference/model_residents.html"><code><a href="model_residents.html">model_residents()</a></code></a></p></li>
+</ul></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Create plots but don't display them:</span></span></span>
+<span class="r-in"><span><span class="co"># Compute all plots but do not display them</span></span></span>
 <span class="r-in"><span><span class="va">fit2</span> <span class="op">&lt;-</span> <span class="fu">prepare_trait_space</span><span class="op">(</span><span class="va">fit</span>, <span class="va">traits_inv</span>, show_plots <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Create and display plots:</span></span></span>
+<span class="r-in"><span><span class="co"># Display plots during construction</span></span></span>
 <span class="r-in"><span><span class="va">fit3</span> <span class="op">&lt;-</span> <span class="fu">prepare_trait_space</span><span class="op">(</span><span class="va">fit</span>, <span class="va">traits_inv</span>, show_plots <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Use a fixed kernel bandwidth and request row-z inside the crowding step</span></span></span>
+<span class="r-in"><span><span class="va">fit4</span> <span class="op">&lt;-</span> <span class="fu">prepare_trait_space</span><span class="op">(</span><span class="va">fit</span>, <span class="va">traits_inv</span>, crowding_sigma <span class="op">=</span> <span class="fl">0.35</span>, row_z <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

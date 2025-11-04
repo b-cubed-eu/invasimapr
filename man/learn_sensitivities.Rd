@@ -6,6 +6,96 @@
 \usage{
 learn_sensitivities(fit, use_site_random_slopes = TRUE, lrt = TRUE)
 }
+\arguments{
+\item{fit}{An object of class \code{invasimapr_fit} produced by
+\code{\link[=prepare_inputs]{prepare_inputs()}} / \code{\link[=assemble_matrices]{assemble_matrices()}}, containing resident
+matrices (\code{r_js_z}, \code{C_js_z}, \code{S_js_z}), trait-space structures (\code{Q_res},
+\code{Q_inv}), and resident community layout (\code{inputs$comm_res}).}
+
+\item{use_site_random_slopes}{Logical; if \code{TRUE}, the auxiliary model is fit
+with site-level random slopes for the abiotic and crowding terms, enabling
+estimation of site-varying αᵢₛ and Γᵢₛ when supported by the data.
+Defaults to \code{TRUE}.}
+
+\item{lrt}{Logical; if \code{TRUE}, compute Wald/LRT summaries for key contrasts
+(e.g., trait-varying vs global slopes) to guide model choice and reporting.
+Defaults to \code{TRUE}.}
+}
+\value{
+The input \code{fit} (invisibly) with an updated \code{fit$sensitivities}
+list (see Details).
+}
 \description{
-Learn sensitivities (αᵢ, βᵢ, θᵢ/γᵢ) and optional site-varying αᵢₛ, Γᵢₛ
+Fits an auxiliary GLMM on \strong{resident} data to estimate invader-level
+sensitivities to crowding and saturation (αᵢ, βᵢ), and abiotic conversion
+slopes (θᵢ or γᵢ), with optional \strong{site-varying} random slopes that yield
+per-site adjustments (αᵢₛ, Γᵢₛ). Results are written into the
+\code{fit$sensitivities} slot of an \code{\link{invasimapr_fit}} object for downstream
+invasion-fitness and establishment steps.
+}
+\details{
+\strong{Workflow}
+\enumerate{
+\item Build an \strong{auxiliary GLMM} on resident responses via
+\code{\link[=fit_auxiliary_residents_glmm]{fit_auxiliary_residents_glmm()}}, optionally including random slopes
+\code{(0 + r_z || site)} and \code{(0 + C_z || site)} when
+\code{use_site_random_slopes = TRUE}.
+\item Convert GLMM coefficients to \strong{sensitivities} (αᵢ, βᵢ, θᵢ/γᵢ) with
+\code{\link[=derive_sensitivities]{derive_sensitivities()}}, returning signed/unsigned variants and
+summary tests (Wald/LRT).
+\item If supported, extract \strong{site-varying parameters} (αᵢₛ, Γᵢₛ) using
+\code{\link[=site_varying_alpha_beta_gamma]{site_varying_alpha_beta_gamma()}}, along with decompositions into
+invader slopes and site deltas.
+}
+
+\strong{Output structure written to \code{fit$sensitivities}}
+\itemize{
+\item \code{fit_coeffs}, \code{data_used}, \code{formula}: artefacts from the auxiliary GLMM.
+\item \code{alpha_i}, \code{beta_i}, \code{theta0}, \code{theta_i}, \code{gamma_i},
+\code{alpha_signed_i}, \code{beta_signed_i}: estimated sensitivities.
+\item \code{wald_lrt}, \code{sens_df}, \code{clamp_summary}, \code{prior_note}: inference
+and diagnostics from \code{\link[=derive_sensitivities]{derive_sensitivities()}}.
+\item \code{site_alpha_beta_gamma}: full list returned by
+\code{\link[=site_varying_alpha_beta_gamma]{site_varying_alpha_beta_gamma()}} (if available).
+\item \code{alpha_is}, \code{Gamma_is}: site-varying crowding and abiotic matrices
+(if available).
+\item \code{site_alpha}, \code{site_gamma}: compact bundles with decompositions
+and a narrow data frame for inspection/joins.
+\item \code{a0..a2}, \code{b0..b2}: trait-plane slope/intercept components used by
+calibration steps downstream.
+\item \code{abg_df}: tidy table of site × invader effects when available.
+}
+
+\strong{Robustness notes}
+\itemize{
+\item Performs finite-value checks on resident predictors (\code{r_js_z}, \code{C_js_z},
+\code{S_js_z}).
+\item Resolves site identifiers from multiple possible locations to ensure
+compatibility with older and newer \code{assemble_matrices()} outputs.
+}
+}
+\examples{
+\dontrun{
+fit <- prepare_inputs(sites = site_df, residents = resident_df,
+                      invaders = invader_df, traits = trait_df)
+
+fit <- learn_sensitivities(fit, use_site_random_slopes = TRUE, lrt = TRUE)
+names(fit$sensitivities)
+head(fit$sensitivities$sens_df)
+
+# Example: map of site-varying Γ (if present)
+if (!is.null(fit$sensitivities$Gamma_is)) {
+  Gamma_is <- fit$sensitivities$Gamma_is
+  # user mapping code goes here...
+}
+}
+
+}
+\seealso{
+\itemize{
+\item Input assembly: \href{https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html}{\code{assemble_matrices()}}
+\item GLMM fit: \href{https://b-cubed-eu.github.io/invasimapr/reference/fit_auxiliary_residents_glmm.html}{\code{fit_auxiliary_residents_glmm()}}
+\item Sensitivity derivation: \href{https://b-cubed-eu.github.io/invasimapr/reference/derive_sensitivities.html}{\code{derive_sensitivities()}}
+\item Site-varying effects: \href{https://b-cubed-eu.github.io/invasimapr/reference/site_varying_alpha_beta_gamma.html}{\code{site_varying_alpha_beta_gamma()}}
+}
 }

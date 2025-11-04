@@ -5,9 +5,13 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prepare inputs (assemble &amp; align core tables) — prepare_inputs"><meta name="description" content="Thin wrapper over assemble_matrices() that
-stores results in an invasimapr_fit object."><meta property="og:description" content="Thin wrapper over assemble_matrices() that
-stores results in an invasimapr_fit object."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Prepare inputs (assemble &amp; align core tables) — prepare_inputs"><meta name="description" content="Thin wrapper around assemble_matrices() that standardises and stores the
+assembled inputs in an invasimapr_fit object for downstream modelling.
+Use this to run the input-assembly step once and pass a single structured
+object through subsequent pipelines."><meta property="og:description" content="Thin wrapper around assemble_matrices() that standardises and stores the
+assembled inputs in an invasimapr_fit object for downstream modelling.
+Use this to run the input-assembly step once and pass a single structured
+object through subsequent pipelines."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -48,8 +52,10 @@ stores results in an invasimapr_fit object."><meta property="og:image" content="
     </div>
 
     <div class="ref-description section level2">
-    <p>Thin wrapper over <code><a href="assemble_matrices.html">assemble_matrices()</a></code> that
-stores results in an <code>invasimapr_fit</code> object.</p>
+    <p>Thin wrapper around <code><a href="assemble_matrices.html">assemble_matrices()</a></code> that standardises and stores the
+assembled inputs in an <code>invasimapr_fit</code> object for downstream modelling.
+Use this to run the input-assembly step once and pass a single structured
+object through subsequent pipelines.</p>
     </div>
 
     <div class="section level2">
@@ -58,10 +64,66 @@ stores results in an <code>invasimapr_fit</code> object.</p>
     </div>
 
     <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
+
+
+<dl><dt id="arg-make-plots">make_plots<a class="anchor" aria-label="anchor" href="#arg-make-plots"></a></dt>
+<dd><p>logical. If <code>TRUE</code>, propagate <code>make_plots</code> to
+<code><a href="assemble_matrices.html">assemble_matrices()</a></code> so that diagnostic plots are produced during
+assembly. Defaults to <code>FALSE</code>.</p></dd>
+
+</dl></div>
+    <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>invasimapr_fit</code></p>
+    <p>An object of class <code>invasimapr_fit</code> with components:</p><dl><dt><code>inputs</code></dt>
+<dd><p>The full list returned by <code><a href="assemble_matrices.html">assemble_matrices()</a></code>.</p></dd>
+
+<dt><code>meta</code></dt>
+<dd><p>A list with <code>n_sites</code>, <code>n_residents</code>, <code>n_traits</code>.</p></dd>
+
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p><strong>What this does</strong></p><ol><li><p>Calls <code><a href="assemble_matrices.html">assemble_matrices()</a></code> to build core site × species/trait matrices,
+perform consistency checks, and harmonise keys and factor levels.</p></li>
+<li><p>Wraps the returned list (<code>core</code>) into a lightweight S3 container
+<code>invasimapr_fit</code> with a dedicated <code>inputs</code> slot and a small <code>meta</code> block
+(counts of sites, residents, traits) used by later steps.</p></li>
+</ol><p><strong>Object layout</strong></p>
+<p></p><div class="sourceCode"><pre><code><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>invasimapr_fit</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>├─ inputs <span class="sc">:</span> <span class="er">&lt;</span>list<span class="sc">&gt;</span>   <span class="co"># output from assemble_matrices()</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>└─ meta   <span class="sc">:</span> <span class="er">&lt;</span>list<span class="sc">&gt;</span>   <span class="co"># n_sites, n_residents, n_traits</span></span></code></pre><p></p></div>
+<p><strong>Notes</strong></p><ul><li><p>No mutation of the <code>core</code> object occurs here; this function only packages
+and annotates it.</p></li>
+<li><p>If you need to inspect the assembled inputs, use <code>fit$inputs</code> after return.</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index">
+<ul><li><p>Input assembly: <a href="https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html"><code><a href="assemble_matrices.html">assemble_matrices()</a></code></a></p></li>
+<li><p>Container constructor: <code><a href="utils_internal.html">new_invasimapr_fit()</a></code></p></li>
+</ul></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="co"># Minimal pattern; pass the same arguments you would to assemble_matrices()</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">prepare_inputs</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  sites      <span class="op">=</span> <span class="va">site_df</span>,</span></span>
+<span class="r-in"><span>  residents  <span class="op">=</span> <span class="va">resident_df</span>,</span></span>
+<span class="r-in"><span>  invaders   <span class="op">=</span> <span class="va">invader_df</span>,</span></span>
+<span class="r-in"><span>  traits     <span class="op">=</span> <span class="va">trait_df</span>,</span></span>
+<span class="r-in"><span>  make_plots <span class="op">=</span> <span class="cn">TRUE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">fit</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">inputs</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span><span class="op">$</span><span class="va">meta</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

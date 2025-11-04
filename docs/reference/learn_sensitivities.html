@@ -5,7 +5,17 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Learn sensitivities (αᵢ, βᵢ, θᵢ/γᵢ) and optional site-varying αᵢₛ, Γᵢₛ — learn_sensitivities"><meta name="description" content="Learn sensitivities (αᵢ, βᵢ, θᵢ/γᵢ) and optional site-varying αᵢₛ, Γᵢₛ"><meta property="og:description" content="Learn sensitivities (αᵢ, βᵢ, θᵢ/γᵢ) and optional site-varying αᵢₛ, Γᵢₛ"><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Learn sensitivities (αᵢ, βᵢ, θᵢ/γᵢ) and optional site-varying αᵢₛ, Γᵢₛ — learn_sensitivities"><meta name="description" content="Fits an auxiliary GLMM on resident data to estimate invader-level
+sensitivities to crowding and saturation (αᵢ, βᵢ), and abiotic conversion
+slopes (θᵢ or γᵢ), with optional site-varying random slopes that yield
+per-site adjustments (αᵢₛ, Γᵢₛ). Results are written into the
+fit$sensitivities slot of an invasimapr_fit object for downstream
+invasion-fitness and establishment steps."><meta property="og:description" content="Fits an auxiliary GLMM on resident data to estimate invader-level
+sensitivities to crowding and saturation (αᵢ, βᵢ), and abiotic conversion
+slopes (θᵢ or γᵢ), with optional site-varying random slopes that yield
+per-site adjustments (αᵢₛ, Γᵢₛ). Results are written into the
+fit$sensitivities slot of an invasimapr_fit object for downstream
+invasion-fitness and establishment steps."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -46,7 +56,12 @@
     </div>
 
     <div class="ref-description section level2">
-    <p>Learn sensitivities (αᵢ, βᵢ, θᵢ/γᵢ) and optional site-varying αᵢₛ, Γᵢₛ</p>
+    <p>Fits an auxiliary GLMM on <strong>resident</strong> data to estimate invader-level
+sensitivities to crowding and saturation (αᵢ, βᵢ), and abiotic conversion
+slopes (θᵢ or γᵢ), with optional <strong>site-varying</strong> random slopes that yield
+per-site adjustments (αᵢₛ, Γᵢₛ). Results are written into the
+<code>fit$sensitivities</code> slot of an <code>invasimapr_fit</code> object for downstream
+invasion-fitness and establishment steps.</p>
     </div>
 
     <div class="section level2">
@@ -54,8 +69,97 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">learn_sensitivities</span><span class="op">(</span><span class="va">fit</span>, use_site_random_slopes <span class="op">=</span> <span class="cn">TRUE</span>, lrt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
 
-  </main></div>
+
+<dl><dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
+<dd><p>An object of class <code>invasimapr_fit</code> produced by
+<code><a href="prepare_inputs.html">prepare_inputs()</a></code> / <code><a href="assemble_matrices.html">assemble_matrices()</a></code>, containing resident
+matrices (<code>r_js_z</code>, <code>C_js_z</code>, <code>S_js_z</code>), trait-space structures (<code>Q_res</code>,
+<code>Q_inv</code>), and resident community layout (<code>inputs$comm_res</code>).</p></dd>
+
+
+<dt id="arg-use-site-random-slopes">use_site_random_slopes<a class="anchor" aria-label="anchor" href="#arg-use-site-random-slopes"></a></dt>
+<dd><p>Logical; if <code>TRUE</code>, the auxiliary model is fit
+with site-level random slopes for the abiotic and crowding terms, enabling
+estimation of site-varying αᵢₛ and Γᵢₛ when supported by the data.
+Defaults to <code>TRUE</code>.</p></dd>
+
+
+<dt id="arg-lrt">lrt<a class="anchor" aria-label="anchor" href="#arg-lrt"></a></dt>
+<dd><p>Logical; if <code>TRUE</code>, compute Wald/LRT summaries for key contrasts
+(e.g., trait-varying vs global slopes) to guide model choice and reporting.
+Defaults to <code>TRUE</code>.</p></dd>
+
+</dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    <p>The input <code>fit</code> (invisibly) with an updated <code>fit$sensitivities</code>
+list (see Details).</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p><strong>Workflow</strong></p><ol><li><p>Build an <strong>auxiliary GLMM</strong> on resident responses via
+<code><a href="fit_auxiliary_residents_glmm.html">fit_auxiliary_residents_glmm()</a></code>, optionally including random slopes
+<code>(0 + r_z || site)</code> and <code>(0 + C_z || site)</code> when
+<code>use_site_random_slopes = TRUE</code>.</p></li>
+<li><p>Convert GLMM coefficients to <strong>sensitivities</strong> (αᵢ, βᵢ, θᵢ/γᵢ) with
+<code><a href="derive_sensitivities.html">derive_sensitivities()</a></code>, returning signed/unsigned variants and
+summary tests (Wald/LRT).</p></li>
+<li><p>If supported, extract <strong>site-varying parameters</strong> (αᵢₛ, Γᵢₛ) using
+<code><a href="site_varying_alpha_beta_gamma.html">site_varying_alpha_beta_gamma()</a></code>, along with decompositions into
+invader slopes and site deltas.</p></li>
+</ol><p><strong>Output structure written to <code>fit$sensitivities</code></strong></p><ul><li><p><code>fit_coeffs</code>, <code>data_used</code>, <code>formula</code>: artefacts from the auxiliary GLMM.</p></li>
+<li><p><code>alpha_i</code>, <code>beta_i</code>, <code>theta0</code>, <code>theta_i</code>, <code>gamma_i</code>,
+<code>alpha_signed_i</code>, <code>beta_signed_i</code>: estimated sensitivities.</p></li>
+<li><p><code>wald_lrt</code>, <code>sens_df</code>, <code>clamp_summary</code>, <code>prior_note</code>: inference
+and diagnostics from <code><a href="derive_sensitivities.html">derive_sensitivities()</a></code>.</p></li>
+<li><p><code>site_alpha_beta_gamma</code>: full list returned by
+<code><a href="site_varying_alpha_beta_gamma.html">site_varying_alpha_beta_gamma()</a></code> (if available).</p></li>
+<li><p><code>alpha_is</code>, <code>Gamma_is</code>: site-varying crowding and abiotic matrices
+(if available).</p></li>
+<li><p><code>site_alpha</code>, <code>site_gamma</code>: compact bundles with decompositions
+and a narrow data frame for inspection/joins.</p></li>
+<li><p><code>a0..a2</code>, <code>b0..b2</code>: trait-plane slope/intercept components used by
+calibration steps downstream.</p></li>
+<li><p><code>abg_df</code>: tidy table of site × invader effects when available.</p></li>
+</ul><p><strong>Robustness notes</strong></p><ul><li><p>Performs finite-value checks on resident predictors (<code>r_js_z</code>, <code>C_js_z</code>,
+<code>S_js_z</code>).</p></li>
+<li><p>Resolves site identifiers from multiple possible locations to ensure
+compatibility with older and newer <code><a href="assemble_matrices.html">assemble_matrices()</a></code> outputs.</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index">
+<ul><li><p>Input assembly: <a href="https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html"><code><a href="assemble_matrices.html">assemble_matrices()</a></code></a></p></li>
+<li><p>GLMM fit: <a href="https://b-cubed-eu.github.io/invasimapr/reference/fit_auxiliary_residents_glmm.html"><code><a href="fit_auxiliary_residents_glmm.html">fit_auxiliary_residents_glmm()</a></code></a></p></li>
+<li><p>Sensitivity derivation: <a href="https://b-cubed-eu.github.io/invasimapr/reference/derive_sensitivities.html"><code><a href="derive_sensitivities.html">derive_sensitivities()</a></code></a></p></li>
+<li><p>Site-varying effects: <a href="https://b-cubed-eu.github.io/invasimapr/reference/site_varying_alpha_beta_gamma.html"><code><a href="site_varying_alpha_beta_gamma.html">site_varying_alpha_beta_gamma()</a></code></a></p></li>
+</ul></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="prepare_inputs.html">prepare_inputs</a></span><span class="op">(</span>sites <span class="op">=</span> <span class="va">site_df</span>, residents <span class="op">=</span> <span class="va">resident_df</span>,</span></span>
+<span class="r-in"><span>                      invaders <span class="op">=</span> <span class="va">invader_df</span>, traits <span class="op">=</span> <span class="va">trait_df</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu">learn_sensitivities</span><span class="op">(</span><span class="va">fit</span>, use_site_random_slopes <span class="op">=</span> <span class="cn">TRUE</span>, lrt <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">sensitivities</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">sensitivities</span><span class="op">$</span><span class="va">sens_df</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Example: map of site-varying Γ (if present)</span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NULL.html" class="external-link">is.null</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">sensitivities</span><span class="op">$</span><span class="va">Gamma_is</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">Gamma_is</span> <span class="op">&lt;-</span> <span class="va">fit</span><span class="op">$</span><span class="va">sensitivities</span><span class="op">$</span><span class="va">Gamma_is</span></span></span>
+<span class="r-in"><span>  <span class="co"># user mapping code goes here...</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside></div>
 
 
     <footer><div class="pkgdown-footer-left">

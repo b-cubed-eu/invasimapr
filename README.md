@@ -35,9 +35,9 @@ At its core, the package (i) models **intrinsic growth potential** from trait–
 
 ## Core concepts (what the framework estimates)
 
-- **Invasion fitness ($\lambda$)** — Net potential for a species to increase when rare at a site: $\lambda = \Gamma r - \alpha C - \beta S + k$, where $r$ is intrinsic (abiotic) performance, $C$ niche crowding, $S$ site saturation, and $\Gamma, \alpha, \beta$ are sensitivities.
-- **Invasiveness ($V_i$)** — Propensity of a species to establish across sites (spatial aggregation of $\lambda$).
-- **Invasibility ($V_s$)** — Openness of a site to establishment by newcomers (aggregation of $\lambda$ over candidate invaders).
+- **Invasion fitness ($\lambda$)** - Net potential for a species to increase when rare at a site: $\lambda = \Gamma r - \alpha C - \beta S + k$, where $r$ is intrinsic (abiotic) performance, $C$ niche crowding, $S$ site saturation, and $\Gamma, \alpha, \beta$ are sensitivities.
+- **Invasiveness ($V_i$)** - Propensity of a species to establish across sites (spatial aggregation of $\lambda$).
+- **Invasibility ($V_s$)** - Openness of a site to establishment by newcomers (aggregation of $\lambda$ over candidate invaders).
 
 Built from three linked pillars:
 

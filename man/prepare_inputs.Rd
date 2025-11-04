@@ -6,10 +6,67 @@
 \usage{
 prepare_inputs(..., make_plots = FALSE)
 }
+\arguments{
+\item{make_plots}{logical. If \code{TRUE}, propagate \code{make_plots} to
+\code{\link[=assemble_matrices]{assemble_matrices()}} so that diagnostic plots are produced during
+assembly. Defaults to \code{FALSE}.}
+}
 \value{
-\code{invasimapr_fit}
+An object of class \code{invasimapr_fit} with components:
+\describe{
+\item{\code{inputs}}{The full list returned by \code{\link[=assemble_matrices]{assemble_matrices()}}.}
+\item{\code{meta}}{A list with \code{n_sites}, \code{n_residents}, \code{n_traits}.}
+}
 }
 \description{
-Thin wrapper over \code{assemble_matrices()} that
-stores results in an \code{invasimapr_fit} object.
+Thin wrapper around \code{\link[=assemble_matrices]{assemble_matrices()}} that standardises and stores the
+assembled inputs in an \code{\link{invasimapr_fit}} object for downstream modelling.
+Use this to run the input-assembly step once and pass a single structured
+object through subsequent pipelines.
+}
+\details{
+\strong{What this does}
+\enumerate{
+\item Calls \code{\link[=assemble_matrices]{assemble_matrices()}} to build core site × species/trait matrices,
+perform consistency checks, and harmonise keys and factor levels.
+\item Wraps the returned list (\code{core}) into a lightweight S3 container
+\code{invasimapr_fit} with a dedicated \code{inputs} slot and a small \code{meta} block
+(counts of sites, residents, traits) used by later steps.
+}
+
+\strong{Object layout}
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{invasimapr_fit
+├─ inputs : <list>   # output from assemble_matrices()
+└─ meta   : <list>   # n_sites, n_residents, n_traits
+}\if{html}{\out{</div>}}
+
+\strong{Notes}
+\itemize{
+\item No mutation of the \code{core} object occurs here; this function only packages
+and annotates it.
+\item If you need to inspect the assembled inputs, use \code{fit$inputs} after return.
+}
+}
+\examples{
+\dontrun{
+# Minimal pattern; pass the same arguments you would to assemble_matrices()
+fit <- prepare_inputs(
+  sites      = site_df,
+  residents  = resident_df,
+  invaders   = invader_df,
+  traits     = trait_df,
+  make_plots = TRUE
+)
+str(fit, 1)
+str(fit$inputs, 1)
+fit$meta
+}
+
+}
+\seealso{
+\itemize{
+\item Input assembly: \href{https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html}{\code{assemble_matrices()}}
+\item Container constructor: \code{\link[=new_invasimapr_fit]{new_invasimapr_fit()}}
+}
 }
