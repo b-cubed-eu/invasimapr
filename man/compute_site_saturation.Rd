@@ -2,32 +2,74 @@
 % Please edit documentation in R/compute_site_saturation.R
 \name{compute_site_saturation}
 \alias{compute_site_saturation}
-\title{Compute site-only saturation S_s and global z-score S_s_z}
+\title{Compute site-only saturation (\eqn{S_s}) and global z-score (\eqn{S_s^{(z)}})}
 \usage{
 compute_site_saturation(mode, comm_res, res_ids, mu_js = NULL)
 }
 \arguments{
-\item{mode}{One of "opportunity_penalty", "modelled_dominance", "evenness_deficit".}
+\item{mode}{One of \code{c("opportunity_penalty","modelled_dominance","evenness_deficit")}.}
 
-\item{comm_res}{Site × resident matrix (or data.frame/tibble) of counts for the
-observed-based modes (will be coerced to matrix if needed).}
+\item{comm_res}{Site × resident matrix (or frame) of observed counts. Will be
+coerced to a numeric matrix; non-numeric entries become \code{NA}.}
 
-\item{res_ids}{Character vector of resident IDs (columns of \code{comm_res}).}
+\item{res_ids}{Character vector of resident IDs (column names to consider).
+Columns not found in \code{comm_res} are ignored with a warning.}
 
-\item{mu_js}{Optional site × resident matrix (or data.frame/tibble) of expected
-abundances for "modelled_dominance" (will be coerced to matrix if needed).}
+\item{mu_js}{Optional site × resident matrix (or frame) of expected abundances,
+required for \code{mode = "modelled_dominance"}. Will be coerced to numeric matrix.}
 }
 \value{
-List with \code{S_s}, \code{S_mu}, \code{S_sd}, \code{S_s_z}, and \code{S_js_z}.
+A list with components:
+\describe{
+\item{\code{S_s}}{Numeric vector (sites) of saturation values.}
+\item{\code{S_mu}}{Global mean of \code{S_s}.}
+\item{\code{S_sd}}{Global SD of \code{S_s} (set to 1 if 0/NA).}
+\item{\code{S_s_z}}{Global z-scores of \code{S_s}.}
+\item{\code{S_js_z}}{Site × resident matrix broadcasting \code{S_s_z} across \code{res_ids}.}
+}
 }
 \description{
-Implements three site-only saturation options: "opportunity_penalty",
-"modelled_dominance", and "evenness_deficit". Coerces non-matrix inputs with
-\code{as.matrix()}. Returns S_s, global z, and a broadcast S_js_z for convenience.
+Implements three site-only saturation definitions and returns (i) the raw
+site statistic \eqn{S_s}, (ii) its global mean/SD, (iii) the global
+z-scored site statistic \eqn{S_s^{(z)}}, and (iv) a \strong{broadcast}
+site–resident matrix \eqn{S_{js}^{(z)}} for downstream modelling.
 }
+\section{Definitions}{
+
+Let \(X_{js}\) be observed resident counts and \(\mu_{js}\) expected counts.
+\describe{
+\item{\code{"opportunity_penalty"}}{
+Abundance penalty: \(\displaystyle S_s=\log(1+\sum_j X_{js})\).
+}
+\item{\code{"modelled_dominance"}}{
+Model-based crowding: \(\displaystyle S_s=\log(1+\sum_j \mu_{js})\).
+Requires \code{mu_js}.
+}
+\item{\code{"evenness_deficit"}}{
+Pielou’s evenness deficit:
+\(J_s = H_s / \log S_s^{(\#)}\) with Shannon \(H_s\) and richness
+\(S_s^{(\#)}\); then \(\displaystyle S_s = 1 - J_s\).
+}
+}
+
+After computing \(S_s\), a \strong{global} z-score is applied:
+\(\displaystyle S_s^{(z)} = (S_s - \bar S)/\mathrm{sd}(S_s)\),
+and this is broadcast across residents to form \(S_{js}^{(z)}\) (same value
+for all \(j\) within a site \(s\)).
+}
+
 \examples{
 \dontrun{
-sat = compute_site_saturation("evenness_deficit", comm_res, colnames(comm_res))
-S_js_z = sat$S_js_z
+# Evenness deficit from observed community
+sat <- compute_site_saturation("evenness_deficit", comm_res, colnames(comm_res))
+head(sat$S_s_z)
+
+# Modelled dominance using expected abundances mu_js
+sat2 <- compute_site_saturation("modelled_dominance", comm_res, colnames(comm_res), mu_js = mu_js)
+dim(sat2$S_js_z)
 }
+
+}
+\seealso{
+\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_site_saturation.html}{Package reference: compute_site_saturation()}
 }
