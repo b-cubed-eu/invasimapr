@@ -25,64 +25,95 @@ get_trait_data(
 )
 }
 \arguments{
-\item{species}{Character. Species name (binomial, e.g. "Acacia karroo").}
+\item{species}{Character. Species name (binomial, e.g. \code{"Acacia karroo"}).}
 
-\item{remove_bg}{Logical. Remove green/white backgrounds from Wikipedia image? (default: TRUE)}
+\item{remove_bg}{Logical. If \code{TRUE}, call remove.bg via \code{remove_bg_and_save()}
+to remove the background from the Wikipedia infobox image and use the
+processed PNG for preview/palette. Default: \code{FALSE}.}
 
-\item{do_palette, do_taxonomy, do_summary, do_image}{Logical. Control which metadata to scrape (default: TRUE for all).}
+\item{do_palette, do_taxonomy, do_summary, do_image}{Logical. Control which
+metadata to scrape. All default to \code{TRUE}.}
 
-\item{bg_thresh}{Integer. Brightness threshold for white background removal (default: 80).}
+\item{bg_thresh}{Integer. Deprecated/ignored when \code{remove_bg = TRUE}.
+Kept for signature compatibility. Default: \code{80}.}
 
-\item{green_delta}{Integer. How much greener is "green" than R/B? (default: 20).}
+\item{green_delta}{Integer. Deprecated/ignored when \code{remove_bg = TRUE}.
+Kept for signature compatibility. Default: \code{20}.}
 
-\item{n_palette}{Integer. Number of colors to extract for palette (default: 5).}
+\item{n_palette}{Integer. Number of colors to extract for the palette.
+Default: \code{5}.}
 
-\item{preview}{Logical. Show image after processing? (default: TRUE)}
+\item{preview}{Logical. Print the processed image (magick) in the console.
+Default: \code{FALSE}.}
 
-\item{save_folder}{Character or NULL. If non-NULL, will save processed PNG image here.}
+\item{save_folder}{Character or \code{NULL}. If non-\code{NULL}, write the PNG used
+for palette/preview into this folder. When \code{remove_bg = TRUE}, the
+background-removed PNG is written here; otherwise the original image is
+written. If \code{NULL} and \code{remove_bg = TRUE}, a temporary directory is used.}
 
-\item{use_try}{Logical. If TRUE, join plant traits using a TRY-format database/table (default: FALSE).}
+\item{use_try}{Logical. If \code{TRUE}, join plant traits using a TRY-format
+database/table. Default: \code{FALSE}.}
 
-\item{try_data}{Character (path) or data.frame. Path to TRY file, or data frame containing trait data.}
+\item{try_data}{Character (path) or \code{data.frame}. Path to a TRY file, or a
+data frame containing TRY-style trait data (must include \code{trait_species_col},
+\code{TraitName}, and \code{OrigValueStr}).}
 
-\item{trait_species_col}{Name of species column in TRY trait table (default: "AccSpeciesName").}
+\item{trait_species_col}{Name of the species column in the TRY trait table.
+Default: \code{"AccSpeciesName"}.}
 
-\item{local_trait_df}{Optional. Data.frame of local trait data (can be any species-trait table).}
+\item{local_trait_df}{Optional. \code{data.frame} of local trait data (any wide
+table). All columns except the species column are returned.}
 
-\item{local_species_col}{Name of species column in local trait table (default: "species").}
+\item{local_species_col}{Name of the species column in the local trait table.
+Default: \code{"species"}.}
 
-\item{max_dist}{Numeric. Maximum distance for fuzzy join (Levenshtein/Jaro-Winkler; default: 1).}
+\item{max_dist}{Numeric. Maximum distance for fuzzy matching (Jaro–Winkler
+via \code{fuzzyjoin::stringdist_left_join}). Default: \code{1}.}
 }
 \value{
-A tibble (one row) with columns: species, \link{optional metadata}, and all trait columns found.
+A tibble (one row) with columns: \code{species}, optional metadata
+(\code{summary}, taxonomy ranks, \code{img_url}, \code{palette}, \code{image_file}), and all
+available trait columns found via TRY/local joins. \code{image_file} contains
+the normalized path to the PNG used for palette/preview (or \code{NA} if none).
 }
 \description{
 Given a binomial species name, this function retrieves optional metadata
-from Wikipedia (taxonomic summary, taxonomy, image, color palette)
+from Wikipedia (taxonomic summary, taxonomy, image, and a color palette)
 and joins relevant plant/trait data from a TRY-style or user-provided trait table.
-Fuzzy matching is used for both TRY and local tables to handle minor spelling or naming mismatches.
+Fuzzy matching is used for both TRY and local tables to handle minor spelling
+or naming mismatches.
 }
 \details{
+When \code{remove_bg = TRUE}, the infobox image background is removed using the
+remove.bg API via an internal helper (\code{remove_bg_and_save()}), the resulting
+PNG is re-read with \strong{magick}, and the palette is extracted from that
+processed image. Set the environment variable \code{REMOVE_BG_API_KEY} to a valid
+remove.bg API key before calling.
+
 \itemize{
-\item For TRY tables, \code{TraitName} is used for wide trait columns. For local tables, all columns except the species column are returned.
-\item Fuzzy matching is used to allow for spelling or formatting mismatches.
-\item Image-based color palette extraction uses simple k-means clustering; backgrounds can be removed using a color threshold.
-\item Requires: dplyr, purrr, tibble, optionally fuzzyjoin, rvest, httr, stringr, jsonlite, magick, abind.
-\item You can control which metadata are scraped for speed.
+\item \strong{Wikipedia:} summary via REST API; taxonomy parsed from the infobox.
+\item \strong{Image:} first infobox image is used; when \code{remove_bg = TRUE}
+the function calls the remove.bg API. Set \code{Sys.setenv(REMOVE_BG_API_KEY = "…")}.
+\item \strong{Palette:} simple k-means on non-transparent pixels of the (processed) PNG.
+\item \strong{Traits (TRY):} wide table produced from \code{TraitName} and numeric \code{OrigValueStr}.
+\item \strong{Traits (local):} returns all columns except the species column.
+\item \strong{Dependencies:} \code{dplyr}, \code{purrr}, \code{tibble}, \code{fuzzyjoin}, \code{rvest},
+\code{httr}, \code{stringr}, \code{jsonlite}, \code{magick}, \code{abind}.
 }
 }
 \examples{
 \dontrun{
-# Example using TRY table:
+# Using TRY table
 get_trait_data("Acacia karroo",
                use_try = TRUE,
                try_data = try_traits,
                trait_species_col = "SpeciesName")
 
-# Example using local trait table:
+# Using a local trait table
 get_trait_data("Acraea horta", local_trait_df = traits, local_species_col = "species")
 
-# Scrape only metadata (no traits):
-get_trait_data("Acacia karroo", use_try = FALSE)
+# Metadata only, with background removal and saving to a folder
+Sys.setenv(REMOVE_BG_API_KEY = "<your-removebg-key>")
+get_trait_data("Acacia karroo", use_try = FALSE, remove_bg = TRUE, save_folder = "out/")
 }
 }

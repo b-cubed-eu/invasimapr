@@ -2,133 +2,175 @@
 % Please edit documentation in R/compute_invasion_fitness.R
 \name{compute_invasion_fitness}
 \alias{compute_invasion_fitness}
-\title{Compute invasion fitness from competition/impact tensors and growth predictions}
+\title{Compute invasion fitness \eqn{\lambda_{is}} for multiple model options}
 \usage{
 compute_invasion_fitness(
-  I_raw = NULL,
-  pressure_inv_site = NULL,
-  r_mat = NULL,
-  predictions = NULL,
-  a_ij = NULL,
-  Nstar = NULL,
-  logistic_on = c("raw", "rel"),
-  k = 1,
-  x0 = NULL,
-  prefer = c("logis", "rel", "raw", "scaled")
+  r_is_z,
+  C_is_z,
+  S_is_z,
+  option = c("A", "B", "C", "D", "E"),
+  alpha_i = NULL,
+  beta_i = NULL,
+  theta0 = 1,
+  theta_i = NULL,
+  Gamma_is = NULL,
+  alpha_is = NULL,
+  beta_signed_i = NULL,
+  calibrate_kappa = FALSE,
+  r_js_z = NULL,
+  C_js_z = NULL,
+  S_js_z = NULL,
+  Q_res = NULL,
+  a0 = NULL,
+  a1 = NULL,
+  a2 = NULL,
+  b0 = NULL,
+  b1 = NULL,
+  b2 = NULL,
+  site_df = NULL,
+  return_long = TRUE,
+  label = NULL
 )
 }
 \arguments{
-\item{I_raw}{3D numeric array \code{[invader, resident, site]} from \code{assemble_matrices()},
-or \code{NULL} if you pass \code{pressure_inv_site} instead.}
+\item{r_is_z}{Matrix \eqn{S \times I} of standardized abiotic suitability for invaders.
+Row names are site IDs; column names are invader IDs.}
 
-\item{pressure_inv_site}{numeric matrix \code{[invader, site]} (sum over residents),
-optional alternative to \code{I_raw}.}
+\item{C_is_z}{Matrix \eqn{S \times I} of standardized niche crowding for invaders.}
 
-\item{r_mat}{numeric matrix \code{[invader, site]} of invader growth on the response scale,
-or \code{NULL} if you pass \code{predictions}.}
+\item{S_is_z}{Matrix \eqn{S \times I} of standardized site saturation for invaders
+(site-only; same value down each site row).}
 
-\item{predictions}{data.frame or \code{NULL}. Long table with columns
-\code{species}, \code{site_id}, \code{pred}. Used to build \code{r_mat} if \code{r_mat} is \code{NULL}.}
+\item{option}{Character, one of \code{c("A","B","C","D","E")}. See Details.}
 
-\item{a_ij}{numeric matrix \code{[invader, resident]} of competition coefficients; required
-only for \code{lambda_rel} or for \code{lambda_logis} when \code{logistic_on = "rel"}.}
+\item{alpha_i}{Optional named numeric vector (length \eqn{I}) of invader crowding
+sensitivities \eqn{\alpha_i}. Required for A–C and E; ignored if \code{alpha_is} is provided in D.}
 
-\item{Nstar}{numeric matrix \code{[resident, site]} of resident abundances; required for \code{lambda_rel}
-and for \code{lambda_logis} when \code{logistic_on = "rel"}.}
+\item{beta_i}{Optional named numeric vector (length \eqn{I}) of saturation sensitivities
+\eqn{\beta_i}. Used in A–D. For E, use \code{beta_signed_i} for a signed effect.}
 
-\item{logistic_on}{character. Use \code{"raw"} (default) to apply the logistic cap to \code{C_raw};
-use \code{"rel"} to apply it to \code{A \%*\% N_rel}.}
+\item{theta0}{Numeric scalar global slope for \eqn{r^{(z)}} (Option B; default \code{1}).}
 
-\item{k}{numeric. Logistic steepness parameter (default \code{1}).}
+\item{theta_i}{Optional named numeric vector (length \eqn{I}) of trait-varying slopes
+for \eqn{r^{(z)}} (Option C).}
 
-\item{x0}{numeric or \code{NULL}. Logistic midpoint. If \code{NULL}, set to
-\code{median(C_target, na.rm = TRUE)}.}
+\item{Gamma_is}{Optional matrix \eqn{S \times I} of site-varying slopes for \eqn{r^{(z)}}
+(Option D). If NULL, falls back to \code{theta_i} or \code{theta0} as available.}
 
-\item{prefer}{\code{"logis"}|\code{"rel"}|\code{"raw"}|\code{"scaled"}. Which fitness to return as \code{$lambda}
-(default \code{"logis"}).}
+\item{alpha_is}{Optional matrix \eqn{S \times I} of site-varying penalties for crowding
+(Option D). If NULL, falls back to broadcasting \code{alpha_i}.}
+
+\item{beta_signed_i}{Optional named numeric vector (length \eqn{I}) providing a signed
+\eqn{\beta} for Option E (facilitation allowed when \eqn{\beta<0}).}
+
+\item{calibrate_kappa}{Logical; if \code{TRUE}, compute \eqn{\kappa} from \strong{residents} so that
+the mean resident \eqn{\lambda} is ~0 on the same scale (see below).}
+
+\item{r_js_z, C_js_z, S_js_z}{Optional resident standardized matrices (site \eqn{\times} resident),
+required only when \code{calibrate_kappa = TRUE}.}
+
+\item{Q_res}{Optional data frame of resident trait-plane scores with columns \code{tr1}, \code{tr2}
+and rownames = resident IDs (only needed for \eqn{\kappa} if you want to
+derive resident analogs \eqn{\alpha_j}, \eqn{\beta_j} from trait slopes).}
+
+\item{a0, a1, a2, b0, b1, b2}{Optional numeric scalars: coefficients for
+resident analog slopes \eqn{\text{slope}_C = a_0 + a_1\,tr1 + a_2\,tr2}
+and \eqn{\text{slope}_S = b_0 + b_1\,tr1 + b_2\,tr2}. Used only when
+\code{calibrate_kappa=TRUE} and \code{Q_res} provided.}
+
+\item{site_df}{Optional site table with columns \code{site}, \code{x}, \code{y} used to enrich the
+tidy output when \code{return_long=TRUE}.}
+
+\item{return_long}{Logical; if \code{TRUE}, returns a tidy table with predictors and coefficients.}
+
+\item{label}{Optional character to tag the option in the tidy output; defaults to a
+descriptive name per option (e.g., \code{"Option A (γ=1)"}).}
 }
 \value{
-A list with components:
+A list with:
 \itemize{
-\item \code{C_raw} \code{[invader, site]}: total penalty summed over residents.
-\item \code{r_mat} \code{[invader, site]}: invader growth matrix.
-\item \code{lambda_raw}, \code{lambda_scaled}, \code{lambda_rel}, \code{lambda_logis}: fitness variants.
-\item \code{lambda}: the selected fitness (per \code{prefer}).
-\item \code{meta}: data about inputs, dimensions, and chosen options.
+\item \code{lambda_is} — matrix \eqn{S \times I} of invasion fitness,
+\item \code{GI} — the \eqn{\gamma} used (vector length \eqn{I} or matrix \eqn{S \times I}),
+\item \code{AI} — the \eqn{\alpha} used (vector length \eqn{I} or matrix \eqn{S \times I}),
+\item \code{BI} — the \eqn{\beta} used (vector length \eqn{I}),
+\item \code{kappa} — numeric calibration offset,
+\item \code{option} — option label,
+\item \code{lambda_long} — tidy tibble (if \code{return_long=TRUE}).
 }
 }
 \description{
-Aggregates the site- and species-specific impact tensor to quantify the \strong{total
-competitive penalty} experienced by each invader at each site, then computes
-several invasion-fitness formulations by subtracting competition penalties from
-predicted growth.
+\code{compute_invasion_fitness()} evaluates the invasion-fitness surface
+\eqn{\lambda_{is}} over sites (\eqn{s}) and invaders (\eqn{i}) using the
+three standardized predictors:
+\itemize{
+\item \strong{Abiotic suitability} \eqn{r^{(z)}_{is}} (alignment between invader traits and local environment),
+\item \strong{Niche crowding} \eqn{C^{(z)}_{is}} (overlap with resident trait space weighted by composition),
+\item \strong{Resident competition} \eqn{S^{(z)}_{is}} (site-only saturation).
+}
+
+It supports five published/useful variants:
+\strong{A}: \eqn{\gamma=1}, \strong{B}: global \eqn{\theta_0}, \strong{C}: trait-varying \eqn{\theta_i},
+\strong{D}: site-varying \eqn{\Gamma_{is}} and \eqn{\alpha_{is}}, \strong{E}: signed \eqn{S} effect.
+Optionally, it calibrates an offset \eqn{\kappa} so the \strong{mean resident} \eqn{\lambda}
+is approximately zero on the same scale (when resident standardized matrices are supplied).
 }
 \details{
-Let \eqn{I_{i j s}} be the per-pair impact at site \eqn{s} (e.g., from
-\code{assemble_matrices()}), with invader \eqn{i}, resident \eqn{j}. The total
-competition penalty at each invader-site is
-\deqn{C_{i s} = \sum_{j} I_{i j s}.}
-Given a matrix of invader growth predictions \eqn{r_{i s}}, we compute:
-\itemize{
-\item \strong{Raw:} \eqn{\lambda^{raw}_{i s} = r_{i s} - C_{i s}}.
-\item \strong{Scaled:} \eqn{\lambda^{scaled}_{i s} = r_{i s} - C_{i s}/J} \,(where \eqn{J} is the number of residents).
-\item \strong{Relative-abundance:} \eqn{\lambda^{rel}_{i s} = r_{i s} - (A N^{rel})_{i s}}, where
-\eqn{A = [a_{i j}]} and \eqn{N^{rel}_{j s} = N_{j s} / \sum_{j'} N_{j' s}}.
-\item \strong{Logistic-capped:} \eqn{\lambda^{logis}_{i s} = r_{i s} - \frac{1}{1 + \exp\{-k\, (C^{*}_{i s} - x_{0})\}}},
-with \eqn{C^{*}_{i s}} taken as either \eqn{C_{i s}} (raw) or \eqn{(A N^{rel})_{i s}} (relative),
-selected via \code{logistic_on = "raw"} or \code{"rel"}.
-}
+Compute invasion fitness (five options) with optional resident calibration
+
+\strong{Options}
+\emph{A}: \eqn{\lambda_{is} = 1\cdot r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+\emph{B}: \eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+\emph{C}: \eqn{\lambda_{is} = \theta_i r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+\emph{D}: \eqn{\lambda_{is} = \Gamma_{is} r^{(z)}_{is} - \alpha_{is} C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+\emph{E}: \eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} + \beta^{(\mathrm{signed})}_i S^{(z)}_{is} + \kappa}
+
+\strong{Resident calibration} (\eqn{\kappa}). When \code{calibrate_kappa=TRUE}, the function
+computes resident analog penalties \eqn{\alpha_j,\beta_j} from \code{Q_res} and slopes
+\verb{\{a0,a1,a2,b0,b1,b2\}}, builds resident matrices \code{AJ}, \code{BJ}, evaluates
+\eqn{\lambda^{(\mathrm{res})}_{js} = \theta_0 r^{(z)}_{js} - \alpha_j C^{(z)}_{js} - \beta_j S^{(z)}_{js}},
+then sets \eqn{\kappa = -\mathrm{mean}(\lambda^{(\mathrm{res})}_{js})} (na-rm),
+keeping residents and invaders on the same scale.
 }
 \examples{
-# --- Minimal, fully simulated example (base R only) ------------------------
-set.seed(123)
+# Minimal reproducible example (toy shapes only)
+S = 5; I = 3
+set.seed(1)
+r_is_z = matrix(rnorm(S*I),  S, I, dimnames=list(paste0("s",1:S), paste0("i",1:I)))
+C_is_z = matrix(rnorm(S*I),  S, I, dimnames=dimnames(r_is_z))
+S_is_z = matrix(rep(scale(rnorm(S)), each=I), S, I, dimnames=dimnames(r_is_z)) # site-only broadcast
+alpha_i = setNames(runif(ncol(r_is_z), 0.2, 1.0), colnames(r_is_z))
+beta_i  = setNames(runif(ncol(r_is_z), 0.1, 0.5), colnames(r_is_z))
 
-# IDs
-invaders <- paste0("sp", 1:3)   # 3 invaders
-residents <- paste0("r", 1:4)   # 4 residents
-sites    <- paste0("s", 1:5)    # 5 sites
+# Option A (γ=1, κ=0)
+outA = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+                                 option="A", alpha_i=alpha_i, beta_i=beta_i,
+                                 theta0=1, return_long=FALSE)
 
-# Competition coefficients a_ij (invader x resident), e.g. from a Gaussian of
-# synthetic distances. Values in (0,1].
-n_i <- length(invaders); n_j <- length(residents); n_s <- length(sites)
-d_ij  <- matrix(runif(n_i * n_j), nrow = n_i,
-                dimnames = list(invaders, residents))
-sigma <- 0.4
-a_ij  <- exp(-(d_ij^2) / (2 * sigma^2))
+# Option B (γ = θ0)
+outB = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+                                 option="B", alpha_i=alpha_i, beta_i=beta_i,
+                                 theta0=0.8, return_long=FALSE)
 
-# Resident abundances per site Nstar (resident x site), positive numbers
-Nstar <- matrix(rexp(n_j * n_s, rate = 1), nrow = n_j,
-                dimnames = list(residents, sites))
+# Option C (γ_i = θ_i) — use I = ncol(r_is_z) to avoid length/name mismatch
+I = ncol(r_is_z)
+theta_i = setNames(runif(I, 0.5, 1.2), colnames(r_is_z))
+outC = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+                                 option="C", alpha_i=alpha_i, beta_i=beta_i,
+                                 theta_i=theta_i, return_long=FALSE)
 
-# Build a simple impact tensor I_raw [invader, resident, site]:
-# I_ijs = a_ij * Nstar[j, s]
-I_raw <- array(NA_real_, dim = c(n_i, n_j, n_s),
-               dimnames = list(invaders, residents, sites))
-for (s in seq_along(sites)) {
-  I_raw[, , s] <- a_ij * rep(Nstar[, s], each = n_i)
-}
+# Option D (site-varying Γ_is and α_is)
+Gamma_is = matrix(rep(theta_i, each=nrow(r_is_z)), nrow=nrow(r_is_z), dimnames=dimnames(r_is_z))
+alpha_is = pmax(0, matrix(rep(alpha_i, each=nrow(r_is_z)), nrow=nrow(r_is_z),
+                           dimnames=dimnames(r_is_z)) + matrix(rnorm(prod(dim(r_is_z)), 0, 0.1),
+                                                               nrow=nrow(r_is_z)))
+outD = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+                                 option="D", alpha_is=alpha_is, beta_i=beta_i,
+                                 Gamma_is=Gamma_is, return_long=FALSE)
 
-# Predicted growth on the response scale r_mat [invader, site]
-r_mat <- matrix(rexp(n_i * n_s, rate = 1), nrow = n_i,
-                dimnames = list(invaders, sites))
-
-# Compute invasion fitness (logistic cap applied to relative pressure A \%*\% N_rel)
-fit <- compute_invasion_fitness(
-  I_raw       = I_raw,
-  r_mat       = r_mat,
-  a_ij        = a_ij,
-  Nstar       = Nstar,
-  logistic_on = "rel",
-  k           = 1,
-  x0          = NULL,
-  prefer      = "logis"
-)
-
-# Inspect the final fitness matrix [invader x site]
-dim(fit$lambda); range(fit$lambda, na.rm = TRUE)
-
-# Alternative variants:
-# fit_raw    <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "raw")
-# fit_scaled <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "scaled")
+# Option E (signed S effect)
+beta_signed_i = setNames(rnorm(ncol(r_is_z), 0, 0.3), colnames(r_is_z))
+outE = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+                                 option="E", alpha_i=alpha_i, beta_signed_i=beta_signed_i,
+                                 theta0=1, return_long=FALSE)
 
 }

@@ -10,3 +10,5 @@
 ^\.devcontainer$
 ^vignettes/\.cache$
 ^inst/extdata/.+\.zip$
+^.*\.Rproj$
+^\.Rproj\.user$

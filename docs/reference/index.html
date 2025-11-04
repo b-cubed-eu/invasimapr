@@ -50,6 +50,65 @@
 
 
     </div><div class="section level2">
+      <h2 id="wrapper-functions">Wrapper Functions<a class="anchor" aria-label="anchor" href="#wrapper-functions"></a></h2>
+
+
+
+
+    </div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="invasimap.html">invasimap()</a></code>
+
+        </dt>
+        <dd>Run the full invasimapr pipeline</dd>
+      </dl><dl><dt>
+
+          <code><a href="prepare_inputs.html">prepare_inputs()</a></code>
+
+        </dt>
+        <dd>Prepare inputs (assemble &amp; align core tables)</dd>
+      </dl><dl><dt>
+
+          <code><a href="prepare_trait_space.html">prepare_trait_space()</a></code>
+
+        </dt>
+        <dd>Prepare trait space and resident crowding (no site-z)</dd>
+      </dl><dl><dt>
+
+          <code><a href="model_residents.html">model_residents()</a></code>
+
+        </dt>
+        <dd>Model residents and build standardized predictors (r_js_z, C_js_z, S_js_z)</dd>
+      </dl><dl><dt>
+
+          <code><a href="learn_sensitivities.html">learn_sensitivities()</a></code>
+
+        </dt>
+        <dd>Learn sensitivities (αᵢ, βᵢ, θᵢ/γᵢ) and optional site-varying αᵢₛ, Γᵢₛ</dd>
+      </dl><dl><dt>
+
+          <code><a href="predict_invaders.html">predict_invaders()</a></code>
+
+        </dt>
+        <dd>Build standardized invader predictors</dd>
+      </dl><dl><dt>
+
+          <code><a href="predict_establishment.html">predict_establishment()</a></code>
+
+        </dt>
+        <dd>Compute invasion fitness (λ) and optional establishment probability (P)</dd>
+      </dl><dl><dt>
+
+          <code><a href="summarise_results.html">summarise_results()</a></code>
+
+        </dt>
+        <dd>Summarise invasiveness/invasibility</dd>
+      </dl></div><div class="section level2">
       <h2 id="core-functions">Core Functions<a class="anchor" aria-label="anchor" href="#core-functions"></a></h2>
 
 
@@ -68,28 +127,10 @@
         <dd>Scrape and Analyze Wikipedia &amp; Trait Data for a Species</dd>
       </dl><dl><dt>
 
-          <code><a href="compute_trait_similarity.html">compute_trait_similarity()</a></code>
+          <code><a href="assemble_matrices.html">assemble_matrices()</a></code>
 
         </dt>
-        <dd>Compute Trait Similarity for Numeric and Categorical Variables</dd>
-      </dl><dl><dt>
-
-          <code><a href="compute_trait_dispersion.html">compute_trait_dispersion()</a></code>
-
-        </dt>
-        <dd>Trait Dispersion Pipeline: Gower -&gt; clustering -&gt; PCoA -&gt; density -&gt; metrics</dd>
-      </dl><dl><dt>
-
-          <code><a href="compute_trait_space.html">compute_trait_space()</a></code>
-
-        </dt>
-        <dd>Compute Trait Space: per-trait similarity + community dispersion</dd>
-      </dl><dl><dt>
-
-          <code><a href="build_glmm_formula.html">build_glmm_formula()</a></code>
-
-        </dt>
-        <dd>Build a trait-environment GLMM formula safely and flexibly</dd>
+        <dd>Assemble community matrices for invasion-fitness workflows</dd>
       </dl><dl><dt>
 
           <code><a href="simulate_invaders.html">simulate_invaders()</a></code>
@@ -98,40 +139,94 @@
         <dd>Simulate hypothetical invader trait profiles from a resident trait pool</dd>
       </dl><dl><dt>
 
-          <code><a href="predict_invader_response.html">predict_invader_response()</a></code>
+          <code><a href="standardise_model_inputs.html">standardise_model_inputs()</a></code>
 
         </dt>
-        <dd>Predict site-level responses for residents and simulated invaders</dd>
+        <dd>Standardise model inputs (no leakage) for residents and invaders</dd>
       </dl><dl><dt>
 
-          <code><a href="compute_interaction_strength.html">compute_interaction_strength()</a></code>
+          <code><a href="compute_trait_space.html">compute_trait_space()</a></code>
 
         </dt>
-        <dd>Compute trait-based interaction strengths and resident abundance matrix</dd>
+        <dd>Shared trait-space construction (Gower + PCoA), resident hull, centroid, and density plot</dd>
       </dl><dl><dt>
 
-          <code><a href="compute_competition_kernel.html">compute_competition_kernel()</a></code>
+          <code><a href="compute_centrality_hull.html">compute_centrality_hull()</a></code>
 
         </dt>
-        <dd>Compute trait-based competition coefficients from a distance matrix</dd>
+        <dd>Compute trait-space centrality (robust Mahalanobis) and hull status, with visuals</dd>
       </dl><dl><dt>
 
-          <code><a href="compute_environment_kernel.html">compute_environment_kernel()</a></code>
+          <code><a href="compute_resident_crowding.html">compute_resident_crowding()</a></code>
 
         </dt>
-        <dd>Environmental optima and site-species environmental distance (with optional kernel)</dd>
+        <dd>Resident crowding C_js via Hellinger composition and Gower–Gaussian trait kernel</dd>
       </dl><dl><dt>
 
-          <code><a href="assemble_matrices.html">assemble_matrices()</a></code>
+          <code><a href="build_model_formula.html">build_model_formula()</a></code>
 
         </dt>
-        <dd>Assemble site- and species-specific competition/impact matrices</dd>
+        <dd>Flexible formula constructor for residents-only trait–environment models</dd>
+      </dl><dl><dt>
+
+          <code><a href="prep_resident_glmm.html">prep_resident_glmm()</a></code>
+
+        </dt>
+        <dd>Build residents-by-sites long table and fit the residents-only GLMM</dd>
+      </dl><dl><dt>
+
+          <code><a href="standardise_by_site.html">standardise_by_site()</a></code>
+
+        </dt>
+        <dd>Standardize a site-by-species matrix by site (row-wise z) with optional robust SD</dd>
+      </dl><dl><dt>
+
+          <code><a href="compute_site_saturation.html">compute_site_saturation()</a></code>
+
+        </dt>
+        <dd>Compute site-only saturation S_s and global z-score S_s_z</dd>
+      </dl><dl><dt>
+
+          <code><a href="fit_auxiliary_residents_glmm.html">fit_auxiliary_residents_glmm()</a></code>
+
+        </dt>
+        <dd>Auxiliary GLMM for trait-varying (and optionally site-varying) slopes</dd>
+      </dl><dl><dt>
+
+          <code><a href="derive_sensitivities.html">derive_sensitivities()</a></code>
+
+        </dt>
+        <dd>Derive trait-varying sensitivities (alpha_i, beta_i) and abiotic slope (theta, gamma_i)</dd>
+      </dl><dl><dt>
+
+          <code><a href="site_varying_alpha_beta_gamma.html">site_varying_alpha_beta_gamma()</a></code>
+
+        </dt>
+        <dd>Site-varying α_is and Γ_is, plus β_i (and signed variants)</dd>
+      </dl><dl><dt>
+
+          <code><a href="build_invader_predictors.html">build_invader_predictors()</a></code>
+
+        </dt>
+        <dd>Build standardized invader predictors r_is_z, C_is_z, S_is_z (expects env/traits frames already projected to model columns)</dd>
       </dl><dl><dt>
 
           <code><a href="compute_invasion_fitness.html">compute_invasion_fitness()</a></code>
 
         </dt>
-        <dd>Compute invasion fitness from competition/impact tensors and growth predictions</dd>
+        <dd>Compute invasion fitness \(\lambda_{is}\) for multiple model options</dd>
+      </dl><dl><dt>
+
+          <code><a href="compute_establishment_probability.html">compute_establishment_probability()</a></code>
+
+        </dt>
+        <dd>Probabilistic establishment from invasion fitness</dd>
+      </dl><dl><dt>
+
+          <code><a href="summarise_invasiveness_invasibility.html">summarise_invasiveness_invasibility()</a></code>
+
+        </dt>
+        <dd>Summaries of invasion fitness: species invasiveness, trait effects, and site invasibility</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

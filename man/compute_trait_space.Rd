@@ -2,88 +2,120 @@
 % Please edit documentation in R/compute_trait_space.R
 \name{compute_trait_space}
 \alias{compute_trait_space}
-\title{Compute Trait Space: per-trait similarity + community dispersion}
+\title{Shared trait-space construction (Gower + PCoA), resident hull, centroid, and density plot}
 \usage{
 compute_trait_space(
-  trait_df,
-  species_col = 1,
-  do_similarity = TRUE,
-  similarity_cols = NULL,
-  do_dispersion = TRUE,
-  k = 4,
-  pcoa_dims = 2,
-  abundance = NULL,
+  traits_res,
+  traits_inv,
+  k = 2,
   kde_n = 100,
-  viridis_option = "D",
-  show_density_plot = TRUE,
-  show_plots = FALSE,
-  seed = NULL
+  pad_prop = 0.1,
+  main_title = "Trait space density with convex hull and centroid",
+  legend_line =
+    "Hull = realised niche region; white square = centroid; black dots = residents; red dots = invaders",
+  cex_main = 1,
+  cex_sub = 0.72,
+  cex_lab = 0.85,
+  cex_axis = 0.75,
+  highlight_level = 0.5,
+  do_plot = TRUE,
+  do_dend = FALSE
 )
 }
 \arguments{
-\item{trait_df}{data.frame. One row per species (or unit); mixed types allowed.}
+\item{traits_res}{A data.frame of resident species (rows) by traits (columns).
+Mixed types are supported (numeric, integer, factor, ordered) via Gower distance.
+Row names are used as resident IDs; if absent, sequential IDs are created.}
 
-\item{species_col}{integer or character (default = 1).
-Column indicating the species ID; excluded from distances.}
+\item{traits_inv}{A data.frame of invader species (rows) by traits (columns).
+Must share the same trait columns (names and types) as \code{traits_res}.
+Row names are used as invader IDs; if absent, sequential IDs are created.
+If you have no invaders, pass a 0-row data.frame with matching columns.}
 
-\item{do_similarity}{logical (default = TRUE). If TRUE, compute per-trait similarity.}
+\item{k}{Integer embedding dimension for PCoA; default 2.}
 
-\item{similarity_cols}{NULL, character, or integer. Which columns to use for similarity;
-default = all columns except \code{species_col}.}
+\item{kde_n}{Integer grid size for 2D kernel density estimation (per axis). Default \code{100}.}
 
-\item{do_dispersion}{logical (default = TRUE). If TRUE, run the dispersion pipeline.}
+\item{pad_prop}{Numeric padding proportion added to the plotting range on each axis. Default \code{0.10} (10\%).}
 
-\item{k}{integer (default = 4). Number of clusters for dendrogram.}
+\item{main_title}{Character main title for the contour plot.}
 
-\item{pcoa_dims}{integer (default = 2). Number of PCoA axes retained (>= 2).}
+\item{legend_line}{Character subtitle used as an inline legend in the title area.}
 
-\item{abundance}{numeric vector or NULL. Optional species weights; normalized internally.}
+\item{cex_main, cex_sub, cex_lab, cex_axis}{Numeric text scaling for main title, subtitle,
+axis labels, and axis tick labels, respectively. Defaults \verb{1, 0.72, 0.85, 0.75}.}
 
-\item{kde_n}{integer (default = 100). KDE grid resolution for density.}
+\item{highlight_level}{Numeric in (0,1]; draws a bold contour at this proportion
+of the maximum density (e.g., \code{0.5}=50\% of max). Set \code{NA} to skip.}
 
-\item{viridis_option}{character (default = "D"). Palette for \code{viridisLite::viridis()}.}
+\item{do_plot}{Logical; if \code{TRUE} renders the \code{filled.contour} figure. Default \code{TRUE}.}
 
-\item{show_density_plot}{logical (default = TRUE). Also emit a base \code{filled.contour}.}
-
-\item{show_plots}{logical (default = FALSE). If TRUE, prints a patchwork of ggplots.}
-
-\item{seed}{integer or NULL. Optional RNG seed.}
+\item{do_dend}{Logical; if \code{TRUE}, computes \code{hclust} on Gower and attempts to produce a
+dendrogram plot with \code{factoextra::fviz_dend} when available. Default \code{FALSE}.}
 }
 \value{
-A list with (present elements depend on flags):
+A list with:
 \itemize{
-\item \code{similarity}: data.frame with columns \code{Trait}, \code{Similarity} (0-100).
-\item \code{dispersion}: list containing
-\code{distance_matrix}, \code{hc}, \code{pcoa}, \code{scores}, \code{centroid},
-\code{metrics_df}, and \code{plots} (ggplots: \code{$dend}, \code{$density_gg},
-\code{$centrality_hist}, \code{$metrics_bar}).
+\item \code{gower}  — Gower distance matrix (all species).
+\item \code{scores} — Data frame of 2D PCoA scores (\code{Q_all}) with columns \code{tr1,tr2}.
+\item \code{Q_res}, \code{Q_inv} — Subsets of \code{scores} for residents and invaders.
+\item \code{hull_res} — Data frame (tr1,tr2) of the resident convex hull ring (closed), or \code{NULL} if < 3 residents.
+\item \code{centroid} — Numeric vector of the overall (res+inv) centroid \code{c(tr1, tr2)}.
+\item \code{density} — List \code{list(x, y, z)} from \code{MASS::kde2d}.
+\item \code{colors}  — Named vector with color per species ID (residents black, invaders red).
+\item \code{hc}      — \code{hclust} object (if \code{do_dend=TRUE}), else \code{NULL}.
+\item \code{dend_plot} — A ggplot object from \code{factoextra::fviz_dend} when available, else \code{NULL}.
+\item \code{xlim}, \code{ylim} — Numeric length-2 ranges used for plotting with padding.
 }
 }
 \description{
-A unified workflow that (1) computes within-trait similarity (numeric + categorical)
-and (2) computes community-level dispersion in trait space
-(Gower -> clustering -> PCoA -> density -> metrics).
+Builds a unified trait space for resident and invader species by:
+(1) computing a Gower distance on the stacked trait table,
+(2) projecting to 2D via classical MDS/PCoA (\code{stats::cmdscale}),
+(3) deriving the resident convex hull (realised niche region),
+(4) estimating a kernel density over the 2D space, and
+(5) optionally rendering a base R \code{filled.contour} map that overlays
+the hull, all points (residents black, invaders red), and the cloud centroid (white square with black outline).
+Optionally it also computes a functional dendrogram (\code{hclust}) and a
+pretty dendrogram plot (\code{factoextra::fviz_dend}) when available.
+}
+\details{
+Compute and plot shared trait space for residents and invaders
+
+This function assumes that the trait columns in \code{traits_inv} are compatible with those in
+\code{traits_res}. Gower distance (\code{cluster::daisy}) supports mixed data types and handles
+factors/ordered factors appropriately. The PCoA (\code{cmdscale}) is computed on the Gower distances
+and the first two axes are returned by default for visualisation. The resident convex hull is
+computed on the resident scores only and is drawn as the "realised niche region".
 }
 \examples{
-# Simulate a small mixed-type table
-set.seed(123)
-n <- 20
-trait_df <- data.frame(
-  species = paste0("sp_", seq_len(n)),
-  height = rnorm(n),
-  mass = runif(n, -1, 1),
-  rank = factor(sample(1:3, n, TRUE), ordered = TRUE),
-  bin = factor(sample(c(0, 1), n, TRUE)),
-  cat = factor(sample(LETTERS[1:4], n, TRUE)),
-  check.names = FALSE
+\dontrun{
+# Minimal reproducible example with numeric traits
+set.seed(1)
+traits_res = data.frame(
+  trait_1 = rnorm(20),
+  trait_2 = rnorm(20, 2),
+  row.names = paste0("sp", 1:20)
 )
-abundance <- rexp(n)
+traits_inv = data.frame(
+  trait_1 = rnorm(5, 0.5),
+  trait_2 = rnorm(5, 2.5),
+  row.names = paste0("inv", 1:5)
+)
 
-out <- compute_trait_space(trait_df,
-  species_col = "species", abundance = abundance,
-  k = 3, pcoa_dims = 2, show_density_plot = FALSE
+out = compute_trait_space(
+  traits_res = traits_res,
+  traits_inv = traits_inv,
+  do_plot    = TRUE,
+  do_dend    = TRUE,
+  main_title = "Trait space density with hull and centroid",
+  legend_line = "Hull = realised niche region; white square = centroid; black = residents; red = invaders"
 )
-out$similarity
-out$dispersion$metrics_df
+
+# Access returned objects
+head(out$scores)
+out$centroid
+if (!is.null(out$dend_plot)) print(out$dend_plot)
+}
 
 }

@@ -15,7 +15,7 @@ BugReports: https://github.com/b-cubed-eu/invasimapr/issues
 Encoding: UTF-8
 LazyData: false
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.5)
 Imports:
     stats,
     graphics,
@@ -35,7 +35,8 @@ Imports:
     glmmTMB,
     lme4,
     mgcv,
-    rlang
+    rlang,
+    data.table (>= 1.15.0)
 Suggests:
     sf,
     terra,

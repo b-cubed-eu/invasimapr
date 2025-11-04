@@ -1,225 +1,297 @@
-#' Compute invasion fitness from competition/impact tensors and growth predictions
+#' Compute invasion fitness (five options) with optional resident calibration
+#'
+#' @title Compute invasion fitness \eqn{\lambda_{is}} for multiple model options
 #'
 #' @description
-#' Aggregates the site- and species-specific impact tensor to quantify the **total
-#' competitive penalty** experienced by each invader at each site, then computes
-#' several invasion-fitness formulations by subtracting competition penalties from
-#' predicted growth.
+#' `compute_invasion_fitness()` evaluates the invasion-fitness surface
+#' \eqn{\lambda_{is}} over sites (\eqn{s}) and invaders (\eqn{i}) using the
+#' three standardized predictors:
+#' * **Abiotic suitability** \eqn{r^{(z)}_{is}} (alignment between invader traits and local environment),
+#' * **Niche crowding** \eqn{C^{(z)}_{is}} (overlap with resident trait space weighted by composition),
+#' * **Resident competition** \eqn{S^{(z)}_{is}} (site-only saturation).
+#'
+#' It supports five published/useful variants:
+#' **A**: \eqn{\gamma=1}, **B**: global \eqn{\theta_0}, **C**: trait-varying \eqn{\theta_i},
+#' **D**: site-varying \eqn{\Gamma_{is}} and \eqn{\alpha_{is}}, **E**: signed \eqn{S} effect.
+#' Optionally, it calibrates an offset \eqn{\kappa} so the **mean resident** \eqn{\lambda}
+#' is approximately zero on the same scale (when resident standardized matrices are supplied).
+#'
+#' @param r_is_z Matrix \eqn{S \times I} of standardized abiotic suitability for invaders.
+#'               Row names are site IDs; column names are invader IDs.
+#' @param C_is_z Matrix \eqn{S \times I} of standardized niche crowding for invaders.
+#' @param S_is_z Matrix \eqn{S \times I} of standardized site saturation for invaders
+#'               (site-only; same value down each site row).
+#' @param option Character, one of `c("A","B","C","D","E")`. See Details.
+#' @param alpha_i Optional named numeric vector (length \eqn{I}) of invader crowding
+#'                sensitivities \eqn{\alpha_i}. Required for A–C and E; ignored if `alpha_is` is provided in D.
+#' @param beta_i  Optional named numeric vector (length \eqn{I}) of saturation sensitivities
+#'                \eqn{\beta_i}. Used in A–D. For E, use `beta_signed_i` for a signed effect.
+#' @param theta0  Numeric scalar global slope for \eqn{r^{(z)}} (Option B; default `1`).
+#' @param theta_i Optional named numeric vector (length \eqn{I}) of trait-varying slopes
+#'                for \eqn{r^{(z)}} (Option C).
+#' @param Gamma_is Optional matrix \eqn{S \times I} of site-varying slopes for \eqn{r^{(z)}}
+#'                 (Option D). If NULL, falls back to `theta_i` or `theta0` as available.
+#' @param alpha_is Optional matrix \eqn{S \times I} of site-varying penalties for crowding
+#'                 (Option D). If NULL, falls back to broadcasting `alpha_i`.
+#' @param beta_signed_i Optional named numeric vector (length \eqn{I}) providing a signed
+#'                 \eqn{\beta} for Option E (facilitation allowed when \eqn{\beta<0}).
+#' @param calibrate_kappa Logical; if `TRUE`, compute \eqn{\kappa} from **residents** so that
+#'                        the mean resident \eqn{\lambda} is ~0 on the same scale (see below).
+#' @param r_js_z,C_js_z,S_js_z Optional resident standardized matrices (site \eqn{\times} resident),
+#'                        required only when `calibrate_kappa = TRUE`.
+#' @param Q_res Optional data frame of resident trait-plane scores with columns `tr1`, `tr2`
+#'              and rownames = resident IDs (only needed for \eqn{\kappa} if you want to
+#'              derive resident analogs \eqn{\alpha_j}, \eqn{\beta_j} from trait slopes).
+#' @param a0,a1,a2,b0,b1,b2 Optional numeric scalars: coefficients for
+#'              resident analog slopes \eqn{\text{slope}_C = a_0 + a_1\,tr1 + a_2\,tr2}
+#'              and \eqn{\text{slope}_S = b_0 + b_1\,tr1 + b_2\,tr2}. Used only when
+#'              `calibrate_kappa=TRUE` and `Q_res` provided.
+#' @param site_df Optional site table with columns `site`, `x`, `y` used to enrich the
+#'                tidy output when `return_long=TRUE`.
+#' @param return_long Logical; if `TRUE`, returns a tidy table with predictors and coefficients.
+#' @param label Optional character to tag the option in the tidy output; defaults to a
+#'              descriptive name per option (e.g., `"Option A (γ=1)"`).
 #'
 #' @details
-#' Let \eqn{I_{i j s}} be the per-pair impact at site \eqn{s} (e.g., from
-#' \code{assemble_matrices()}), with invader \eqn{i}, resident \eqn{j}. The total
-#' competition penalty at each invader-site is
-#' \deqn{C_{i s} = \sum_{j} I_{i j s}.}
-#' Given a matrix of invader growth predictions \eqn{r_{i s}}, we compute:
-#' \itemize{
-#'   \item \strong{Raw:} \eqn{\lambda^{raw}_{i s} = r_{i s} - C_{i s}}.
-#'   \item \strong{Scaled:} \eqn{\lambda^{scaled}_{i s} = r_{i s} - C_{i s}/J} \,(where \eqn{J} is the number of residents).
-#'   \item \strong{Relative-abundance:} \eqn{\lambda^{rel}_{i s} = r_{i s} - (A N^{rel})_{i s}}, where
-#'         \eqn{A = [a_{i j}]} and \eqn{N^{rel}_{j s} = N_{j s} / \sum_{j'} N_{j' s}}.
-#'   \item \strong{Logistic-capped:} \eqn{\lambda^{logis}_{i s} = r_{i s} - \frac{1}{1 + \exp\{-k\, (C^{*}_{i s} - x_{0})\}}},
-#'         with \eqn{C^{*}_{i s}} taken as either \eqn{C_{i s}} (raw) or \eqn{(A N^{rel})_{i s}} (relative),
-#'         selected via \code{logistic_on = "raw"} or \code{"rel"}.
-#' }
+#' **Options**
+#' *A*: \eqn{\lambda_{is} = 1\cdot r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+#' *B*: \eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+#' *C*: \eqn{\lambda_{is} = \theta_i r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+#' *D*: \eqn{\lambda_{is} = \Gamma_{is} r^{(z)}_{is} - \alpha_{is} C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
+#' *E*: \eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} + \beta^{(\mathrm{signed})}_i S^{(z)}_{is} + \kappa}
 #'
-#' @param I_raw 3D numeric array \code{[invader, resident, site]} from \code{assemble_matrices()},
-#'   or \code{NULL} if you pass \code{pressure_inv_site} instead.
-#' @param pressure_inv_site numeric matrix \code{[invader, site]} (sum over residents),
-#'   optional alternative to \code{I_raw}.
-#' @param r_mat numeric matrix \code{[invader, site]} of invader growth on the response scale,
-#'   or \code{NULL} if you pass \code{predictions}.
-#' @param predictions data.frame or \code{NULL}. Long table with columns
-#'   \code{species}, \code{site_id}, \code{pred}. Used to build \code{r_mat} if \code{r_mat} is \code{NULL}.
-#' @param a_ij numeric matrix \code{[invader, resident]} of competition coefficients; required
-#'   only for \code{lambda_rel} or for \code{lambda_logis} when \code{logistic_on = "rel"}.
-#' @param Nstar numeric matrix \code{[resident, site]} of resident abundances; required for \code{lambda_rel}
-#'   and for \code{lambda_logis} when \code{logistic_on = "rel"}.
-#' @param logistic_on character. Use \code{"raw"} (default) to apply the logistic cap to \code{C_raw};
-#'   use \code{"rel"} to apply it to \code{A \%*\% N_rel}.
-#' @param k numeric. Logistic steepness parameter (default \code{1}).
-#' @param x0 numeric or \code{NULL}. Logistic midpoint. If \code{NULL}, set to
-#'   \code{median(C_target, na.rm = TRUE)}.
-#' @param prefer \code{"logis"}|\code{"rel"}|\code{"raw"}|\code{"scaled"}. Which fitness to return as \code{$lambda}
-#'   (default \code{"logis"}).
+#' **Resident calibration** (\eqn{\kappa}). When `calibrate_kappa=TRUE`, the function
+#' computes resident analog penalties \eqn{\alpha_j,\beta_j} from `Q_res` and slopes
+#' `{a0,a1,a2,b0,b1,b2}`, builds resident matrices `AJ`, `BJ`, evaluates
+#' \eqn{\lambda^{(\mathrm{res})}_{js} = \theta_0 r^{(z)}_{js} - \alpha_j C^{(z)}_{js} - \beta_j S^{(z)}_{js}},
+#' then sets \eqn{\kappa = -\mathrm{mean}(\lambda^{(\mathrm{res})}_{js})} (na-rm),
+#' keeping residents and invaders on the same scale.
 #'
-#' @return A list with components:
-#' \itemize{
-#'   \item \code{C_raw} \code{[invader, site]}: total penalty summed over residents.
-#'   \item \code{r_mat} \code{[invader, site]}: invader growth matrix.
-#'   \item \code{lambda_raw}, \code{lambda_scaled}, \code{lambda_rel}, \code{lambda_logis}: fitness variants.
-#'   \item \code{lambda}: the selected fitness (per \code{prefer}).
-#'   \item \code{meta}: data about inputs, dimensions, and chosen options.
-#' }
+#' @return A list with:
+#' * `lambda_is` — matrix \eqn{S \times I} of invasion fitness,
+#' * `GI` — the \eqn{\gamma} used (vector length \eqn{I} or matrix \eqn{S \times I}),
+#' * `AI` — the \eqn{\alpha} used (vector length \eqn{I} or matrix \eqn{S \times I}),
+#' * `BI` — the \eqn{\beta} used (vector length \eqn{I}),
+#' * `kappa` — numeric calibration offset,
+#' * `option` — option label,
+#' * `lambda_long` — tidy tibble (if `return_long=TRUE`).
 #'
 #' @examples
-#' # --- Minimal, fully simulated example (base R only) ------------------------
-#' set.seed(123)
+#' # Minimal reproducible example (toy shapes only)
+#' S = 5; I = 3
+#' set.seed(1)
+#' r_is_z = matrix(rnorm(S*I),  S, I, dimnames=list(paste0("s",1:S), paste0("i",1:I)))
+#' C_is_z = matrix(rnorm(S*I),  S, I, dimnames=dimnames(r_is_z))
+#' S_is_z = matrix(rep(scale(rnorm(S)), each=I), S, I, dimnames=dimnames(r_is_z)) # site-only broadcast
+#' alpha_i = setNames(runif(ncol(r_is_z), 0.2, 1.0), colnames(r_is_z))
+#' beta_i  = setNames(runif(ncol(r_is_z), 0.1, 0.5), colnames(r_is_z))
 #'
-#' # IDs
-#' invaders <- paste0("sp", 1:3)   # 3 invaders
-#' residents <- paste0("r", 1:4)   # 4 residents
-#' sites    <- paste0("s", 1:5)    # 5 sites
+#' # Option A (γ=1, κ=0)
+#' outA = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+#'                                  option="A", alpha_i=alpha_i, beta_i=beta_i,
+#'                                  theta0=1, return_long=FALSE)
 #'
-#' # Competition coefficients a_ij (invader x resident), e.g. from a Gaussian of
-#' # synthetic distances. Values in (0,1].
-#' n_i <- length(invaders); n_j <- length(residents); n_s <- length(sites)
-#' d_ij  <- matrix(runif(n_i * n_j), nrow = n_i,
-#'                 dimnames = list(invaders, residents))
-#' sigma <- 0.4
-#' a_ij  <- exp(-(d_ij^2) / (2 * sigma^2))
+#' # Option B (γ = θ0)
+#' outB = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+#'                                  option="B", alpha_i=alpha_i, beta_i=beta_i,
+#'                                  theta0=0.8, return_long=FALSE)
 #'
-#' # Resident abundances per site Nstar (resident x site), positive numbers
-#' Nstar <- matrix(rexp(n_j * n_s, rate = 1), nrow = n_j,
-#'                 dimnames = list(residents, sites))
+#' # Option C (γ_i = θ_i) — use I = ncol(r_is_z) to avoid length/name mismatch
+#' I = ncol(r_is_z)
+#' theta_i = setNames(runif(I, 0.5, 1.2), colnames(r_is_z))
+#' outC = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+#'                                  option="C", alpha_i=alpha_i, beta_i=beta_i,
+#'                                  theta_i=theta_i, return_long=FALSE)
 #'
-#' # Build a simple impact tensor I_raw [invader, resident, site]:
-#' # I_ijs = a_ij * Nstar[j, s]
-#' I_raw <- array(NA_real_, dim = c(n_i, n_j, n_s),
-#'                dimnames = list(invaders, residents, sites))
-#' for (s in seq_along(sites)) {
-#'   I_raw[, , s] <- a_ij * rep(Nstar[, s], each = n_i)
-#' }
+#' # Option D (site-varying Γ_is and α_is)
+#' Gamma_is = matrix(rep(theta_i, each=nrow(r_is_z)), nrow=nrow(r_is_z), dimnames=dimnames(r_is_z))
+#' alpha_is = pmax(0, matrix(rep(alpha_i, each=nrow(r_is_z)), nrow=nrow(r_is_z),
+#'                            dimnames=dimnames(r_is_z)) + matrix(rnorm(prod(dim(r_is_z)), 0, 0.1),
+#'                                                                nrow=nrow(r_is_z)))
+#' outD = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+#'                                  option="D", alpha_is=alpha_is, beta_i=beta_i,
+#'                                  Gamma_is=Gamma_is, return_long=FALSE)
 #'
-#' # Predicted growth on the response scale r_mat [invader, site]
-#' r_mat <- matrix(rexp(n_i * n_s, rate = 1), nrow = n_i,
-#'                 dimnames = list(invaders, sites))
-#'
-#' # Compute invasion fitness (logistic cap applied to relative pressure A %*% N_rel)
-#' fit <- compute_invasion_fitness(
-#'   I_raw       = I_raw,
-#'   r_mat       = r_mat,
-#'   a_ij        = a_ij,
-#'   Nstar       = Nstar,
-#'   logistic_on = "rel",
-#'   k           = 1,
-#'   x0          = NULL,
-#'   prefer      = "logis"
-#' )
-#'
-#' # Inspect the final fitness matrix [invader x site]
-#' dim(fit$lambda); range(fit$lambda, na.rm = TRUE)
-#'
-#' # Alternative variants:
-#' # fit_raw    <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "raw")
-#' # fit_scaled <- compute_invasion_fitness(I_raw = I_raw, r_mat = r_mat, prefer = "scaled")
+#' # Option E (signed S effect)
+#' beta_signed_i = setNames(rnorm(ncol(r_is_z), 0, 0.3), colnames(r_is_z))
+#' outE = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
+#'                                  option="E", alpha_i=alpha_i, beta_signed_i=beta_signed_i,
+#'                                  theta0=1, return_long=FALSE)
 #'
 #' @export
-compute_invasion_fitness <- function(
-    I_raw = NULL,
-    pressure_inv_site = NULL,
-    r_mat = NULL,
-    predictions = NULL,
-    a_ij = NULL,
-    Nstar = NULL,
-    logistic_on = c("raw", "rel"),
-    k = 1,
-    x0 = NULL,
-    prefer = c("logis", "rel", "raw", "scaled")) {
-  logistic_on <- match.arg(logistic_on)
-  prefer <- match.arg(prefer)
+compute_invasion_fitness = function(
+    r_is_z, C_is_z, S_is_z,
+    option = c("A","B","C","D","E"),
+    alpha_i = NULL, beta_i = NULL,
+    theta0 = 1, theta_i = NULL,
+    Gamma_is = NULL, alpha_is = NULL,
+    beta_signed_i = NULL,
+    calibrate_kappa = FALSE,
+    r_js_z = NULL, C_js_z = NULL, S_js_z = NULL,
+    Q_res = NULL, a0 = NULL, a1 = NULL, a2 = NULL, b0 = NULL, b1 = NULL, b2 = NULL,
+    site_df = NULL, return_long = TRUE, label = NULL
+){
+  option = match.arg(option)
 
-  # --- 1) Build C_raw (invader x site): sum over residents -------------------
-  if (!is.null(I_raw)) {
-    if (length(dim(I_raw)) != 3) stop("I_raw must be a 3D array [invader, resident, site].")
-    # sum over residents (dim 2)
-    C_raw <- apply(I_raw, c(1, 3), sum, na.rm = TRUE)
-    inv_ids <- dimnames(I_raw)[[1]]
-    site_ids <- dimnames(I_raw)[[3]]
-  } else {
-    if (is.null(pressure_inv_site)) stop("Provide I_raw or pressure_inv_site.")
-    C_raw <- as.matrix(pressure_inv_site)
-    inv_ids <- rownames(C_raw)
-    site_ids <- colnames(C_raw)
-  }
-  if (is.null(inv_ids) || is.null(site_ids)) stop("C_raw needs row/colnames (invaders/sites).")
+  # --- Coerce to matrix (robust to data.frame inputs) --------------------------
+  r_is_z = if (is.matrix(r_is_z)) r_is_z else as.matrix(r_is_z)
+  C_is_z = if (is.matrix(C_is_z)) C_is_z else as.matrix(C_is_z)
+  S_is_z = if (is.matrix(S_is_z)) S_is_z else as.matrix(S_is_z)
 
-  # --- 2) Build r_mat (invader x site) ---------------------------------------
-  if (is.null(r_mat)) {
-    if (is.null(predictions)) stop("Provide r_mat or predictions to construct r_mat.")
-    need <- c("species", "site_id", "pred")
-    if (!all(need %in% names(predictions))) stop("predictions must contain: species, site_id, pred.")
-    # build site x invader, then transpose to invader x site ordered by C_raw
-    inv_set <- unique(inv_ids)
-    site_set <- unique(site_ids)
-    r_wide <- matrix(NA_real_,
-      nrow = length(site_set), ncol = length(inv_set),
-      dimnames = list(site_set, inv_set)
-    )
-    split_by_site <- split(predictions, predictions$site_id)
-    for (s in names(split_by_site)) {
-      if (!s %in% site_set) next
-      sub <- split_by_site[[s]]
-      col_idx <- match(sub$species, inv_set, nomatch = 0L)
-      ok <- col_idx > 0L
-      r_wide[s, col_idx[ok]] <- as.numeric(sub$pred[ok])
+  stopifnot(identical(dim(r_is_z), dim(C_is_z)), identical(dim(r_is_z), dim(S_is_z)))
+  stopifnot(!is.null(rownames(r_is_z)), !is.null(colnames(r_is_z)))
+  sites   = rownames(r_is_z)
+  inv_ids = colnames(r_is_z)
+  S = length(sites); I = length(inv_ids)
+
+  # Flexible aligner for invader-vectors (γ_i, α_i, β_i, etc.)
+  .align_inv_vec = function(x, nm_expected, allow_scalar = TRUE, arg = deparse(substitute(x))) {
+    if (is.null(x)) return(NULL)
+    if (!is.null(names(x))) {
+      out = x[nm_expected]
+      if (any(is.na(out))) {
+        miss = nm_expected[is.na(out)]
+        stop(sprintf("%s is missing names for: %s", arg, paste(miss, collapse=", ")))
+      }
+      return(out)
+    } else {
+      if (length(x) == length(nm_expected)) {
+        names(x) = nm_expected
+        return(x)
+      }
+      if (allow_scalar && length(x) == 1L) {
+        return(stats::setNames(rep(x, length(nm_expected)), nm_expected))
+      }
+      stop(sprintf("%s must be named by invader IDs or have length 1 or %d.", arg, length(nm_expected)))
     }
-    r_mat <- t(r_wide)[inv_ids, site_ids, drop = FALSE]
-  } else {
-    r_mat <- as.matrix(r_mat)[inv_ids, site_ids, drop = FALSE]
   }
 
-  # --- 3) Auxiliary for relative-abundance penalty ---------------------------
-  lambda_rel <- lambda_logis <- NULL
-  if (!is.null(a_ij) && !is.null(Nstar)) {
-    a_ij <- as.matrix(a_ij)
-    # align dimnames
-    if (is.null(rownames(a_ij)) || is.null(colnames(a_ij))) stop("a_ij must have row (invaders) and col (residents) names.")
-    if (!all(rownames(a_ij) %in% inv_ids)) stop("Some invaders in a_ij not found in C_raw/r_mat.")
-    # reorder to inv_ids
-    a_ij <- a_ij[inv_ids, , drop = FALSE]
-    # Nstar: residents x sites, align to a_ij cols and site_ids
-    if (is.null(rownames(Nstar)) || is.null(colnames(Nstar))) stop("Nstar must have row (residents) and col (sites) names.")
-    if (!all(colnames(a_ij) %in% rownames(Nstar))) stop("Residents in a_ij must be rows in Nstar.")
-    Nstar_use <- Nstar[colnames(a_ij), site_ids, drop = FALSE]
-    # normalise by site totals
-    N_rel <- sweep(Nstar_use, 2, colSums(Nstar_use, na.rm = TRUE), "/")
-    # a_ij %*% N_rel -> invader x site
-    C_rel <- a_ij %*% N_rel
-  } else {
-    C_rel <- NULL
+  # --- Choose coefficients per option -----------------------------------------
+  if (option == "A") {
+    GI = matrix(1, nrow = S, ncol = I, dimnames = list(sites, inv_ids))
+    AI = matrix(rep(.align_inv_vec(alpha_i, inv_ids), each = S), nrow = S, dimnames = list(sites, inv_ids))
+    BI = .align_inv_vec(beta_i, inv_ids)
+    if (is.null(label)) label = "Option A (γ=1)"
+
+  } else if (option == "B") {
+    GI = matrix(theta0, nrow = S, ncol = I, dimnames = list(sites, inv_ids))
+    AI = matrix(rep(.align_inv_vec(alpha_i, inv_ids), each = S), nrow = S, dimnames = list(sites, inv_ids))
+    BI = .align_inv_vec(beta_i, inv_ids)
+    if (is.null(label)) label = "Option B (γ=θ0)"
+
+  } else if (option == "C") {
+    GI = matrix(rep(.align_inv_vec(theta_i, inv_ids), each = S), nrow = S, dimnames = list(sites, inv_ids))
+    AI = matrix(rep(.align_inv_vec(alpha_i, inv_ids),  each = S), nrow = S, dimnames = list(sites, inv_ids))
+    BI = .align_inv_vec(beta_i, inv_ids)
+    if (is.null(label)) label = "Option C (γ=θ_i)"
+
+  } else if (option == "D") {
+    if (!is.null(Gamma_is)) {
+      Gamma_is = if (is.matrix(Gamma_is)) Gamma_is else as.matrix(Gamma_is)
+      stopifnot(identical(dim(Gamma_is), dim(r_is_z)))
+      GI = Gamma_is
+    } else if (!is.null(theta_i)) {
+      GI = matrix(rep(.align_inv_vec(theta_i, inv_ids), each = S), nrow = S, dimnames = list(sites, inv_ids))
+    } else {
+      GI = matrix(theta0, nrow = S, ncol = I, dimnames = list(sites, inv_ids))
+    }
+
+    if (!is.null(alpha_is)) {
+      alpha_is = if (is.matrix(alpha_is)) alpha_is else as.matrix(alpha_is)
+      stopifnot(identical(dim(alpha_is), dim(r_is_z)))
+      AI = alpha_is
+    } else {
+      AI = matrix(rep(.align_inv_vec(alpha_i, inv_ids), each = S), nrow = S, dimnames = list(sites, inv_ids))
+    }
+
+    BI = .align_inv_vec(beta_i, inv_ids)
+    if (is.null(label)) label = "Option D (Γ_is, α_is)"
+
+  } else if (option == "E") {
+    GI = matrix(theta0, nrow = S, ncol = I, dimnames = list(sites, inv_ids))
+    AI = matrix(rep(.align_inv_vec(alpha_i, inv_ids), each = S), nrow = S, dimnames = list(sites, inv_ids))
+    BI = .align_inv_vec(beta_signed_i, inv_ids)
+    if (is.null(label)) label = "Option E (signed S)"
   }
 
-  # --- 4) Fitness variants ----------------------------------------------------
-  J <- if (!is.null(a_ij)) ncol(a_ij) else NA_integer_
-  lambda_raw <- r_mat - C_raw
-  lambda_scaled <- r_mat - C_raw / ifelse(is.na(J), nrow(C_raw) * 0 + nrow(C_raw), J) # fallback J if missing
+  # --- Optional resident calibration (kappa) -----------------------------------
+  kappa = 0
+  if (isTRUE(calibrate_kappa)) {
+    if (is.null(r_js_z) || is.null(C_js_z) || is.null(S_js_z))
+      stop("calibrate_kappa=TRUE requires resident matrices: r_js_z, C_js_z, S_js_z.")
+    r_js_z = if (is.matrix(r_js_z)) r_js_z else as.matrix(r_js_z)
+    C_js_z = if (is.matrix(C_js_z)) C_js_z else as.matrix(C_js_z)
+    S_js_z = if (is.matrix(S_js_z)) S_js_z else as.matrix(S_js_z)
 
-  if (!is.null(C_rel)) {
-    lambda_rel <- r_mat - C_rel
+    if (!is.null(Q_res) && all(vapply(list(a0,a1,a2,b0,b1,b2), function(x) !is.null(x), logical(1)))) {
+      slope_C_j = with(Q_res, a0 + a1*tr1 + a2*tr2)
+      slope_S_j = with(Q_res, b0 + b1*tr1 + b2*tr2)
+      alpha_j = pmax(0, -as.numeric(slope_C_j)); names(alpha_j) = rownames(Q_res)
+      beta_j  = pmax(0, -as.numeric(slope_S_j)); names(beta_j) = rownames(Q_res)
+    } else {
+      alpha_j = stats::setNames(rep(1, ncol(C_js_z)), colnames(C_js_z))
+      beta_j  = stats::setNames(rep(1, ncol(S_js_z)), colnames(S_js_z))
+    }
+
+    AJ = matrix(alpha_j[colnames(C_js_z)], nrow=nrow(C_js_z), ncol=ncol(C_js_z),
+                 byrow=TRUE, dimnames=dimnames(C_js_z))
+    BJ = matrix(beta_j [colnames(S_js_z)], nrow=nrow(S_js_z), ncol=ncol(S_js_z),
+                 byrow=TRUE, dimnames=dimnames(S_js_z))
+
+    lambda_js_res = theta0 * r_js_z - AJ * C_js_z - BJ * S_js_z
+    kappa = -mean(lambda_js_res, na.rm = TRUE)
   }
 
-  # Logistic-capped (on chosen target)
-  C_target <- if (logistic_on == "rel" && !is.null(C_rel)) C_rel else C_raw
-  if (is.null(x0)) x0 <- stats::median(C_target, na.rm = TRUE)
-  pen <- 1 / (1 + exp(-k * (C_target - x0)))
-  lambda_logis <- r_mat - pen
+  # --- Assemble λ_is -----------------------------------------------------------
+  lambda_is = GI * r_is_z - AI * C_is_z - sweep(S_is_z, 2, .align_inv_vec(BI, inv_ids), `*`) + kappa
 
-  # --- 5) Pick preferred output ----------------------------------------------
-  lambda <- switch(prefer,
-    logis = lambda_logis,
-    rel = {
-      if (is.null(lambda_rel)) stop("lambda_rel requested but a_ij/Nstar not supplied.")
-      lambda_rel
-    },
-    raw = lambda_raw,
-    scaled = lambda_scaled
-  )
+  # --- Optional tidy table -----------------------------------------------------
+  # --- Optional tidy table -----------------------------------------------------
+  lambda_long = NULL
+  if (isTRUE(return_long)) {
+    # Try a user helper if present, but fall back robustly
+    lambda_long_try = NULL
+    if (exists("make_lambda_long")) {
+      lambda_long_try = try(
+        make_lambda_long(
+          lambda_is, label, r_is_z, C_is_z, S_is_z,
+          site_df = if (!is.null(site_df)) site_df else tibble::tibble(site = rownames(lambda_is)),
+          gamma   = if (is.matrix(GI)) NULL else stats::setNames(as.numeric(GI[1, ]), colnames(GI)),
+          alpha   = if (is.matrix(AI)) NULL else stats::setNames(as.numeric(AI[1, ]), colnames(AI)),
+          beta    = .align_inv_vec(BI, inv_ids)
+        ),
+        silent = TRUE
+      )
+      if (inherits(lambda_long_try, "try-error")) lambda_long_try = NULL
+    }
+
+    if (is.null(lambda_long_try) || NROW(lambda_long_try) == 0L) {
+      # Robust default
+      lambda_long = tibble::tibble(
+        site    = rep(rownames(lambda_is), times = ncol(lambda_is)),
+        invader = rep(colnames(lambda_is), each  = nrow(lambda_is)),
+        lambda  = as.vector(lambda_is),
+        r_z     = as.vector(r_is_z),
+        C_z     = as.vector(C_is_z),
+        S_z     = as.vector(S_is_z),
+        option  = label
+      )
+      if (!is.null(site_df) && all(c("site","x","y") %in% names(site_df))) {
+        lambda_long = dplyr::left_join(lambda_long, site_df, by = "site")
+      }
+    } else {
+      lambda_long = lambda_long_try
+    }
+  }
+
 
   list(
-    C_raw = C_raw,
-    r_mat = r_mat,
-    lambda_raw = lambda_raw,
-    lambda_scaled = lambda_scaled,
-    lambda_rel = lambda_rel,
-    lambda_logis = lambda_logis,
-    lambda = lambda,
-    meta = list(
-      logistic_on = logistic_on, k = k, x0 = x0,
-      prefer = prefer,
-      dims = list(
-        invaders = length(inv_ids), sites = length(site_ids),
-        residents = if (!is.null(a_ij)) ncol(a_ij) else NA_integer_
-      )
-    )
+    lambda_is   = lambda_is,
+    GI          = GI,
+    AI          = AI,
+    BI          = .align_inv_vec(BI, inv_ids),
+    kappa       = kappa,
+    option      = label,
+    lambda_long = lambda_long
   )
 }

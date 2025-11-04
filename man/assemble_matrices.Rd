@@ -2,101 +2,62 @@
 % Please edit documentation in R/assemble_matrices.R
 \name{assemble_matrices}
 \alias{assemble_matrices}
-\title{Assemble site- and species-specific competition/impact matrices}
+\title{Assemble community matrices for invasion-fitness workflows}
 \usage{
 assemble_matrices(
-  a_ij,
-  Nstar,
-  invader_pred_wide = NULL,
-  predictions = NULL,
-  env_dist,
-  sigma_e = NULL,
-  K_env = NULL
+  long_df = NULL,
+  site_df = NULL,
+  env_df = NULL,
+  comm_res = NULL,
+  traits_res = NULL,
+  comm_long = c("auto", "long", "wide"),
+  site_col = "site",
+  x_col = "x",
+  y_col = "y",
+  species_col = "species",
+  count_col = "count",
+  env_cols = NULL,
+  env_prefix = "^env",
+  trait_cols = NULL,
+  trait_prefix = "^trait",
+  drop_empty_sites = TRUE,
+  drop_empty_species = TRUE,
+  return_diversity = TRUE,
+  make_plots = FALSE
 )
 }
 \arguments{
-\item{a_ij}{numeric matrix (invaders x residents).
-Trait-based competition coefficients (e.g., from \code{compute_competition()}).
-Row names = invader IDs; column names = resident IDs.}
+\item{long_df}{Optional long data frame with at least \code{site}, \code{x}, \code{y},
+\code{species}, \code{count}.}
 
-\item{Nstar}{numeric matrix (residents x sites).
-Resident abundances by site (e.g., from \code{compute_interaction_strength()}).
-Row names = resident IDs; column names = site IDs.}
+\item{site_df}{Optional data frame with columns \code{site}, \code{x}, \code{y} (used when
+\code{long_df} is \code{NULL}).}
 
-\item{invader_pred_wide}{numeric matrix (sites x invaders) or \code{NULL}.
-Site x invader abundances on the response scale.
-If \code{NULL}, supply \code{predictions} instead.}
+\item{env_df}{Optional site × environment \strong{numeric} data frame/matrix
+(row names must be site IDs; used when \code{long_df} is \code{NULL}).}
 
-\item{predictions}{data.frame or \code{NULL}.
-Long table with columns \code{species}, \code{site_id}, \code{pred}.
-Used only if \code{invader_pred_wide} is \code{NULL}.}
+\item{comm_res}{Optional site × resident numeric matrix/data frame (wide) or
+a long table with \code{site}, \code{species}, \code{count} (see \code{comm_long}).}
 
-\item{env_dist}{numeric matrix (sites x residents).
-Site-resident environmental distance (e.g., from \code{compute_environment_kernel()}).
-Row names = site IDs; column names = resident IDs.}
+\item{traits_res}{Optional resident × traits data frame (row names = species).}
 
-\item{sigma_e}{numeric or \code{NULL}.
-Bandwidth for the Gaussian environmental kernel;
-if \code{NULL}, compute the kernel upstream (e.g., \code{compute_environment_kernel(..., kernel = "gaussian")})
-and pass it via \code{K_env}.}
+\item{comm_long}{How to interpret a separately supplied \code{comm_res}:
+one of \code{c("auto","long","wide")}; \code{"auto"} detects a long table and pivots.}
 
-\item{K_env}{numeric matrix (sites x residents) or \code{NULL}.
-Optional precomputed environmental kernel (similarity) for residents by site.
-If supplied, \code{env_dist} and \code{sigma_e} are ignored.}
-}
-\value{
-A list with:
-\itemize{
-\item \code{I_raw}: 3D array (invaders x residents x sites) of per-pair impact terms.
-\item \code{pressure_inv_site}: matrix (invaders x sites) with total pressure on each invader at each site
-(sum over residents).
-\item \code{meta}: list with matched IDs and dimensions.
-}
+\item{site_col, x_col, y_col, species_col, count_col}{Column names to use when
+building from \code{long_df}. Defaults: \code{"site"}, \code{"x"}, \code{"y"}, \code{"species"}, \code{"count"}.}
+
+\item{env_cols, env_prefix, trait_cols, trait_prefix, drop_empty_sites, }{drop_empty_species,return_diversity,make_plots See details in original docs.}
 }
 \description{
-Builds a 3D array of per-site interaction terms by combining:
-(1) invader and resident abundances, (2) trait-based competition coefficients
-\eqn{a_{ij}}, and (3) environmental matching between each site and residents.
-The result is a tensor \code{I_raw[invader, resident, site]} suitable for
-summarising total competitive pressure on each invader at each site.
+\code{assemble_matrices()} creates the standard inputs used throughout the
+invasion-fitness pipeline from either a single “long” table or a set of
+already-formed tables. It returns aligned objects:
+\itemize{
+\item \code{site_df} (site × x,y),
+\item \code{env_df} (site × environment; \strong{numeric matrix}),
+\item \code{comm_res} (site × resident abundances; numeric matrix),
+\item \code{pa_res} (site × resident presence/absence; integer matrix),
+\item \code{traits_res} (resident × traits; data frame, keeps mixed types).
 }
-\details{
-For site \eqn{s}, invader \eqn{i}, resident \eqn{j}:
-\deqn{I_{i j s} = r_{i s}\, r_{j s}\, a_{i j}\, K^{(env)}_{j s},}
-where \eqn{r_{i s}} and \eqn{r_{j s}} are predicted (or expected) abundances,
-\eqn{a_{i j} = \exp\!\big(-d_{i j}^2/(2\,\sigma_t^2)\big)} is the trait-based competition coefficient,
-and \eqn{K^{(env)}_{j s}} is an environmental matching kernel for resident \eqn{j} at site \eqn{s}.
-}
-\examples{
-# Minimal, self-contained toy example
-set.seed(1)
-inv <- paste0("inv", 1:2)
-res <- paste0("sp", 1:3)
-sites <- paste0("s", 1:4)
-
-# invader x resident Gaussian kernel (a_ij)
-a_ij <- matrix(runif(length(inv) * length(res), 0.1, 0.9),
-  nrow = length(inv), dimnames = list(inv, res)
-)
-
-# residents x sites abundances (Nstar)
-Nstar <- matrix(abs(rnorm(length(res) * length(sites), 5, 2)),
-  nrow = length(res), dimnames = list(res, sites)
-)
-
-# site x resident environmental kernel (K_env)
-K_env <- matrix(runif(length(sites) * length(res), 0.3, 1),
-  nrow = length(sites), dimnames = list(sites, res)
-)
-
-# long predictions data.frame (pred) with r_is
-predictions <- expand.grid(site_id = sites, species = inv)
-predictions$pred <- rlnorm(nrow(predictions), 0, 0.4)
-
-am <- assemble_matrices(
-  a_ij = a_ij, Nstar = Nstar,
-  K_env = K_env, predictions = predictions
-)
-str(am)
-
 }

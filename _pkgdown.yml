@@ -37,21 +37,39 @@ reference:
       Produces interaction matrices and trait-specific invasion risk indicators.
       Aligns with Hui et al. (2023): integrates traits, propagule pressure, and environment.
 
-# 2. First five functions, in order
+# 2. Function wrappers
+  - title: "Wrapper Functions"
+    contents:
+      - invasimap
+      - prepare_inputs
+      - prepare_trait_space
+      - model_residents
+      - learn_sensitivities
+      - predict_invaders
+      - predict_establishment
+      - summarise_results
+
+# 3. First five functions, in order
   - title: "Core Functions"
     contents:
       - get_trait_data
-      - compute_trait_similarity
-      - compute_trait_dispersion
-      - compute_trait_space
-      - build_glmm_formula
-      - simulate_invaders
-      - predict_invader_response
-      - compute_interaction_strength
-      - compute_competition_kernel
-      - compute_environment_kernel
       - assemble_matrices
+      - simulate_invaders
+      - standardise_model_inputs
+      - compute_trait_space
+      - compute_centrality_hull
+      - compute_resident_crowding
+      - build_model_formula
+      - prep_resident_glmm
+      - standardise_by_site
+      - compute_site_saturation
+      - fit_auxiliary_residents_glmm
+      - derive_sensitivities
+      - site_varying_alpha_beta_gamma
+      - build_invader_predictors
       - compute_invasion_fitness
+      - compute_establishment_probability
+      - summarise_invasiveness_invasibility
 
 articles:
   - title: "All tutorials"

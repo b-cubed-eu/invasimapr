@@ -1,6 +1,6 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# **`invasimapr`**<a href="https://b-cubed-eu.github.io/invasimapr/"><img src="man/figures/logo.png" align="right" height="139" alt="invasimapr website" /></a>
+# **`invasimapr`**<a href="https://b-cubed-eu.github.io/invasimapr/"><img src="man/figures/logo.png" align="right" height="135" alt="invasimapr website" /></a>
 
 ## A Novel Framework to visualise trait dispersion and assess species invasiveness or site invasibility
 
@@ -27,103 +27,113 @@ badge](https://b-cubed-eu.r-universe.dev/badges/:name?color=6CDDB4)](https://b-c
 
 ## Introduction
 
-Biological invasions are a leading driver of biodiversity loss. Establishment success depends on a species’ functional traits, the suitability of local environments, and the competitive pressure from resident communities—so ad-hoc, single-component analyses are insufficient. **`invasimapr`** provides a transparent, trait- and site-specific framework that integrates these components into a single, reproducible workflow to estimate **invasion fitness** and derive decision-ready indicators of **species invasiveness** and **site invasibility**.
+Biological invasions are a leading driver of biodiversity loss. Establishment success depends on a species’ functional traits, local environments, and the competitive pressure from resident communities—so ad-hoc, single-component analyses are insufficient. **`invasimapr`** provides a transparent, trait- and site-specific framework that integrates these components into a single, reproducible workflow to estimate **invasion fitness** and derive decision-ready indicators of **species invasiveness** and **site invasibility**.
 
-At its core, the package (i) models **intrinsic growth potential** from trait–environment responses, (ii) quantifies **competitive penalties** imposed by resident communities via trait overlap and environmental filtering, and (iii) combines these to compute a site- and species-resolved fitness surface that can be summarised and mapped. It relies on widely used statistical tools (e.g., GLMM/GAM) and standard distance measures, making it accessible and extensible for applied invasion ecology and conservation planning.
+At its core, the package (i) models **intrinsic growth potential** from trait–environment responses, (ii) quantifies **competitive penalties** imposed by resident communities via trait overlap and environmental filtering, and (iii) combines these to compute a site- and species-resolved fitness surface that can be summarised and mapped. It relies on standard statistical tools (e.g., GLMM/GAM) and explicit distance/kernels, making it accessible and extensible for applied invasion ecology and conservation planning.
 
 ---
 
 ## Core concepts (what the framework estimates)
 
-* **Invasion fitness (`λ`)** — Net potential for a species to increase when rare at a site: `λ = r − C`, where `r` is predicted intrinsic (abiotic) performance and `C` is the competitive penalty from residents.
-* **Invasiveness (`Vᵢ`)** — Propensity of a species to establish across sites (spatial aggregation of `λ`).
-* **Invasibility (`Vₛ`)** — Openness of a site to establishment by newcomers (aggregation of `λ` over candidate invaders).
+- **Invasion fitness ($\lambda$)** — Net potential for a species to increase when rare at a site: $\lambda = \Gamma r - \alpha C - \beta S + k$, where $r$ is intrinsic (abiotic) performance, $C$ niche crowding, $S$ site saturation, and $\Gamma, \alpha, \beta$ are sensitivities.
+- **Invasiveness ($V_i$)** — Propensity of a species to establish across sites (spatial aggregation of $\lambda$).
+- **Invasibility ($V_s$)** — Openness of a site to establishment by newcomers (aggregation of $\lambda$ over candidate invaders).
 
-These are built from three linked pillars:
+Built from three linked pillars:
 
-1. **Trait space → competition:** species are embedded in a functional trait space; a kernel (e.g., Gaussian) converts pairwise trait distances to competition coefficients (higher similarity → stronger competition).
-2. **Environmental filtering:** residents matter most where they are well matched to local conditions; an environmental kernel up- or down-weights their effect by site–resident mismatch.
-3. **Resident context:** predicted/typical resident abundance further scales their suppressive effect.
-
-Together these define an **interaction tensor** that aggregates to a site-level penalty `C` and, with `r`, yields `λ`.
+1. **Trait space → competition:** Trait similarity yields competition coefficients (higher similarity → stronger competition).
+2. **Environmental filtering:** Resident effects are up/down-weighted by site–resident environmental match.
+3. **Resident context:** Predicted/typical resident abundance scales suppressive effects.
 
 ---
 
 ## What the package does (high-level workflow)
 
-* **Data preparation**
+- **Data preparation:** Harmonise traits, environments, and resident composition; optionally simulate invaders.
+- **Model trait–environment responses:** Fit a single model to predict $r$; estimate resident optima and mismatch.
+- **Quantify competitive pressure:** Build trait space; compute similarity kernels; combine with environmental weights and resident context to obtain $C$ and $S$.
+- **Compute and summarise outcomes:** Calculate $\lambda$ for each species×site; summarise **$V_s$** and **$V_s$** for mapping, ranking, and prioritisation.
 
-  * Harmonise traits, environments, and resident composition.
-  * Optionally **simulate invaders** to test “what-if” scenarios.
-
-* **Model trait–environment responses**
-
-  * Fit a single trait–environment model to predict `r` (expected performance without competitors) for candidate invaders at each site.
-  * Estimate resident optima and site–resident mismatch for environmental weighting.
-
-* **Quantify competitive pressure**
-
-  * Build trait space and compute pairwise similarity → competition kernel.
-  * Combine trait overlap, environmental match, and resident context into interaction strengths; sum over residents to get `C`.
-
-* **Compute and summarise outcomes**
-
-  * **Invasion fitness `λ`** for every species × site.
-  * Site-level **invasibility (`Vₛ`)** and species-level **invasiveness (`Vᵢ`)** for mapping, ranking, and prioritisation.
-
-The pipeline is **modular** (each step inspectable/reusable) and designed for **reproducibility**.
+The pipeline is **modular** and **reproducible**, returning intermediate diagnostics for auditability.
 
 ---
 
 ## Typical outputs
 
-* Matrices/data frames for `r`, `C`, and `λ` (species × sites).
-* Site summaries (**`Vₛ`**) and species summaries (**`Vᵢ`**) for reporting and maps.
-* Intermediate diagnostics (trait distances, kernels, resident optima/mismatch) to audit assumptions and perform sensitivity checks.
+- Matrices/data frames for $r$, $C$, $S$, and $\lambda$ (species × sites).
+- Site summaries (**$V_s$**) and species summaries (**$V_i$**).
+- Diagnostics: trait distances, kernels, resident optima/mismatch, and sensitivity estimates.
 
 ---
 
 ## When to use `invasimapr`
 
-* Screening **candidate invaders** or pathways and ranking species by establishment potential.
-* Identifying **vulnerable sites** and allocating surveillance/management effort.
-* **Scenario analysis** under environmental change (e.g., altered climates, trait shifts).
-* Creating consistent, repeatable **maps of invasion risk** across large landscapes.
+- Screening **candidate invaders** and ranking species by establishment potential.
+- Identifying **vulnerable sites** and allocating surveillance/management.
+- **Scenario analysis** under environmental change.
+- Producing consistent, repeatable **maps of invasion risk** across large landscapes.
 
 ---
 
 ## Data requirements (minimum viable inputs)
 
-* **Traits** for residents (and invaders/simulated invaders).
-* **Site environments** (e.g., climate, soils, habitat metrics).
-* **Resident composition** (occurrence/abundance or a proxy).
-* Consistent **species and site identifiers** for joins.
-* Optional: curated trait tables and metadata for automated ingestion.
+- **Traits** for residents (and invaders/simulated invaders).
+- **Site environments** (e.g., climate, soils, habitat metrics).
+- **Resident composition** (occurrence/abundance or proxy).
+- Consistent **species** and **site** identifiers for joins.
+- Optional: curated trait tables and metadata for automated ingestion.
 
 ---
 
 ## Main functions (overview, not a tutorial)
 
-**Data & simulation**
+The workflow is organised into eight wrapper functions; each returns intermediate objects for auditability and reuse.
 
-* `get_trait_data()` — Collect, clean, and standardise trait data; optionally augment with metadata.
-* `simulate_invaders()` — Generate hypothetical invaders to probe scenarios.
+1. **`utils_internal` — setup & utilities**
+- `new_invasimapr_fit()`: create a pipeline container for inputs/outputs.
+- `print.invasimapr_fit()`: compact summary of pipeline contents.
+- `.standardise_df()`: column-wise z-scores for numeric frames (factors/characters preserved).
 
-**Trait–environment modelling**
+2. **`prepare_inputs` — data access & assembly**
+- Read local data (e.g., `utils::read.csv`) or use **`dissmapr`** to fetch/align observations and environments.
+- `get_trait_data()`: retrieve and harmonise species traits.
+- `assemble_matrices()`: build core inputs (site coordinates, site×environment, site×resident, trait tables).
+- `simulate_invaders()`: optional generation of hypothetical invaders.
 
-* `compute_trait_space()` — Build trait space and competition coefficients from pairwise distances.
-* `build_glmm_formula()` — Compose model formulae for trait–environment responses.
-* `predict_invader_response()` — Estimate intrinsic growth potential `r` for species at sites.
+3. **`prepare_trait_space` — scaling, geometry & crowding**
+- `standardise_model_inputs()`: z-score environments/resident traits; rescale invader traits on resident moments; align factor levels.  
+  *Outputs:* `env_df_z`, `traits_res_glmm`, `traits_inv_glmm`, scaling metadata.
+- `compute_trait_space()`: shared resident–invader trait map.
+- `compute_centrality_hull()`: centrality metrics and convex-hull membership.
+- `compute_resident_crowding()`: crowding indices \(C_{js}\) from composition × trait similarity (Gower→Gaussian), with robust z-standardisation.  
+  *Outputs stored in:* `fit$traits`, `fit$crowding`.
 
-**Competition & environment**
+4. **`model_residents` — resident-only predictors**
+- `build_model_formula()`: GLMM-ready formula.
+- `prep_resident_glmm()`: site×resident long table; fit residents-only GLMM → link-scale suitability \(r_{js}\) and expected abundance \(\mu_{js}\).
+- `standardise_by_site()`: row-standardise site×species matrices.
+- `compute_site_saturation()`: site saturation \(S_s\) and z-standardised \(S^{(z)}_s\).
 
-* `compute_environment_kernel()` — Weight resident effects by site–resident environmental mismatch.
-* `compute_interaction_strength()` — Combine trait overlap, environmental match, and resident context into pairwise impacts; sum to get `C`.
+5. **`learn_sensitivities` — slopes & coefficients**
+- `fit_auxiliary_residents_glmm()`: auxiliary GLMM with trait×predictor interactions and optional site random slopes.
+- `derive_sensitivities()`: invader-level \(\alpha_i\) (crowding), \(\beta_i\) (saturation), \(\theta_i\) (abiotic slope), fallback \(\gamma_i\).
+- `site_varying_alpha_beta_gamma()`: integrate trait-fixed effects with site deviations → \(\alpha_{is}\), \(\Gamma_{is}\); propagate \(\beta_i\).
 
-**Outcomes & summaries**
+6. **`predict_invaders` — invader-side predictors**
+- `build_invader_predictors()`: produce resident-calibrated predictors for invaders:  
+  \(r^{(z)}_{is}\) (abiotic suitability), \(C^{(z)}_{is}\) (crowding via weighted similarity), \(S^{(z)}_{is}\) (site saturation broadcast to invaders).
 
-* `compute_invasion_fitness()` — Compute `λ = r − C` (with optional scaled variants).
-* Summaries: **`Vₛ`** (site invasibility) and **`Vᵢ`** (species invasiveness) for mapping and prioritisation.
+7. **`predict_establishment` — fitness & probability**
+- `compute_invasion_fitness()`: assemble \(\lambda_{is} = \Gamma_{is} r^{(z)}_{is} - \alpha_{is} C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa\).  
+  Options: global/site-varying slopes; signed/unsigned saturation; calibration strategies.
+- `compute_establishment_probability()`: transform \(\lambda_{is}\) to \(p_{is}\) via `probit`, `logit`, or hard thresholds.
+
+8. **`summarise_results` — aggregation & reporting**
+- `summarise_invasiveness_invasibility()`: collapse species×site surfaces to:
+  - **Species invasiveness** \(V_i\): breadth across sites.
+  - **Site invasibility** \(V_s\): fraction/probability of invaders establishing.
+  - **Trait invasiveness**: trait-level associations (continuous slopes; ANOVA \(R^2\) for categorical traits).
+*Outputs:* tidy species/site tables, trait-effect summaries, and plots (maps, rankings, heatmaps, trait-effect diagrams).
 
 > For full argument lists and return types see the package reference index.
 
@@ -131,23 +141,22 @@ The pipeline is **modular** (each step inspectable/reusable) and designed for **
 
 ## Design principles & assumptions (brief)
 
-* **Single coherent model:** one trait–environment fit underpins both invader performance and resident context to keep assumptions aligned.
-* **Distance/kernels are explicit:** choice of trait/environment distance and kernel bandwidths (e.g., `σ_t`, `σ_e`) is transparent and tunable.
-* **Interpretation depends on response:** if `r` is predicted abundance/occurrence, `λ` is a **relative establishment proxy**, not a demographic rate—interpret accordingly.
-* **Auditability:** intermediate objects are returned so you can inspect sensitivity to traits chosen, scaling, and kernel parameters.
+- **Single coherent model:** One trait–environment fit underpins invader performance and resident context.
+- **Explicit distances/kernels:** Choice of metrics and bandwidths (e.g., $\sigma_t$, $\sigma_e$) is transparent and tunable.
+- **Interpretation depends on response:** If $r$ is proxy abundance/occurrence, $\lambda$ is a **relative establishment proxy**, not a demographic rate.
+- **Auditability:** Intermediate objects are returned for sensitivity checks and reproducibility.
 
 ---
 
 ## Interoperability
 
-* Plays well with common R ecosystems for spatial data, modelling, and visualisation.
-* Complements packages used for data access/prep and for downstream mapping and reporting (e.g., building site layers and trait tables prior to modelling).
+Works with common R ecosystems for spatial data (e.g., `sf`), modelling (`lme4`, `mgcv`), and visualisation (`ggplot2`). Complements data access/prep packages upstream and mapping/reporting downstream.
 
 ---
 
 ## Installation
 
-```r
+```{r setup-invasimapr}
 # install.packages("remotes")
 remotes::install_github("b-cubed-eu/invasimapr")
 ```

@@ -1,277 +1,286 @@
-#' Compute Trait Space: per-trait similarity + community dispersion
+#' Compute and plot shared trait space for residents and invaders
+#'
+#' @title Shared trait-space construction (Gower + PCoA), resident hull, centroid, and density plot
 #'
 #' @description
-#' A unified workflow that (1) computes within-trait similarity (numeric + categorical)
-#' and (2) computes community-level dispersion in trait space
-#' (Gower -> clustering -> PCoA -> density -> metrics).
+#' Builds a unified trait space for resident and invader species by:
+#' (1) computing a Gower distance on the stacked trait table,
+#' (2) projecting to 2D via classical MDS/PCoA (`stats::cmdscale`),
+#' (3) deriving the resident convex hull (realised niche region),
+#' (4) estimating a kernel density over the 2D space, and
+#' (5) optionally rendering a base R `filled.contour` map that overlays
+#' the hull, all points (residents black, invaders red), and the cloud centroid (white square with black outline).
+#' Optionally it also computes a functional dendrogram (`hclust`) and a
+#' pretty dendrogram plot (`factoextra::fviz_dend`) when available.
 #'
-#' @param trait_df data.frame. One row per species (or unit); mixed types allowed.
-#' @param species_col integer or character (default = 1).
-#'   Column indicating the species ID; excluded from distances.
-#' @param do_similarity logical (default = TRUE). If TRUE, compute per-trait similarity.
-#' @param similarity_cols NULL, character, or integer. Which columns to use for similarity;
-#'   default = all columns except \code{species_col}.
-#' @param do_dispersion logical (default = TRUE). If TRUE, run the dispersion pipeline.
-#' @param k integer (default = 4). Number of clusters for dendrogram.
-#' @param pcoa_dims integer (default = 2). Number of PCoA axes retained (>= 2).
-#' @param abundance numeric vector or NULL. Optional species weights; normalized internally.
-#' @param kde_n integer (default = 100). KDE grid resolution for density.
-#' @param viridis_option character (default = "D"). Palette for \code{viridisLite::viridis()}.
-#' @param show_density_plot logical (default = TRUE). Also emit a base \code{filled.contour}.
-#' @param show_plots logical (default = FALSE). If TRUE, prints a patchwork of ggplots.
-#' @param seed integer or NULL. Optional RNG seed.
+#' @param traits_res A data.frame of resident species (rows) by traits (columns).
+#'   Mixed types are supported (numeric, integer, factor, ordered) via Gower distance.
+#'   Row names are used as resident IDs; if absent, sequential IDs are created.
+#' @param traits_inv A data.frame of invader species (rows) by traits (columns).
+#'   Must share the same trait columns (names and types) as `traits_res`.
+#'   Row names are used as invader IDs; if absent, sequential IDs are created.
+#'   If you have no invaders, pass a 0-row data.frame with matching columns.
+#' @param k Integer embedding dimension for PCoA; default 2.
+#' @param kde_n Integer grid size for 2D kernel density estimation (per axis). Default `100`.
+#' @param pad_prop Numeric padding proportion added to the plotting range on each axis. Default `0.10` (10%).
+#' @param main_title Character main title for the contour plot.
+#' @param legend_line Character subtitle used as an inline legend in the title area.
+#' @param cex_main,cex_sub,cex_lab,cex_axis Numeric text scaling for main title, subtitle,
+#'   axis labels, and axis tick labels, respectively. Defaults `1, 0.72, 0.85, 0.75`.
+#' @param highlight_level Numeric in (0,1]; draws a bold contour at this proportion
+#'   of the maximum density (e.g., `0.5`=50% of max). Set `NA` to skip.
+#' @param do_plot Logical; if `TRUE` renders the `filled.contour` figure. Default `TRUE`.
+#' @param do_dend Logical; if `TRUE`, computes `hclust` on Gower and attempts to produce a
+#'   dendrogram plot with `factoextra::fviz_dend` when available. Default `FALSE`.
 #'
-#' @return A list with (present elements depend on flags):
+#' @return A list with:
 #' \itemize{
-#'   \item \code{similarity}: data.frame with columns \code{Trait}, \code{Similarity} (0-100).
-#'   \item \code{dispersion}: list containing
-#'         \code{distance_matrix}, \code{hc}, \code{pcoa}, \code{scores}, \code{centroid},
-#'         \code{metrics_df}, and \code{plots} (ggplots: \code{$dend}, \code{$density_gg},
-#'         \code{$centrality_hist}, \code{$metrics_bar}).
+#'   \item \code{gower}  — Gower distance matrix (all species).
+#'   \item \code{scores} — Data frame of 2D PCoA scores (\code{Q_all}) with columns \code{tr1,tr2}.
+#'   \item \code{Q_res}, \code{Q_inv} — Subsets of \code{scores} for residents and invaders.
+#'   \item \code{hull_res} — Data frame (tr1,tr2) of the resident convex hull ring (closed), or \code{NULL} if < 3 residents.
+#'   \item \code{centroid} — Numeric vector of the overall (res+inv) centroid \code{c(tr1, tr2)}.
+#'   \item \code{density} — List \code{list(x, y, z)} from \code{MASS::kde2d}.
+#'   \item \code{colors}  — Named vector with color per species ID (residents black, invaders red).
+#'   \item \code{hc}      — \code{hclust} object (if \code{do_dend=TRUE}), else \code{NULL}.
+#'   \item \code{dend_plot} — A ggplot object from \code{factoextra::fviz_dend} when available, else \code{NULL}.
+#'   \item \code{xlim}, \code{ylim} — Numeric length-2 ranges used for plotting with padding.
 #' }
 #'
-#' @examples
-#' # Simulate a small mixed-type table
-#' set.seed(123)
-#' n <- 20
-#' trait_df <- data.frame(
-#'   species = paste0("sp_", seq_len(n)),
-#'   height = rnorm(n),
-#'   mass = runif(n, -1, 1),
-#'   rank = factor(sample(1:3, n, TRUE), ordered = TRUE),
-#'   bin = factor(sample(c(0, 1), n, TRUE)),
-#'   cat = factor(sample(LETTERS[1:4], n, TRUE)),
-#'   check.names = FALSE
-#' )
-#' abundance <- rexp(n)
+#' @details
+#' This function assumes that the trait columns in \code{traits_inv} are compatible with those in
+#' \code{traits_res}. Gower distance (\code{cluster::daisy}) supports mixed data types and handles
+#' factors/ordered factors appropriately. The PCoA (`cmdscale`) is computed on the Gower distances
+#' and the first two axes are returned by default for visualisation. The resident convex hull is
+#' computed on the resident scores only and is drawn as the "realised niche region".
 #'
-#' out <- compute_trait_space(trait_df,
-#'   species_col = "species", abundance = abundance,
-#'   k = 3, pcoa_dims = 2, show_density_plot = FALSE
+#' @examples
+#' \dontrun{
+#' # Minimal reproducible example with numeric traits
+#' set.seed(1)
+#' traits_res = data.frame(
+#'   trait_1 = rnorm(20),
+#'   trait_2 = rnorm(20, 2),
+#'   row.names = paste0("sp", 1:20)
 #' )
-#' out$similarity
-#' out$dispersion$metrics_df
+#' traits_inv = data.frame(
+#'   trait_1 = rnorm(5, 0.5),
+#'   trait_2 = rnorm(5, 2.5),
+#'   row.names = paste0("inv", 1:5)
+#' )
+#'
+#' out = compute_trait_space(
+#'   traits_res = traits_res,
+#'   traits_inv = traits_inv,
+#'   do_plot    = TRUE,
+#'   do_dend    = TRUE,
+#'   main_title = "Trait space density with hull and centroid",
+#'   legend_line = "Hull = realised niche region; white square = centroid; black = residents; red = invaders"
+#' )
+#'
+#' # Access returned objects
+#' head(out$scores)
+#' out$centroid
+#' if (!is.null(out$dend_plot)) print(out$dend_plot)
+#' }
 #'
 #' @importFrom cluster daisy
-#' @importFrom stats as.dist hclust cmdscale dist weighted.mean
-#' @importFrom ggplot2 ggplot aes geom_histogram geom_col labs theme_bw theme_classic guides
 #' @importFrom MASS kde2d
-#' @importFrom geometry convhulln
-#' @importFrom viridisLite viridis
-#' @importFrom patchwork plot_layout
-#' @importFrom graphics axis
+#' @importFrom stats cmdscale hclust as.dist
+#' @importFrom grDevices chull
+#' @importFrom graphics filled.contour title axis points lines contour par
 #' @export
-compute_trait_space <- function(trait_df,
-                                species_col = 1,
-                                do_similarity = TRUE,
-                                similarity_cols = NULL,
-                                do_dispersion = TRUE,
-                                k = 4,
-                                pcoa_dims = 2,
-                                abundance = NULL,
-                                kde_n = 100,
-                                viridis_option = "D",
-                                show_density_plot = TRUE,
-                                show_plots = FALSE,
-                                seed = NULL) {
-  # ---- checks ----
-  if (!is.data.frame(trait_df)) stop("trait_df must be a data.frame.")
-  sp_col_idx <- if (is.character(species_col)) match(species_col, names(trait_df)) else as.integer(species_col)
-  if (is.na(sp_col_idx) || sp_col_idx < 1L || sp_col_idx > ncol(trait_df)) {
-    stop("species_col not found / out of range.")
+compute_trait_space = function(traits_res,
+                            traits_inv,
+                            k = 2,
+                            kde_n = 100,
+                            pad_prop = 0.10,
+                            main_title = "Trait space density with convex hull and centroid",
+                            legend_line = "Hull = realised niche region; white square = centroid; black dots = residents; red dots = invaders",
+                            cex_main = 1, cex_sub = 0.72, cex_lab = 0.85, cex_axis = 0.75,
+                            highlight_level = 0.5,
+                            do_plot = TRUE,
+                            do_dend = FALSE) {
+
+  # ---- 0) Input checks & ID hygiene -------------------------------------------
+  stopifnot(is.data.frame(traits_res), is.data.frame(traits_inv))
+  if (is.null(rownames(traits_res))) rownames(traits_res) = paste0("res_", seq_len(nrow(traits_res)))
+  if (is.null(rownames(traits_inv))) rownames(traits_inv) = paste0("inv_", seq_len(nrow(traits_inv)))
+
+  # Coerce factors/ordered to ensure Gower handles them properly
+  # (cluster::daisy is tolerant; we still keep original types.)
+  # Ensure same column set / order
+  common_cols = intersect(colnames(traits_res), colnames(traits_inv))
+  if (length(common_cols) == 0L && nrow(traits_inv) > 0) {
+    stop("traits_res and traits_inv share no common trait columns.")
   }
-  if (!is.null(seed)) set.seed(seed)
-
-  n <- nrow(trait_df)
-  res <- list()
-
-  # ======================= PART 1: similarity ===============================
-  if (isTRUE(do_similarity)) {
-    # pick columns for similarity
-    if (is.null(similarity_cols)) {
-      sim_idx <- setdiff(seq_along(trait_df), sp_col_idx)
-    } else {
-      sim_idx <- if (is.character(similarity_cols)) {
-        match(similarity_cols, names(trait_df))
-      } else {
-        as.integer(similarity_cols)
-      }
-      if (anyNA(sim_idx)) stop("similarity_cols: some names/indices not found.")
-    }
-
-    # helpers
-    sim_numeric <- function(x) {
-      x2 <- x[!is.na(x)]
-      if (length(x2) <= 1) {
-        return(1)
-      }
-      r <- diff(range(x2))
-      if (r == 0) {
-        return(1)
-      }
-      x_scaled <- (x2 - min(x2)) / r
-      1 - mean(stats::dist(x_scaled))
-    }
-    sim_categ <- function(x) {
-      x <- as.character(x)
-      freqs <- table(x)
-      if (sum(freqs) < 2) {
-        return(1)
-      }
-      as.numeric(sum(choose(freqs, 2)) / choose(sum(freqs), 2))
-    }
-
-    trait_names <- names(trait_df)[sim_idx]
-    sim_vals <- vapply(sim_idx, function(j) {
-      col <- trait_df[[j]]
-      if (is.numeric(col)) sim_numeric(col) else sim_categ(col)
-    }, numeric(1))
-
-    res$similarity <- data.frame(
-      Trait = trait_names,
-      Similarity = 100 * sim_vals,
-      row.names = NULL, check.names = FALSE
-    )
+  # Align both tables to the common trait set (if invaders present)
+  if (nrow(traits_inv) > 0) {
+    traits_res2 = traits_res[, common_cols, drop = FALSE]
+    traits_inv2 = traits_inv[, common_cols, drop = FALSE]
+  } else {
+    traits_res2 = traits_res
+    traits_inv2 = traits_inv
   }
 
-  # ======================= PART 2: dispersion ===============================
-  if (isTRUE(do_dispersion)) {
-    if (pcoa_dims < 2L) stop("pcoa_dims must be >= 2.")
-    # weights
-    p <- if (is.null(abundance)) {
-      rep(1 / n, n)
-    } else {
-      if (!is.numeric(abundance) || length(abundance) != n || any(abundance < 0)) {
-        stop("abundance must be non-negative numeric, length == nrow(trait_df).")
-      }
-      s <- sum(abundance)
-      if (s == 0) stop("sum(abundance) is zero.")
-      as.numeric(abundance) / s
+  # ---- 1) Stack species and compute Gower distance ----------------------------
+  # all_traits = rbind(traits_res2, traits_inv2)
+  # Ensure categorical columns are factors (not character) and align levels
+  to_factor = function(df) {
+    df = as.data.frame(df, stringsAsFactors = FALSE)
+    for (nm in names(df)) if (is.character(df[[nm]])) df[[nm]] = factor(df[[nm]])
+    df
+  }
+
+  # FIX:
+  traits_res = to_factor(traits_res)
+  traits_inv = to_factor(traits_inv)
+
+  # Harmonize factor levels across res + inv so Gower treats them consistently
+  common = intersect(names(traits_res), names(traits_inv))
+  for (nm in common) {
+    if (is.factor(traits_res[[nm]]) || is.factor(traits_inv[[nm]])) {
+      lev = union(levels(factor(traits_res[[nm]])), levels(factor(traits_inv[[nm]])))
+      if (is.factor(traits_res[[nm]])) traits_res[[nm]] = factor(traits_res[[nm]], levels = lev)
+      if (is.factor(traits_inv [[nm]])) traits_inv [[nm]] = factor(traits_inv [[nm]], levels = lev)
     }
+  }
 
-    # Gower
-    gower_obj <- cluster::daisy(trait_df[, -sp_col_idx, drop = FALSE], metric = "gower")
-    trait_dist <- as.matrix(gower_obj)
+  # continue with your existing code, e.g.:
+  all_traits = rbind(
+    cbind(.role = "res", traits_res[ , common, drop = FALSE]),
+    cbind(.role = "inv", traits_inv [ , common, drop = FALSE])
+  )
 
-    # clustering + PCoA
-    hc <- stats::hclust(stats::as.dist(gower_obj))
-    pcoa <- stats::cmdscale(gower_obj, eig = TRUE, k = max(2L, pcoa_dims))
-    scores <- as.data.frame(pcoa$points)[, seq_len(pcoa_dims), drop = FALSE]
-    colnames(scores) <- paste0("PCoA", seq_len(pcoa_dims))
+  # Gower distance supports mixed types; converts internally as needed
+  # gower_all = cluster::daisy(all_traits, metric = "gower")
+  # drop the .role column before daisy if needed
+  gower_all = cluster::daisy(all_traits[ , setdiff(names(all_traits), ".role"), drop = FALSE], metric = "gower")
+  gower_mat = as.matrix(gower_all)
 
-    # centroid + centrality
-    centroid <- vapply(seq_len(pcoa_dims), function(j) stats::weighted.mean(scores[[j]], w = p), numeric(1))
-    scores$centrality <- sqrt(rowSums((as.matrix(scores[, seq_len(pcoa_dims)]) -
-      matrix(centroid, nrow(scores), pcoa_dims, byrow = TRUE))^2))
+  # ---- 2) 2D PCoA (cmdscale) --------------------------------------------------
+  # Classical MDS on distances; returns coordinates (scores)
+  pcoa_xy = stats::cmdscale(gower_mat, k = k)
+  if (k < 2) stop("k must be >= 2 to plot the trait plane.")
+  Q_all = data.frame(tr1 = pcoa_xy[, 1], tr2 = pcoa_xy[, 2],
+                      row.names = rownames(all_traits))
 
-    # metrics
-    FDis <- sum(p * scores$centrality)
+  # Split back to residents / invaders
+  res_ids = rownames(traits_res2)
+  inv_ids = rownames(traits_inv2)
+  Q_res = Q_all[res_ids, , drop = FALSE]
+  Q_inv = Q_all[inv_ids, , drop = FALSE]
 
-    FRic <- NA_real_
-    if (n >= (pcoa_dims + 1L)) {
-      ch_try <- try(geometry::convhulln(as.matrix(scores[, seq_len(pcoa_dims)]), options = "FA"), silent = TRUE)
-      if (!inherits(ch_try, "try-error") && !is.null(ch_try$vol)) {
-        FRic <- as.numeric(ch_try$vol)
-      } else {
-        warning("FRic not computed: convex hull failed; returning NA.")
-      }
-    } else {
-      warning(sprintf("FRic requires at least %d points; have %d. Returning NA.", pcoa_dims + 1L, n))
-    }
+  # ---- 3) Resident convex hull and centroid -----------------------------------
+  hull_res = NULL
+  if (nrow(Q_res) >= 3) {
+    # chull returns vertex indices; close the polygon by repeating the first
+    h_idx = grDevices::chull(Q_res$tr1, Q_res$tr2)
+    hull_res = Q_res[c(h_idx, h_idx[1]), c("tr1", "tr2")]
+  }
+  # Overall centroid is computed on all species (res+inv)
+  cloud_centroid = colMeans(Q_all[, c("tr1", "tr2"), drop = FALSE])
 
-    dmat <- as.matrix(stats::dist(scores[, seq_len(pcoa_dims)]))
-    RaoQ <- 0.5 * sum(outer(p, p) * dmat)
+  # ---- 4) 2D Kernel density estimate in the trait plane -----------------------
+  # Plot limits padded to avoid clipping aesthetics at the edges
+  xr = range(Q_all$tr1, na.rm = TRUE); xw = diff(xr); xpad = ifelse(xw > 0, pad_prop * xw, 0.5)
+  yr = range(Q_all$tr2, na.rm = TRUE); yw = diff(yr); ypad = ifelse(yw > 0, pad_prop * yw, 0.5)
+  xlims = xr + c(-xpad, xpad)
+  ylims = yr + c(-ypad, ypad)
 
-    metrics_df <- data.frame(
-      Metric = c("FDis", "FRic", "RaoQ"),
-      Value = c(FDis, FRic, RaoQ),
-      row.names = NULL, check.names = FALSE
+  dens = MASS::kde2d(Q_all$tr1, Q_all$tr2, n = kde_n, lims = c(xlims, ylims))
+
+  # ---- 5) Colors: residents (black), invaders (red) ---------------------------
+  species_ids = rownames(Q_all)
+  is_inv = species_ids %in% inv_ids
+  col_vec = ifelse(is_inv, "red", "black")
+  names(col_vec) = species_ids
+
+  # ---- 6) Density plot (base) -------------------------------------------------
+  dens_plot = NULL
+  if (isTRUE(do_plot)) {
+    # draw the plot
+    filled.contour(
+      dens,
+      color.palette = viridisLite::viridis,
+      xlim = xlims, ylim = ylims,
+
+      plot.title = {
+        graphics::title(
+          main = main_title,
+          sub  = legend_line,
+          xlab = "trPC1", ylab = "trPC2",
+          cex.main = cex_main,
+          cex.sub  = cex_sub,
+          cex.lab  = cex_lab
+        )
+      },
+
+      plot.axes = {
+        oldpar = graphics::par(cex.axis = cex_axis)
+        graphics::axis(1); graphics::axis(2)
+        graphics::par(oldpar)
+
+        graphics::points(Q_all$tr1, Q_all$tr2, pch = 19, cex = 0.55, col = col_vec)
+
+        graphics::contour(dens$x, dens$y, dens$z,
+                          add = TRUE, drawlabels = FALSE, lwd = 0.7, col = "grey60")
+
+        if (is.finite(highlight_level) && length(highlight_level) == 1L) {
+          lvl = max(dens$z, na.rm = TRUE) * highlight_level
+          graphics::contour(dens$x, dens$y, dens$z,
+                            levels = lvl, add = TRUE,
+                            drawlabels = FALSE, lwd = 2, col = "black")
+        }
+
+        if (!is.null(hull_res)) {
+          graphics::lines(hull_res$tr1, hull_res$tr2, lwd = 2, col = "lightgrey")
+        }
+
+        graphics::points(cloud_centroid[1], cloud_centroid[2],
+                         pch = 22, bg = "white", col = "black", lwd = 1.2, cex = 1.8)
+      },
+
+      key.title = graphics::title(main = "Density", cex.main = 0.8)
     )
 
-    # plots
-    k_cols <- viridisLite::viridis(k, option = viridis_option)
-    dend_gg <- factoextra::fviz_dend(
-      hc,
-      k = k, cex = 0.5,
-      k_colors = k_cols, color_labels_by_k = TRUE,
-      rect = TRUE, rect_border = "grey40",
-      main = "Gower Cluster Dendrogram"
-    ) + ggplot2::guides(scale = "none")
+    # =- NEW: capture the fully rendered plot as a recordedplot
+    dens_plot = grDevices::recordPlot()
 
-    scores2 <- scores[, c("PCoA1", "PCoA2")]
-    xrange <- range(scores2$PCoA1)
-    xpad <- 0.1 * diff(xrange)
-    xlims <- xrange + c(-xpad, xpad)
-    yrange <- range(scores2$PCoA2)
-    ypad <- 0.1 * diff(yrange)
-    ylims <- yrange + c(-ypad, ypad)
-    kd <- MASS::kde2d(scores2$PCoA1, scores2$PCoA2, n = kde_n, lims = c(xlims, ylims))
+    # (optional) show it now as well
+    # grDevices::replayPlot(dens_plot)
+  }
 
-    if (isTRUE(show_density_plot)) {
-      filled.contour(
-        kd,
-        color.palette = function(n) viridisLite::viridis(n, option = viridis_option),
-        xlim = xlims, ylim = ylims,
-        plot.title = title(main = "Trait Space Density Contours", xlab = "PCoA1", ylab = "PCoA2"),
-        plot.axes = {
-          axis(1)
-          axis(2)
-          points(scores2, pch = 19, cex = 0.5)
-          contour(kd$x, kd$y, kd$z, add = TRUE, drawlabels = FALSE, lwd = 0.7, col = "grey60")
-          contour(kd$x, kd$y, kd$z,
-            add = TRUE, drawlabels = FALSE,
-            levels = max(kd$z) * 0.5, lwd = 2, col = "black"
-          )
-        },
-        key.title = title(main = "Density")
+  # ---- 7) Optional dendrogram -------------------------------------------------
+  hc = dend_plot = NULL
+  if (isTRUE(do_dend)) {
+    hc = stats::hclust(stats::as.dist(gower_mat))
+    if (requireNamespace("factoextra", quietly = TRUE) &&
+        requireNamespace("viridis", quietly = TRUE)) {
+      dend_plot = factoextra::fviz_dend(
+        hc, k = 4, cex = 0.5,
+        k_colors = viridis::viridis(4, option = "D"),
+        color_labels_by_k = TRUE, rect = TRUE, rect_border = "grey40",
+        main = "Gower Cluster Dendrogram"
       )
     }
-
-    density_gg <- ggplot2::ggplot(scores2, ggplot2::aes(PCoA1, PCoA2)) +
-      ggplot2::stat_density_2d_filled(contour = TRUE) +
-      ggplot2::geom_point(size = 0.7) +
-      ggplot2::labs(title = "Trait Space Density (PCoA1-PCoA2)", x = "PCoA1", y = "PCoA2") +
-      ggplot2::theme_bw()
-
-    centrality_hist <- ggplot2::ggplot(scores, ggplot2::aes(x = centrality)) +
-      ggplot2::geom_histogram(bins = 20, fill = "steelblue", color = "white") +
-      ggplot2::theme_bw() +
-      ggplot2::labs(
-        x = "Distance to community centroid", y = "Number of species",
-        title = "Trait Centrality (Community Edge vs Core)") +
-      ggplot2::theme(plot.title = ggplot2::element_text(size = 10))
-
-    metrics_bar <- ggplot2::ggplot(metrics_df, ggplot2::aes(x = Metric, y = Value)) +
-      ggplot2::geom_col(width = 0.6, fill = "firebrick") +
-      ggplot2::theme_classic() +
-      ggplot2::labs(title = "Community-Level Trait Dispersion", y = "Metric value") +
-      ggplot2::theme(plot.title = ggplot2::element_text(size = 10))
-
-    plots <- list(
-      dend = dend_gg,
-      density_gg = density_gg,
-      centrality_hist = centrality_hist,
-      metrics_bar = metrics_bar
-    )
-
-    if (isTRUE(show_plots)) {
-      combined <- plots$dend /
-        (plots$centrality_hist | plots$metrics_bar) /
-        plots$density_gg +
-        patchwork::plot_layout(heights = c(1, 2, 1))
-      print(combined)
-    }
-
-    res$dispersion <- list(
-      distance_matrix = trait_dist,
-      hc = hc,
-      pcoa = pcoa,
-      scores = scores,
-      centroid = centroid,
-      metrics_df = metrics_df,
-      plots = plots
-    )
+    if (!is.null(dend_plot)) print(dend_plot)
   }
 
-  res
+  # ---- 8) Return --------------------------------------------------------------
+  list(
+    gower     = gower_all,
+    scores    = Q_all,
+    Q_res     = Q_res,
+    Q_inv     = Q_inv,
+    hull_res  = hull_res,
+    centroid  = cloud_centroid,
+    density   = dens,
+    colors    = col_vec,
+    hc        = hc,
+    dens_plot = dens_plot,   # recordedplot (replay with grDevices::replayPlot)
+    dend_plot = dend_plot,   # ggplot object (print directly)
+    xlim      = xlims,
+    ylim      = ylims
+  )
 }

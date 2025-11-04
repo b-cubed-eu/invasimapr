@@ -6,12 +6,14 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Scrape and Analyze Wikipedia &amp; Trait Data for a Species — get_trait_data"><meta name="description" content="Given a binomial species name, this function retrieves optional metadata
-from Wikipedia (taxonomic summary, taxonomy, image, color palette)
+from Wikipedia (taxonomic summary, taxonomy, image, and a color palette)
 and joins relevant plant/trait data from a TRY-style or user-provided trait table.
-Fuzzy matching is used for both TRY and local tables to handle minor spelling or naming mismatches."><meta property="og:description" content="Given a binomial species name, this function retrieves optional metadata
-from Wikipedia (taxonomic summary, taxonomy, image, color palette)
+Fuzzy matching is used for both TRY and local tables to handle minor spelling
+or naming mismatches."><meta property="og:description" content="Given a binomial species name, this function retrieves optional metadata
+from Wikipedia (taxonomic summary, taxonomy, image, and a color palette)
 and joins relevant plant/trait data from a TRY-style or user-provided trait table.
-Fuzzy matching is used for both TRY and local tables to handle minor spelling or naming mismatches."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
+Fuzzy matching is used for both TRY and local tables to handle minor spelling
+or naming mismatches."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -53,9 +55,10 @@ Fuzzy matching is used for both TRY and local tables to handle minor spelling or
 
     <div class="ref-description section level2">
     <p>Given a binomial species name, this function retrieves optional metadata
-from Wikipedia (taxonomic summary, taxonomy, image, color palette)
+from Wikipedia (taxonomic summary, taxonomy, image, and a color palette)
 and joins relevant plant/trait data from a TRY-style or user-provided trait table.
-Fuzzy matching is used for both TRY and local tables to handle minor spelling or naming mismatches.</p>
+Fuzzy matching is used for both TRY and local tables to handle minor spelling
+or naming mismatches.</p>
     </div>
 
     <div class="section level2">
@@ -86,89 +89,117 @@ Fuzzy matching is used for both TRY and local tables to handle minor spelling or
 
 
 <dl><dt id="arg-species">species<a class="anchor" aria-label="anchor" href="#arg-species"></a></dt>
-<dd><p>Character. Species name (binomial, e.g. "Acacia karroo").</p></dd>
+<dd><p>Character. Species name (binomial, e.g. <code>"Acacia karroo"</code>).</p></dd>
 
 
 <dt id="arg-remove-bg">remove_bg<a class="anchor" aria-label="anchor" href="#arg-remove-bg"></a></dt>
-<dd><p>Logical. Remove green/white backgrounds from Wikipedia image? (default: TRUE)</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, call remove.bg via <code>remove_bg_and_save()</code>
+to remove the background from the Wikipedia infobox image and use the
+processed PNG for preview/palette. Default: <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-do-palette-do-taxonomy-do-summary-do-image">do_palette, do_taxonomy, do_summary, do_image<a class="anchor" aria-label="anchor" href="#arg-do-palette-do-taxonomy-do-summary-do-image"></a></dt>
-<dd><p>Logical. Control which metadata to scrape (default: TRUE for all).</p></dd>
+<dd><p>Logical. Control which
+metadata to scrape. All default to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg-bg-thresh">bg_thresh<a class="anchor" aria-label="anchor" href="#arg-bg-thresh"></a></dt>
-<dd><p>Integer. Brightness threshold for white background removal (default: 80).</p></dd>
+<dd><p>Integer. Deprecated/ignored when <code>remove_bg = TRUE</code>.
+Kept for signature compatibility. Default: <code>80</code>.</p></dd>
 
 
 <dt id="arg-green-delta">green_delta<a class="anchor" aria-label="anchor" href="#arg-green-delta"></a></dt>
-<dd><p>Integer. How much greener is "green" than R/B? (default: 20).</p></dd>
+<dd><p>Integer. Deprecated/ignored when <code>remove_bg = TRUE</code>.
+Kept for signature compatibility. Default: <code>20</code>.</p></dd>
 
 
 <dt id="arg-n-palette">n_palette<a class="anchor" aria-label="anchor" href="#arg-n-palette"></a></dt>
-<dd><p>Integer. Number of colors to extract for palette (default: 5).</p></dd>
+<dd><p>Integer. Number of colors to extract for the palette.
+Default: <code>5</code>.</p></dd>
 
 
 <dt id="arg-preview">preview<a class="anchor" aria-label="anchor" href="#arg-preview"></a></dt>
-<dd><p>Logical. Show image after processing? (default: TRUE)</p></dd>
+<dd><p>Logical. Print the processed image (magick) in the console.
+Default: <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-save-folder">save_folder<a class="anchor" aria-label="anchor" href="#arg-save-folder"></a></dt>
-<dd><p>Character or NULL. If non-NULL, will save processed PNG image here.</p></dd>
+<dd><p>Character or <code>NULL</code>. If non-<code>NULL</code>, write the PNG used
+for palette/preview into this folder. When <code>remove_bg = TRUE</code>, the
+background-removed PNG is written here; otherwise the original image is
+written. If <code>NULL</code> and <code>remove_bg = TRUE</code>, a temporary directory is used.</p></dd>
 
 
 <dt id="arg-use-try">use_try<a class="anchor" aria-label="anchor" href="#arg-use-try"></a></dt>
-<dd><p>Logical. If TRUE, join plant traits using a TRY-format database/table (default: FALSE).</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, join plant traits using a TRY-format
+database/table. Default: <code>FALSE</code>.</p></dd>
 
 
 <dt id="arg-try-data">try_data<a class="anchor" aria-label="anchor" href="#arg-try-data"></a></dt>
-<dd><p>Character (path) or data.frame. Path to TRY file, or data frame containing trait data.</p></dd>
+<dd><p>Character (path) or <code>data.frame</code>. Path to a TRY file, or a
+data frame containing TRY-style trait data (must include <code>trait_species_col</code>,
+<code>TraitName</code>, and <code>OrigValueStr</code>).</p></dd>
 
 
 <dt id="arg-trait-species-col">trait_species_col<a class="anchor" aria-label="anchor" href="#arg-trait-species-col"></a></dt>
-<dd><p>Name of species column in TRY trait table (default: "AccSpeciesName").</p></dd>
+<dd><p>Name of the species column in the TRY trait table.
+Default: <code>"AccSpeciesName"</code>.</p></dd>
 
 
 <dt id="arg-local-trait-df">local_trait_df<a class="anchor" aria-label="anchor" href="#arg-local-trait-df"></a></dt>
-<dd><p>Optional. Data.frame of local trait data (can be any species-trait table).</p></dd>
+<dd><p>Optional. <code>data.frame</code> of local trait data (any wide
+table). All columns except the species column are returned.</p></dd>
 
 
 <dt id="arg-local-species-col">local_species_col<a class="anchor" aria-label="anchor" href="#arg-local-species-col"></a></dt>
-<dd><p>Name of species column in local trait table (default: "species").</p></dd>
+<dd><p>Name of the species column in the local trait table.
+Default: <code>"species"</code>.</p></dd>
 
 
 <dt id="arg-max-dist">max_dist<a class="anchor" aria-label="anchor" href="#arg-max-dist"></a></dt>
-<dd><p>Numeric. Maximum distance for fuzzy join (Levenshtein/Jaro-Winkler; default: 1).</p></dd>
+<dd><p>Numeric. Maximum distance for fuzzy matching (Jaro–Winkler
+via <code><a href="https://rdrr.io/pkg/fuzzyjoin/man/stringdist_join.html" class="external-link">fuzzyjoin::stringdist_left_join</a></code>). Default: <code>1</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tibble (one row) with columns: species, optional metadata, and all trait columns found.</p>
+    <p>A tibble (one row) with columns: <code>species</code>, optional metadata
+(<code>summary</code>, taxonomy ranks, <code>img_url</code>, <code>palette</code>, <code>image_file</code>), and all
+available trait columns found via TRY/local joins. <code>image_file</code> contains
+the normalized path to the PNG used for palette/preview (or <code>NA</code> if none).</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-
-<ul><li><p>For TRY tables, <code>TraitName</code> is used for wide trait columns. For local tables, all columns except the species column are returned.</p></li>
-<li><p>Fuzzy matching is used to allow for spelling or formatting mismatches.</p></li>
-<li><p>Image-based color palette extraction uses simple k-means clustering; backgrounds can be removed using a color threshold.</p></li>
-<li><p>Requires: dplyr, purrr, tibble, optionally fuzzyjoin, rvest, httr, stringr, jsonlite, magick, abind.</p></li>
-<li><p>You can control which metadata are scraped for speed.</p></li>
+    <p>When <code>remove_bg = TRUE</code>, the infobox image background is removed using the
+remove.bg API via an internal helper (<code>remove_bg_and_save()</code>), the resulting
+PNG is re-read with <strong>magick</strong>, and the palette is extracted from that
+processed image. Set the environment variable <code>REMOVE_BG_API_KEY</code> to a valid
+remove.bg API key before calling.</p>
+<ul><li><p><strong>Wikipedia:</strong> summary via REST API; taxonomy parsed from the infobox.</p></li>
+<li><p><strong>Image:</strong> first infobox image is used; when <code>remove_bg = TRUE</code>
+the function calls the remove.bg API. Set <code>Sys.setenv(REMOVE_BG_API_KEY = "…")</code>.</p></li>
+<li><p><strong>Palette:</strong> simple k-means on non-transparent pixels of the (processed) PNG.</p></li>
+<li><p><strong>Traits (TRY):</strong> wide table produced from <code>TraitName</code> and numeric <code>OrigValueStr</code>.</p></li>
+<li><p><strong>Traits (local):</strong> returns all columns except the species column.</p></li>
+<li><p><strong>Dependencies:</strong> <code>dplyr</code>, <code>purrr</code>, <code>tibble</code>, <code>fuzzyjoin</code>, <code>rvest</code>,
+<code>httr</code>, <code>stringr</code>, <code>jsonlite</code>, <code>magick</code>, <code>abind</code>.</p></li>
 </ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span><span class="co"># Example using TRY table:</span></span></span>
+<span class="r-in"><span><span class="co"># Using TRY table</span></span></span>
 <span class="r-in"><span><span class="fu">get_trait_data</span><span class="op">(</span><span class="st">"Acacia karroo"</span>,</span></span>
 <span class="r-in"><span>               use_try <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
 <span class="r-in"><span>               try_data <span class="op">=</span> <span class="va">try_traits</span>,</span></span>
 <span class="r-in"><span>               trait_species_col <span class="op">=</span> <span class="st">"SpeciesName"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Example using local trait table:</span></span></span>
+<span class="r-in"><span><span class="co"># Using a local trait table</span></span></span>
 <span class="r-in"><span><span class="fu">get_trait_data</span><span class="op">(</span><span class="st">"Acraea horta"</span>, local_trait_df <span class="op">=</span> <span class="va">traits</span>, local_species_col <span class="op">=</span> <span class="st">"species"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Scrape only metadata (no traits):</span></span></span>
-<span class="r-in"><span><span class="fu">get_trait_data</span><span class="op">(</span><span class="st">"Acacia karroo"</span>, use_try <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Metadata only, with background removal and saving to a folder</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>REMOVE_BG_API_KEY <span class="op">=</span> <span class="st">"&lt;your-removebg-key&gt;"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">get_trait_data</span><span class="op">(</span><span class="st">"Acacia karroo"</span>, use_try <span class="op">=</span> <span class="cn">FALSE</span>, remove_bg <span class="op">=</span> <span class="cn">TRUE</span>, save_folder <span class="op">=</span> <span class="st">"out/"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>
