@@ -25,15 +25,15 @@ learned sensitivities.}
 \item{option}{Character, one of \code{c("A","B","C","D","E")} selecting the
 invasion-fitness specification:
 \describe{
-\item{A}{Baseline: \(\lambda=r^{(z)}-\alpha C^{(z)}-\beta S^{(z)}\).}
-\item{B}{Global abiotic scaling \(\theta_0\cdot r^{(z)}\).}
-\item{C}{Trait-varying abiotic scaling \(\theta_i\cdot r^{(z)}\).}
-\item{D}{Site-varying abiotic and crowding \(\Gamma_{is}, \alpha_{is}\).}
-\item{E}{Signed saturation effect (facilitation allowed via signed \(\beta_i\)).}
+\item{A}{Baseline: \eqn{\lambda = r^{(z)} - \alpha C^{(z)} - \beta S^{(z)}}.}
+\item{B}{Global abiotic scaling \eqn{\theta_0 \cdot r^{(z)}}.}
+\item{C}{Trait-varying abiotic scaling \eqn{\theta_i \cdot r^{(z)}}.}
+\item{D}{Site-varying abiotic and crowding \eqn{\Gamma_{is}, \alpha_{is}}.}
+\item{E}{Signed saturation effect (facilitation allowed via signed \eqn{\beta_i}).}
 }}
 
-\item{calibrate_kappa}{Logical; if \code{TRUE}, set \(\kappa\) so mean \strong{resident}
-\(\lambda \approx 0\) (scale alignment for communication/comparison).}
+\item{calibrate_kappa}{Logical; if \code{TRUE}, set \eqn{\kappa} so mean \strong{resident}
+\eqn{\lambda \approx 0} (scale alignment for communication/comparison).}
 
 \item{prob_method}{(legacy) \code{NULL} or one of \code{c("probit","logit","hard")};
 preserved for backward compatibility.}
@@ -64,7 +64,7 @@ probability tables and plots (with boundary overlay applied when provided).}
 Wraps
 \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{\code{compute_invasion_fitness()}}
 to generate invader-by-site invasion fitness \eqn{\lambda_{is}} under model
-Options \strong{A–E}, and (optionally) maps \eqn{\lambda} to probabilities via
+Options \strong{A-E}, and (optionally) maps \eqn{\lambda} to probabilities via
 \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_establishment_probability.html}{\code{compute_establishment_probability()}}.
 Supports calibration of \eqn{\kappa} so that \strong{resident} mean \eqn{\lambda}
 is approximately zero, and can overlay an \code{sf} boundary on map-like plots.
@@ -74,30 +74,28 @@ is approximately zero, and can overlay an \code{sf} boundary on map-like plots.
 \enumerate{
 \item Chooses the appropriate sensitivity inputs for the requested \code{option}
 (e.g., \code{theta_i} for C, \code{Gamma_is}/\code{alpha_is} for D).
-\item Calls
-\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{\code{compute_invasion_fitness()}}
-with site-standardised inputs \((r^{(z)}, C^{(z)}, S^{(z)})\) held in \code{fit}.
-\item (Optional) Converts \(\lambda\) to probability \(\,P\,\) via probit, logit,
+\item Calls ... with site-standardised inputs \eqn{(r^{(z)}, C^{(z)}, S^{(z)})} held in \code{fit}.
+\item (Optional) Converts \eqn{\lambda} to probability \eqn{P} via probit, logit,
 or a hard threshold, forwarding \verb{prob_*} settings.
 \item (Optional) If \code{boundary_sf} is supplied and plots are available, overlays
 the boundary on map-like plots using \code{geom_sf()}.
 }
 
 \strong{Calibration (\code{calibrate_kappa = TRUE})}
-Aligns invader–resident scales by shifting \(\lambda\) so that the \strong{resident}
+Aligns invader-resident scales by shifting \eqn{\lambda} so that the \strong{resident}
 mean is ~0, using resident moments and trait-plane slopes stored in \code{fit}.
 }
 \examples{
 \dontrun{
-fit <- fit |>
+fit = fit |>
   predict_invaders(traits_inv) |>
   predict_establishment(option = "C", calibrate_kappa = TRUE,
                         method = "probit", prob_scale = list(sigma = 1))
 
 # Overlay a boundary on probability maps
-fit <- predict_establishment(fit, option = "D", method = "logit",
-                             prob_scale = list(tau = 1),
-                             boundary_sf = rsa_boundary)
+fit = predict_establishment(fit, option = "D", method = "logit",
+                            prob_scale = list(tau = 1),
+                            boundary_sf = rsa_boundary)
 }
 
 }

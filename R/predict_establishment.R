@@ -3,7 +3,7 @@
 #' Wraps
 #' \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{`compute_invasion_fitness()`}
 #' to generate invader-by-site invasion fitness \eqn{\lambda_{is}} under model
-#' Options **A–E**, and (optionally) maps \eqn{\lambda} to probabilities via
+#' Options **A-E**, and (optionally) maps \eqn{\lambda} to probabilities via
 #' \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_establishment_probability.html}{`compute_establishment_probability()`}.
 #' Supports calibration of \eqn{\kappa} so that **resident** mean \eqn{\lambda}
 #' is approximately zero, and can overlay an `sf` boundary on map-like plots.
@@ -15,14 +15,15 @@
 #' @param option Character, one of `c("A","B","C","D","E")` selecting the
 #'   invasion-fitness specification:
 #'   \describe{
-#'     \item{A}{Baseline: \(\lambda=r^{(z)}-\alpha C^{(z)}-\beta S^{(z)}\).}
-#'     \item{B}{Global abiotic scaling \(\theta_0\cdot r^{(z)}\).}
-#'     \item{C}{Trait-varying abiotic scaling \(\theta_i\cdot r^{(z)}\).}
-#'     \item{D}{Site-varying abiotic and crowding \(\Gamma_{is}, \alpha_{is}\).}
-#'     \item{E}{Signed saturation effect (facilitation allowed via signed \(\beta_i\)).}
+#'     \item{A}{Baseline: \eqn{\lambda = r^{(z)} - \alpha C^{(z)} - \beta S^{(z)}}.}
+#'     \item{B}{Global abiotic scaling \eqn{\theta_0 \cdot r^{(z)}}.}
+#'     \item{C}{Trait-varying abiotic scaling \eqn{\theta_i \cdot r^{(z)}}.}
+#'     \item{D}{Site-varying abiotic and crowding \eqn{\Gamma_{is}, \alpha_{is}}.}
+#'     \item{E}{Signed saturation effect (facilitation allowed via signed \eqn{\beta_i}).}
 #'   }
-#' @param calibrate_kappa Logical; if `TRUE`, set \(\kappa\) so mean **resident**
-#'   \(\lambda \approx 0\) (scale alignment for communication/comparison).
+#'
+#' @param calibrate_kappa Logical; if `TRUE`, set \eqn{\kappa} so mean **resident**
+#'   \eqn{\lambda \approx 0} (scale alignment for communication/comparison).
 #' @param prob_method (legacy) `NULL` or one of `c("probit","logit","hard")`;
 #'   preserved for backward compatibility.
 #' @param prob_args (legacy) List of arguments passed to
@@ -38,16 +39,14 @@
 #' **What this wrapper does**
 #' 1. Chooses the appropriate sensitivity inputs for the requested `option`
 #'    (e.g., `theta_i` for C, `Gamma_is`/`alpha_is` for D).
-#' 2. Calls
-#'    \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{`compute_invasion_fitness()`}
-#'    with site-standardised inputs \((r^{(z)}, C^{(z)}, S^{(z)})\) held in `fit`.
-#' 3. (Optional) Converts \(\lambda\) to probability \(\,P\,\) via probit, logit,
+#' 2. Calls ... with site-standardised inputs \eqn{(r^{(z)}, C^{(z)}, S^{(z)})} held in `fit`.
+#' 3. (Optional) Converts \eqn{\lambda} to probability \eqn{P} via probit, logit,
 #'    or a hard threshold, forwarding `prob_*` settings.
 #' 4. (Optional) If `boundary_sf` is supplied and plots are available, overlays
 #'    the boundary on map-like plots using `geom_sf()`.
 #'
 #' **Calibration (`calibrate_kappa = TRUE`)**
-#' Aligns invader–resident scales by shifting \(\lambda\) so that the **resident**
+#' Aligns invader-resident scales by shifting \eqn{\lambda} so that the **resident**
 #' mean is ~0, using resident moments and trait-plane slopes stored in `fit`.
 #'
 #' @return The input `fit` with:
@@ -66,15 +65,15 @@
 #'
 #' @examples
 #' \dontrun{
-#' fit <- fit |>
+#' fit = fit |>
 #'   predict_invaders(traits_inv) |>
 #'   predict_establishment(option = "C", calibrate_kappa = TRUE,
 #'                         method = "probit", prob_scale = list(sigma = 1))
 #'
 #' # Overlay a boundary on probability maps
-#' fit <- predict_establishment(fit, option = "D", method = "logit",
-#'                              prob_scale = list(tau = 1),
-#'                              boundary_sf = rsa_boundary)
+#' fit = predict_establishment(fit, option = "D", method = "logit",
+#'                             prob_scale = list(tau = 1),
+#'                             boundary_sf = rsa_boundary)
 #' }
 #'
 #' @export
@@ -93,29 +92,29 @@ predict_establishment = function(
   `%||%` = function(a, b) if (!is.null(a)) a else b
   stopifnot(inherits(fit, "invasimapr_fit"))
 
-  option <- match.arg(option)
-  method_in <- method %||% prob_method
-  prob_method_norm <- if (is.null(method_in)) NULL else
+  option = match.arg(option)
+  method_in = method %||% prob_method
+  prob_method_norm = if (is.null(method_in)) NULL else
     match.arg(as.character(method_in)[1L], c("probit","logit","hard"))
 
-  prob_args_norm <- prob_scale %||% prob_args
-  if (is.null(prob_args_norm)) prob_args_norm <- list()
+  prob_args_norm = prob_scale %||% prob_args
+  if (is.null(prob_args_norm)) prob_args_norm = list()
   if (!is.list(prob_args_norm)) stop("`prob_scale`/`prob_args` must be a list.")
 
   # --- Select site-/trait-varying sensitivities as required by `option` --------
-  GI <- switch(option,
+  GI = switch(option,
                A = NULL,
                B = NULL,
                C = fit$sensitivities$theta_i,
                D = if (!is.null(fit$sensitivities$site_gamma)) fit$sensitivities$site_gamma$Gamma_is else NULL,
                E = NULL)
 
-  AI <- switch(option,
+  AI = switch(option,
                D = if (!is.null(fit$sensitivities$site_alpha)) fit$sensitivities$site_alpha$alpha_is else NULL,
                NULL)
 
   # --- Compute invasion fitness λ ----------------------------------------------
-  fin <- compute_invasion_fitness(
+  fin = compute_invasion_fitness(
     r_is_z   = fit$invaders$r_is_z,
     C_is_z   = fit$invaders$C_is_z,
     S_is_z   = fit$invaders$S_is_z,
@@ -138,11 +137,11 @@ predict_establishment = function(
     site_df  = fit$inputs$site_df,
     return_long = TRUE
   )
-  fit$fitness <- fin
+  fit$fitness = fin
 
   # --- Optional: map λ → P via probit/logit/hard and overlay boundary ----------
   if (!is.null(prob_method_norm)) {
-    fit$prob <- do.call(
+    fit$prob = do.call(
       what = compute_establishment_probability,
       args = c(list(
         lambda_is    = fin$lambda_is,
@@ -157,21 +156,21 @@ predict_establishment = function(
         !is.null(fit$prob$plots) &&
         requireNamespace("ggplot2", quietly = TRUE)) {
 
-      add_boundary <- function(p) {
+      add_boundary = function(p) {
         if (is.null(p) || !"ggplot" %in% class(p)) return(p)
         do.call(`+`, list(
           p,
           do.call(ggplot2::geom_sf, c(list(data = boundary_sf), boundary_params))
         ))
       }
-      pl <- fit$prob$plots
-      if (!is.null(pl$site_mean))  pl$site_mean  <- add_boundary(pl$site_mean)
-      if (!is.null(pl$expected_n)) pl$expected_n <- add_boundary(pl$expected_n)
-      if (!is.null(pl$band))       pl$band       <- add_boundary(pl$band)
-      fit$prob$plots <- pl
+      pl = fit$prob$plots
+      if (!is.null(pl$site_mean))  pl$site_mean  = add_boundary(pl$site_mean)
+      if (!is.null(pl$expected_n)) pl$expected_n = add_boundary(pl$expected_n)
+      if (!is.null(pl$band))       pl$band       = add_boundary(pl$band)
+      fit$prob$plots = pl
     }
   } else {
-    fit$prob <- NULL
+    fit$prob = NULL
   }
 
   fit

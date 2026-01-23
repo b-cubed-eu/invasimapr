@@ -1,5 +1,10 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/404.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/articles/1-introduction.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/articles/2-workflow.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/articles/3-clusters.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/articles/4-synthesis.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/articles/5-tutorial.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/getting-started.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/index.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/authors.html</loc></url>
@@ -37,8 +42,5 @@
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/summarise_invasiveness_invasibility.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/summarise_results.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/utils_internal.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/x_LICENSE.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/_back_README.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/_front_README.html</loc></url>
 </urlset>
 

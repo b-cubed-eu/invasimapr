@@ -1,4 +1,4 @@
-#' Site-varying α_{is} and Γ_{is}, plus β_i (and signed variants)
+#' Site-varying \eqn{α_{is}} and \eqn{Γ_{is}}, plus \eqn{β_{i}} (and signed variants)
 #'
 #' @description
 #' Adds site random-slope adjustments for C_z and r_z to produce α_{is} and Γ_{is}.

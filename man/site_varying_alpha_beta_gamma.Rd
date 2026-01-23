@@ -2,7 +2,7 @@
 % Please edit documentation in R/site_varying_alpha_beta_gamma.R
 \name{site_varying_alpha_beta_gamma}
 \alias{site_varying_alpha_beta_gamma}
-\title{Site-varying α_{is} and Γ_{is}, plus β_i (and signed variants)}
+\title{Site-varying \eqn{α_{is}} and \eqn{Γ_{is}}, plus \eqn{β_{i}} (and signed variants)}
 \usage{
 site_varying_alpha_beta_gamma(
   fit_coeffs,

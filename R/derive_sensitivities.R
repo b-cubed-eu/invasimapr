@@ -1,4 +1,4 @@
-#' Derive trait-varying sensitivities (alpha_i, beta_i) and abiotic slope (theta, gamma_i)
+#' Derive trait-varying sensitivities (αᵢ, βᵢ) and abiotic slope (θ, Γᵢ)
 #'
 #' @description
 #' From an auxiliary GLMM on standardized predictors, extract fixed-effect

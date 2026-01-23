@@ -76,3 +76,8 @@ articles:
     navbar: "Articles"
     contents:
       - "getting-started"
+      - "1-introduction"
+      - "2-workflow"
+      - "3-clusters"
+      - "4-synthesis"
+      - "5-tutorial"

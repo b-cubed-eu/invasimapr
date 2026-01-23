@@ -1,6 +1,6 @@
 #' Compute resident crowding from community composition and trait similarity
 #'
-#' @title Resident crowding C_js via Hellinger composition and Gower–Gaussian trait kernel
+#' @title Resident crowding \eqn{C_{js}} via Hellinger composition and Gower–Gaussian trait kernel
 #'
 #' @description
 #' Given a site × resident community matrix and a resident traits table, this function:

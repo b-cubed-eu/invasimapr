@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_resident_crowding.R
 \name{compute_resident_crowding}
 \alias{compute_resident_crowding}
-\title{Resident crowding C_js via Hellinger composition and Gower–Gaussian trait kernel}
+\title{Resident crowding \eqn{C_{js}} via Hellinger composition and Gower–Gaussian trait kernel}
 \usage{
 compute_resident_crowding(
   comm_res,

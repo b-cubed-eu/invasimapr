@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_sensitivities.R
 \name{derive_sensitivities}
 \alias{derive_sensitivities}
-\title{Derive trait-varying sensitivities (alpha_i, beta_i) and abiotic slope (theta, gamma_i)}
+\title{Derive trait-varying sensitivities (αᵢ, βᵢ) and abiotic slope (θ, Γᵢ)}
 \usage{
 derive_sensitivities(fit_coeffs, Q_inv, inv_ids, lrt = TRUE)
 }
