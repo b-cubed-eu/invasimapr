@@ -1187,6 +1187,7 @@ fit = predict_establishment(
 
 lambda_is = fit$fitness$lambda_is
 p_is      = fit$prob$p_is
+fit_lambda = fit$fitness$lambda_long
 ```
 
 
@@ -1217,7 +1218,7 @@ if (!is.null(fit$prob$plots$invader_mean))     fit$prob$plots$invader_mean
 
 ```{r plot-fitness-mean, fig.alt="Spatial and invader-specific establishment likelihood"}
 
-fitness_df = fit$fitness$lambda_long |>
+fitness_df = fit_lambda |>
   dplyr::group_by(site, x, y, option) |>
   dplyr::summarise(lambda_mean = mean(lambda, na.rm = TRUE), .groups = "drop")
 
