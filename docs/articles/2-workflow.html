@@ -1621,7 +1621,7 @@ objects</strong> used for invader predictions.</p>
 <span><span class="co">#&gt;  $ dat_r   :'data.frame':    11205 obs. of  33 variables:</span></span>
 <span><span class="co">#&gt;  $ grid_res:'data.frame':    11205 obs. of  33 variables:</span></span>
 <span><span class="co">#&gt;  $ fml     :Class 'formula'  language abundance ~ env1 + env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 +      env10 + trait_cont1 + trait_cont2| __truncated__ ...</span></span>
-<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x0000016e0a1325b8&gt; </span></span>
+<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000002ebd1f0a708&gt; </span></span>
 <span><span class="co">#&gt;  $ r_js    : num [1:415, 1:27] 1.061 0.957 1.218 1.247 1.415 ...</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">#&gt;  $ mu_js   : num [1:415, 1:27] 2.89 2.6 3.38 3.48 4.12 ...</span></span>
@@ -1805,7 +1805,7 @@ attach them to <code>fit$sensitivities</code>.</p>
 <span><span class="co">#&gt;   ..- attr(*, "class")= chr "glmmTMB"</span></span>
 <span><span class="co">#&gt;  $ data_used            : tibble [11,205 × 8] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ formula              :Class 'formula'  language log1p(abundance) ~ (r_z + C_z + S_z) * (tr1 + tr2) + (1 | species) + (1 |      site) + (0 + r_z || site) + (0 + C_z || site)</span></span>
-<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x0000016e685b1ea8&gt; </span></span>
+<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000002ec68558dc8&gt; </span></span>
 <span><span class="co">#&gt;  $ alpha_i              : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:10] "inv1" "inv2" "inv3" "inv4" ...</span></span>
 <span><span class="co">#&gt;  $ alpha_signed_i       : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...</span></span>
@@ -2092,7 +2092,7 @@ and ranks for rapid review.</p>
 <span></span>
 <span><span class="va">lambda_is</span> <span class="op">=</span> <span class="va">fit</span><span class="op">$</span><span class="va">fitness</span><span class="op">$</span><span class="va">lambda_is</span></span>
 <span><span class="va">p_is</span>      <span class="op">=</span> <span class="va">fit</span><span class="op">$</span><span class="va">prob</span><span class="op">$</span><span class="va">p_is</span></span>
-<span><span class="va">fit_lambda</span> <span class="op">=</span> <span class="va">fit</span><span class="op">$</span><span class="va">fitness</span><span class="op">$</span><span class="va">lambda_long</span></span></code></pre></div>
+<span><span class="co"># fit_lambda = fit$fitness$lambda_long</span></span></code></pre></div>
 <p>:bar_chart: <strong>Overall mean</strong> <span class="math inline">\(\lambda\)</span> maps that summarise openness,
 <strong>probability heatmaps</strong> and <strong>per-invader faceted
 maps</strong> reveal where and for whom establishment is likely.</p>

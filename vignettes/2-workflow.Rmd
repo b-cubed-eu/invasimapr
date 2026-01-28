@@ -1216,7 +1216,7 @@ if (!is.null(fit$prob$plots$invader_mean))     fit$prob$plots$invader_mean
 
 > :chart_with_upwards_trend: **Figure 17**: Invasiveness ranking by invader. Bars show the mean fraction of sites where intrinsic growth is positive ($\lambda$ > 0) for each invader, averaged across all sites and ordered from highest (more invasive; e.g., inv7, inv9) to lowest (e.g., inv10).
 
-```{r make-fitness-df, include=FALSE}
+```{r make-fitness-df, include=FALSE, eval = !DOCS_BUILD}
 fitness_df = fit$fitness$lambda_long |>
   dplyr::group_by(site, x, y, option) |>
   dplyr::summarise(lambda_mean = mean(lambda, na.rm = TRUE), .groups = "drop")
