@@ -1382,6 +1382,10 @@ Final guardrails for robust runs and reproducibility.
 # Each vignette runs in a clean R session. We therefore **persist state explicitly**.
 dir.create("_data", showWarnings = FALSE, recursive = TRUE)
 
+fitness_df = fit$fitness$lambda_long |>
+  dplyr::group_by(site, x, y, option) |>
+  dplyr::summarise(lambda_mean = mean(lambda, na.rm = TRUE), .groups = "drop")
+
 saveRDS(
   list(
     fit = fit,
