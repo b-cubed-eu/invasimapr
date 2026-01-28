@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 set.seed(42)
 
 # Set BCUBED_DOCS_BUILD=true in CI / docs conversion to skip heavy chunks if needed.
-BCUBED_DOCS_BUILD = identical(Sys.getenv("BCUBED_DOCS_BUILD"), "true")
+DOCS_BUILD = identical(Sys.getenv("BCUBED_DOCS_BUILD"), "true")
 ```
 
 ---
@@ -1168,7 +1168,7 @@ ggplot2::ggplot(df_C_site, ggplot2::aes(x, y, fill = mean_C_z)) +
 
 :zap: **Run `predict_establishment()`** to produce $\lambda$ and $P$ surfaces for chosen options, with maps and ranks for rapid review.
 
-```{r predict-establishment}
+```{r predict-establishment, eval = !DOCS_BUILD}
 library(ggplot2)  # ensures waiver() exists
 # try(source("D:/Methods/R/myR_Packages/b-cubed-versions/invasimapr/R/predict_establishment.R"), silent = TRUE)
 # if (!exists("predict_establishment")) stop("predict_establishment() not found.")
@@ -1188,7 +1188,7 @@ str(fit,1)
 
 lambda_is = fit$fitness$lambda_is
 p_is      = fit$prob$p_is
-fit_lambda = fit$fitness$lambda_long
+# fit_lambda = fit$fitness$lambda_long
 ```
 
 
