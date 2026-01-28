@@ -41,9 +41,9 @@ knitr::opts_chunk$set(
 
 options(rmarkdown.html_vignette.check_title = FALSE)
 
-if (requireNamespace("devtools", quietly = TRUE)) {
-  devtools::load_all(quiet = TRUE)
-}
+# if (requireNamespace("devtools", quietly = TRUE)) {
+#   devtools::load_all(quiet = TRUE)
+# }
 
 # if (requireNamespace("data.table", quietly = TRUE)) data.table::cedta()
 
