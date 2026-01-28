@@ -1216,6 +1216,7 @@ if (!is.null(fit$prob$plots$invader_mean))     fit$prob$plots$invader_mean
 
 
 ```{r plot-fitness-mean, fig.alt="Spatial and invader-specific establishment likelihood"}
+
 fitness_df = fit$fitness$lambda_long |>
   dplyr::group_by(site, x, y, option) |>
   dplyr::summarise(lambda_mean = mean(lambda, na.rm = TRUE), .groups = "drop")
