@@ -1182,6 +1182,7 @@ fit = predict_establishment(
   boundary_sf    = rsa
 )
 
+str(fit,1)
 # str(fit$fitness, 1)
 # str(fit$prob, 1)
 
@@ -1266,8 +1267,8 @@ fit = summarise_results(
   boundary_sf       = rsa
 )
 
+str(fit, 1)
 str(fit$summary, 1)
-
 # head(dplyr::arrange(fit$summary$species, dplyr::desc(V_i)), 10)
 # head(dplyr::arrange(fit$summary$site,    dplyr::desc(total_expected %||% n_est)), 10)
 # fit$summary$trait_effects

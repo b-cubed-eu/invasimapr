@@ -1621,7 +1621,7 @@ objects</strong> used for invader predictions.</p>
 <span><span class="co">#&gt;  $ dat_r   :'data.frame':    11205 obs. of  33 variables:</span></span>
 <span><span class="co">#&gt;  $ grid_res:'data.frame':    11205 obs. of  33 variables:</span></span>
 <span><span class="co">#&gt;  $ fml     :Class 'formula'  language abundance ~ env1 + env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 +      env10 + trait_cont1 + trait_cont2| __truncated__ ...</span></span>
-<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000002080c5375b0&gt; </span></span>
+<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000001d736c10008&gt; </span></span>
 <span><span class="co">#&gt;  $ r_js    : num [1:415, 1:27] 1.061 0.957 1.218 1.247 1.415 ...</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">#&gt;  $ mu_js   : num [1:415, 1:27] 2.89 2.6 3.38 3.48 4.12 ...</span></span>
@@ -1805,7 +1805,7 @@ attach them to <code>fit$sensitivities</code>.</p>
 <span><span class="co">#&gt;   ..- attr(*, "class")= chr "glmmTMB"</span></span>
 <span><span class="co">#&gt;  $ data_used            : tibble [11,205 × 8] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ formula              :Class 'formula'  language log1p(abundance) ~ (r_z + C_z + S_z) * (tr1 + tr2) + (1 | species) + (1 |      site) + (0 + r_z || site) + (0 + C_z || site)</span></span>
-<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x0000020868788350&gt; </span></span>
+<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000001d7eb61c238&gt; </span></span>
 <span><span class="co">#&gt;  $ alpha_i              : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:10] "inv1" "inv2" "inv3" "inv4" ...</span></span>
 <span><span class="co">#&gt;  $ alpha_signed_i       : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...</span></span>
@@ -2073,6 +2073,20 @@ and ranks for rapid review.</p>
 <span>  boundary_sf    <span class="op">=</span> <span class="va">rsa</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">fit</span>,<span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; List of 11</span></span>
+<span><span class="co">#&gt;  $ inputs       :List of 13</span></span>
+<span><span class="co">#&gt;  $ meta         :List of 7</span></span>
+<span><span class="co">#&gt;  $ inputs_std   :List of 2</span></span>
+<span><span class="co">#&gt;  $ traits       :List of 10</span></span>
+<span><span class="co">#&gt;  $ crowding     :List of 5</span></span>
+<span><span class="co">#&gt;  $ model        :List of 7</span></span>
+<span><span class="co">#&gt;  $ residents    :List of 16</span></span>
+<span><span class="co">#&gt;  $ sensitivities:List of 26</span></span>
+<span><span class="co">#&gt;  $ invaders     :List of 6</span></span>
+<span><span class="co">#&gt;  $ fitness      :List of 7</span></span>
+<span><span class="co">#&gt;  $ prob         :List of 7</span></span>
+<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "invasimapr_fit" "list"</span></span>
 <span><span class="co"># str(fit$fitness, 1)</span></span>
 <span><span class="co"># str(fit$prob, 1)</span></span>
 <span></span>
@@ -2186,6 +2200,21 @@ predictors and trait geometry.</p>
 <span>  boundary_sf       <span class="op">=</span> <span class="va">rsa</span></span>
 <span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">fit</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; List of 12</span></span>
+<span><span class="co">#&gt;  $ inputs       :List of 13</span></span>
+<span><span class="co">#&gt;  $ meta         :List of 7</span></span>
+<span><span class="co">#&gt;  $ inputs_std   :List of 2</span></span>
+<span><span class="co">#&gt;  $ traits       :List of 10</span></span>
+<span><span class="co">#&gt;  $ crowding     :List of 5</span></span>
+<span><span class="co">#&gt;  $ model        :List of 7</span></span>
+<span><span class="co">#&gt;  $ residents    :List of 16</span></span>
+<span><span class="co">#&gt;  $ sensitivities:List of 26</span></span>
+<span><span class="co">#&gt;  $ invaders     :List of 6</span></span>
+<span><span class="co">#&gt;  $ fitness      :List of 7</span></span>
+<span><span class="co">#&gt;  $ prob         :List of 7</span></span>
+<span><span class="co">#&gt;  $ summary      :List of 6</span></span>
+<span><span class="co">#&gt;  - attr(*, "class")= chr [1:2] "invasimapr_fit" "list"</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html" class="external-link">str</a></span><span class="op">(</span><span class="va">fit</span><span class="op">$</span><span class="va">summary</span>, <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 6</span></span>
 <span><span class="co">#&gt;  $ species       : tibble [10 × 5] (S3: tbl_df/tbl/data.frame)</span></span>
@@ -2194,7 +2223,6 @@ predictors and trait geometry.</p>
 <span><span class="co">#&gt;  $ establish_long: tibble [4,150 × 8] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ plots         :List of 4</span></span>
 <span><span class="co">#&gt;  $ meta          :List of 3</span></span>
-<span></span>
 <span><span class="co"># head(dplyr::arrange(fit$summary$species, dplyr::desc(V_i)), 10)</span></span>
 <span><span class="co"># head(dplyr::arrange(fit$summary$site,    dplyr::desc(total_expected %||% n_est)), 10)</span></span>
 <span><span class="co"># fit$summary$trait_effects</span></span></code></pre></div>
