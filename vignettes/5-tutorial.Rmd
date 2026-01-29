@@ -24,6 +24,7 @@ set.seed(42)
 BCUBED_DOCS_BUILD = identical(Sys.getenv("BCUBED_DOCS_BUILD"), "true")
 ```
 
+
 ```{r functions, include=FALSE}
 # ------------------------------ sigma_mat_from_vcov helper ------------------------------
 
@@ -80,8 +81,7 @@ sigma_mat_from_vcov <- function(fit, r_is_z, C_is_z, S_is_z, Q_inv, add_resid = 
 
 ```{r read_files, include=FALSE}
 # At the start of the next vignette, explicitly load files from previous vignette:
-# inputs = readRDS("_data/fit_synthesis_inputs.rds")
-inputs = readRDS("_data/fit_inputs.rds")
+inputs = readRDS("_data/inputs_vignettes.rds")
 
 fit = inputs$fit
 site_df = inputs$site_df
@@ -1106,14 +1106,20 @@ print(p_hist_q)
 
 
 ```{r save-state, include=FALSE}
-# Save state for downstream vignettes
-# Each vignette runs in a clean R session. We therefore **persist state explicitly**.
+# # Save state for downstream vignettes
+# # Each vignette runs in a clean R session. We therefore **persist state explicitly**.
 # dir.create("_data", showWarnings = FALSE, recursive = TRUE)
 # 
 # saveRDS(
-#   fit,
-##   file = "_data/fit_tut_inputs.rds",
-#    file = "_data/fit_inputs.rds",
+#   list(
+#     fit = fit,
+#     site_df = site_df,
+#     fitness_df = fitness_df,
+#     df_inv = df_inv,
+#     traits_inv = traits_inv,
+#     lambda_long = lambda_long
+#     ),
+#   file = "_data/inputs_vignettes.rds",
 #   compress = "xz"
 # )
 ```

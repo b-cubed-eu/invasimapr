@@ -6,8 +6,6 @@
 \alias{invasimapr-package}
 \title{invasimapr: Workflow to visualise trait dispersion and assess invasibility}
 \description{
-\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
-
 Utilities for assembling invader–resident interaction tensors, computing trait-based competition kernels from distance matrices, deriving environmental suitability kernels, calculating invasion fitness, and summarising trait dispersion metrics. Includes helpers to predict site × species responses for residents and simulated invaders.
 }
 \seealso{

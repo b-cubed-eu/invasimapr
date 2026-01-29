@@ -1,3 +1,8 @@
+# Ignore build artefacts in Git
+vignettes/figures/
+man/figures/
+
+
 # History files
 .Rhistory
 .Rapp.history

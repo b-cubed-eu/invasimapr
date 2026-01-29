@@ -125,7 +125,8 @@ Install and load the `dissmapr` package from GitHub, ensuring all functions are 
 
 # Ensure the package is loaded
 library(dissmapr)
-sessionInfo()$otherPkgs$dissmapr$Version
+# Optional: report package version
+packageVersion("dissmapr")
 ```
 
 #### Import and harmonise biodiversity-occurrence data
@@ -331,7 +332,7 @@ Then proceed to **retrieve and process environmental data** using [`dissmapr::ge
 
 ```{r get-enviro, echo=TRUE, results='hide', message=FALSE, warning=FALSE, fig.show='hide'}
 # Retrieve 19 bioclim layers (≈10-km, WorldClim v2.1) for all grid centroids
-data_path = "inst/extdata" # cache folder for rasters
+data_path = "_data" # cache folder for rasters
 enviro_list = dissmapr::get_enviro_data(
   data       = grid_spp, # centroids + obs_sum + spp_rich
   buffer_km  = 10, # pad the AOI slightly
@@ -1216,7 +1217,7 @@ if (!is.null(fit$prob$plots$invader_mean))     fit$prob$plots$invader_mean
 
 > :chart_with_upwards_trend: **Figure 17**: Invasiveness ranking by invader. Bars show the mean fraction of sites where intrinsic growth is positive ($\lambda$ > 0) for each invader, averaged across all sites and ordered from highest (more invasive; e.g., inv7, inv9) to lowest (e.g., inv10).
 
-```{r make-fitness-df, include=FALSE, eval = !DOCS_BUILD}
+```{r make-fitness-df, eval = !DOCS_BUILD}
 fitness_df = fit$fitness$lambda_long |>
   dplyr::group_by(site, x, y, option) |>
   dplyr::summarise(lambda_mean = mean(lambda, na.rm = TRUE), .groups = "drop")
@@ -1378,26 +1379,22 @@ Final guardrails for robust runs and reproducibility.
 -   **Saturation slopes.** Do **not** add `(0 + S_z || site)`; `S_z` has no within-site variation.
 
 ```{r save-state, include=FALSE}
-## Save state for downstream vignettes
-# Each vignette runs in a clean R session. We therefore **persist state explicitly**.
-dir.create("_data", showWarnings = FALSE, recursive = TRUE)
-
-fitness_df = fit$fitness$lambda_long |>
-  dplyr::group_by(site, x, y, option) |>
-  dplyr::summarise(lambda_mean = mean(lambda, na.rm = TRUE), .groups = "drop")
-
-saveRDS(
-  list(
-    fit = fit,
-    site_df = site_df,
-    fitness_df = fitness_df,
-    df_inv = df_inv,
-    traits_inv = traits_inv
-  ),
-  # file = "_data/fit_workflow_inputs.rds",
-  file = "_data/fit_inputs.rds",
-  compress = "xz"
-)
+# ## Save state for downstream vignettes
+# # Each vignette runs in a clean R session. We therefore **persist state explicitly**.
+# dir.create("_data", showWarnings = FALSE, recursive = TRUE)
+# 
+# saveRDS(
+#   list(
+    # fit = fit,
+    # site_df = site_df,
+    # fitness_df = fitness_df,
+    # df_inv = df_inv,
+    # traits_inv = traits_inv
+#   ),
+#   # file = "_data/fit_workflow_inputs.rds",
+#   file = "_data/inputs_2.rds",
+#   compress = "xz"
+# )
 
 ```
 
