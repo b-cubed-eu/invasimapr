@@ -156,9 +156,9 @@ Works with common R ecosystems for spatial data (e.g., `sf`), modelling (`lme4`,
 
 ## Installation
 
-```{r setup-invasimapr}
+```{r setup-invasimapr, eval=FALSE, include=TRUE}
 # install.packages("remotes")
-remotes::install_github("b-cubed-eu/invasimapr")
+# remotes::install_github("b-cubed-eu/invasimapr")
 ```
 
 ---
