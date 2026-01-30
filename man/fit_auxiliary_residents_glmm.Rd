@@ -2,7 +2,7 @@
 % Please edit documentation in R/fit_auxiliary_residents_glmm.R
 \name{fit_auxiliary_residents_glmm}
 \alias{fit_auxiliary_residents_glmm}
-\title{Auxiliary GLMM for trait-varying (and optionally site-varying) slopes}
+\title{Auxiliary GLMM for trait-varying and site-varying slopes}
 \usage{
 fit_auxiliary_residents_glmm(
   comm_res,
@@ -18,81 +18,84 @@ fit_auxiliary_residents_glmm(
 )
 }
 \arguments{
-\item{comm_res}{Numeric matrix of site × resident \strong{abundances}; rownames = site
-IDs, colnames = resident IDs (data.frame/tibble will be coerced with \code{as.matrix()}).}
+\item{comm_res}{Numeric matrix of site by resident abundances. Row names are
+site identifiers and column names are resident identifiers.}
 
-\item{r_js_z}{Numeric matrix of site × resident \strong{standardized abiotic suitability}
-(row-wise z by site); same dimnames as \code{comm_res} (coerced with \code{as.matrix()} if needed).}
+\item{r_js_z}{Numeric matrix of standardized abiotic suitability with the same
+dimensions and names as \code{comm_res}.}
 
-\item{C_js_z}{Numeric matrix of site × resident \strong{standardized crowding}
-(row-wise z by site); same dimnames as \code{comm_res} (coerced with \code{as.matrix()} if needed).}
+\item{C_js_z}{Numeric matrix of standardized niche crowding with the same
+dimensions and names as \code{comm_res}.}
 
-\item{S_js_z}{Numeric matrix of site × resident \strong{standardized site saturation}
-(broadcast site-only); same dimnames as \code{comm_res} (coerced with \code{as.matrix()} if needed).}
+\item{S_js_z}{Numeric matrix of standardized site saturation broadcast across
+residents, with the same dimensions and names as \code{comm_res}.}
 
-\item{Q_res}{Data frame with resident trait scores; must contain columns
-\code{tr1} and \code{tr2}, and rownames matching \code{colnames(comm_res)}. If rownames are
-missing but a column named \code{"species"} exists, it is used for rownames.}
+\item{Q_res}{Data frame of resident trait scores. Must contain numeric columns
+\code{tr1} and \code{tr2}, with row names matching
+\code{colnames(comm_res)}.}
 
-\item{use_site_random_slopes}{Logical; if \code{TRUE}, add \code{(0 + r_z || site)} and
-\code{(0 + C_z || site)} to allow site-varying slopes. Default \code{TRUE}.}
+\item{use_site_random_slopes}{Logical; if \code{TRUE}, include random slopes
+for \code{r_z} and \code{C_z} at the site level.}
 
-\item{family}{GLM family for the conditional model. Default
-\code{gaussian()} for \code{log1p(abundance)}; keep as-is for slope learning.}
+\item{family}{GLM family for the conditional model. Default is
+\code{gaussian()} applied to \code{log1p(abundance)}.}
 
-\item{control}{Control list passed to \code{glmmTMB::glmmTMB()}. Default increases
-optimizer limits for stability.}
+\item{control}{Control object passed to \code{glmmTMB::glmmTMB()}.}
 
-\item{na_action}{How to handle rows with any missing values among
-\code{abundance}, \code{r_z}, \code{C_z}, \code{S_z}, \code{tr1}, \code{tr2}. One of \code{"drop"} (default)
-or \code{"error"}.}
+\item{na_action}{How to handle rows with missing values. Either
+\code{"drop"} (default) or \code{"error"}.}
 
-\item{verbose}{Logical; if \code{TRUE}, prints a compact model summary line.}
+\item{verbose}{Logical; if \code{TRUE}, print a short model summary line.}
 }
 \value{
-A named list with:
+A list with components:
 \itemize{
-\item \code{fit} — the \code{glmmTMB} fitted model (auxiliary residents GLMM).
-\item \code{data} — the long table used for fitting (one row per site×resident).
-\item \code{formula} — the exact formula used.
-\item \code{args} — list of key arguments resolved inside the function.
+\item \code{fit}: the fitted \code{glmmTMB} model
+\item \code{data}: the long-format data frame used for fitting
+\item \code{formula}: the model formula
+\item \code{args}: resolved arguments used in the fit
 }
 }
 \description{
 \code{fit_auxiliary_residents_glmm()} assembles a long table of resident
-\emph{(site, species)} cells with standardized predictors \eqn{r^{(z)}_{js}},
-\eqn{C^{(z)}_{js}}, \eqn{S^{(z)}_{js}} and 2D trait scores \verb{(tr1, tr2)},
-then fits a Gaussian GLMM to estimate how slopes on abiotic suitability,
-niche crowding, and site saturation vary across the trait plane. You can
-optionally include site-level random slopes for \code{r_z} and \code{C_z}. (Do \strong{not}
-include \code{(0 + S_z || site)}, as \code{S_z} is site-only and has no within-site
-variation across residents.)
+site by species cells with standardized predictors
+\eqn{r^{(z)}_{js}}, \eqn{C^{(z)}_{js}}, and \eqn{S^{(z)}_{js}}, together with
+two-dimensional trait scores (\code{tr1}, \code{tr2}). It then fits a Gaussian
+generalized linear mixed model to estimate how slopes on abiotic suitability,
+niche crowding, and site saturation vary across the trait plane.
 
-This version is forgiving: it \strong{coerces non-matrix inputs with \code{as.matrix()}},
-repairs missing dimnames where possible, and aligns inputs to \code{comm_res}.
+Optional site-level random slopes can be included for \code{r_z} and
+\code{C_z}. Random slopes for \code{S_z} are intentionally excluded because
+\code{S_z} is site-only and has no within-site variation across residents.
+
+This function is intentionally forgiving: non-matrix inputs are coerced using
+\code{as.matrix()}, missing dimension names are repaired when possible, and
+inputs are aligned to \code{comm_res}.
 }
 \details{
 Fit an auxiliary residents-only GLMM on standardized predictors
 
-The fixed part of the model is
-\deqn{\log(1+\mathrm{abundance}) \sim (r_z + C_z + S_z)\times(tr1 + tr2),}
-with random intercepts \code{(1 | species) + (1 | site)} always included.
-If \code{use_site_random_slopes = TRUE}, the random-slope terms
-\code{(0 + r_z || site) + (0 + C_z || site)} are added. We intentionally omit
-\code{(0 + S_z || site)} because \code{S_z} is site-only, therefore constant within
-a site and not estimable as a random slope.
-}
-\section{Why this matters for invasion fitness}{
+The fixed-effects component of the model is
+\deqn{\log(1 + \mathrm{abundance}) \sim (r_z + C_z + S_z) \times (tr1 + tr2),}
+with random intercepts for species and site always included.
 
-Fitting this auxiliary model yields \strong{trait-varying slope systems} for
-\code{r_z}, \code{C_z}, and \code{S_z}, which you can map to
-\eqn{\theta_i}, \eqn{\alpha_i}, and \eqn{\beta_i} (and optionally
-site-varying versions via random slopes). These parameters plug directly into
-the linear invasion-fitness decomposition
-\eqn{\lambda_{is} = \Gamma_{is}\, r^{(z)}_{is} - \alpha_{is}\, C^{(z)}_{is} - \beta_i\, S^{(z)}_{is}},
-linking \strong{trait position} (trait space, convex hull, centroid) to how
-\strong{abiotic suitability}, \strong{niche crowding}, and \strong{resident competition}
-shape establishment.
+When \code{use_site_random_slopes = TRUE}, random slopes
+\eqn{(0 + r_z | site)} and \eqn{(0 + C_z | site)} are added. Random slopes
+for \code{S_z} are omitted because \code{S_z} is constant within each site
+and therefore not identifiable.
+}
+\section{Role in invasion fitness}{
+
+This auxiliary model estimates trait-dependent slope systems that can be
+mapped to invader-level parameters such as
+\eqn{\theta_i}, \eqn{\alpha_i}, and \eqn{\beta_i}, and optionally to
+site-varying counterparts via random slopes. These parameters enter directly
+into the linear invasion-fitness decomposition
+\deqn{\lambda_{is} = \Gamma_{is} r^{(z)}_{is} -
+      \alpha_{is} C^{(z)}_{is} -
+      \beta_i S^{(z)}_{is},}
+linking trait position to abiotic suitability, niche crowding, and resident
+competition.
 }
 
 \examples{
@@ -104,7 +107,7 @@ J = 6  # residents
 sites   = paste0("s", 1:S)
 res_ids = paste0("sp", 1:J)
 
-# Site × resident abundance
+# Site x resident abundance
 comm_res = matrix(rpois(S*J, lambda = 2), S, J,
                    dimnames = list(sites, res_ids))
 

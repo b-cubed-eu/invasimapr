@@ -1,75 +1,85 @@
-#' Convert invasion fitness to probabilistic establishment (probit/logit/hard)
+#' Convert invasion fitness to probabilistic establishment (probit, logit, hard)
 #'
 #' @title Probabilistic establishment from invasion fitness
 #'
 #' @description
-#' Invasion fitness \eqn{\lambda_{is}} integrates **trait space geometry** (distances,
-#' overlaps, **convex hull**, **cloud centroid**) with **abiotic suitability**
-#' (alignment of invader traits to local environment), **niche crowding** (overlap
-#' with resident trait space weighted by composition), and **resident competition**
-#' (site saturation). `compute_establishment_probability()` maps \eqn{\lambda_{is}}
-#' to **probabilities of establishment** using a unified interface:
+#' Invasion fitness \eqn{\lambda_{is}} integrates trait-space geometry
+#' (distances, overlaps, convex hulls, centroids) with abiotic suitability
+#' (alignment of invader traits to the local environment), niche crowding
+#' (overlap with resident trait space weighted by composition), and resident
+#' competition (site saturation).
 #'
-#' - **Probit**: \eqn{P = \Phi(\lambda/\sigma)} with \eqn{\sigma} as a scalar,
-#'   the residual SD from a fitted auxiliary GLMM, or a cell-wise **predictive SD**.
-#' - **Logistic**: \eqn{P = \mathrm{logit}^{-1}(\lambda / \tau)} with scale \eqn{\tau}.
-#' - **Hard rule**: \eqn{P = \mathbb{I}\{\lambda>0\}} for a binary map.
+#' \code{compute_establishment_probability()} maps \eqn{\lambda_{is}} to
+#' probabilities of establishment using a unified interface:
 #'
-#' If `lambda_is` is not supplied, the function will build it from standardized
-#' predictors via \eqn{\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} - \beta \, S^{(z)}_{is} + \kappa}.
+#' \itemize{
+#'   \item \strong{Probit}: \eqn{P = \Phi(\lambda / \sigma)}, where \eqn{\sigma} is a
+#'     scalar, the residual standard deviation from a fitted auxiliary model,
+#'     or a cell-wise predictive standard deviation.
+#'   \item \strong{Logistic}: \eqn{P = \mathrm{logit}^{-1}(\lambda / \tau)}, where
+#'     \eqn{\tau} is a scale parameter.
+#'   \item \strong{Hard rule}: \eqn{P = I(\lambda > 0)}, yielding a binary map.
+#' }
 #'
-#' @param lambda_is Optional matrix \eqn{S\times I} of invasion fitness (rows = sites,
-#'   cols = invaders). If `NULL`, it is computed from components (see below).
-#' @param r_is_z,C_is_z,S_is_z Optional matrices \eqn{S\times I} of standardized
-#'   abiotic suitability, niche crowding, and saturation. Used only if `lambda_is=NULL`.
-#' @param gamma Optional vector (length \eqn{I}) or matrix \eqn{S\times I} for the
-#'   abiotic slope \eqn{\gamma}; recycled to \eqn{S\times I} as needed.
-#' @param alpha Optional vector (length \eqn{I}) or matrix \eqn{S\times I} of crowding
-#'   penalties \eqn{\alpha \ge 0} by convention); recycled if needed.
-#' @param beta  Optional vector (length \eqn{I}) of saturation penalties \eqn{\beta}.
-#'   If you allow facilitation, pass signed values here.
-#' @param kappa Optional scalar calibration offset added to \eqn{\lambda}; default `0`.
-#' @param method Character, one of `c("probit","logit","hard")`.
-#' @param sigma Numeric **scalar** SD for probit (ignored for other methods). If not
-#'   given and `fit` is supplied, `sigma` defaults to `sigma(fit)`.
-#' @param tau Numeric **scalar** scale for logistic (denominator inside logit); default `1`.
-#' @param fit Optional fitted model (e.g., `glmmTMB`), used to obtain `sigma(fit)` when
-#'   `method="probit"` and `sigma` is missing.
-#' @param predictive Logical; for `method="probit"`, if `TRUE` the function uses a
-#'   **predictive SD** matrix instead of a scalar. Provide it via `sigma_mat`, or set
-#'   `use_vcov=TRUE` to compute it from `fit` (see below).
-#' @param sigma_mat Optional matrix \eqn{S\times I} of SDs (e.g., predictive SD per cell).
-#' @param use_vcov Logical; if `TRUE` and `method="probit"` with `predictive=TRUE`, the
-#'   function will attempt to compute **mean-SE** from `vcov(fit)` and add the residual
-#'   SD to yield a predictive SD. Requires `fit`, `Q_inv`, and the standardized matrices.
-#' @param Q_inv Optional data frame with invader trait-plane scores (`tr1`,`tr2`),
-#'   rownames = invader IDs. Required only if `use_vcov=TRUE`.
-#' @param site_df Optional site table with columns `site,x,y` for mapping; rownames of
-#'   the matrices must match `site_df$site`.
-#' @param return_long Logical; if `TRUE`, include a tidy tibble in the output.
-#' @param make_plots Logical; if `TRUE`, return ggplot objects (site mean map, invader
-#'   ranking, and site×invader heatmap).
-#' @param option_label Optional label attached to the tidy output and plot titles.
+#' If \code{lambda_is} is not supplied, the function builds it from standardized
+#' predictors using
+#' \eqn{\lambda_{is} = \gamma r^{(z)}_{is} - \alpha C^{(z)}_{is} -
+#' \beta S^{(z)}_{is} + \kappa}.
+#'
+#' @param lambda_is Optional matrix of invasion fitness values with dimensions
+#'   \eqn{S} by \eqn{I} (rows are sites, columns are invaders). If \code{NULL},
+#'   fitness is computed from the supplied components.
+#' @param r_is_z,C_is_z,S_is_z Optional matrices of standardized abiotic suitability,
+#'   niche crowding, and saturation. Used only when \code{lambda_is = NULL}.
+#' @param gamma Optional vector of length \eqn{I} or matrix of dimension
+#'   \eqn{S} by \eqn{I} giving the abiotic slope.
+#' @param alpha Optional vector or matrix of crowding penalties. By convention,
+#'   these values are constrained to be non-negative.
+#' @param beta Optional vector of saturation penalties. Signed values allow
+#'   facilitation.
+#' @param kappa Optional scalar offset added to invasion fitness (default 0).
+#' @param method Character string; one of \code{"probit"}, \code{"logit"},
+#'   or \code{"hard"}.
+#' @param sigma Numeric scalar standard deviation for the probit transform.
+#' @param tau Numeric scalar scale parameter for the logistic transform.
+#' @param fit Optional fitted model object used to obtain a residual standard
+#'   deviation when \code{method = "probit"}.
+#' @param predictive Logical; if \code{TRUE}, a predictive standard deviation
+#'   matrix is used for the probit transform.
+#' @param sigma_mat Optional matrix of predictive standard deviations with the
+#'   same dimensions as \code{lambda_is}.
+#' @param use_vcov Logical; if \code{TRUE}, compute predictive standard deviations
+#'   from the variance-covariance matrix of \code{fit}.
+#' @param Q_inv Optional data frame of invader trait scores with columns
+#'   \code{tr1} and \code{tr2}.
+#' @param site_df Optional site metadata table with columns \code{site}, \code{x},
+#'   and \code{y}.
+#' @param return_long Logical; if \code{TRUE}, include a long-format table in
+#'   the output.
+#' @param make_plots Logical; if \code{TRUE}, return diagnostic plots.
+#' @param option_label Optional label attached to the output.
 #'
 #' @details
-#' **Probit**: \eqn{P_{is}=\Phi(\lambda_{is}/\sigma)}. Use a **scalar** `sigma` (fast),
-#' the residual SD from `fit`, or set `predictive=TRUE` to inject a **cell-wise** SD:
-#' either supply `sigma_mat` directly or compute it with `use_vcov=TRUE`, which uses
-#' the fixed-effect covariance from `vcov(fit)` plus the model residual SD.
+#' For the probit method, probabilities are computed as
+#' \eqn{P_{is} = \Phi(\lambda_{is} / \sigma)}. A scalar or cell-wise standard
+#' deviation may be used.
 #'
-#' **Logistic**: \eqn{P_{is}=\mathrm{logit}^{-1}(\lambda_{is}/\tau)}. The scale `tau`
-#' controls how sharply probabilities switch around \eqn{\lambda=0}.
+#' For the logistic method, probabilities are computed as
+#' \eqn{P_{is} = \mathrm{logit}^{-1}(\lambda_{is} / \tau)}.
 #'
-#' **Hard rule**: \eqn{P_{is} = \mathbb{I}\{\lambda_{is}>0\}} yields a binary map
-#' useful for thresholds and counts (invasibility = \#invaders with \(P=1\) at a site).
+#' The hard rule returns a binary indicator equal to one when
+#' \eqn{\lambda_{is} > 0}.
 #'
-#' @return A list with:
-#' - `p_is`: matrix \eqn{S\times I} of probabilities (or 0/1 for `hard`);
-#' - `lambda_is`: the \eqn{S\times I} fitness matrix used;
-#' - `sigma_used`: scalar or matrix actually used for probit (else `NULL`);
-#' - `method`, `option_label`;
-#' - `prob_long`: tidy tibble (if `return_long=TRUE`);
-#' - `plots`: list of ggplots (if `make_plots=TRUE`): `site_mean`, `invader_mean`, `heatmap`.
+#' @return A list with components:
+#' \itemize{
+#'   \item \code{p_is}: matrix of establishment probabilities
+#'   \item \code{lambda_is}: invasion fitness matrix
+#'   \item \code{sigma_used}: standard deviation used by the probit transform
+#'   \item \code{method}: transformation method
+#'   \item \code{option_label}: label used for summaries
+#'   \item \code{prob_long}: long-format table (optional)
+#'   \item \code{plots}: list of plots (optional)
+#' }
 #'
 #' @examples
 #' ## Minimal example (toy shapes)
@@ -101,7 +111,7 @@
 #' # View site-mean probability map (requires ggplot2)
 #' if (requireNamespace("ggplot2", quietly=TRUE)) print(out_probit$plots$site_mean)
 #'
-#' # Hard rule (λ>0)
+#' # Hard rule (lambda>0)
 #' out_hard = compute_establishment_probability(
 #'   r_is_z=r_is_z, C_is_z=C_is_z, S_is_z=S_is_z,
 #'   gamma=gamma, alpha=alpha, beta=beta,
@@ -135,7 +145,7 @@ compute_establishment_probability = function(
     sites   = rownames(r_is_z); invaders = colnames(r_is_z)
     if (is.null(sites) || is.null(invaders)) stop("Matrices must have rownames (sites) and colnames (invaders).")
 
-    # Recycle gamma/alpha to S×I; beta is per-invader (vector)
+    # Recycle gamma/alpha to SxI; beta is per-invader (vector)
     if (length(gamma) == 1L) {
       GI = matrix(gamma, S, I, dimnames=list(sites, invaders))
     } else if (is.vector(gamma)) {
@@ -205,7 +215,7 @@ compute_establishment_probability = function(
         # Parameter name universe
         pn = names(cf); Vb = Vb[pn, pn, drop=FALSE]
 
-        # Build x-row for each (s,i): matches the auxiliary linear predictor used for λ
+        # Build x-row for each (s,i): matches the auxiliary linear predictor used for lambda
         build_x_row = function(param_names, r_sz, C_sz, S_sz, tr1_i, tr2_i){
           x = setNames(numeric(length(param_names)), param_names)
 
@@ -218,7 +228,7 @@ compute_establishment_probability = function(
           add("C_z", -C_sz)
           add("C_z:tr1", -C_sz*tr1_i); add("tr1:C_z", -C_sz*tr1_i)
           add("C_z:tr2", -C_sz*tr2_i); add("tr2:C_z", -C_sz*tr2_i)
-          # - S terms (penalty or signed if you used signed beta when building λ)
+          # - S terms (penalty or signed if you used signed beta when building lambda)
           add("S_z", -S_sz)
           add("S_z:tr1", -S_sz*tr1_i); add("tr1:S_z", -S_sz*tr1_i)
           add("S_z:tr2", -S_sz*tr2_i); add("tr2:S_z", -S_sz*tr2_i)
@@ -250,7 +260,7 @@ compute_establishment_probability = function(
     if (!is.finite(tau) || tau <= 0) tau = 1
   }
 
-  # ---- 2) Transform λ -> probability -----------------------------------------
+  # ---- 2) Transform lambda -> probability -----------------------------------------
   p_is =
     if (method == "probit") {
       if (is.matrix(sigma_used)) {
@@ -275,7 +285,7 @@ compute_establishment_probability = function(
       option  = option_label %||% switch(method,
                                          probit="Probit P(establish)",
                                          logit ="Logistic P(establish)",
-                                         hard  ="Establish (λ>0)")
+                                         hard  ="Establish (Lambda>0)")
     )
     if (!is.null(site_df) && all(c("site","x","y") %in% names(site_df))) {
       prob_long = dplyr::left_join(prob_long, site_df, by="site")
@@ -327,11 +337,11 @@ compute_establishment_probability = function(
       ggplot2::ggplot(ggplot2::aes(x = stats::reorder(invader, val), y = val)) +
       ggplot2::geom_col() + ggplot2::coord_flip() +
       ggplot2::scale_y_continuous(labels = if (method=="hard") ggplot2::waiver() else scales::percent_format()) +
-      ggplot2::labs(x="Invader", y = if (method=="hard") "Share of sites (λ>0)" else "Mean P",
+      ggplot2::labs(x="Invader", y = if (method=="hard") "Share of sites (Lambda>0)" else "Mean P",
                     title = "Invasiveness (mean across sites)") +
       ggplot2::theme_minimal()
 
-    # Heatmap (site × invader)
+    # Heatmap (site x invader)
     if (method=='hard') {
       d$val_f = factor(d$val, levels = c(0,1), labels = c("0","1"))
     heatmap = d |>

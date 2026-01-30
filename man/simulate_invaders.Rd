@@ -18,141 +18,106 @@ simulate_invaders(
 )
 }
 \arguments{
-\item{resident_traits}{A \code{data.frame} containing a species ID column
-(specified by \code{species_col}) \strong{or} species IDs as row names, plus one or
-more trait columns (numeric, factor, character supported).}
+\item{resident_traits}{A data frame containing either a species identifier
+column (specified by \code{species_col}) or species identifiers as row names,
+plus one or more trait columns.}
 
 \item{n_inv}{Integer; number of invaders to simulate (default \code{10}).}
 
-\item{species_col}{\code{NULL} or character; the species ID column name in
-\code{resident_traits}. If \code{NULL}, species IDs are taken from row names
-(default \code{"species"}).}
+\item{species_col}{\code{NULL} or character; name of the species identifier column
+in \code{resident_traits}. If \code{NULL}, species identifiers are taken from row names.}
 
-\item{trait_cols}{\code{NULL} or character vector; which trait columns to use.
-Default: all columns except \code{species_col} (when present).}
+\item{trait_cols}{\code{NULL} or character vector specifying which trait columns
+to use. Defaults to all columns except \code{species_col} when present.}
 
-\item{mode}{Either \code{"columnwise"} (new trait combinations; default) or
-\code{"rowwise"} (preserve covariance by resampling rows).}
+\item{mode}{Character; either \code{"columnwise"} or \code{"rowwise"}.}
 
-\item{numeric_method}{For columnwise \strong{numeric} traits: one of
-\code{"bootstrap"} (default; sample from observed values),
-\code{"normal"} (draws from \eqn{N(\bar{x}, s)}; truncated to \link{min, max} if
-\code{keep_bounds = TRUE}), or \code{"uniform"} (draws from \code{Uniform[min, max]}).}
+\item{numeric_method}{Character; for numeric traits in columnwise mode,
+one of \code{"bootstrap"}, \code{"normal"}, or \code{"uniform"}.}
 
 \item{keep_bounds}{Logical; if \code{TRUE}, normal or uniform draws are constrained
-to the observed \verb{[min, max]}. This does not apply to \code{"bootstrap"}
-(default \code{TRUE}).}
+to the observed minimum and maximum values.}
 
-\item{inv_prefix}{Character; prefix used to construct invader IDs
-(default \code{"inv"}).}
+\item{inv_prefix}{Character; prefix used to construct invader identifiers.}
 
-\item{keep_species_column}{Logical; when \code{species_col} is not \code{NULL}, keep
-the species ID column after setting row names (default \code{TRUE}). Ignored if
-\code{species_col = NULL}.}
+\item{keep_species_column}{Logical; if \code{TRUE} and \code{species_col} is not \code{NULL},
+retain the species identifier column after setting row names.}
 
-\item{seed}{\code{NULL} or integer; optional RNG seed for reproducibility.}
+\item{seed}{\code{NULL} or integer; optional random seed for reproducibility.}
 }
 \value{
-A \code{data.frame} of simulated invaders. Row names are the invader IDs.
-If \code{species_col} is not \code{NULL} and \code{keep_species_column = TRUE}, that
-column will contain the same IDs as the row names.
+A data frame of simulated invader traits. Row names correspond to invader
+identifiers. If \code{species_col} is not \code{NULL} and \code{keep_species_column = TRUE},
+the species identifier column contains the same identifiers.
 }
 \description{
-Generate \eqn{n_{\mathrm{inv}}} trait rows for hypothetical invaders by resampling
-the empirical distribution of resident traits. By default, traits are sampled
-independently per column (“columnwise”), creating novel combinations across
-traits. Alternatively, entire rows can be bootstrapped (“rowwise”) to preserve
-the resident covariance structure. Row names of the returned object are set to
-the invader IDs.
+Generate \eqn{n_{\mathrm{inv}}} rows of trait values for hypothetical invaders
+by resampling the empirical distribution of resident traits. By default,
+traits are sampled independently by column, creating novel trait
+combinations. Alternatively, entire rows can be resampled to preserve the
+covariance structure of the resident trait space.
+
+Row names of the returned object are set to the invader identifiers.
 }
 \details{
-\strong{Species identifiers.} Supply species IDs in a dedicated column via
-\code{species_col}, or set \code{species_col = NULL} to use \code{row.names(resident_traits)}
-as the species IDs. In both cases, newly simulated invaders receive fresh,
-unique IDs (\code{inv_prefix1}, \code{inv_prefix2}, …), which become the \strong{row names}
-of the returned \code{data.frame}. When \code{species_col} is not \code{NULL}, the same IDs
-are also stored in that column (unless \code{keep_species_column = FALSE}).
+\strong{Species identifiers}
+Species identifiers can be supplied via a dedicated column specified by
+\code{species_col}, or taken from the row names of \code{resident_traits} when
+\code{species_col = NULL}. Newly simulated invaders receive fresh, unique
+identifiers constructed from \code{inv_prefix}, which become the row names of
+the returned data frame. When \code{species_col} is not \code{NULL}, the same identifiers
+are also stored in that column unless \code{keep_species_column = FALSE}.
 
-\strong{Trait selection.} If \code{trait_cols} is \code{NULL}, all columns except
-\code{species_col} (when present) are considered traits. Otherwise, only the
-intersection of \code{trait_cols} and existing column names is used.
+\strong{Trait selection}
+If \code{trait_cols} is \code{NULL}, all columns except \code{species_col} (when present)
+are treated as traits. Otherwise, only the intersection of \code{trait_cols} and
+existing column names is used.
 
-\strong{Sampling modes.}
+\strong{Sampling modes}
 \itemize{
-\item \code{mode = "columnwise"}: Each trait is generated independently. Numeric traits
-can be drawn by bootstrap (empirical sampling), uniform within observed
-bounds, or from a normal distribution parameterized by the empirical mean
-and SD (optionally truncated to observed min–max if \code{keep_bounds = TRUE}).
-Factor and character traits are sampled from their observed values/levels.
-\item \code{mode = "rowwise"}: Entire rows are resampled with replacement from
-\code{resident_traits}, preserving the joint structure. In this mode, if
-\code{species_col} is provided, its values are overwritten with the new invader
-IDs. If \code{species_col = NULL}, only the trait columns are returned and the
-row names are replaced by the invader IDs.
+\item \code{mode = "columnwise"}: Each trait is generated independently.
+Numeric traits can be drawn by bootstrap sampling, from a normal
+distribution parameterised by the empirical mean and standard
+deviation, or from a uniform distribution on the observed range.
+Factor and character traits are sampled from observed values.
+\item \code{mode = "rowwise"}: Entire rows are resampled with replacement
+from the resident trait table, preserving joint structure across
+traits.
 }
 
-\strong{ID collisions.} If any proposed invader IDs would collide with existing
-resident IDs, they are made unique using \code{\link[base]{make.unique}}.
+\strong{Identifier collisions}
+If proposed invader identifiers collide with existing resident identifiers,
+they are made unique using \link[base]{make.unique}.
 }
 \examples{
-## ---------------------------
-## Example 1: species IDs in a column
-## ---------------------------
+\dontrun{
 set.seed(1)
-residents_col = data.frame(
-  species = paste0("sp", 1:5),
-  height  = c(10.2, 9.8, 11.1, 10.5, 9.9),
-  SLA     = c(15.0, 15.2, 14.7, 15.5, 15.1),
+residents <- data.frame(
+  species  = paste0("sp", 1:5),
+  height   = c(10.2, 9.8, 11.1, 10.5, 9.9),
+  SLA      = c(15.0, 15.2, 14.7, 15.5, 15.1),
   lifeform = factor(c("tree", "shrub", "shrub", "tree", "herb"))
 )
 
-# Columnwise bootstrap for numeric traits; factor sampled from levels.
-inv1 = simulate_invaders(
-  residents_col, n_inv = 4, species_col = "species",
-  mode = "columnwise", numeric_method = "bootstrap",
-  inv_prefix = "inv", keep_species_column = TRUE, seed = 42
+inv <- simulate_invaders(
+  residents,
+  n_inv = 4,
+  species_col = "species",
+  mode = "columnwise",
+  numeric_method = "bootstrap"
 )
-head(inv1)
-
-# Rowwise resampling preserves covariance (entire rows).
-inv2 = simulate_invaders(
-  residents_col, n_inv = 3, species_col = "species",
-  mode = "rowwise", inv_prefix = "inv", seed = 123
-)
-head(inv2)
-
-## ---------------------------
-## Example 2: species IDs in row names (species_col = NULL)
-## ---------------------------
-set.seed(2)
-residents_rn = data.frame(
-  height  = c(10.2, 9.8, 11.1, 10.5, 9.9),
-  SLA     = c(15.0, 15.2, 14.7, 15.5, 15.1),
-  lifeform = factor(c("tree", "shrub", "shrub", "tree", "herb"))
-)
-rownames(residents_rn) = paste0("sp", 1:5)
-
-# Columnwise with normal draws truncated to observed min–max
-inv3 = simulate_invaders(
-  residents_rn, n_inv = 5, species_col = NULL,
-  mode = "columnwise", numeric_method = "normal",
-  keep_bounds = TRUE, inv_prefix = "x", seed = 99
-)
-head(inv3)  # row names are the invader IDs; no species column present
-
-# Rowwise with species_col = NULL: entire rows resampled; row names replaced
-inv4 = simulate_invaders(
-  residents_rn, n_inv = 3, species_col = NULL,
-  mode = "rowwise", inv_prefix = "new", seed = 77
-)
-head(inv4)
+head(inv)
+}
 
 }
 \seealso{
-\link[base:sample]{base::sample}, \link[base:make.unique]{base::make.unique}, \link[stats:Normal]{stats::rnorm}, \link[stats:Uniform]{stats::runif}, \link[stats:sd]{stats::sd}
+\link[base]{sample},
+\link[base]{make.unique},
+\link[stats]{rnorm},
+\link[stats]{runif},
+\link[stats]{sd}
 }
 \keyword{bootstrap}
-\keyword{ecology}
 \keyword{resampling}
 \keyword{simulation}
 \keyword{traits}

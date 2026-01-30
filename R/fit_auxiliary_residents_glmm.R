@@ -1,69 +1,76 @@
 #' Fit an auxiliary residents-only GLMM on standardized predictors
 #'
-#' @title Auxiliary GLMM for trait-varying (and optionally site-varying) slopes
+#' @title Auxiliary GLMM for trait-varying and site-varying slopes
 #'
 #' @description
-#' `fit_auxiliary_residents_glmm()` assembles a long table of resident
-#' *(site, species)* cells with standardized predictors \eqn{r^{(z)}_{js}},
-#' \eqn{C^{(z)}_{js}}, \eqn{S^{(z)}_{js}} and 2D trait scores `(tr1, tr2)`,
-#' then fits a Gaussian GLMM to estimate how slopes on abiotic suitability,
-#' niche crowding, and site saturation vary across the trait plane. You can
-#' optionally include site-level random slopes for `r_z` and `C_z`. (Do **not**
-#' include `(0 + S_z || site)`, as `S_z` is site-only and has no within-site
-#' variation across residents.)
+#' \code{fit_auxiliary_residents_glmm()} assembles a long table of resident
+#' site by species cells with standardized predictors
+#' \eqn{r^{(z)}_{js}}, \eqn{C^{(z)}_{js}}, and \eqn{S^{(z)}_{js}}, together with
+#' two-dimensional trait scores (\code{tr1}, \code{tr2}). It then fits a Gaussian
+#' generalized linear mixed model to estimate how slopes on abiotic suitability,
+#' niche crowding, and site saturation vary across the trait plane.
 #'
-#' This version is forgiving: it **coerces non-matrix inputs with `as.matrix()`**,
-#' repairs missing dimnames where possible, and aligns inputs to `comm_res`.
+#' Optional site-level random slopes can be included for \code{r_z} and
+#' \code{C_z}. Random slopes for \code{S_z} are intentionally excluded because
+#' \code{S_z} is site-only and has no within-site variation across residents.
 #'
-#' @param comm_res   Numeric matrix of site × resident **abundances**; rownames = site
-#'   IDs, colnames = resident IDs (data.frame/tibble will be coerced with `as.matrix()`).
-#' @param r_js_z     Numeric matrix of site × resident **standardized abiotic suitability**
-#'   (row-wise z by site); same dimnames as `comm_res` (coerced with `as.matrix()` if needed).
-#' @param C_js_z     Numeric matrix of site × resident **standardized crowding**
-#'   (row-wise z by site); same dimnames as `comm_res` (coerced with `as.matrix()` if needed).
-#' @param S_js_z     Numeric matrix of site × resident **standardized site saturation**
-#'   (broadcast site-only); same dimnames as `comm_res` (coerced with `as.matrix()` if needed).
-#' @param Q_res      Data frame with resident trait scores; must contain columns
-#'   `tr1` and `tr2`, and rownames matching `colnames(comm_res)`. If rownames are
-#'   missing but a column named `"species"` exists, it is used for rownames.
-#' @param use_site_random_slopes Logical; if `TRUE`, add `(0 + r_z || site)` and
-#'   `(0 + C_z || site)` to allow site-varying slopes. Default `TRUE`.
-#' @param family     GLM family for the conditional model. Default
-#'   `gaussian()` for `log1p(abundance)`; keep as-is for slope learning.
-#' @param control    Control list passed to `glmmTMB::glmmTMB()`. Default increases
-#'   optimizer limits for stability.
-#' @param na_action  How to handle rows with any missing values among
-#'   `abundance`, `r_z`, `C_z`, `S_z`, `tr1`, `tr2`. One of `"drop"` (default)
-#'   or `"error"`.
-#' @param verbose    Logical; if `TRUE`, prints a compact model summary line.
+#' This function is intentionally forgiving: non-matrix inputs are coerced using
+#' \code{as.matrix()}, missing dimension names are repaired when possible, and
+#' inputs are aligned to \code{comm_res}.
 #'
-#' @return A named list with:
-#' \itemize{
-#'   \item `fit` — the `glmmTMB` fitted model (auxiliary residents GLMM).
-#'   \item `data` — the long table used for fitting (one row per site×resident).
-#'   \item `formula` — the exact formula used.
-#'   \item `args` — list of key arguments resolved inside the function.
-#' }
+#' @param comm_res Numeric matrix of site by resident abundances. Row names are
+#'   site identifiers and column names are resident identifiers.
+#' @param r_js_z Numeric matrix of standardized abiotic suitability with the same
+#'   dimensions and names as \code{comm_res}.
+#' @param C_js_z Numeric matrix of standardized niche crowding with the same
+#'   dimensions and names as \code{comm_res}.
+#' @param S_js_z Numeric matrix of standardized site saturation broadcast across
+#'   residents, with the same dimensions and names as \code{comm_res}.
+#' @param Q_res Data frame of resident trait scores. Must contain numeric columns
+#'   \code{tr1} and \code{tr2}, with row names matching
+#'   \code{colnames(comm_res)}.
+#' @param use_site_random_slopes Logical; if \code{TRUE}, include random slopes
+#'   for \code{r_z} and \code{C_z} at the site level.
+#' @param family GLM family for the conditional model. Default is
+#'   \code{gaussian()} applied to \code{log1p(abundance)}.
+#' @param control Control object passed to \code{glmmTMB::glmmTMB()}.
+#' @param na_action How to handle rows with missing values. Either
+#'   \code{"drop"} (default) or \code{"error"}.
+#' @param verbose Logical; if \code{TRUE}, print a short model summary line.
 #'
 #' @details
-#' The fixed part of the model is
-#' \deqn{\log(1+\mathrm{abundance}) \sim (r_z + C_z + S_z)\times(tr1 + tr2),}
-#' with random intercepts `(1 | species) + (1 | site)` always included.
-#' If `use_site_random_slopes = TRUE`, the random-slope terms
-#' `(0 + r_z || site) + (0 + C_z || site)` are added. We intentionally omit
-#' `(0 + S_z || site)` because `S_z` is site-only, therefore constant within
-#' a site and not estimable as a random slope.
+#' The fixed-effects component of the model is
+#' \deqn{\log(1 + \mathrm{abundance}) \sim (r_z + C_z + S_z) \times (tr1 + tr2),}
+#' with random intercepts for species and site always included.
 #'
-#' @section Why this matters for invasion fitness:
-#' Fitting this auxiliary model yields **trait-varying slope systems** for
-#' `r_z`, `C_z`, and `S_z`, which you can map to
-#' \eqn{\theta_i}, \eqn{\alpha_i}, and \eqn{\beta_i} (and optionally
-#' site-varying versions via random slopes). These parameters plug directly into
-#' the linear invasion-fitness decomposition
-#' \eqn{\lambda_{is} = \Gamma_{is}\, r^{(z)}_{is} - \alpha_{is}\, C^{(z)}_{is} - \beta_i\, S^{(z)}_{is}},
-#' linking **trait position** (trait space, convex hull, centroid) to how
-#' **abiotic suitability**, **niche crowding**, and **resident competition**
-#' shape establishment.
+#' When \code{use_site_random_slopes = TRUE}, random slopes
+#' \eqn{(0 + r_z | site)} and \eqn{(0 + C_z | site)} are added. Random slopes
+#' for \code{S_z} are omitted because \code{S_z} is constant within each site
+#' and therefore not identifiable.
+#'
+#' @section Role in invasion fitness:
+#' This auxiliary model estimates trait-dependent slope systems that can be
+#' mapped to invader-level parameters such as
+#' \eqn{\theta_i}, \eqn{\alpha_i}, and \eqn{\beta_i}, and optionally to
+#' site-varying counterparts via random slopes. These parameters enter directly
+#' into the linear invasion-fitness decomposition
+#' \deqn{\lambda_{is} = \Gamma_{is} r^{(z)}_{is} -
+#'       \alpha_{is} C^{(z)}_{is} -
+#'       \beta_i S^{(z)}_{is},}
+#' linking trait position to abiotic suitability, niche crowding, and resident
+#' competition.
+#'
+#' @return A list with components:
+#' \itemize{
+#'   \item \code{fit}: the fitted \code{glmmTMB} model
+#'   \item \code{data}: the long-format data frame used for fitting
+#'   \item \code{formula}: the model formula
+#'   \item \code{args}: resolved arguments used in the fit
+#' }
+#'
+#' @importFrom stats complete.cases
+#' @importFrom utils head
+#' @importFrom stats gaussian
 #'
 #' @examples
 #' \dontrun{
@@ -74,7 +81,7 @@
 #' sites   = paste0("s", 1:S)
 #' res_ids = paste0("sp", 1:J)
 #'
-#' # Site × resident abundance
+#' # Site x resident abundance
 #' comm_res = matrix(rpois(S*J, lambda = 2), S, J,
 #'                    dimnames = list(sites, res_ids))
 #'
@@ -134,7 +141,7 @@ fit_auxiliary_residents_glmm = function(
     # Ensure 2D numeric with finite dims
     if (length(dim(x)) != 2L || any(dim(x) == 0L))
       stop(sprintf("%s must be a non-empty 2D matrix; got dim = (%s).",
-                   name, paste(dim(x), collapse = "×")))
+                   name, paste(dim(x), collapse = "x")))
     suppressWarnings(storage.mode(x) == "double")
     x
   }

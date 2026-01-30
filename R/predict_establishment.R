@@ -102,14 +102,19 @@ predict_establishment = function(
   if (!is.list(prob_args_norm)) stop("`prob_scale`/`prob_args` must be a list.")
 
   # --- Select site-/trait-varying sensitivities as required by `option` --------
-  GI = switch(option,
-               A = NULL,
-               B = NULL,
-               C = fit$sensitivities$theta_i,
-               D = if (!is.null(fit$sensitivities$site_gamma)) fit$sensitivities$site_gamma$Gamma_is else NULL,
-               E = NULL)
+  GI = switch(
+    as.character(option),
+    "A" = NULL,
+    "B" = NULL,
+    "C" = fit$sensitivities$theta_i,
+    "D" = if (!is.null(fit$sensitivities$site_gamma))
+      fit$sensitivities$site_gamma$Gamma_is else NULL,
+    "E" = NULL,
+    stop("Unknown option: ", option)
+  )
 
-  AI = switch(option,
+  AI = switch(
+    as.character(option),
                D = if (!is.null(fit$sensitivities$site_alpha)) fit$sensitivities$site_alpha$alpha_is else NULL,
                NULL)
 

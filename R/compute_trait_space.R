@@ -9,7 +9,8 @@
 #' (3) deriving the resident convex hull (realised niche region),
 #' (4) estimating a kernel density over the 2D space, and
 #' (5) optionally rendering a base R `filled.contour` map that overlays
-#' the hull, all points (residents black, invaders red), and the cloud centroid (white square with black outline).
+#' the hull, all points (residents black, invaders red), and the cloud centroid
+#' (white square with black outline).
 #' Optionally it also computes a functional dendrogram (`hclust`) and a
 #' pretty dendrogram plot (`factoextra::fviz_dend`) when available.
 #'
@@ -35,16 +36,16 @@
 #'
 #' @return A list with:
 #' \itemize{
-#'   \item \code{gower}  — Gower distance matrix (all species).
-#'   \item \code{scores} — Data frame of 2D PCoA scores (\code{Q_all}) with columns \code{tr1,tr2}.
-#'   \item \code{Q_res}, \code{Q_inv} — Subsets of \code{scores} for residents and invaders.
-#'   \item \code{hull_res} — Data frame (tr1,tr2) of the resident convex hull ring (closed), or \code{NULL} if < 3 residents.
-#'   \item \code{centroid} — Numeric vector of the overall (res+inv) centroid \code{c(tr1, tr2)}.
-#'   \item \code{density} — List \code{list(x, y, z)} from \code{MASS::kde2d}.
-#'   \item \code{colors}  — Named vector with color per species ID (residents black, invaders red).
-#'   \item \code{hc}      — \code{hclust} object (if \code{do_dend=TRUE}), else \code{NULL}.
-#'   \item \code{dend_plot} — A ggplot object from \code{factoextra::fviz_dend} when available, else \code{NULL}.
-#'   \item \code{xlim}, \code{ylim} — Numeric length-2 ranges used for plotting with padding.
+#'   \item \code{gower}  - Gower distance matrix (all species).
+#'   \item \code{scores} - Data frame of 2D PCoA scores (\code{Q_all}) with columns \code{tr1,tr2}.
+#'   \item \code{Q_res}, \code{Q_inv} - Subsets of \code{scores} for residents and invaders.
+#'   \item \code{hull_res} - Data frame (tr1,tr2) of the resident convex hull ring (closed), or \code{NULL} if < 3 residents.
+#'   \item \code{centroid} - Numeric vector of the overall (res+inv) centroid \code{c(tr1, tr2)}.
+#'   \item \code{density} - List \code{list(x, y, z)} from \code{MASS::kde2d}.
+#'   \item \code{colors}  - Named vector with color per species ID (residents black, invaders red).
+#'   \item \code{hc}      - \code{hclust} object (if \code{do_dend=TRUE}), else \code{NULL}.
+#'   \item \code{dend_plot} - A ggplot object from \code{factoextra::fviz_dend} when available, else \code{NULL}.
+#'   \item \code{xlim}, \code{ylim} - Numeric length-2 ranges used for plotting with padding.
 #' }
 #'
 #' @details
@@ -75,7 +76,8 @@
 #'   do_plot    = TRUE,
 #'   do_dend    = TRUE,
 #'   main_title = "Trait space density with hull and centroid",
-#'   legend_line = "Hull = realised niche region; white square = centroid; black = residents; red = invaders"
+#'   legend_line = "Hull = realised niche region;
+#'   white square = centroid; black = residents; red = invaders"
 #' )
 #'
 #' # Access returned objects
@@ -96,7 +98,7 @@ compute_trait_space = function(traits_res,
                             kde_n = 100,
                             pad_prop = 0.10,
                             main_title = "Trait space density with convex hull and centroid",
-                            legend_line = "Hull = realised niche region; white square = centroid; black dots = residents; red dots = invaders",
+                            legend_line = "Hull = realised niche; white square = centroid; black dots = residents; red dots = invaders",
                             cex_main = 1, cex_sub = 0.72, cex_lab = 0.85, cex_axis = 0.75,
                             highlight_level = 0.5,
                             do_plot = TRUE,

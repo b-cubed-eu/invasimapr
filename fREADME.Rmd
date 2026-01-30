@@ -1,6 +1,6 @@
 ---
 title: "invasimapr"
-sidebar_label: "Getting Started"
+sidebar_label: "Key Concepts"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -161,7 +161,7 @@ Works with common R ecosystems for spatial data (e.g., `sf`), modelling (`lme4`,
 
 ## Installation
 
-```{r setup-invasimapr, eval=FALSE, include=FALSE}
+```{r setup-invasimapr, eval=FALSE, include=TRUE}
 # install.packages("remotes")
 # remotes::install_github("b-cubed-eu/invasimapr")
 ```

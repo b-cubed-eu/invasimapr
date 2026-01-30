@@ -6,30 +6,50 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Compute invasion fitness \(\lambda_{is}\) for multiple model options — compute_invasion_fitness"><meta name="description" content="compute_invasion_fitness() evaluates the invasion-fitness surface
-\(\lambda_{is}\) over sites (\(s\)) and invaders (\(i\)) using the
-three standardized predictors:
-Abiotic suitability \(r^{(z)}_{is}\) (alignment between invader traits and local environment),
-Niche crowding \(C^{(z)}_{is}\) (overlap with resident trait space weighted by composition),
-Resident competition \(S^{(z)}_{is}\) (site-only saturation).
+\(\lambda_{is}\) over sites (\(s\)) and invaders (\(i\)) using three
+standardized predictors:
+
+Abiotic suitability \(r^{(z)}_{is}\) (alignment between invader traits
+and the local environment),
+Niche crowding \(C^{(z)}_{is}\) (overlap with resident trait space,
+weighted by composition),
+Resident competition \(S^{(z)}_{is}\) (site-level saturation).
 
 
-It supports five published/useful variants:
-A: \(\gamma=1\), B: global \(\theta_0\), C: trait-varying \(\theta_i\),
-D: site-varying \(\Gamma_{is}\) and \(\alpha_{is}\), E: signed \(S\) effect.
-Optionally, it calibrates an offset \(\kappa\) so the mean resident \(\lambda\)
-is approximately zero on the same scale (when resident standardized matrices are supplied)."><meta property="og:description" content="compute_invasion_fitness() evaluates the invasion-fitness surface
-\(\lambda_{is}\) over sites (\(s\)) and invaders (\(i\)) using the
-three standardized predictors:
-Abiotic suitability \(r^{(z)}_{is}\) (alignment between invader traits and local environment),
-Niche crowding \(C^{(z)}_{is}\) (overlap with resident trait space weighted by composition),
-Resident competition \(S^{(z)}_{is}\) (site-only saturation).
+Five model variants are supported:
+Option A: \(\gamma = 1\)
+Option B: global slope \(\theta_0\)
+Option C: invader-specific slopes \(\theta_i\)
+Option D: site-varying slopes \(\Gamma_{is}\) and penalties
+\(\alpha_{is}\)
+Option E: signed saturation effect
 
 
-It supports five published/useful variants:
-A: \(\gamma=1\), B: global \(\theta_0\), C: trait-varying \(\theta_i\),
-D: site-varying \(\Gamma_{is}\) and \(\alpha_{is}\), E: signed \(S\) effect.
-Optionally, it calibrates an offset \(\kappa\) so the mean resident \(\lambda\)
-is approximately zero on the same scale (when resident standardized matrices are supplied)."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
+Optionally, an offset \(\kappa\) can be calibrated so that the mean resident
+invasion fitness is approximately zero when resident standardized matrices
+are supplied."><meta property="og:description" content="compute_invasion_fitness() evaluates the invasion-fitness surface
+\(\lambda_{is}\) over sites (\(s\)) and invaders (\(i\)) using three
+standardized predictors:
+
+Abiotic suitability \(r^{(z)}_{is}\) (alignment between invader traits
+and the local environment),
+Niche crowding \(C^{(z)}_{is}\) (overlap with resident trait space,
+weighted by composition),
+Resident competition \(S^{(z)}_{is}\) (site-level saturation).
+
+
+Five model variants are supported:
+Option A: \(\gamma = 1\)
+Option B: global slope \(\theta_0\)
+Option C: invader-specific slopes \(\theta_i\)
+Option D: site-varying slopes \(\Gamma_{is}\) and penalties
+\(\alpha_{is}\)
+Option E: signed saturation effect
+
+
+Optionally, an offset \(\kappa\) can be calibrated so that the mean resident
+invasion fitness is approximately zero when resident standardized matrices
+are supplied."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -51,11 +71,11 @@ is approximately zero on the same scale (when resident standardized matrices are
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Articles</h6></li>
-    <li><a class="dropdown-item" href="../articles/1-introduction.html">Introduction</a></li>
-    <li><a class="dropdown-item" href="../articles/2-workflow.html">Step-by-step Workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/3-clusters.html">Clustering and risk scenarios</a></li>
-    <li><a class="dropdown-item" href="../articles/4-synthesis.html">Invasion fitness synthesis</a></li>
-    <li><a class="dropdown-item" href="../articles/5-tutorial.html">Tutorial on computing invasion fitness</a></li>
+    <li><a class="dropdown-item" href="../articles/introduction_1.html">Introduction</a></li>
+    <li><a class="dropdown-item" href="../articles/workflow_2.html">Step-by-step Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/clusters_3.html">Clustering and risk scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/synthesis_4.html">Invasion fitness synthesis</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial_5.html">Tutorial on computing invasion fitness</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -75,15 +95,22 @@ is approximately zero on the same scale (when resident standardized matrices are
 
     <div class="ref-description section level2">
     <p><code>compute_invasion_fitness()</code> evaluates the invasion-fitness surface
-\(\lambda_{is}\) over sites (\(s\)) and invaders (\(i\)) using the
-three standardized predictors:</p><ul><li><p><strong>Abiotic suitability</strong> \(r^{(z)}_{is}\) (alignment between invader traits and local environment),</p></li>
-<li><p><strong>Niche crowding</strong> \(C^{(z)}_{is}\) (overlap with resident trait space weighted by composition),</p></li>
-<li><p><strong>Resident competition</strong> \(S^{(z)}_{is}\) (site-only saturation).</p></li>
-</ul><p>It supports five published/useful variants:
-<strong>A</strong>: \(\gamma=1\), <strong>B</strong>: global \(\theta_0\), <strong>C</strong>: trait-varying \(\theta_i\),
-<strong>D</strong>: site-varying \(\Gamma_{is}\) and \(\alpha_{is}\), <strong>E</strong>: signed \(S\) effect.
-Optionally, it calibrates an offset \(\kappa\) so the <strong>mean resident</strong> \(\lambda\)
-is approximately zero on the same scale (when resident standardized matrices are supplied).</p>
+\(\lambda_{is}\) over sites (\(s\)) and invaders (\(i\)) using three
+standardized predictors:</p>
+<ul><li><p>Abiotic suitability \(r^{(z)}_{is}\) (alignment between invader traits
+and the local environment),</p></li>
+<li><p>Niche crowding \(C^{(z)}_{is}\) (overlap with resident trait space,
+weighted by composition),</p></li>
+<li><p>Resident competition \(S^{(z)}_{is}\) (site-level saturation).</p></li>
+</ul><p>Five model variants are supported:</p><ul><li><p>Option A: \(\gamma = 1\)</p></li>
+<li><p>Option B: global slope \(\theta_0\)</p></li>
+<li><p>Option C: invader-specific slopes \(\theta_i\)</p></li>
+<li><p>Option D: site-varying slopes \(\Gamma_{is}\) and penalties
+\(\alpha_{is}\)</p></li>
+<li><p>Option E: signed saturation effect</p></li>
+</ul><p>Optionally, an offset \(\kappa\) can be calibrated so that the mean resident
+invasion fitness is approximately zero when resident standardized matrices
+are supplied.</p>
     </div>
 
     <div class="section level2">
@@ -122,164 +149,273 @@ is approximately zero on the same scale (when resident standardized matrices are
 
 
 <dl><dt id="arg-r-is-z">r_is_z<a class="anchor" aria-label="anchor" href="#arg-r-is-z"></a></dt>
-<dd><p>Matrix \(S \times I\) of standardized abiotic suitability for invaders.
-Row names are site IDs; column names are invader IDs.</p></dd>
+<dd><p>Matrix of standardized abiotic suitability with dimensions
+\(S\) by \(I\).</p></dd>
 
 
 <dt id="arg-c-is-z">C_is_z<a class="anchor" aria-label="anchor" href="#arg-c-is-z"></a></dt>
-<dd><p>Matrix \(S \times I\) of standardized niche crowding for invaders.</p></dd>
+<dd><p>Matrix of standardized niche crowding with dimensions
+\(S\) by \(I\).</p></dd>
 
 
 <dt id="arg-s-is-z">S_is_z<a class="anchor" aria-label="anchor" href="#arg-s-is-z"></a></dt>
-<dd><p>Matrix \(S \times I\) of standardized site saturation for invaders
-(site-only; same value down each site row).</p></dd>
+<dd><p>Matrix of standardized site saturation with dimensions
+\(S\) by \(I\).</p></dd>
 
 
 <dt id="arg-option">option<a class="anchor" aria-label="anchor" href="#arg-option"></a></dt>
-<dd><p>Character, one of <code>c("A","B","C","D","E")</code>. See Details.</p></dd>
+<dd><p>Character string specifying the model option. One of
+<code>"A"</code>, <code>"B"</code>, <code>"C"</code>, <code>"D"</code>, or <code>"E"</code>.</p></dd>
 
 
 <dt id="arg-alpha-i">alpha_i<a class="anchor" aria-label="anchor" href="#arg-alpha-i"></a></dt>
-<dd><p>Optional named numeric vector (length \(I\)) of invader crowding
-sensitivities \(\alpha_i\). Required for A–C and E; ignored if <code>alpha_is</code> is provided in D.</p></dd>
+<dd><p>Optional named vector of invader-level crowding sensitivities.</p></dd>
 
 
 <dt id="arg-beta-i">beta_i<a class="anchor" aria-label="anchor" href="#arg-beta-i"></a></dt>
-<dd><p>Optional named numeric vector (length \(I\)) of saturation sensitivities
-\(\beta_i\). Used in A–D. For E, use <code>beta_signed_i</code> for a signed effect.</p></dd>
+<dd><p>Optional named vector of invader-level saturation sensitivities.</p></dd>
 
 
 <dt id="arg-theta-">theta0<a class="anchor" aria-label="anchor" href="#arg-theta-"></a></dt>
-<dd><p>Numeric scalar global slope for \(r^{(z)}\) (Option B; default <code>1</code>).</p></dd>
+<dd><p>Global abiotic slope used in options A, B, and E.</p></dd>
 
 
 <dt id="arg-theta-i">theta_i<a class="anchor" aria-label="anchor" href="#arg-theta-i"></a></dt>
-<dd><p>Optional named numeric vector (length \(I\)) of trait-varying slopes
-for \(r^{(z)}\) (Option C).</p></dd>
+<dd><p>Optional invader-specific abiotic slopes used in option C.</p></dd>
 
 
 <dt id="arg-gamma-is">Gamma_is<a class="anchor" aria-label="anchor" href="#arg-gamma-is"></a></dt>
-<dd><p>Optional matrix \(S \times I\) of site-varying slopes for \(r^{(z)}\)
-(Option D). If NULL, falls back to <code>theta_i</code> or <code>theta0</code> as available.</p></dd>
+<dd><p>Optional site by invader matrix of abiotic slopes used in
+option D.</p></dd>
 
 
 <dt id="arg-alpha-is">alpha_is<a class="anchor" aria-label="anchor" href="#arg-alpha-is"></a></dt>
-<dd><p>Optional matrix \(S \times I\) of site-varying penalties for crowding
-(Option D). If NULL, falls back to broadcasting <code>alpha_i</code>.</p></dd>
+<dd><p>Optional site by invader matrix of crowding penalties used
+in option D.</p></dd>
 
 
 <dt id="arg-beta-signed-i">beta_signed_i<a class="anchor" aria-label="anchor" href="#arg-beta-signed-i"></a></dt>
-<dd><p>Optional named numeric vector (length \(I\)) providing a signed
-\(\beta\) for Option E (facilitation allowed when \(\beta&lt;0\)).</p></dd>
+<dd><p>Optional signed saturation sensitivities used in
+option E.</p></dd>
 
 
 <dt id="arg-calibrate-kappa">calibrate_kappa<a class="anchor" aria-label="anchor" href="#arg-calibrate-kappa"></a></dt>
-<dd><p>Logical; if <code>TRUE</code>, compute \(\kappa\) from <strong>residents</strong> so that
-the mean resident \(\lambda\) is ~0 on the same scale (see below).</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, compute a calibration offset
+using resident data.</p></dd>
 
 
 <dt id="arg-r-js-z-c-js-z-s-js-z">r_js_z, C_js_z, S_js_z<a class="anchor" aria-label="anchor" href="#arg-r-js-z-c-js-z-s-js-z"></a></dt>
-<dd><p>Optional resident standardized matrices (site \(\times\) resident),
-required only when <code>calibrate_kappa = TRUE</code>.</p></dd>
+<dd><p>Optional resident standardized matrices required
+when <code>calibrate_kappa = TRUE</code>.</p></dd>
 
 
 <dt id="arg-q-res">Q_res<a class="anchor" aria-label="anchor" href="#arg-q-res"></a></dt>
-<dd><p>Optional data frame of resident trait-plane scores with columns <code>tr1</code>, <code>tr2</code>
-and rownames = resident IDs (only needed for \(\kappa\) if you want to
-derive resident analogs \(\alpha_j\), \(\beta_j\) from trait slopes).</p></dd>
+<dd><p>Optional data frame of resident trait-plane scores.</p></dd>
 
 
 <dt id="arg-a-a-a-b-b-b-">a0, a1, a2, b0, b1, b2<a class="anchor" aria-label="anchor" href="#arg-a-a-a-b-b-b-"></a></dt>
-<dd><p>Optional numeric scalars: coefficients for
-resident analog slopes \(\text{slope}_C = a_0 + a_1\,tr1 + a_2\,tr2\)
-and \(\text{slope}_S = b_0 + b_1\,tr1 + b_2\,tr2\). Used only when
-<code>calibrate_kappa=TRUE</code> and <code>Q_res</code> provided.</p></dd>
+<dd><p>Optional numeric coefficients used to derive resident
+analog slopes when calibrating \(\kappa\).</p></dd>
 
 
 <dt id="arg-site-df">site_df<a class="anchor" aria-label="anchor" href="#arg-site-df"></a></dt>
-<dd><p>Optional site table with columns <code>site</code>, <code>x</code>, <code>y</code> used to enrich the
-tidy output when <code>return_long=TRUE</code>.</p></dd>
+<dd><p>Optional site metadata table with columns <code>site</code>, <code>x</code>,
+and <code>y</code>.</p></dd>
 
 
 <dt id="arg-return-long">return_long<a class="anchor" aria-label="anchor" href="#arg-return-long"></a></dt>
-<dd><p>Logical; if <code>TRUE</code>, returns a tidy table with predictors and coefficients.</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, return a tidy long-format table.</p></dd>
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
-<dd><p>Optional character to tag the option in the tidy output; defaults to a
-descriptive name per option (e.g., <code>"Option A (γ=1)"</code>).</p></dd>
+<dd><p>Optional character label attached to the output.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with:</p><ul><li><p><code>lambda_is</code> — matrix \(S \times I\) of invasion fitness,</p></li>
-<li><p><code>GI</code> — the \(\gamma\) used (vector length \(I\) or matrix \(S \times I\)),</p></li>
-<li><p><code>AI</code> — the \(\alpha\) used (vector length \(I\) or matrix \(S \times I\)),</p></li>
-<li><p><code>BI</code> — the \(\beta\) used (vector length \(I\)),</p></li>
-<li><p><code>kappa</code> — numeric calibration offset,</p></li>
-<li><p><code>option</code> — option label,</p></li>
-<li><p><code>lambda_long</code> — tidy tibble (if <code>return_long=TRUE</code>).</p></li>
+    <p>A list containing:</p><ul><li><p><code>lambda_is</code>: invasion fitness matrix</p></li>
+<li><p><code>GI</code>: abiotic slope used</p></li>
+<li><p><code>AI</code>: crowding penalties used</p></li>
+<li><p><code>BI</code>: saturation penalties used</p></li>
+<li><p><code>kappa</code>: calibration offset</p></li>
+<li><p><code>option</code>: option label</p></li>
+<li><p><code>lambda_long</code>: tidy table (optional)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Compute invasion fitness (five options) with optional resident calibration</p>
-<p><strong>Options</strong>
-<em>A</em>: \(\lambda_{is} = 1\cdot r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa\)
-<em>B</em>: \(\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa\)
-<em>C</em>: \(\lambda_{is} = \theta_i r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa\)
-<em>D</em>: \(\lambda_{is} = \Gamma_{is} r^{(z)}_{is} - \alpha_{is} C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa\)
-<em>E</em>: \(\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} + \beta^{(\mathrm{signed})}_i S^{(z)}_{is} + \kappa\)</p>
-<p><strong>Resident calibration</strong> (\(\kappa\)). When <code>calibrate_kappa=TRUE</code>, the function
-computes resident analog penalties \(\alpha_j,\beta_j\) from <code>Q_res</code> and slopes
-<code>{a0,a1,a2,b0,b1,b2}</code>, builds resident matrices <code>AJ</code>, <code>BJ</code>, evaluates
-\(\lambda^{(\mathrm{res})}_{js} = \theta_0 r^{(z)}_{js} - \alpha_j C^{(z)}_{js} - \beta_j S^{(z)}_{js}\),
-then sets \(\kappa = -\mathrm{mean}(\lambda^{(\mathrm{res})}_{js})\) (na-rm),
-keeping residents and invaders on the same scale.</p>
+    <p>Compute invasion fitness with multiple model options</p>
+<p>The invasion fitness is computed as:</p>
+<ul><li><p>Option A:
+\(\lambda_{is} = r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa\)</p></li>
+<li><p>Option B:
+\(\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa\)</p></li>
+<li><p>Option C:
+\(\lambda_{is} = \theta_i r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa\)</p></li>
+<li><p>Option D:
+\(\lambda_{is} = \Gamma_{is} r^{(z)}_{is} - \alpha_{is} C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa\)</p></li>
+<li><p>Option E:
+\(\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    + \beta_i^{(signed)} S^{(z)}_{is} + \kappa\)</p></li>
+</ul><p>When <code>calibrate_kappa = TRUE</code>, the offset is chosen so that the mean
+resident invasion fitness equals zero.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Minimal reproducible example (toy shapes only)</span></span></span>
-<span class="r-in"><span><span class="va">S</span> <span class="op">=</span> <span class="fl">5</span>; <span class="va">I</span> <span class="op">=</span> <span class="fl">3</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Minimal reproducible example (toy dimensions, no real ecology)</span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## S = number of sites, I = number of invaders</span></span></span>
+<span class="r-in"><span><span class="va">S</span> <span class="op">=</span> <span class="fl">5</span></span></span>
+<span class="r-in"><span><span class="va">I</span> <span class="op">=</span> <span class="fl">3</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">r_is_z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span><span class="op">*</span><span class="va">I</span><span class="op">)</span>,  <span class="va">S</span>, <span class="va">I</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s"</span>,<span class="fl">1</span><span class="op">:</span><span class="va">S</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"i"</span>,<span class="fl">1</span><span class="op">:</span><span class="va">I</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">C_is_z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span><span class="op">*</span><span class="va">I</span><span class="op">)</span>,  <span class="va">S</span>, <span class="va">I</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">S_is_z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span><span class="op">)</span>, each<span class="op">=</span><span class="va">I</span><span class="op">)</span>, <span class="va">S</span>, <span class="va">I</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span> <span class="co"># site-only broadcast</span></span></span>
-<span class="r-in"><span><span class="va">alpha_i</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>, <span class="fl">0.2</span>, <span class="fl">1.0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">beta_i</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>, <span class="fl">0.1</span>, <span class="fl">0.5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Option A (γ=1, κ=0)</span></span></span>
-<span class="r-in"><span><span class="va">outA</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span><span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
-<span class="r-in"><span>                                 option<span class="op">=</span><span class="st">"A"</span>, alpha_i<span class="op">=</span><span class="va">alpha_i</span>, beta_i<span class="op">=</span><span class="va">beta_i</span>,</span></span>
-<span class="r-in"><span>                                 theta0<span class="op">=</span><span class="fl">1</span>, return_long<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## r_is_z : intrinsic growth component</span></span></span>
+<span class="r-in"><span><span class="co">## rows = sites (s), columns = invaders (i)</span></span></span>
+<span class="r-in"><span><span class="va">r_is_z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span> <span class="op">*</span> <span class="va">I</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="va">S</span>,</span></span>
+<span class="r-in"><span>  ncol <span class="op">=</span> <span class="va">I</span>,</span></span>
+<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"s"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">S</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"i"</span>, <span class="fl">1</span><span class="op">:</span><span class="va">I</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Option B (γ = θ0)</span></span></span>
-<span class="r-in"><span><span class="va">outB</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span><span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
-<span class="r-in"><span>                                 option<span class="op">=</span><span class="st">"B"</span>, alpha_i<span class="op">=</span><span class="va">alpha_i</span>, beta_i<span class="op">=</span><span class="va">beta_i</span>,</span></span>
-<span class="r-in"><span>                                 theta0<span class="op">=</span><span class="fl">0.8</span>, return_long<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## C_is_z : crowding / competition component (same shape as r_is_z)</span></span></span>
+<span class="r-in"><span><span class="va">C_is_z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span> <span class="op">*</span> <span class="va">I</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="va">S</span>,</span></span>
+<span class="r-in"><span>  ncol <span class="op">=</span> <span class="va">I</span>,</span></span>
+<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Option C (γ_i = θ_i) — use I = ncol(r_is_z) to avoid length/name mismatch</span></span></span>
-<span class="r-in"><span><span class="va">I</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">theta_i</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">I</span>, <span class="fl">0.5</span>, <span class="fl">1.2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">outC</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span><span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
-<span class="r-in"><span>                                 option<span class="op">=</span><span class="st">"C"</span>, alpha_i<span class="op">=</span><span class="va">alpha_i</span>, beta_i<span class="op">=</span><span class="va">beta_i</span>,</span></span>
-<span class="r-in"><span>                                 theta_i<span class="op">=</span><span class="va">theta_i</span>, return_long<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## S_is_z : site-only environmental gradient</span></span></span>
+<span class="r-in"><span><span class="co">## generated per-site, then broadcast across invaders</span></span></span>
+<span class="r-in"><span><span class="va">S_is_z</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/scale.html" class="external-link">scale</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">S</span><span class="op">)</span><span class="op">)</span>, each <span class="op">=</span> <span class="va">I</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="va">S</span>,</span></span>
+<span class="r-in"><span>  ncol <span class="op">=</span> <span class="va">I</span>,</span></span>
+<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Option D (site-varying Γ_is and α_is)</span></span></span>
-<span class="r-in"><span><span class="va">Gamma_is</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">theta_i</span>, each<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>, dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">alpha_is</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">alpha_i</span>, each<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span>, nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                           dimnames<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/prod.html" class="external-link">prod</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/dim.html" class="external-link">dim</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.1</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>                                                               nrow<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">outD</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span><span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
-<span class="r-in"><span>                                 option<span class="op">=</span><span class="st">"D"</span>, alpha_is<span class="op">=</span><span class="va">alpha_is</span>, beta_i<span class="op">=</span><span class="va">beta_i</span>,</span></span>
-<span class="r-in"><span>                                 Gamma_is<span class="op">=</span><span class="va">Gamma_is</span>, return_long<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in compute_invasion_fitness(r_is_z, C_is_z, S_is_z, option = "D",     alpha_is = alpha_is, beta_i = beta_i, Gamma_is = Gamma_is,     return_long = FALSE):</span> identical(dim(alpha_is), dim(r_is_z)) is not TRUE</span>
+<span class="r-in"><span><span class="co">## Invader-specific baseline parameters</span></span></span>
+<span class="r-in"><span><span class="va">alpha_i</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">I</span>, <span class="fl">0.2</span>, <span class="fl">1.0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span>  <span class="co"># baseline crowding sensitivity</span></span></span>
+<span class="r-in"><span><span class="va">beta_i</span>  <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">I</span>, <span class="fl">0.1</span>, <span class="fl">0.5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span>  <span class="co"># strength of S effect</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Option E (signed S effect)</span></span></span>
-<span class="r-in"><span><span class="va">beta_signed_i</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">outE</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span><span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
-<span class="r-in"><span>                                 option<span class="op">=</span><span class="st">"E"</span>, alpha_i<span class="op">=</span><span class="va">alpha_i</span>, beta_signed_i<span class="op">=</span><span class="va">beta_signed_i</span>,</span></span>
-<span class="r-in"><span>                                 theta0<span class="op">=</span><span class="fl">1</span>, return_long<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Option A: fixed gamma = 1, no S effect (kappa = 0)</span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="va">outA</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
+<span class="r-in"><span>  option      <span class="op">=</span> <span class="st">"A"</span>,</span></span>
+<span class="r-in"><span>  alpha_i     <span class="op">=</span> <span class="va">alpha_i</span>,</span></span>
+<span class="r-in"><span>  beta_i      <span class="op">=</span> <span class="va">beta_i</span>,</span></span>
+<span class="r-in"><span>  theta0      <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  return_long <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Option B: gamma shared across invaders (gamma = theta_0)</span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="va">outB</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
+<span class="r-in"><span>  option      <span class="op">=</span> <span class="st">"B"</span>,</span></span>
+<span class="r-in"><span>  alpha_i     <span class="op">=</span> <span class="va">alpha_i</span>,</span></span>
+<span class="r-in"><span>  beta_i      <span class="op">=</span> <span class="va">beta_i</span>,</span></span>
+<span class="r-in"><span>  theta0      <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
+<span class="r-in"><span>  return_long <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Option C: invader-specific gamma_i</span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="va">theta_i</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">runif</a></span><span class="op">(</span><span class="va">I</span>, <span class="fl">0.5</span>, <span class="fl">1.2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">outC</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
+<span class="r-in"><span>  option      <span class="op">=</span> <span class="st">"C"</span>,</span></span>
+<span class="r-in"><span>  alpha_i     <span class="op">=</span> <span class="va">alpha_i</span>,</span></span>
+<span class="r-in"><span>  beta_i      <span class="op">=</span> <span class="va">beta_i</span>,</span></span>
+<span class="r-in"><span>  theta_i     <span class="op">=</span> <span class="va">theta_i</span>,</span></span>
+<span class="r-in"><span>  return_long <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Option D: fully site-varying Gamma_is and alpha_is</span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## gamma_is : site x invader matrix of density-dependence scalars</span></span></span>
+<span class="r-in"><span><span class="co">## constructed by repeating gamma_i across sites</span></span></span>
+<span class="r-in"><span><span class="va">Gamma_is</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">theta_i</span>, each <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## alpha_is : site x invader crowding sensitivity</span></span></span>
+<span class="r-in"><span><span class="co">## start from invader-specific alpha_i and allow small site-level variation</span></span></span>
+<span class="r-in"><span><span class="va">alpha_is</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="cn">NA_real_</span>,</span></span>
+<span class="r-in"><span>  nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">alpha_is</span><span class="op">[</span>, <span class="va">j</span><span class="op">]</span> <span class="op">=</span> <span class="va">alpha_i</span><span class="op">[</span><span class="va">j</span><span class="op">]</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## Add site-level noise and enforce positivity.</span></span></span>
+<span class="r-in"><span><span class="co">## pmax() drops matrix attributes, so we re-wrap explicitly.</span></span></span>
+<span class="r-in"><span><span class="va">alpha_is</span> <span class="op">=</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">tmp</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">pmax</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>    <span class="va">alpha_is</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">alpha_is</span><span class="op">)</span>, <span class="fl">0</span>, <span class="fl">0.1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>      ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="va">tmp</span>,</span></span>
+<span class="r-in"><span>    nrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    ncol <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">ncol</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    dimnames <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/dimnames.html" class="external-link">dimnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">outD</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
+<span class="r-in"><span>  option      <span class="op">=</span> <span class="st">"D"</span>,</span></span>
+<span class="r-in"><span>  alpha_is    <span class="op">=</span> <span class="va">alpha_is</span>,</span></span>
+<span class="r-in"><span>  beta_i      <span class="op">=</span> <span class="va">beta_i</span>,</span></span>
+<span class="r-in"><span>  Gamma_is    <span class="op">=</span> <span class="va">Gamma_is</span>,</span></span>
+<span class="r-in"><span>  return_long <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="co">## Option E: signed S effect (positive or negative beta_i)</span></span></span>
+<span class="r-in"><span><span class="co">## ---------------------------------------------------------------</span></span></span>
+<span class="r-in"><span><span class="va">beta_signed_i</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html" class="external-link">setNames</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">I</span>, <span class="fl">0</span>, <span class="fl">0.3</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">colnames</a></span><span class="op">(</span><span class="va">r_is_z</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">outE</span> <span class="op">=</span> <span class="fu">compute_invasion_fitness</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="va">r_is_z</span>, <span class="va">C_is_z</span>, <span class="va">S_is_z</span>,</span></span>
+<span class="r-in"><span>  option          <span class="op">=</span> <span class="st">"E"</span>,</span></span>
+<span class="r-in"><span>  alpha_i         <span class="op">=</span> <span class="va">alpha_i</span>,</span></span>
+<span class="r-in"><span>  beta_signed_i   <span class="op">=</span> <span class="va">beta_signed_i</span>,</span></span>
+<span class="r-in"><span>  theta0          <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  return_long     <span class="op">=</span> <span class="cn">FALSE</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

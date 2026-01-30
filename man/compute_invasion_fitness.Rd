@@ -33,144 +33,268 @@ compute_invasion_fitness(
 )
 }
 \arguments{
-\item{r_is_z}{Matrix \eqn{S \times I} of standardized abiotic suitability for invaders.
-Row names are site IDs; column names are invader IDs.}
+\item{r_is_z}{Matrix of standardized abiotic suitability with dimensions
+\eqn{S} by \eqn{I}.}
 
-\item{C_is_z}{Matrix \eqn{S \times I} of standardized niche crowding for invaders.}
+\item{C_is_z}{Matrix of standardized niche crowding with dimensions
+\eqn{S} by \eqn{I}.}
 
-\item{S_is_z}{Matrix \eqn{S \times I} of standardized site saturation for invaders
-(site-only; same value down each site row).}
+\item{S_is_z}{Matrix of standardized site saturation with dimensions
+\eqn{S} by \eqn{I}.}
 
-\item{option}{Character, one of \code{c("A","B","C","D","E")}. See Details.}
+\item{option}{Character string specifying the model option. One of
+\code{"A"}, \code{"B"}, \code{"C"}, \code{"D"}, or \code{"E"}.}
 
-\item{alpha_i}{Optional named numeric vector (length \eqn{I}) of invader crowding
-sensitivities \eqn{\alpha_i}. Required for A–C and E; ignored if \code{alpha_is} is provided in D.}
+\item{alpha_i}{Optional named vector of invader-level crowding sensitivities.}
 
-\item{beta_i}{Optional named numeric vector (length \eqn{I}) of saturation sensitivities
-\eqn{\beta_i}. Used in A–D. For E, use \code{beta_signed_i} for a signed effect.}
+\item{beta_i}{Optional named vector of invader-level saturation sensitivities.}
 
-\item{theta0}{Numeric scalar global slope for \eqn{r^{(z)}} (Option B; default \code{1}).}
+\item{theta0}{Global abiotic slope used in options A, B, and E.}
 
-\item{theta_i}{Optional named numeric vector (length \eqn{I}) of trait-varying slopes
-for \eqn{r^{(z)}} (Option C).}
+\item{theta_i}{Optional invader-specific abiotic slopes used in option C.}
 
-\item{Gamma_is}{Optional matrix \eqn{S \times I} of site-varying slopes for \eqn{r^{(z)}}
-(Option D). If NULL, falls back to \code{theta_i} or \code{theta0} as available.}
+\item{Gamma_is}{Optional site by invader matrix of abiotic slopes used in
+option D.}
 
-\item{alpha_is}{Optional matrix \eqn{S \times I} of site-varying penalties for crowding
-(Option D). If NULL, falls back to broadcasting \code{alpha_i}.}
+\item{alpha_is}{Optional site by invader matrix of crowding penalties used
+in option D.}
 
-\item{beta_signed_i}{Optional named numeric vector (length \eqn{I}) providing a signed
-\eqn{\beta} for Option E (facilitation allowed when \eqn{\beta<0}).}
+\item{beta_signed_i}{Optional signed saturation sensitivities used in
+option E.}
 
-\item{calibrate_kappa}{Logical; if \code{TRUE}, compute \eqn{\kappa} from \strong{residents} so that
-the mean resident \eqn{\lambda} is ~0 on the same scale (see below).}
+\item{calibrate_kappa}{Logical; if \code{TRUE}, compute a calibration offset
+using resident data.}
 
-\item{r_js_z, C_js_z, S_js_z}{Optional resident standardized matrices (site \eqn{\times} resident),
-required only when \code{calibrate_kappa = TRUE}.}
+\item{r_js_z, C_js_z, S_js_z}{Optional resident standardized matrices required
+when \code{calibrate_kappa = TRUE}.}
 
-\item{Q_res}{Optional data frame of resident trait-plane scores with columns \code{tr1}, \code{tr2}
-and rownames = resident IDs (only needed for \eqn{\kappa} if you want to
-derive resident analogs \eqn{\alpha_j}, \eqn{\beta_j} from trait slopes).}
+\item{Q_res}{Optional data frame of resident trait-plane scores.}
 
-\item{a0, a1, a2, b0, b1, b2}{Optional numeric scalars: coefficients for
-resident analog slopes \eqn{\text{slope}_C = a_0 + a_1\,tr1 + a_2\,tr2}
-and \eqn{\text{slope}_S = b_0 + b_1\,tr1 + b_2\,tr2}. Used only when
-\code{calibrate_kappa=TRUE} and \code{Q_res} provided.}
+\item{a0, a1, a2, b0, b1, b2}{Optional numeric coefficients used to derive resident
+analog slopes when calibrating \eqn{\kappa}.}
 
-\item{site_df}{Optional site table with columns \code{site}, \code{x}, \code{y} used to enrich the
-tidy output when \code{return_long=TRUE}.}
+\item{site_df}{Optional site metadata table with columns \code{site}, \code{x},
+and \code{y}.}
 
-\item{return_long}{Logical; if \code{TRUE}, returns a tidy table with predictors and coefficients.}
+\item{return_long}{Logical; if \code{TRUE}, return a tidy long-format table.}
 
-\item{label}{Optional character to tag the option in the tidy output; defaults to a
-descriptive name per option (e.g., \code{"Option A (γ=1)"}).}
+\item{label}{Optional character label attached to the output.}
 }
 \value{
-A list with:
+A list containing:
 \itemize{
-\item \code{lambda_is} — matrix \eqn{S \times I} of invasion fitness,
-\item \code{GI} — the \eqn{\gamma} used (vector length \eqn{I} or matrix \eqn{S \times I}),
-\item \code{AI} — the \eqn{\alpha} used (vector length \eqn{I} or matrix \eqn{S \times I}),
-\item \code{BI} — the \eqn{\beta} used (vector length \eqn{I}),
-\item \code{kappa} — numeric calibration offset,
-\item \code{option} — option label,
-\item \code{lambda_long} — tidy tibble (if \code{return_long=TRUE}).
+\item \code{lambda_is}: invasion fitness matrix
+\item \code{GI}: abiotic slope used
+\item \code{AI}: crowding penalties used
+\item \code{BI}: saturation penalties used
+\item \code{kappa}: calibration offset
+\item \code{option}: option label
+\item \code{lambda_long}: tidy table (optional)
 }
 }
 \description{
 \code{compute_invasion_fitness()} evaluates the invasion-fitness surface
-\eqn{\lambda_{is}} over sites (\eqn{s}) and invaders (\eqn{i}) using the
-three standardized predictors:
+\eqn{\lambda_{is}} over sites (\eqn{s}) and invaders (\eqn{i}) using three
+standardized predictors:
+
 \itemize{
-\item \strong{Abiotic suitability} \eqn{r^{(z)}_{is}} (alignment between invader traits and local environment),
-\item \strong{Niche crowding} \eqn{C^{(z)}_{is}} (overlap with resident trait space weighted by composition),
-\item \strong{Resident competition} \eqn{S^{(z)}_{is}} (site-only saturation).
+\item Abiotic suitability \eqn{r^{(z)}_{is}} (alignment between invader traits
+and the local environment),
+\item Niche crowding \eqn{C^{(z)}_{is}} (overlap with resident trait space,
+weighted by composition),
+\item Resident competition \eqn{S^{(z)}_{is}} (site-level saturation).
 }
 
-It supports five published/useful variants:
-\strong{A}: \eqn{\gamma=1}, \strong{B}: global \eqn{\theta_0}, \strong{C}: trait-varying \eqn{\theta_i},
-\strong{D}: site-varying \eqn{\Gamma_{is}} and \eqn{\alpha_{is}}, \strong{E}: signed \eqn{S} effect.
-Optionally, it calibrates an offset \eqn{\kappa} so the \strong{mean resident} \eqn{\lambda}
-is approximately zero on the same scale (when resident standardized matrices are supplied).
+Five model variants are supported:
+\itemize{
+\item Option A: \eqn{\gamma = 1}
+\item Option B: global slope \eqn{\theta_0}
+\item Option C: invader-specific slopes \eqn{\theta_i}
+\item Option D: site-varying slopes \eqn{\Gamma_{is}} and penalties
+\eqn{\alpha_{is}}
+\item Option E: signed saturation effect
+}
+
+Optionally, an offset \eqn{\kappa} can be calibrated so that the mean resident
+invasion fitness is approximately zero when resident standardized matrices
+are supplied.
 }
 \details{
-Compute invasion fitness (five options) with optional resident calibration
+Compute invasion fitness with multiple model options
 
-\strong{Options}
-\emph{A}: \eqn{\lambda_{is} = 1\cdot r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
-\emph{B}: \eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
-\emph{C}: \eqn{\lambda_{is} = \theta_i r^{(z)}_{is} - \alpha_i C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
-\emph{D}: \eqn{\lambda_{is} = \Gamma_{is} r^{(z)}_{is} - \alpha_{is} C^{(z)}_{is} - \beta_i S^{(z)}_{is} + \kappa}
-\emph{E}: \eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is} + \beta^{(\mathrm{signed})}_i S^{(z)}_{is} + \kappa}
+The invasion fitness is computed as:
 
-\strong{Resident calibration} (\eqn{\kappa}). When \code{calibrate_kappa=TRUE}, the function
-computes resident analog penalties \eqn{\alpha_j,\beta_j} from \code{Q_res} and slopes
-\verb{\{a0,a1,a2,b0,b1,b2\}}, builds resident matrices \code{AJ}, \code{BJ}, evaluates
-\eqn{\lambda^{(\mathrm{res})}_{js} = \theta_0 r^{(z)}_{js} - \alpha_j C^{(z)}_{js} - \beta_j S^{(z)}_{js}},
-then sets \eqn{\kappa = -\mathrm{mean}(\lambda^{(\mathrm{res})}_{js})} (na-rm),
-keeping residents and invaders on the same scale.
+\itemize{
+\item Option A:
+\eqn{\lambda_{is} = r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa}
+\item Option B:
+\eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa}
+\item Option C:
+\eqn{\lambda_{is} = \theta_i r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa}
+\item Option D:
+\eqn{\lambda_{is} = \Gamma_{is} r^{(z)}_{is} - \alpha_{is} C^{(z)}_{is}
+    - \beta_i S^{(z)}_{is} + \kappa}
+\item Option E:
+\eqn{\lambda_{is} = \theta_0 r^{(z)}_{is} - \alpha_i C^{(z)}_{is}
+    + \beta_i^{(signed)} S^{(z)}_{is} + \kappa}
+}
+
+When \code{calibrate_kappa = TRUE}, the offset is chosen so that the mean
+resident invasion fitness equals zero.
 }
 \examples{
-# Minimal reproducible example (toy shapes only)
-S = 5; I = 3
+## ---------------------------------------------------------------
+## Minimal reproducible example (toy dimensions, no real ecology)
+## ---------------------------------------------------------------
+
+## S = number of sites, I = number of invaders
+S = 5
+I = 3
 set.seed(1)
-r_is_z = matrix(rnorm(S*I),  S, I, dimnames=list(paste0("s",1:S), paste0("i",1:I)))
-C_is_z = matrix(rnorm(S*I),  S, I, dimnames=dimnames(r_is_z))
-S_is_z = matrix(rep(scale(rnorm(S)), each=I), S, I, dimnames=dimnames(r_is_z)) # site-only broadcast
-alpha_i = setNames(runif(ncol(r_is_z), 0.2, 1.0), colnames(r_is_z))
-beta_i  = setNames(runif(ncol(r_is_z), 0.1, 0.5), colnames(r_is_z))
 
-# Option A (γ=1, κ=0)
-outA = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
-                                 option="A", alpha_i=alpha_i, beta_i=beta_i,
-                                 theta0=1, return_long=FALSE)
+## r_is_z : intrinsic growth component
+## rows = sites (s), columns = invaders (i)
+r_is_z = matrix(
+  rnorm(S * I),
+  nrow = S,
+  ncol = I,
+  dimnames = list(paste0("s", 1:S), paste0("i", 1:I))
+)
 
-# Option B (γ = θ0)
-outB = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
-                                 option="B", alpha_i=alpha_i, beta_i=beta_i,
-                                 theta0=0.8, return_long=FALSE)
+## C_is_z : crowding / competition component (same shape as r_is_z)
+C_is_z = matrix(
+  rnorm(S * I),
+  nrow = S,
+  ncol = I,
+  dimnames = dimnames(r_is_z)
+)
 
-# Option C (γ_i = θ_i) — use I = ncol(r_is_z) to avoid length/name mismatch
-I = ncol(r_is_z)
-theta_i = setNames(runif(I, 0.5, 1.2), colnames(r_is_z))
-outC = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
-                                 option="C", alpha_i=alpha_i, beta_i=beta_i,
-                                 theta_i=theta_i, return_long=FALSE)
+## S_is_z : site-only environmental gradient
+## generated per-site, then broadcast across invaders
+S_is_z = matrix(
+  rep(scale(rnorm(S)), each = I),
+  nrow = S,
+  ncol = I,
+  dimnames = dimnames(r_is_z)
+)
 
-# Option D (site-varying Γ_is and α_is)
-Gamma_is = matrix(rep(theta_i, each=nrow(r_is_z)), nrow=nrow(r_is_z), dimnames=dimnames(r_is_z))
-alpha_is = pmax(0, matrix(rep(alpha_i, each=nrow(r_is_z)), nrow=nrow(r_is_z),
-                           dimnames=dimnames(r_is_z)) + matrix(rnorm(prod(dim(r_is_z)), 0, 0.1),
-                                                               nrow=nrow(r_is_z)))
-outD = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
-                                 option="D", alpha_is=alpha_is, beta_i=beta_i,
-                                 Gamma_is=Gamma_is, return_long=FALSE)
+## Invader-specific baseline parameters
+alpha_i = setNames(runif(I, 0.2, 1.0), colnames(r_is_z))  # baseline crowding sensitivity
+beta_i  = setNames(runif(I, 0.1, 0.5), colnames(r_is_z))  # strength of S effect
 
-# Option E (signed S effect)
-beta_signed_i = setNames(rnorm(ncol(r_is_z), 0, 0.3), colnames(r_is_z))
-outE = compute_invasion_fitness(r_is_z, C_is_z, S_is_z,
-                                 option="E", alpha_i=alpha_i, beta_signed_i=beta_signed_i,
-                                 theta0=1, return_long=FALSE)
+## ---------------------------------------------------------------
+## Option A: fixed gamma = 1, no S effect (kappa = 0)
+## ---------------------------------------------------------------
+outA = compute_invasion_fitness(
+  r_is_z, C_is_z, S_is_z,
+  option      = "A",
+  alpha_i     = alpha_i,
+  beta_i      = beta_i,
+  theta0      = 1,
+  return_long = FALSE
+)
+
+## ---------------------------------------------------------------
+## Option B: gamma shared across invaders (gamma = theta_0)
+## ---------------------------------------------------------------
+outB = compute_invasion_fitness(
+  r_is_z, C_is_z, S_is_z,
+  option      = "B",
+  alpha_i     = alpha_i,
+  beta_i      = beta_i,
+  theta0      = 0.8,
+  return_long = FALSE
+)
+
+## ---------------------------------------------------------------
+## Option C: invader-specific gamma_i
+## ---------------------------------------------------------------
+theta_i = setNames(
+  runif(I, 0.5, 1.2),
+  colnames(r_is_z)
+)
+
+outC = compute_invasion_fitness(
+  r_is_z, C_is_z, S_is_z,
+  option      = "C",
+  alpha_i     = alpha_i,
+  beta_i      = beta_i,
+  theta_i     = theta_i,
+  return_long = FALSE
+)
+
+## ---------------------------------------------------------------
+## Option D: fully site-varying Gamma_is and alpha_is
+## ---------------------------------------------------------------
+
+## gamma_is : site x invader matrix of density-dependence scalars
+## constructed by repeating gamma_i across sites
+Gamma_is = matrix(
+  rep(theta_i, each = nrow(r_is_z)),
+  nrow = nrow(r_is_z),
+  ncol = ncol(r_is_z),
+  dimnames = dimnames(r_is_z)
+)
+
+## alpha_is : site x invader crowding sensitivity
+## start from invader-specific alpha_i and allow small site-level variation
+alpha_is = matrix(
+  NA_real_,
+  nrow = nrow(r_is_z),
+  ncol = ncol(r_is_z),
+  dimnames = dimnames(r_is_z)
+)
+
+for (j in seq_len(ncol(r_is_z))) {
+  alpha_is[, j] = alpha_i[j]
+}
+
+## Add site-level noise and enforce positivity.
+## pmax() drops matrix attributes, so we re-wrap explicitly.
+alpha_is = {
+  tmp = pmax(
+    0,
+    alpha_is + matrix(
+      rnorm(length(alpha_is), 0, 0.1),
+      nrow = nrow(r_is_z),
+      ncol = ncol(r_is_z)
+    )
+  )
+  matrix(
+    tmp,
+    nrow = nrow(r_is_z),
+    ncol = ncol(r_is_z),
+    dimnames = dimnames(r_is_z)
+  )
+}
+
+outD = compute_invasion_fitness(
+  r_is_z, C_is_z, S_is_z,
+  option      = "D",
+  alpha_is    = alpha_is,
+  beta_i      = beta_i,
+  Gamma_is    = Gamma_is,
+  return_long = FALSE
+)
+
+## ---------------------------------------------------------------
+## Option E: signed S effect (positive or negative beta_i)
+## ---------------------------------------------------------------
+beta_signed_i = setNames(
+  rnorm(I, 0, 0.3),
+  colnames(r_is_z)
+)
+
+outE = compute_invasion_fitness(
+  r_is_z, C_is_z, S_is_z,
+  option          = "E",
+  alpha_i         = alpha_i,
+  beta_signed_i   = beta_signed_i,
+  theta0          = 1,
+  return_long     = FALSE
+)
 
 }

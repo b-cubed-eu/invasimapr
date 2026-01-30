@@ -27,37 +27,56 @@ assemble_matrices(
 )
 }
 \arguments{
-\item{long_df}{Optional long data frame with at least \code{site}, \code{x}, \code{y},
-\code{species}, \code{count}.}
+\item{long_df}{Optional long-format data frame with at least the columns
+\code{site}, \code{x}, \code{y}, \code{species}, and \code{count}.}
 
-\item{site_df}{Optional data frame with columns \code{site}, \code{x}, \code{y} (used when
-\code{long_df} is \code{NULL}).}
+\item{site_df}{Optional data frame with columns \code{site}, \code{x}, and
+\code{y}, used when \code{long_df} is \code{NULL}.}
 
-\item{env_df}{Optional site × environment \strong{numeric} data frame/matrix
-(row names must be site IDs; used when \code{long_df} is \code{NULL}).}
+\item{env_df}{Optional site by environment numeric data frame or matrix.
+Row names must correspond to site identifiers.}
 
-\item{comm_res}{Optional site × resident numeric matrix/data frame (wide) or
-a long table with \code{site}, \code{species}, \code{count} (see \code{comm_long}).}
+\item{comm_res}{Optional site by resident numeric matrix or data frame (wide),
+or a long-format table with columns \code{site}, \code{species}, and
+\code{count}.}
 
-\item{traits_res}{Optional resident × traits data frame (row names = species).}
+\item{traits_res}{Optional resident by trait data frame with row names
+corresponding to species identifiers.}
 
-\item{comm_long}{How to interpret a separately supplied \code{comm_res}:
-one of \code{c("auto","long","wide")}; \code{"auto"} detects a long table and pivots.}
+\item{comm_long}{Character string indicating how to interpret a separately
+supplied \code{comm_res}; one of \code{"auto"}, \code{"long"}, or
+\code{"wide"}.}
 
-\item{site_col, x_col, y_col, species_col, count_col}{Column names to use when
-building from \code{long_df}. Defaults: \code{"site"}, \code{"x"}, \code{"y"}, \code{"species"}, \code{"count"}.}
+\item{site_col, x_col, y_col, species_col, count_col}{Column names used when
+building from \code{long_df}.}
 
-\item{env_cols, env_prefix, trait_cols, trait_prefix, drop_empty_sites, }{drop_empty_species,return_diversity,make_plots See details in original docs.}
+\item{env_cols}{Character vector of environment column names to extract.}
+
+\item{env_prefix}{Regular expression used to select environment columns.}
+
+\item{trait_cols}{Character vector of trait column names to extract.}
+
+\item{trait_prefix}{Regular expression used to select trait columns.}
+
+\item{drop_empty_sites}{Logical. If \code{TRUE}, drop sites with zero total abundance.}
+
+\item{drop_empty_species}{Logical. If \code{TRUE}, drop resident species with
+zero total abundance across all sites.}
+
+\item{return_diversity}{Logical. If \code{TRUE}, compute and return site-level
+diversity summaries.}
+
+\item{make_plots}{Logical. If \code{TRUE}, generate quick diagnostic plots.}
 }
 \description{
 \code{assemble_matrices()} creates the standard inputs used throughout the
-invasion-fitness pipeline from either a single “long” table or a set of
-already-formed tables. It returns aligned objects:
+invasion-fitness pipeline from either a single long-format table or a set of
+pre-assembled tables. It returns aligned objects including:
 \itemize{
-\item \code{site_df} (site × x,y),
-\item \code{env_df} (site × environment; \strong{numeric matrix}),
-\item \code{comm_res} (site × resident abundances; numeric matrix),
-\item \code{pa_res} (site × resident presence/absence; integer matrix),
-\item \code{traits_res} (resident × traits; data frame, keeps mixed types).
+\item \code{site_df}: site by x,y coordinates
+\item \code{env_df}: site by environment numeric matrix
+\item \code{comm_res}: site by resident abundance matrix
+\item \code{pa_res}: site by resident presence-absence matrix
+\item \code{traits_res}: resident by trait data frame (mixed types allowed)
 }
 }

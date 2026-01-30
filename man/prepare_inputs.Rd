@@ -2,55 +2,85 @@
 % Please edit documentation in R/prepare_inputs.R
 \name{prepare_inputs}
 \alias{prepare_inputs}
-\title{Prepare inputs (assemble & align core tables)}
+\title{Prepare inputs (assemble and align core tables)}
 \usage{
 prepare_inputs(..., make_plots = FALSE)
 }
 \arguments{
-\item{make_plots}{logical. If \code{TRUE}, propagate \code{make_plots} to
-\code{\link[=assemble_matrices]{assemble_matrices()}} so that diagnostic plots are produced during
+\item{...}{
+  Arguments passed on to \code{\link[=assemble_matrices]{assemble_matrices}}
+  \describe{
+    \item{\code{long_df}}{Optional long-format data frame with at least the columns
+\code{site}, \code{x}, \code{y}, \code{species}, and \code{count}.}
+    \item{\code{site_df}}{Optional data frame with columns \code{site}, \code{x}, and
+\code{y}, used when \code{long_df} is \code{NULL}.}
+    \item{\code{env_df}}{Optional site by environment numeric data frame or matrix.
+Row names must correspond to site identifiers.}
+    \item{\code{comm_res}}{Optional site by resident numeric matrix or data frame (wide),
+or a long-format table with columns \code{site}, \code{species}, and
+\code{count}.}
+    \item{\code{traits_res}}{Optional resident by trait data frame with row names
+corresponding to species identifiers.}
+    \item{\code{comm_long}}{Character string indicating how to interpret a separately
+supplied \code{comm_res}; one of \code{"auto"}, \code{"long"}, or
+\code{"wide"}.}
+    \item{\code{site_col,x_col,y_col,species_col,count_col}}{Column names used when
+building from \code{long_df}.}
+    \item{\code{env_cols}}{Character vector of environment column names to extract.}
+    \item{\code{env_prefix}}{Regular expression used to select environment columns.}
+    \item{\code{trait_cols}}{Character vector of trait column names to extract.}
+    \item{\code{trait_prefix}}{Regular expression used to select trait columns.}
+    \item{\code{drop_empty_sites}}{Logical. If \code{TRUE}, drop sites with zero total abundance.}
+    \item{\code{drop_empty_species}}{Logical. If \code{TRUE}, drop resident species with
+zero total abundance across all sites.}
+    \item{\code{return_diversity}}{Logical. If \code{TRUE}, compute and return site-level
+diversity summaries.}
+  }}
+
+\item{make_plots}{Logical; if \code{TRUE}, propagate \code{make_plots} to
+\link{assemble_matrices} so that diagnostic plots are produced during
 assembly. Defaults to \code{FALSE}.}
 }
 \value{
 An object of class \code{invasimapr_fit} with components:
 \describe{
-\item{\code{inputs}}{The full list returned by \code{\link[=assemble_matrices]{assemble_matrices()}}.}
-\item{\code{meta}}{A list with \code{n_sites}, \code{n_residents}, \code{n_traits}.}
+\item{inputs}{The full list returned by \link{assemble_matrices}.}
+\item{meta}{A list with elements \code{n_sites}, \code{n_residents}, and \code{n_traits}.}
 }
 }
 \description{
-Thin wrapper around \code{\link[=assemble_matrices]{assemble_matrices()}} that standardises and stores the
-assembled inputs in an \code{\link{invasimapr_fit}} object for downstream modelling.
-Use this to run the input-assembly step once and pass a single structured
-object through subsequent pipelines.
+Thin wrapper around \link{assemble_matrices} that standardises and stores
+assembled inputs in a \link{new_invasimapr_fit} object for downstream modelling.
+Use this function to run the input-assembly step once and pass a single
+structured container through subsequent pipelines.
 }
 \details{
 \strong{What this does}
 \enumerate{
-\item Calls \code{\link[=assemble_matrices]{assemble_matrices()}} to build core site × species/trait matrices,
-perform consistency checks, and harmonise keys and factor levels.
-\item Wraps the returned list (\code{core}) into a lightweight S3 container
-\code{invasimapr_fit} with a dedicated \code{inputs} slot and a small \code{meta} block
-(counts of sites, residents, traits) used by later steps.
+\item Calls \link{assemble_matrices} to build core site-by-species and
+site-by-trait matrices, perform consistency checks, and harmonise
+keys and factor levels.
+\item Wraps the returned list into a lightweight S3 container of class
+\code{invasimapr_fit}, with a dedicated \code{inputs} slot and a small \code{meta}
+block containing basic counts used by later steps.
 }
 
 \strong{Object layout}
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{invasimapr_fit
-├─ inputs : <list>   # output from assemble_matrices()
-└─ meta   : <list>   # n_sites, n_residents, n_traits
-}\if{html}{\out{</div>}}
+\preformatted{
+invasimapr_fit
+  inputs : list   (output from assemble_matrices)
+  meta   : list   (n_sites, n_residents, n_traits)
+}
 
 \strong{Notes}
 \itemize{
-\item No mutation of the \code{core} object occurs here; this function only packages
-and annotates it.
-\item If you need to inspect the assembled inputs, use \code{fit$inputs} after return.
+\item No mutation of the assembled inputs occurs here; the function only
+packages and annotates them.
+\item To inspect the assembled data, use \code{fit$inputs} on the returned object.
 }
 }
 \examples{
 \dontrun{
-# Minimal pattern; pass the same arguments you would to assemble_matrices()
 fit <- prepare_inputs(
   sites      = site_df,
   residents  = resident_df,
@@ -58,6 +88,7 @@ fit <- prepare_inputs(
   traits     = trait_df,
   make_plots = TRUE
 )
+
 str(fit, 1)
 str(fit$inputs, 1)
 fit$meta
@@ -65,8 +96,6 @@ fit$meta
 
 }
 \seealso{
-\itemize{
-\item Input assembly: \href{https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html}{\code{assemble_matrices()}}
-\item Container constructor: \code{\link[=new_invasimapr_fit]{new_invasimapr_fit()}}
-}
+\link{assemble_matrices},
+\link{new_invasimapr_fit}
 }

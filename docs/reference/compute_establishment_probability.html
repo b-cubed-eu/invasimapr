@@ -5,33 +5,45 @@
       fontURL: "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/output/chtml/fonts/woff-v2"
     }
   };
-</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Probabilistic establishment from invasion fitness — compute_establishment_probability"><meta name="description" content="Invasion fitness \(\lambda_{is}\) integrates trait space geometry (distances,
-overlaps, convex hull, cloud centroid) with abiotic suitability
-(alignment of invader traits to local environment), niche crowding (overlap
-with resident trait space weighted by composition), and resident competition
-(site saturation). compute_establishment_probability() maps \(\lambda_{is}\)
-to probabilities of establishment using a unified interface:
-Probit: \(P = \Phi(\lambda/\sigma)\) with \(\sigma\) as a scalar,
-the residual SD from a fitted auxiliary GLMM, or a cell-wise predictive SD.
-Logistic: \(P = \mathrm{logit}^{-1}(\lambda / \tau)\) with scale \(\tau\).
-Hard rule: \(P = \mathbb{I}\{\lambda&amp;gt;0\}\) for a binary map.
+</script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Probabilistic establishment from invasion fitness — compute_establishment_probability"><meta name="description" content="Invasion fitness \(\lambda_{is}\) integrates trait-space geometry
+(distances, overlaps, convex hulls, centroids) with abiotic suitability
+(alignment of invader traits to the local environment), niche crowding
+(overlap with resident trait space weighted by composition), and resident
+competition (site saturation).
+compute_establishment_probability() maps \(\lambda_{is}\) to
+probabilities of establishment using a unified interface:
+
+Probit: \(P = \Phi(\lambda / \sigma)\), where \(\sigma\) is a
+scalar, the residual standard deviation from a fitted auxiliary model,
+or a cell-wise predictive standard deviation.
+Logistic: \(P = \mathrm{logit}^{-1}(\lambda / \tau)\), where
+\(\tau\) is a scale parameter.
+Hard rule: \(P = I(\lambda &amp;gt; 0)\), yielding a binary map.
 
 
-If lambda_is is not supplied, the function will build it from standardized
-predictors via \(\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} - \beta \, S^{(z)}_{is} + \kappa\)."><meta property="og:description" content="Invasion fitness \(\lambda_{is}\) integrates trait space geometry (distances,
-overlaps, convex hull, cloud centroid) with abiotic suitability
-(alignment of invader traits to local environment), niche crowding (overlap
-with resident trait space weighted by composition), and resident competition
-(site saturation). compute_establishment_probability() maps \(\lambda_{is}\)
-to probabilities of establishment using a unified interface:
-Probit: \(P = \Phi(\lambda/\sigma)\) with \(\sigma\) as a scalar,
-the residual SD from a fitted auxiliary GLMM, or a cell-wise predictive SD.
-Logistic: \(P = \mathrm{logit}^{-1}(\lambda / \tau)\) with scale \(\tau\).
-Hard rule: \(P = \mathbb{I}\{\lambda&amp;gt;0\}\) for a binary map.
+If lambda_is is not supplied, the function builds it from standardized
+predictors using
+\(\lambda_{is} = \gamma r^{(z)}_{is} - \alpha C^{(z)}_{is} -
+\beta S^{(z)}_{is} + \kappa\)."><meta property="og:description" content="Invasion fitness \(\lambda_{is}\) integrates trait-space geometry
+(distances, overlaps, convex hulls, centroids) with abiotic suitability
+(alignment of invader traits to the local environment), niche crowding
+(overlap with resident trait space weighted by composition), and resident
+competition (site saturation).
+compute_establishment_probability() maps \(\lambda_{is}\) to
+probabilities of establishment using a unified interface:
+
+Probit: \(P = \Phi(\lambda / \sigma)\), where \(\sigma\) is a
+scalar, the residual standard deviation from a fitted auxiliary model,
+or a cell-wise predictive standard deviation.
+Logistic: \(P = \mathrm{logit}^{-1}(\lambda / \tau)\), where
+\(\tau\) is a scale parameter.
+Hard rule: \(P = I(\lambda &amp;gt; 0)\), yielding a binary map.
 
 
-If lambda_is is not supplied, the function will build it from standardized
-predictors via \(\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} - \beta \, S^{(z)}_{is} + \kappa\)."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
+If lambda_is is not supplied, the function builds it from standardized
+predictors using
+\(\lambda_{is} = \gamma r^{(z)}_{is} - \alpha C^{(z)}_{is} -
+\beta S^{(z)}_{is} + \kappa\)."><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -53,11 +65,11 @@ predictors via \(\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} 
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Articles</h6></li>
-    <li><a class="dropdown-item" href="../articles/1-introduction.html">Introduction</a></li>
-    <li><a class="dropdown-item" href="../articles/2-workflow.html">Step-by-step Workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/3-clusters.html">Clustering and risk scenarios</a></li>
-    <li><a class="dropdown-item" href="../articles/4-synthesis.html">Invasion fitness synthesis</a></li>
-    <li><a class="dropdown-item" href="../articles/5-tutorial.html">Tutorial on computing invasion fitness</a></li>
+    <li><a class="dropdown-item" href="../articles/introduction_1.html">Introduction</a></li>
+    <li><a class="dropdown-item" href="../articles/workflow_2.html">Step-by-step Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/clusters_3.html">Clustering and risk scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/synthesis_4.html">Invasion fitness synthesis</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial_5.html">Tutorial on computing invasion fitness</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -76,17 +88,23 @@ predictors via \(\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} 
     </div>
 
     <div class="ref-description section level2">
-    <p>Invasion fitness \(\lambda_{is}\) integrates <strong>trait space geometry</strong> (distances,
-overlaps, <strong>convex hull</strong>, <strong>cloud centroid</strong>) with <strong>abiotic suitability</strong>
-(alignment of invader traits to local environment), <strong>niche crowding</strong> (overlap
-with resident trait space weighted by composition), and <strong>resident competition</strong>
-(site saturation). <code>compute_establishment_probability()</code> maps \(\lambda_{is}\)
-to <strong>probabilities of establishment</strong> using a unified interface:</p><ul><li><p><strong>Probit</strong>: \(P = \Phi(\lambda/\sigma)\) with \(\sigma\) as a scalar,
-the residual SD from a fitted auxiliary GLMM, or a cell-wise <strong>predictive SD</strong>.</p></li>
-<li><p><strong>Logistic</strong>: \(P = \mathrm{logit}^{-1}(\lambda / \tau)\) with scale \(\tau\).</p></li>
-<li><p><strong>Hard rule</strong>: \(P = \mathbb{I}\{\lambda&gt;0\}\) for a binary map.</p></li>
-</ul><p>If <code>lambda_is</code> is not supplied, the function will build it from standardized
-predictors via \(\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} - \beta \, S^{(z)}_{is} + \kappa\).</p>
+    <p>Invasion fitness \(\lambda_{is}\) integrates trait-space geometry
+(distances, overlaps, convex hulls, centroids) with abiotic suitability
+(alignment of invader traits to the local environment), niche crowding
+(overlap with resident trait space weighted by composition), and resident
+competition (site saturation).</p>
+<p><code>compute_establishment_probability()</code> maps \(\lambda_{is}\) to
+probabilities of establishment using a unified interface:</p>
+<ul><li><p><strong>Probit</strong>: \(P = \Phi(\lambda / \sigma)\), where \(\sigma\) is a
+scalar, the residual standard deviation from a fitted auxiliary model,
+or a cell-wise predictive standard deviation.</p></li>
+<li><p><strong>Logistic</strong>: \(P = \mathrm{logit}^{-1}(\lambda / \tau)\), where
+\(\tau\) is a scale parameter.</p></li>
+<li><p><strong>Hard rule</strong>: \(P = I(\lambda &gt; 0)\), yielding a binary map.</p></li>
+</ul><p>If <code>lambda_is</code> is not supplied, the function builds it from standardized
+predictors using
+\(\lambda_{is} = \gamma r^{(z)}_{is} - \alpha C^{(z)}_{is} -
+\beta S^{(z)}_{is} + \kappa\).</p>
     </div>
 
     <div class="section level2">
@@ -120,111 +138,111 @@ predictors via \(\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} 
 
 
 <dl><dt id="arg-lambda-is">lambda_is<a class="anchor" aria-label="anchor" href="#arg-lambda-is"></a></dt>
-<dd><p>Optional matrix \(S\times I\) of invasion fitness (rows = sites,
-cols = invaders). If <code>NULL</code>, it is computed from components (see below).</p></dd>
+<dd><p>Optional matrix of invasion fitness values with dimensions
+\(S\) by \(I\) (rows are sites, columns are invaders). If <code>NULL</code>,
+fitness is computed from the supplied components.</p></dd>
 
 
 <dt id="arg-r-is-z-c-is-z-s-is-z">r_is_z, C_is_z, S_is_z<a class="anchor" aria-label="anchor" href="#arg-r-is-z-c-is-z-s-is-z"></a></dt>
-<dd><p>Optional matrices \(S\times I\) of standardized
-abiotic suitability, niche crowding, and saturation. Used only if <code>lambda_is=NULL</code>.</p></dd>
+<dd><p>Optional matrices of standardized abiotic suitability,
+niche crowding, and saturation. Used only when <code>lambda_is = NULL</code>.</p></dd>
 
 
 <dt id="arg-gamma">gamma<a class="anchor" aria-label="anchor" href="#arg-gamma"></a></dt>
-<dd><p>Optional vector (length \(I\)) or matrix \(S\times I\) for the
-abiotic slope \(\gamma\); recycled to \(S\times I\) as needed.</p></dd>
+<dd><p>Optional vector of length \(I\) or matrix of dimension
+\(S\) by \(I\) giving the abiotic slope.</p></dd>
 
 
 <dt id="arg-alpha">alpha<a class="anchor" aria-label="anchor" href="#arg-alpha"></a></dt>
-<dd><p>Optional vector (length \(I\)) or matrix \(S\times I\) of crowding
-penalties \(\alpha \ge 0\) by convention); recycled if needed.</p></dd>
+<dd><p>Optional vector or matrix of crowding penalties. By convention,
+these values are constrained to be non-negative.</p></dd>
 
 
 <dt id="arg-beta">beta<a class="anchor" aria-label="anchor" href="#arg-beta"></a></dt>
-<dd><p>Optional vector (length \(I\)) of saturation penalties \(\beta\).
-If you allow facilitation, pass signed values here.</p></dd>
+<dd><p>Optional vector of saturation penalties. Signed values allow
+facilitation.</p></dd>
 
 
 <dt id="arg-kappa">kappa<a class="anchor" aria-label="anchor" href="#arg-kappa"></a></dt>
-<dd><p>Optional scalar calibration offset added to \(\lambda\); default <code>0</code>.</p></dd>
+<dd><p>Optional scalar offset added to invasion fitness (default 0).</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p>Character, one of <code>c("probit","logit","hard")</code>.</p></dd>
+<dd><p>Character string; one of <code>"probit"</code>, <code>"logit"</code>,
+or <code>"hard"</code>.</p></dd>
 
 
 <dt id="arg-sigma">sigma<a class="anchor" aria-label="anchor" href="#arg-sigma"></a></dt>
-<dd><p>Numeric <strong>scalar</strong> SD for probit (ignored for other methods). If not
-given and <code>fit</code> is supplied, <code>sigma</code> defaults to <code>sigma(fit)</code>.</p></dd>
+<dd><p>Numeric scalar standard deviation for the probit transform.</p></dd>
 
 
 <dt id="arg-tau">tau<a class="anchor" aria-label="anchor" href="#arg-tau"></a></dt>
-<dd><p>Numeric <strong>scalar</strong> scale for logistic (denominator inside logit); default <code>1</code>.</p></dd>
+<dd><p>Numeric scalar scale parameter for the logistic transform.</p></dd>
 
 
 <dt id="arg-fit">fit<a class="anchor" aria-label="anchor" href="#arg-fit"></a></dt>
-<dd><p>Optional fitted model (e.g., <code>glmmTMB</code>), used to obtain <code>sigma(fit)</code> when
-<code>method="probit"</code> and <code>sigma</code> is missing.</p></dd>
+<dd><p>Optional fitted model object used to obtain a residual standard
+deviation when <code>method = "probit"</code>.</p></dd>
 
 
 <dt id="arg-predictive">predictive<a class="anchor" aria-label="anchor" href="#arg-predictive"></a></dt>
-<dd><p>Logical; for <code>method="probit"</code>, if <code>TRUE</code> the function uses a
-<strong>predictive SD</strong> matrix instead of a scalar. Provide it via <code>sigma_mat</code>, or set
-<code>use_vcov=TRUE</code> to compute it from <code>fit</code> (see below).</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, a predictive standard deviation
+matrix is used for the probit transform.</p></dd>
 
 
 <dt id="arg-sigma-mat">sigma_mat<a class="anchor" aria-label="anchor" href="#arg-sigma-mat"></a></dt>
-<dd><p>Optional matrix \(S\times I\) of SDs (e.g., predictive SD per cell).</p></dd>
+<dd><p>Optional matrix of predictive standard deviations with the
+same dimensions as <code>lambda_is</code>.</p></dd>
 
 
 <dt id="arg-use-vcov">use_vcov<a class="anchor" aria-label="anchor" href="#arg-use-vcov"></a></dt>
-<dd><p>Logical; if <code>TRUE</code> and <code>method="probit"</code> with <code>predictive=TRUE</code>, the
-function will attempt to compute <strong>mean-SE</strong> from <code>vcov(fit)</code> and add the residual
-SD to yield a predictive SD. Requires <code>fit</code>, <code>Q_inv</code>, and the standardized matrices.</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, compute predictive standard deviations
+from the variance-covariance matrix of <code>fit</code>.</p></dd>
 
 
 <dt id="arg-q-inv">Q_inv<a class="anchor" aria-label="anchor" href="#arg-q-inv"></a></dt>
-<dd><p>Optional data frame with invader trait-plane scores (<code>tr1</code>,<code>tr2</code>),
-rownames = invader IDs. Required only if <code>use_vcov=TRUE</code>.</p></dd>
+<dd><p>Optional data frame of invader trait scores with columns
+<code>tr1</code> and <code>tr2</code>.</p></dd>
 
 
 <dt id="arg-site-df">site_df<a class="anchor" aria-label="anchor" href="#arg-site-df"></a></dt>
-<dd><p>Optional site table with columns <code>site,x,y</code> for mapping; rownames of
-the matrices must match <code>site_df$site</code>.</p></dd>
+<dd><p>Optional site metadata table with columns <code>site</code>, <code>x</code>,
+and <code>y</code>.</p></dd>
 
 
 <dt id="arg-return-long">return_long<a class="anchor" aria-label="anchor" href="#arg-return-long"></a></dt>
-<dd><p>Logical; if <code>TRUE</code>, include a tidy tibble in the output.</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, include a long-format table in
+the output.</p></dd>
 
 
 <dt id="arg-make-plots">make_plots<a class="anchor" aria-label="anchor" href="#arg-make-plots"></a></dt>
-<dd><p>Logical; if <code>TRUE</code>, return ggplot objects (site mean map, invader
-ranking, and site×invader heatmap).</p></dd>
+<dd><p>Logical; if <code>TRUE</code>, return diagnostic plots.</p></dd>
 
 
 <dt id="arg-option-label">option_label<a class="anchor" aria-label="anchor" href="#arg-option-label"></a></dt>
-<dd><p>Optional label attached to the tidy output and plot titles.</p></dd>
+<dd><p>Optional label attached to the output.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A list with:</p><ul><li><p><code>p_is</code>: matrix \(S\times I\) of probabilities (or 0/1 for <code>hard</code>);</p></li>
-<li><p><code>lambda_is</code>: the \(S\times I\) fitness matrix used;</p></li>
-<li><p><code>sigma_used</code>: scalar or matrix actually used for probit (else <code>NULL</code>);</p></li>
-<li><p><code>method</code>, <code>option_label</code>;</p></li>
-<li><p><code>prob_long</code>: tidy tibble (if <code>return_long=TRUE</code>);</p></li>
-<li><p><code>plots</code>: list of ggplots (if <code>make_plots=TRUE</code>): <code>site_mean</code>, <code>invader_mean</code>, <code>heatmap</code>.</p></li>
+    <p>A list with components:</p><ul><li><p><code>p_is</code>: matrix of establishment probabilities</p></li>
+<li><p><code>lambda_is</code>: invasion fitness matrix</p></li>
+<li><p><code>sigma_used</code>: standard deviation used by the probit transform</p></li>
+<li><p><code>method</code>: transformation method</p></li>
+<li><p><code>option_label</code>: label used for summaries</p></li>
+<li><p><code>prob_long</code>: long-format table (optional)</p></li>
+<li><p><code>plots</code>: list of plots (optional)</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Convert invasion fitness to probabilistic establishment (probit/logit/hard)</p>
-<p><strong>Probit</strong>: \(P_{is}=\Phi(\lambda_{is}/\sigma)\). Use a <strong>scalar</strong> <code>sigma</code> (fast),
-the residual SD from <code>fit</code>, or set <code>predictive=TRUE</code> to inject a <strong>cell-wise</strong> SD:
-either supply <code>sigma_mat</code> directly or compute it with <code>use_vcov=TRUE</code>, which uses
-the fixed-effect covariance from <code>vcov(fit)</code> plus the model residual SD.</p>
-<p><strong>Logistic</strong>: \(P_{is}=\mathrm{logit}^{-1}(\lambda_{is}/\tau)\). The scale <code>tau</code>
-controls how sharply probabilities switch around \(\lambda=0\).</p>
-<p><strong>Hard rule</strong>: \(P_{is} = \mathbb{I}\{\lambda_{is}&gt;0\}\) yields a binary map
-useful for thresholds and counts (invasibility = \#invaders with \(P=1\) at a site).</p>
+    <p>Convert invasion fitness to probabilistic establishment (probit, logit, hard)</p>
+<p>For the probit method, probabilities are computed as
+\(P_{is} = \Phi(\lambda_{is} / \sigma)\). A scalar or cell-wise standard
+deviation may be used.</p>
+<p>For the logistic method, probabilities are computed as
+\(P_{is} = \mathrm{logit}^{-1}(\lambda_{is} / \tau)\).</p>
+<p>The hard rule returns a binary indicator equal to one when
+\(\lambda_{is} &gt; 0\).</p>
     </div>
 
     <div class="section level2">
@@ -263,7 +281,7 @@ useful for thresholds and counts (invasibility = \#invaders with \(P=1\) at a si
 <span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"ggplot2"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">out_probit</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">site_mean</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Hard rule (λ&gt;0)</span></span></span>
+<span class="r-in"><span><span class="co"># Hard rule (lambda&gt;0)</span></span></span>
 <span class="r-in"><span><span class="va">out_hard</span> <span class="op">=</span> <span class="fu">compute_establishment_probability</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  r_is_z<span class="op">=</span><span class="va">r_is_z</span>, C_is_z<span class="op">=</span><span class="va">C_is_z</span>, S_is_z<span class="op">=</span><span class="va">S_is_z</span>,</span></span>
 <span class="r-in"><span>  gamma<span class="op">=</span><span class="va">gamma</span>, alpha<span class="op">=</span><span class="va">alpha</span>, beta<span class="op">=</span><span class="va">beta</span>,</span></span>

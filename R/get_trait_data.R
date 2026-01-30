@@ -62,7 +62,7 @@
 #' }
 #'
 #' @importFrom rlang .data
-#' @importFrom dplyr first
+#' @importFrom fuzzyjoin fuzzy_left_join
 #'
 #' @examples
 #' \dontrun{

@@ -6,22 +6,22 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/PT_Sans-0.4.10/font.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Assemble community matrices for invasion-fitness workflows — assemble_matrices"><meta name="description" content="assemble_matrices() creates the standard inputs used throughout the
-invasion-fitness pipeline from either a single “long” table or a set of
-already-formed tables. It returns aligned objects:
-site_df (site × x,y),
-env_df (site × environment; numeric matrix),
-comm_res (site × resident abundances; numeric matrix),
-pa_res (site × resident presence/absence; integer matrix),
-traits_res (resident × traits; data frame, keeps mixed types).
+invasion-fitness pipeline from either a single long-format table or a set of
+pre-assembled tables. It returns aligned objects including:
+site_df: site by x,y coordinates
+env_df: site by environment numeric matrix
+comm_res: site by resident abundance matrix
+pa_res: site by resident presence-absence matrix
+traits_res: resident by trait data frame (mixed types allowed)
 
 "><meta property="og:description" content="assemble_matrices() creates the standard inputs used throughout the
-invasion-fitness pipeline from either a single “long” table or a set of
-already-formed tables. It returns aligned objects:
-site_df (site × x,y),
-env_df (site × environment; numeric matrix),
-comm_res (site × resident abundances; numeric matrix),
-pa_res (site × resident presence/absence; integer matrix),
-traits_res (resident × traits; data frame, keeps mixed types).
+invasion-fitness pipeline from either a single long-format table or a set of
+pre-assembled tables. It returns aligned objects including:
+site_df: site by x,y coordinates
+env_df: site by environment numeric matrix
+comm_res: site by resident abundance matrix
+pa_res: site by resident presence-absence matrix
+traits_res: resident by trait data frame (mixed types allowed)
 
 "><meta property="og:image" content="https://b-cubed-eu.github.io/invasimapr/logo.png"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -45,11 +45,11 @@ traits_res (resident × traits; data frame, keeps mixed types).
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Articles</h6></li>
-    <li><a class="dropdown-item" href="../articles/1-introduction.html">Introduction</a></li>
-    <li><a class="dropdown-item" href="../articles/2-workflow.html">Step-by-step Workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/3-clusters.html">Clustering and risk scenarios</a></li>
-    <li><a class="dropdown-item" href="../articles/4-synthesis.html">Invasion fitness synthesis</a></li>
-    <li><a class="dropdown-item" href="../articles/5-tutorial.html">Tutorial on computing invasion fitness</a></li>
+    <li><a class="dropdown-item" href="../articles/introduction_1.html">Introduction</a></li>
+    <li><a class="dropdown-item" href="../articles/workflow_2.html">Step-by-step Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/clusters_3.html">Clustering and risk scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/synthesis_4.html">Invasion fitness synthesis</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial_5.html">Tutorial on computing invasion fitness</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -69,12 +69,12 @@ traits_res (resident × traits; data frame, keeps mixed types).
 
     <div class="ref-description section level2">
     <p><code>assemble_matrices()</code> creates the standard inputs used throughout the
-invasion-fitness pipeline from either a single “long” table or a set of
-already-formed tables. It returns aligned objects:</p><ul><li><p><code>site_df</code> (site × x,y),</p></li>
-<li><p><code>env_df</code> (site × environment; <strong>numeric matrix</strong>),</p></li>
-<li><p><code>comm_res</code> (site × resident abundances; numeric matrix),</p></li>
-<li><p><code>pa_res</code> (site × resident presence/absence; integer matrix),</p></li>
-<li><p><code>traits_res</code> (resident × traits; data frame, keeps mixed types).</p></li>
+invasion-fitness pipeline from either a single long-format table or a set of
+pre-assembled tables. It returns aligned objects including:</p><ul><li><p><code>site_df</code>: site by x,y coordinates</p></li>
+<li><p><code>env_df</code>: site by environment numeric matrix</p></li>
+<li><p><code>comm_res</code>: site by resident abundance matrix</p></li>
+<li><p><code>pa_res</code>: site by resident presence-absence matrix</p></li>
+<li><p><code>traits_res</code>: resident by trait data frame (mixed types allowed)</p></li>
 </ul></div>
 
     <div class="section level2">
@@ -107,41 +107,74 @@ already-formed tables. It returns aligned objects:</p><ul><li><p><code>site_df</
 
 
 <dl><dt id="arg-long-df">long_df<a class="anchor" aria-label="anchor" href="#arg-long-df"></a></dt>
-<dd><p>Optional long data frame with at least <code>site</code>, <code>x</code>, <code>y</code>,
-<code>species</code>, <code>count</code>.</p></dd>
+<dd><p>Optional long-format data frame with at least the columns
+<code>site</code>, <code>x</code>, <code>y</code>, <code>species</code>, and <code>count</code>.</p></dd>
 
 
 <dt id="arg-site-df">site_df<a class="anchor" aria-label="anchor" href="#arg-site-df"></a></dt>
-<dd><p>Optional data frame with columns <code>site</code>, <code>x</code>, <code>y</code> (used when
-<code>long_df</code> is <code>NULL</code>).</p></dd>
+<dd><p>Optional data frame with columns <code>site</code>, <code>x</code>, and
+<code>y</code>, used when <code>long_df</code> is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-env-df">env_df<a class="anchor" aria-label="anchor" href="#arg-env-df"></a></dt>
-<dd><p>Optional site × environment <strong>numeric</strong> data frame/matrix
-(row names must be site IDs; used when <code>long_df</code> is <code>NULL</code>).</p></dd>
+<dd><p>Optional site by environment numeric data frame or matrix.
+Row names must correspond to site identifiers.</p></dd>
 
 
 <dt id="arg-comm-res">comm_res<a class="anchor" aria-label="anchor" href="#arg-comm-res"></a></dt>
-<dd><p>Optional site × resident numeric matrix/data frame (wide) or
-a long table with <code>site</code>, <code>species</code>, <code>count</code> (see <code>comm_long</code>).</p></dd>
+<dd><p>Optional site by resident numeric matrix or data frame (wide),
+or a long-format table with columns <code>site</code>, <code>species</code>, and
+<code>count</code>.</p></dd>
 
 
 <dt id="arg-traits-res">traits_res<a class="anchor" aria-label="anchor" href="#arg-traits-res"></a></dt>
-<dd><p>Optional resident × traits data frame (row names = species).</p></dd>
+<dd><p>Optional resident by trait data frame with row names
+corresponding to species identifiers.</p></dd>
 
 
 <dt id="arg-comm-long">comm_long<a class="anchor" aria-label="anchor" href="#arg-comm-long"></a></dt>
-<dd><p>How to interpret a separately supplied <code>comm_res</code>:
-one of <code>c("auto","long","wide")</code>; <code>"auto"</code> detects a long table and pivots.</p></dd>
+<dd><p>Character string indicating how to interpret a separately
+supplied <code>comm_res</code>; one of <code>"auto"</code>, <code>"long"</code>, or
+<code>"wide"</code>.</p></dd>
 
 
 <dt id="arg-site-col-x-col-y-col-species-col-count-col">site_col, x_col, y_col, species_col, count_col<a class="anchor" aria-label="anchor" href="#arg-site-col-x-col-y-col-species-col-count-col"></a></dt>
-<dd><p>Column names to use when
-building from <code>long_df</code>. Defaults: <code>"site"</code>, <code>"x"</code>, <code>"y"</code>, <code>"species"</code>, <code>"count"</code>.</p></dd>
+<dd><p>Column names used when
+building from <code>long_df</code>.</p></dd>
 
 
-<dt id="arg-env-cols-env-prefix-trait-cols-trait-prefix-drop-empty-sites-">env_cols, env_prefix, trait_cols, trait_prefix, drop_empty_sites, <a class="anchor" aria-label="anchor" href="#arg-env-cols-env-prefix-trait-cols-trait-prefix-drop-empty-sites-"></a></dt>
-<dd><p>drop_empty_species,return_diversity,make_plots See details in original docs.</p></dd>
+<dt id="arg-env-cols">env_cols<a class="anchor" aria-label="anchor" href="#arg-env-cols"></a></dt>
+<dd><p>Character vector of environment column names to extract.</p></dd>
+
+
+<dt id="arg-env-prefix">env_prefix<a class="anchor" aria-label="anchor" href="#arg-env-prefix"></a></dt>
+<dd><p>Regular expression used to select environment columns.</p></dd>
+
+
+<dt id="arg-trait-cols">trait_cols<a class="anchor" aria-label="anchor" href="#arg-trait-cols"></a></dt>
+<dd><p>Character vector of trait column names to extract.</p></dd>
+
+
+<dt id="arg-trait-prefix">trait_prefix<a class="anchor" aria-label="anchor" href="#arg-trait-prefix"></a></dt>
+<dd><p>Regular expression used to select trait columns.</p></dd>
+
+
+<dt id="arg-drop-empty-sites">drop_empty_sites<a class="anchor" aria-label="anchor" href="#arg-drop-empty-sites"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, drop sites with zero total abundance.</p></dd>
+
+
+<dt id="arg-drop-empty-species">drop_empty_species<a class="anchor" aria-label="anchor" href="#arg-drop-empty-species"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, drop resident species with
+zero total abundance across all sites.</p></dd>
+
+
+<dt id="arg-return-diversity">return_diversity<a class="anchor" aria-label="anchor" href="#arg-return-diversity"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, compute and return site-level
+diversity summaries.</p></dd>
+
+
+<dt id="arg-make-plots">make_plots<a class="anchor" aria-label="anchor" href="#arg-make-plots"></a></dt>
+<dd><p>Logical. If <code>TRUE</code>, generate quick diagnostic plots.</p></dd>
 
 </dl></div>
 

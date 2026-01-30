@@ -3,22 +3,54 @@
 #' Small helper functions used inside the package. Not part of the public API.
 #'
 #' @name utils_internal
-#' @keywords internal   # <-- hide from index
-#' @aliases "%||%" new_invasimapr_fit print.invasimapr_fit .standardise_df .scale_like .row_z
+#' @keywords internal
+#' @aliases new_invasimapr_fit .standardise_df .scale_like .row_z
 NULL
+
 new_invasimapr_fit = function(x = list()) {
   class(x) = unique(c("invasimapr_fit", class(x)))
   x
 }
 
-#' @title Compact print
-#' @keywords internal   # <-- hide from index
+#' Internal infix helper
+#' @keywords internal
+#' @noRd
+`%||%` <- function(a, b) if (!is.null(a)) a else b
+
+#' invasimapr_fit object
+#'
+#' A lightweight S3 container used throughout **invasimapr** to store assembled
+#' inputs, fitted models, sensitivities, invasion fitness, and derived summaries.
+#'
+#' Objects of class `invasimapr_fit` are created by
+#' \link{prepare_inputs} (via \link{new_invasimapr_fit}) and are progressively
+#' enriched by downstream modelling and prediction functions.
+#'
+#' @details
+#' The object typically contains the following components:
+#' \describe{
+#'   \item{inputs}{Core data structures returned by \link{assemble_matrices}.}
+#'   \item{meta}{Basic metadata such as number of sites, residents, and traits.}
+#'   \item{residents, traits, sensitivities, fitness, prob, summary}{Optional
+#'     components added by downstream workflows.}
+#' }
+#'
+#' @name invasimapr_fit
+#' @rdname invasimapr_fit
+#' @keywords internal
+NULL
+
+
+#' @title Compact print method for invasimapr_fit
+#' @description Internal print method. Not part of the public API.
+#' @keywords internal
 #' @export
 print.invasimapr_fit = function(x, ...) {
   cat("<invasimapr_fit>\n")
-  stages = c("inputs","traits","crowding","residents","sensitivities","invaders","fitness","prob","summary")
+  stages = c("inputs","traits","crowding","residents","sensitivities",
+             "invaders","fitness","prob","summary")
   present = stages[stages %in% names(x)]
-  if (length(present)) cat(" stages:", paste(present, collapse = " → "), "\n")
+  if (length(present)) cat(" stages:", paste(present, collapse = " -> "), "\n")
   if (!is.null(x$meta)) {
     cat(sprintf(" sites: %s | residents: %s | invaders: %s\n",
                 x$meta$n_sites %||% NA_integer_,
@@ -27,7 +59,6 @@ print.invasimapr_fit = function(x, ...) {
   }
   invisible(x)
 }
-`%||%` = function(a,b) if (!is.null(a)) a else b
 
 # ------------------------------ small helpers ------------------------------
 

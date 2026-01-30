@@ -1,11 +1,42 @@
-#' Site-varying \eqn{α_{is}} and \eqn{Γ_{is}}, plus \eqn{β_{i}} (and signed variants)
+#' Site-varying alpha and gamma with trait-dependent beta
 #'
 #' @description
-#' Adds site random-slope adjustments for C_z and r_z to produce α_{is} and Γ_{is}.
-#' β is trait-varying only (no site-varying β_{is} because S_z is site-only).
-#' Also surfaces signed slopes and clamping info from `derive_sensitivities()`.
-#' @return list(alpha_is, Gamma_is, beta_i, beta_signed_i, alpha_signed_i,
-#'              theta_i, gamma_i, slope_C_i, delta_C_s, delta_r_s, notes, df)
+#' Constructs site-by-invader crowding penalties and density-dependence scalars
+#' by combining trait-derived slopes with site-level random effects.
+#'
+#' Site-level random slopes for \eqn{C_z} and \eqn{r_z} are added to the
+#' trait-dependent systems to produce site-varying crowding penalties
+#' \eqn{\alpha_{is}} and density-dependence scalars \eqn{\Gamma_{is}}.
+#' Saturation effects \eqn{\beta_i} are trait-varying only; no site-varying
+#' \eqn{\beta_{is}} is constructed because \eqn{S_z} is site-only.
+#'
+#' The function also exposes signed slopes and clamping diagnostics returned by
+#' \code{derive_sensitivities()}.
+#'
+#' @param fit_coeffs Fitted residents-only GLMM (e.g. `glmmTMB`) used to extract
+#'   fixed effects and site-level random slopes.
+#' @param Q_inv Data frame of invader trait scores with columns `tr1` and `tr2`;
+#'   row names must correspond to `inv_ids`.
+#' @param sites Character vector of site identifiers (rows of the output matrices).
+#' @param inv_ids Character vector of invader identifiers (columns of the output matrices).
+#' @param lrt Logical; passed to \code{derive_sensitivities()} to control likelihood-ratio
+#'   testing for trait effects.
+#' @param quiet Logical; if `TRUE`, suppress warnings about missing or negligible
+#'   site-level random effects.
+#'
+#' @return A list with the following elements:
+#' \itemize{
+#'   \item \code{alpha_is}: matrix of site-by-invader crowding penalties
+#'   \item \code{Gamma_is}: matrix of site-by-invader density-dependence scalars
+#'   \item \code{beta_i}, \code{beta_signed_i}: invader-level saturation effects
+#'   \item \code{alpha_signed_i}: signed crowding slopes prior to clamping
+#'   \item \code{theta_i}, \code{gamma_i}: invader-level abiotic sensitivities
+#'   \item \code{slope_C_i}: trait-derived crowding slopes
+#'   \item \code{delta_C_s}, \code{delta_r_s}: site-level random effects
+#'   \item \code{notes}: character vector of diagnostics
+#'   \item \code{df}: tidy long-format data frame
+#' }
+#'
 #' @export
 site_varying_alpha_beta_gamma = function(fit_coeffs, Q_inv, sites, inv_ids,
                                           lrt = TRUE, quiet = FALSE) {
@@ -39,7 +70,7 @@ site_varying_alpha_beta_gamma = function(fit_coeffs, Q_inv, sites, inv_ids,
     } else {
       delta_C_s = stats::setNames(as.numeric(re_site[, jC[1], drop = TRUE]), rownames(re_site))
       if (stats::sd(delta_C_s, na.rm = TRUE) < 1e-8)
-        notes = c(notes, "delta_C_s ~ 0 variance; α_is ≈ α_i across sites.")
+        notes = c(notes, "delta_C_s ~ 0 variance; alpha_is similar alpha_i across sites.")
     }
 
     if (!length(jR)) {
@@ -49,7 +80,7 @@ site_varying_alpha_beta_gamma = function(fit_coeffs, Q_inv, sites, inv_ids,
     } else {
       delta_r_s = stats::setNames(as.numeric(re_site[, jR[1], drop = TRUE]), rownames(re_site))
       if (stats::sd(delta_r_s, na.rm = TRUE) < 1e-8)
-        notes = c(notes, "delta_r_s ~ 0 variance; Γ_is ≈ θ_i across sites.")
+        notes = c(notes, "delta_r_s ~ 0 variance; Gamma_is similar theta_i across sites.")
     }
   }
 
@@ -91,7 +122,7 @@ site_varying_alpha_beta_gamma = function(fit_coeffs, Q_inv, sites, inv_ids,
     beta_signed_i  = sens$beta_signed_i,
     alpha_signed_i = sens$alpha_signed_i,
     theta_i        = sens$theta_i,
-    gamma_i        = sens$gamma_i,   # for options where you want γ_i (not Γ_{is})
+    gamma_i        = sens$gamma_i,   # for options where you want gamma_i (not Gamma_{is})
     slope_C_i      = slope_C_i,
     delta_C_s      = delta_C_s,
     delta_r_s      = delta_r_s,

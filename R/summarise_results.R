@@ -1,74 +1,76 @@
-#' Summarise invasiveness / invasibility (tables, maps, rankings)
+#' Summarise invasiveness and invasibility (tables, maps, rankings)
 #'
-#' Thin wrapper around
-#' \href{https://b-cubed-eu.github.io/invasimapr/reference/summarise_invasiveness_invasibility.html}{`summarise_invasiveness_invasibility()`}
-#' that pulls inputs from an [`invasimapr_fit`] container, forwards optional
-#' arguments, and (optionally) overlays a boundary layer on the site map.
-#' Designed as a drop-in reporting step after computing invasion fitness and/or
+#' @description
+#' Thin wrapper around \link{summarise_invasiveness_invasibility} that extracts
+#' inputs from a \link{new_invasimapr_fit} container, forwards optional arguments,
+#' and optionally overlays a boundary layer on the site map. This function is
+#' intended as a reporting step after computing invasion fitness and/or
 #' establishment probabilities.
 #'
-#' @section What it uses from `fit`:
-#' - `fit$fitness$lambda_is` (optional): site × invader invasion fitness matrix.
-#' - `fit$prob$p_is` (optional): site × invader establishment probability matrix.
-#' - `fit$inputs$site_df` (optional): site metadata with `site`, `x`, `y`.
-#' - `fit$inputs$comm_res` (optional): resident community matrix for context stats.
-#' - `fit$invaders$traits_inv_raw` **or** `fit$invaders$traits_inv_glmm`
-#'   (optional): invader traits used for invader-ranked summaries.
-#'
-#' At least one of `lambda_is` or `p_is` must be available; otherwise an error
-#' is thrown.
-#'
-#' @param fit An object of class `invasimapr_fit` containing `fitness` and/or
-#'   `prob` components produced by upstream steps (see **See also**).
-#' @param boundary_sf Optional **sf** object to overlay on the site map
-#'   (e.g., national/park boundary).
-#' @param boundary_params Named list of aesthetics for `ggplot2::geom_sf()`.
-#'   Defaults to `list(inherit.aes = FALSE, fill = NA, color = "black", size = 0.3)`.
-#' @param traits_inv Optional override of the invader trait table used in
-#'   summaries. If `NULL`, falls back to `fit$invaders$traits_inv_raw`, then
-#'   `fit$invaders$traits_inv_glmm` when available.
+#' @param fit An object produced by the invasimapr workflow, containing
+#'   `fitness` and/or `prob` components created by upstream steps.
+#' @param boundary_sf Optional object of class `sf` providing a boundary layer
+#'   to overlay on the site map.
+#' @param boundary_params Named list of aesthetics passed to
+#'   `ggplot2::geom_sf()`. Defaults to
+#'   `list(inherit.aes = FALSE, fill = NA, color = "black", size = 0.3)`.
+#' @param traits_inv Optional override of the invader trait table used for
+#'   invader-ranked summaries. If `NULL`, traits are taken from the container.
 #' @param ... Additional arguments forwarded to
-#'   \href{https://b-cubed-eu.github.io/invasimapr/reference/summarise_invasiveness_invasibility.html}{`summarise_invasiveness_invasibility()`}.
+#'   \link{summarise_invasiveness_invasibility}.
 #'
 #' @details
-#' **Behaviour**
-#' 1. Extracts `lambda_is` and/or `p_is` from `fit`; errors if neither is found.
-#' 2. Chooses `site_df` from `fit$inputs$site_df` when present.
-#' 3. Selects an effective trait table for invader-ranked summaries in the order:
-#'    user-supplied `traits_inv` → `fit$invaders$traits_inv_raw` →
-#'    `fit$invaders$traits_inv_glmm`.
-#' 4. Calls
-#'    \href{https://b-cubed-eu.github.io/invasimapr/reference/summarise_invasiveness_invasibility.html}{`summarise_invasiveness_invasibility()`}
-#'    to construct tidy summaries and ggplots (site maps, rankings, heatmaps).
-#' 5. If `boundary_sf` is supplied and plots are available, overlays the boundary
-#'    with `geom_sf()` using `boundary_params`.
+#' \strong{Inputs used from the container}
+#' \itemize{
+#'   \item `fit$fitness$lambda_is`: site-by-invader invasion fitness matrix (optional).
+#'   \item `fit$prob$p_is`: site-by-invader establishment probability matrix (optional).
+#'   \item `fit$inputs$site_df`: site metadata with coordinates `x` and `y` (optional).
+#'   \item `fit$inputs$comm_res`: resident community matrix for context summaries (optional).
+#'   \item invader trait tables stored in the container, used for invader rankings.
+#' }
 #'
-#' **Output layout**
-#' The returned `fit` gains a `summary` element mirroring the structure from
-#' `summarise_invasiveness_invasibility()` (e.g., `tables`, `plots`, `args_used`).
+#' At least one of `lambda_is` or `p_is` must be present; otherwise an error
+#' is thrown.
 #'
-#' @return The input `fit` with an added/updated `fit$summary` list containing
-#'   summary tables and plots. Invisibly returns `fit` to support piping.
+#' \strong{Behaviour}
+#' \enumerate{
+#'   \item Extract invasion fitness and/or establishment probability matrices
+#'         from the container.
+#'   \item Select site metadata and an effective invader trait table when available.
+#'   \item Call \link{summarise_invasiveness_invasibility} to construct tidy
+#'         summary tables and plots (site maps, rankings, heatmaps).
+#'   \item If a boundary layer is supplied and plots are available, overlay it
+#'         on the site map using `geom_sf()`.
+#' }
+#'
+#' \strong{Output layout}
+#' The returned container gains a `summary` element mirroring the structure
+#' returned by \link{summarise_invasiveness_invasibility}, typically containing
+#' summary tables, plots, and the arguments used.
+#'
+#' @return
+#' The input `fit` object with an added or updated `fit$summary` list.
+#' Invisibly returns `fit` to support piping.
 #'
 #' @seealso
-#' - Fitness: \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.html}{`compute_invasion_fitness()`}
-#' - Probabilities: \href{https://b-cubed-eu.github.io/invasimapr/reference/compute_establishment_probability.html}{`compute_establishment_probability()`}
-#' - Summaries: \href{https://b-cubed-eu.github.io/invasimapr/reference/summarise_invasiveness_invasibility.html}{`summarise_invasiveness_invasibility()`}
-#' - Inputs: \href{https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html}{`assemble_matrices()`}
+#' \link{compute_invasion_fitness},
+#' \link{compute_establishment_probability},
+#' \link{summarise_invasiveness_invasibility},
+#' \link{assemble_matrices}
 #'
 #' @examples
 #' \dontrun{
-#' fit <- prepare_inputs(sites = site_df, residents = resident_df,
-#'                       invaders = invader_df, traits = trait_df)
+#' fit <- prepare_inputs(
+#'   sites = site_df,
+#'   residents = resident_df,
+#'   invaders = invader_df,
+#'   traits = trait_df
+#' )
+#'
 #' fit <- learn_sensitivities(fit)
 #' fit <- predict_invaders(fit, traits_inv = invader_traits)
 #'
-#' # Optionally compute lambda and/or probability
-#' fit$fitness <- compute_invasion_fitness_from_fit(fit)   # hypothetical helper
-#' fit$prob    <- compute_establishment_probability_from_fit(fit)  # idem
-#'
-#' # Overlay a boundary (sf) on the site map
-#' fit <- summarise_results(fit, boundary_sf = rsa_boundary)
+#' fit <- summarise_results(fit)
 #' fit$summary$plots$site_map
 #' }
 #'

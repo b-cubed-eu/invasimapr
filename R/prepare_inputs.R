@@ -1,48 +1,55 @@
-#' Prepare inputs (assemble & align core tables)
+#' Prepare inputs (assemble and align core tables)
 #'
-#' Thin wrapper around [`assemble_matrices()`] that standardises and stores the
-#' assembled inputs in an [`invasimapr_fit`] object for downstream modelling.
-#' Use this to run the input-assembly step once and pass a single structured
-#' object through subsequent pipelines.
+#' @description
+#' Thin wrapper around \link{assemble_matrices} that standardises and stores
+#' assembled inputs in a \link{new_invasimapr_fit} object for downstream modelling.
+#' Use this function to run the input-assembly step once and pass a single
+#' structured container through subsequent pipelines.
 #'
-#' @inheritParams assemble_matrices
-#' @param make_plots logical. If `TRUE`, propagate `make_plots` to
-#'   [`assemble_matrices()`] so that diagnostic plots are produced during
+#' @inheritDotParams assemble_matrices
+#' @param ... Arguments passed directly to \link{assemble_matrices}.
+#' @param make_plots Logical; if `TRUE`, propagate `make_plots` to
+#'   \link{assemble_matrices} so that diagnostic plots are produced during
 #'   assembly. Defaults to `FALSE`.
 #'
 #' @details
-#' **What this does**
-#' 1. Calls [`assemble_matrices()`] to build core site × species/trait matrices,
-#'    perform consistency checks, and harmonise keys and factor levels.
-#' 2. Wraps the returned list (`core`) into a lightweight S3 container
-#'    `invasimapr_fit` with a dedicated `inputs` slot and a small `meta` block
-#'    (counts of sites, residents, traits) used by later steps.
+#' \strong{What this does}
+#' \enumerate{
+#'   \item Calls \link{assemble_matrices} to build core site-by-species and
+#'         site-by-trait matrices, perform consistency checks, and harmonise
+#'         keys and factor levels.
+#'   \item Wraps the returned list into a lightweight S3 container of class
+#'         `invasimapr_fit`, with a dedicated `inputs` slot and a small `meta`
+#'         block containing basic counts used by later steps.
+#' }
 #'
-#' **Object layout**
-#' ```
+#' \strong{Object layout}
+#' \preformatted{
 #' invasimapr_fit
-#' ├─ inputs : <list>   # output from assemble_matrices()
-#' └─ meta   : <list>   # n_sites, n_residents, n_traits
-#' ```
+#'   inputs : list   (output from assemble_matrices)
+#'   meta   : list   (n_sites, n_residents, n_traits)
+#' }
 #'
-#' **Notes**
-#' - No mutation of the `core` object occurs here; this function only packages
-#'   and annotates it.
-#' - If you need to inspect the assembled inputs, use `fit$inputs` after return.
+#' \strong{Notes}
+#' \itemize{
+#'   \item No mutation of the assembled inputs occurs here; the function only
+#'         packages and annotates them.
+#'   \item To inspect the assembled data, use `fit$inputs` on the returned object.
+#' }
 #'
-#' @return An object of class `invasimapr_fit` with components:
+#' @return
+#' An object of class `invasimapr_fit` with components:
 #' \describe{
-#'   \item{`inputs`}{The full list returned by [`assemble_matrices()`].}
-#'   \item{`meta`}{A list with `n_sites`, `n_residents`, `n_traits`.}
+#'   \item{inputs}{The full list returned by \link{assemble_matrices}.}
+#'   \item{meta}{A list with elements `n_sites`, `n_residents`, and `n_traits`.}
 #' }
 #'
 #' @seealso
-#' - Input assembly: \href{https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html}{`assemble_matrices()`}
-#' - Container constructor: [`new_invasimapr_fit()`]
+#' \link{assemble_matrices},
+#' \link{new_invasimapr_fit}
 #'
 #' @examples
 #' \dontrun{
-#' # Minimal pattern; pass the same arguments you would to assemble_matrices()
 #' fit <- prepare_inputs(
 #'   sites      = site_df,
 #'   residents  = resident_df,
@@ -50,6 +57,7 @@
 #'   traits     = trait_df,
 #'   make_plots = TRUE
 #' )
+#'
 #' str(fit, 1)
 #' str(fit$inputs, 1)
 #' fit$meta

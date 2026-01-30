@@ -21,23 +21,30 @@ Imports:
     graphics,
     cluster,
     MASS,
-    geometry,
     viridisLite,
     ggplot2,
-    patchwork,
     factoextra,
     dplyr,
     tidyr,
     tibble,
     purrr,
-    tidyselect,
     magrittr,
     glmmTMB,
-    lme4,
-    mgcv,
     rlang,
+    matrixStats,
+    vegan,
+    fuzzyjoin,
+    forcats,
+    Matrix,
+    httr,
+    jsonlite,
+    magick,
+    rvest,
     data.table (>= 1.15.0)
 Suggests:
+    dissmapr,
+    pheatmap,
+    scico,
     sf,
     terra,
     ClustGeo,
@@ -47,7 +54,6 @@ Suggests:
     viridis,
     stringr,
     fastDummies,
-    vegan,
     performance,
     lattice,
     RColorBrewer,
@@ -56,5 +62,6 @@ Suggests:
     testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
+Config/Needs/website: false
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2

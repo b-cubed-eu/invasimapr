@@ -2,7 +2,7 @@
 % Please edit documentation in R/model_residents.R
 \name{model_residents}
 \alias{model_residents}
-\title{Model residents and build standardized predictors (\eqn{r_{js}^{(z)}, C_{js}^{(z)}, S_{js}^{(z)}})}
+\title{Resident GLMM and construction of standardized predictors}
 \usage{
 model_residents(
   fit,
@@ -20,93 +20,92 @@ model_residents(
 )
 }
 \arguments{
-\item{fit}{An \code{invasimapr_fit} returned by
-\href{https://b-cubed-eu.github.io/invasimapr/reference/prepare_trait_space.html}{\code{prepare_trait_space()}};
-must contain \code{inputs$comm_res}, \code{inputs$env_df}, \code{inputs$traits_res},
-and \code{crowding$C_js} (raw, not z-scored).}
+\item{fit}{An object of class \code{invasimapr_fit} produced by
+\code{prepare_trait_space()}. Must contain resident inputs, environment
+covariates, and raw crowding matrices.}
 
-\item{family}{A \code{glmmTMB} family (default
-\code{glmmTMB::tweedie(link = "log")}).}
+\item{family}{A \code{glmmTMB} family. Default is
+\code{glmmTMB::tweedie(link = "log")}.}
 
 \item{include_env_trait_interactions}{Logical; whether to include
-environment × trait interactions in the fixed effects (when not reduced).}
+environment by trait interactions when not reduced.}
 
-\item{saturation_mode}{One of
-\code{c("evenness_deficit","opportunity_penalty","modelled_dominance")};
-forwarded to
-\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_site_saturation.html}{\code{compute_site_saturation()}}.}
+\item{saturation_mode}{Character string controlling site saturation
+computation. Passed to \code{compute_site_saturation()}.}
 
-\item{robust_r, robust_c}{Logical; use robust row-wise z-scoring for
-\eqn{r_{js}} and \eqn{C_{js}} respectively.}
+\item{robust_r, robust_c}{Logical; whether to use robust row-wise
+z-standardisation for \eqn{r_{js}} and \eqn{C_{js}}.}
 
-\item{fit_model}{Logical; if \code{FALSE}, preflight only (build design/estimate
-memory footprint) and return without fitting.}
+\item{fit_model}{Logical; if \code{FALSE}, perform preflight only and return
+without fitting the model.}
 
-\item{max_dense_gb}{Numeric; maximum allowed dense fixed-effects design size
-(in GB) for preflight in \code{"auto"} mode.}
+\item{max_dense_gb}{Numeric; maximum allowed dense fixed-effects size (GB)
+in automatic reduction mode.}
 
-\item{reduce_strategy}{One of \code{c("auto","none","no_interactions","pca")}.}
+\item{reduce_strategy}{One of \code{"auto"}, \code{"none"},
+\code{"no_interactions"}, or \code{"pca"}.}
 
-\item{pca_env_k, pca_trait_k}{Integers; number of PCs to retain for the environment
-and trait blocks under PCA reduction.}
+\item{pca_env_k, pca_trait_k}{Integers giving the number of retained principal
+components for environment and trait blocks.}
 
-\item{verbose}{Logical; emit progress/messages.}
+\item{verbose}{Logical; if \code{TRUE}, emit progress messages.}
 }
 \value{
-The input \code{invasimapr_fit} with updated components:
+The input \code{fit} object with updated components:
 \describe{
-\item{\code{model}}{Lists of standardised inputs (\code{env_df_z}, \code{traits_res_glmm}),
-means/SDs, and—if PCA used—\verb{*_pca}, \verb{*_pca_vars}, \verb{*_pca_center},
-\verb{*_pca_scale}, and \verb{*_pca_info} needed for invader projection.}
-\item{\code{residents}}{GLMM fit (\code{fit_r}), model frame (\code{dat_r}), grid for predictions,
-raw linear predictor matrix \code{r_js}, mean scale \code{mu_js}, and row-z outputs
-\code{r_js_z} with per-site means/SDs; similarly \code{C_js_z} and saturation summaries
-(\code{S_s}, \code{S_s_z}, \code{S_js_z}).}
-\item{\code{model$pca_used}}{Flags and counts recording whether PCA was used and
+\item{\code{model}}{Standardised inputs, PCA objects, and metadata required
+for invader projection.}
+\item{\code{residents}}{Resident GLMM fit, prediction grid, raw and
+standardised predictor matrices, and site saturation summaries.}
+\item{\code{model$pca_used}}{Flags indicating whether PCA was applied and
 the retained dimensionality.}
 }
 }
 \description{
-Fits the \strong{residents-only} GLMM and constructs site-standardised predictors
-used to learn sensitivities and to project invaders. Specifically:
-(i) builds a design using environment and resident traits,
-(ii) optionally \strong{dummy-expands} factors and performs \strong{PCA compression}
-with stored centering/scale metadata for reproducible projection,
-(iii) fits a \code{glmmTMB} model on resident abundance,
-(iv) predicts linear predictors \eqn{r_{js}} then applies \strong{row-wise
-z-scoring} to obtain \eqn{r_{js}^{(z)}}, and (v) row-z-standardises
-\strong{resident crowding} \eqn{C_{js}} and computes site saturation summaries
-\eqn{S_s}, \eqn{S_{s}^{(z)}}, \eqn{S_{js}^{(z)}}.
+\code{model_residents()} fits a residents-only generalized linear mixed model
+and constructs site-standardized predictors used for learning sensitivities
+and projecting invaders. Specifically, the function:
+\enumerate{
+\item builds a fixed-effects design from environment and resident traits,
+\item optionally expands factors and applies PCA compression with stored
+centering and scaling metadata,
+\item fits a \code{glmmTMB} model to resident abundance,
+\item predicts resident linear predictors \eqn{r_{js}} and applies
+row-wise z-standardisation to obtain \eqn{r^{(z)}_{js}},
+\item standardises resident crowding \eqn{C_{js}} and computes site
+saturation summaries \eqn{S_s}, \eqn{S^{(z)}_s}, and
+\eqn{S^{(z)}_{js}}.
+}
 }
 \details{
-\strong{Design construction}
-The base frames \code{env_df_z} and \code{traits_res_glmm} are created by robust
-standardisation. Characters are coerced to factors to ensure stable
-dummy-expansion. In \code{"pca"} reduction, each block undergoes:
-\code{model.matrix} one-hot encoding (no intercept) → per-column standardisation →
-\code{prcomp()} with \strong{stored} centring/scales and rotation rownames. This metadata
-supports lossless, future projection of invaders (see
-\href{https://b-cubed-eu.github.io/invasimapr/reference/predict_invaders.html}{\code{predict_invaders()}}).
+Model residents and build standardized predictors
 
-\strong{Preflight memory check}
-A rough dense design GB estimate is computed on the fixed-effects portion
-(random terms stripped). \code{"auto"} reduction iteratively lowers complexity to
-meet \code{max_dense_gb}.
+\strong{Design construction}.
+Environment and trait tables are standardised prior to model fitting.
+Character variables are coerced to factors to ensure stable dummy expansion.
+Under PCA reduction, each block is one-hot encoded, column-standardised, and
+passed to \code{prcomp()}. All centering, scaling, and rotation metadata are
+stored to enable reproducible projection of invaders.
 
-\strong{Z-standardisation}
-Row-wise z-scoring uses \code{.row_z()} (robust if requested) and stores site-wise
-means/SDs for later use in mapping probabilities and fitness.
+\strong{Preflight memory checks}.
+In automatic reduction mode, the dense fixed-effects design size is estimated
+before fitting. If the design exceeds \code{max_dense_gb}, interactions are
+removed and/or PCA compression is applied until the constraint is satisfied.
+
+\strong{Z-standardisation}.
+Row-wise z-standardisation stores site-level means and standard deviations for
+later use in invasion fitness and probability mapping.
 }
 \section{Reduction strategies}{
 
-Use \code{reduce_strategy} to control the fixed-effects size/complexity.
+The argument \code{reduce_strategy} controls fixed-effects complexity.
 \itemize{
-\item \code{"auto"}: preflights a dense design estimate; if memory budget exceeded,
-falls back to \code{"no_interactions"}, then \code{"pca"}, then \code{"pca+no_interactions"}.
-\item \code{"no_interactions"}: drops all env × trait interactions.
-\item \code{"pca"}: dummy-expand → standardise → \code{prcomp()} on the design blocks
-(environment and traits) and use the first \code{pca_env_k}/\code{pca_trait_k} PCs.
-\item \code{"none"}: keep full model as requested by \code{include_env_trait_interactions}.
+\item \code{"auto"}: estimate dense design size and iteratively reduce
+complexity until the memory budget is met.
+\item \code{"no_interactions"}: drop all environment by trait interactions.
+\item \code{"pca"}: dummy-expand, standardise, and apply \code{prcomp()} to
+environment and trait blocks, retaining the first components.
+\item \code{"none"}: retain the full requested fixed-effects structure.
 }
 }
 
@@ -125,15 +124,10 @@ fit$residents$messages
 }
 \seealso{
 \itemize{
-\item Formula builder:
-\href{https://b-cubed-eu.github.io/invasimapr/reference/build_model_formula.html}{\code{build_model_formula()}}
-\item GLMM preparation:
-\href{https://b-cubed-eu.github.io/invasimapr/reference/prep_resident_glmm.html}{\code{prep_resident_glmm()}}
-\item Site saturation:
-\href{https://b-cubed-eu.github.io/invasimapr/reference/compute_site_saturation.html}{\code{compute_site_saturation()}}
-\item Trait preparation:
-\href{https://b-cubed-eu.github.io/invasimapr/reference/prepare_trait_space.html}{\code{prepare_trait_space()}}
-\item Invader projection:
-\href{https://b-cubed-eu.github.io/invasimapr/reference/predict_invaders.html}{\code{predict_invaders()}}
+\item \code{build_model_formula()}
+\item \code{prep_resident_glmm()}
+\item \code{compute_site_saturation()}
+\item \code{prepare_trait_space()}
+\item \code{predict_invaders()}
 }
 }

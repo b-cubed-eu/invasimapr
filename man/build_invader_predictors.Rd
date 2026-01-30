@@ -24,16 +24,47 @@ build_invader_predictors(
 )
 }
 \arguments{
-\item{fit_r}{Fitted residents-only glmmTMB model.}
+\item{fit_r}{Fitted residents-only \code{glmmTMB} model.}
 
-\item{env_df_model}{Data frame for environment predictors used by the model
-(rows = sites). This is either ENV_PC* (if PCA used) or env_df_z.}
+\item{env_df_model}{Data frame of environment predictors used by the model
+(rows = sites). Either \verb{ENV_PC*} (if PCA was used) or standardized \code{env_df_z}.}
 
-\item{traits_inv_model}{Data frame for invader traits used by the model
-(rows = invaders). This includes TR_PC* (if PCA used) and any raw
-factor traits present in the model formula.}
+\item{traits_inv_model}{Data frame of invader traits used by the model
+(rows = invaders). Includes \verb{TR_PC*} (if PCA was used) and any raw factor
+traits present in the model formula.}
 
-\item{...}{(unchanged other args)}
+\item{sites}{Character vector of site identifiers (must match row names of
+\code{env_df_model} and \code{W_site}).}
+
+\item{inv_ids}{Character vector of invader identifiers (must match row names
+of \code{traits_inv_model}).}
+
+\item{r_mu_s}{Numeric vector of site-wise means used to standardize abiotic
+suitability (\code{r_js}).}
+
+\item{r_sd_s}{Numeric vector of site-wise standard deviations used to
+standardize abiotic suitability (\code{r_js}).}
+
+\item{W_site}{Site × resident weighting matrix (e.g. relative abundance or
+presence–absence weights).}
+
+\item{gower_all}{Square matrix or \code{dist} object of Gower distances among all
+residents and invaders.}
+
+\item{res_ids}{Character vector of resident species identifiers.}
+
+\item{sigma_alpha}{Numeric kernel bandwidth for crowding effects. If \code{NULL}
+or non-positive, a data-driven default is used.}
+
+\item{C_mu_s}{Numeric vector of site-wise means used to standardize crowding
+(\code{C_is}).}
+
+\item{C_sd_s}{Numeric vector of site-wise standard deviations used to
+standardize crowding (\code{C_is}).}
+
+\item{S_s_z}{Numeric vector of standardized site saturation values.}
+
+\item{verbose}{Logical; if \code{TRUE}, emit diagnostic messages.}
 }
 \description{
 Build standardized invader predictors r_is_z, C_is_z, S_is_z

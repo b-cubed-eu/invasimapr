@@ -2,7 +2,7 @@
 % Please edit documentation in R/site_varying_alpha_beta_gamma.R
 \name{site_varying_alpha_beta_gamma}
 \alias{site_varying_alpha_beta_gamma}
-\title{Site-varying \eqn{α_{is}} and \eqn{Γ_{is}}, plus \eqn{β_{i}} (and signed variants)}
+\title{Site-varying alpha and gamma with trait-dependent beta}
 \usage{
 site_varying_alpha_beta_gamma(
   fit_coeffs,
@@ -13,12 +13,47 @@ site_varying_alpha_beta_gamma(
   quiet = FALSE
 )
 }
+\arguments{
+\item{fit_coeffs}{Fitted residents-only GLMM (e.g. \code{glmmTMB}) used to extract
+fixed effects and site-level random slopes.}
+
+\item{Q_inv}{Data frame of invader trait scores with columns \code{tr1} and \code{tr2};
+row names must correspond to \code{inv_ids}.}
+
+\item{sites}{Character vector of site identifiers (rows of the output matrices).}
+
+\item{inv_ids}{Character vector of invader identifiers (columns of the output matrices).}
+
+\item{lrt}{Logical; passed to \code{derive_sensitivities()} to control likelihood-ratio
+testing for trait effects.}
+
+\item{quiet}{Logical; if \code{TRUE}, suppress warnings about missing or negligible
+site-level random effects.}
+}
 \value{
-list(alpha_is, Gamma_is, beta_i, beta_signed_i, alpha_signed_i,
-theta_i, gamma_i, slope_C_i, delta_C_s, delta_r_s, notes, df)
+A list with the following elements:
+\itemize{
+\item \code{alpha_is}: matrix of site-by-invader crowding penalties
+\item \code{Gamma_is}: matrix of site-by-invader density-dependence scalars
+\item \code{beta_i}, \code{beta_signed_i}: invader-level saturation effects
+\item \code{alpha_signed_i}: signed crowding slopes prior to clamping
+\item \code{theta_i}, \code{gamma_i}: invader-level abiotic sensitivities
+\item \code{slope_C_i}: trait-derived crowding slopes
+\item \code{delta_C_s}, \code{delta_r_s}: site-level random effects
+\item \code{notes}: character vector of diagnostics
+\item \code{df}: tidy long-format data frame
+}
 }
 \description{
-Adds site random-slope adjustments for C_z and r_z to produce α_{is} and Γ_{is}.
-β is trait-varying only (no site-varying β_{is} because S_z is site-only).
-Also surfaces signed slopes and clamping info from \code{derive_sensitivities()}.
+Constructs site-by-invader crowding penalties and density-dependence scalars
+by combining trait-derived slopes with site-level random effects.
+
+Site-level random slopes for \eqn{C_z} and \eqn{r_z} are added to the
+trait-dependent systems to produce site-varying crowding penalties
+\eqn{\alpha_{is}} and density-dependence scalars \eqn{\Gamma_{is}}.
+Saturation effects \eqn{\beta_i} are trait-varying only; no site-varying
+\eqn{\beta_{is}} is constructed because \eqn{S_z} is site-only.
+
+The function also exposes signed slopes and clamping diagnostics returned by
+\code{derive_sensitivities()}.
 }

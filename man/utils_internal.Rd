@@ -2,9 +2,7 @@
 % Please edit documentation in R/utils_internal.R
 \name{utils_internal}
 \alias{utils_internal}
-\alias{"\%||\%"}
 \alias{new_invasimapr_fit}
-\alias{print.invasimapr_fit}
 \alias{.standardise_df}
 \alias{.scale_like}
 \alias{.row_z}
@@ -12,9 +10,4 @@
 \description{
 Small helper functions used inside the package. Not part of the public API.
 }
-\keyword{#}
-\keyword{<--}
-\keyword{from}
-\keyword{hide}
-\keyword{index}
 \keyword{internal}

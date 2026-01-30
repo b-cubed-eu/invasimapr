@@ -1,13 +1,33 @@
 #' Build standardized invader predictors r_is_z, C_is_z, S_is_z
 #' (expects env/traits frames already projected to model columns)
 #'
-#' @param fit_r Fitted residents-only glmmTMB model.
-#' @param env_df_model Data frame for environment predictors used by the model
-#'        (rows = sites). This is either ENV_PC* (if PCA used) or env_df_z.
-#' @param traits_inv_model Data frame for invader traits used by the model
-#'        (rows = invaders). This includes TR_PC* (if PCA used) and any raw
-#'        factor traits present in the model formula.
-#' @param ... (unchanged other args)
+#' @param fit_r Fitted residents-only `glmmTMB` model.
+#' @param env_df_model Data frame of environment predictors used by the model
+#'   (rows = sites). Either `ENV_PC*` (if PCA was used) or standardized `env_df_z`.
+#' @param traits_inv_model Data frame of invader traits used by the model
+#'   (rows = invaders). Includes `TR_PC*` (if PCA was used) and any raw factor
+#'   traits present in the model formula.
+#' @param sites Character vector of site identifiers (must match row names of
+#'   `env_df_model` and `W_site`).
+#' @param inv_ids Character vector of invader identifiers (must match row names
+#'   of `traits_inv_model`).
+#' @param r_mu_s Numeric vector of site-wise means used to standardize abiotic
+#'   suitability (`r_js`).
+#' @param r_sd_s Numeric vector of site-wise standard deviations used to
+#'   standardize abiotic suitability (`r_js`).
+#' @param W_site Site × resident weighting matrix (e.g. relative abundance or
+#'   presence–absence weights).
+#' @param gower_all Square matrix or `dist` object of Gower distances among all
+#'   residents and invaders.
+#' @param res_ids Character vector of resident species identifiers.
+#' @param sigma_alpha Numeric kernel bandwidth for crowding effects. If `NULL`
+#'   or non-positive, a data-driven default is used.
+#' @param C_mu_s Numeric vector of site-wise means used to standardize crowding
+#'   (`C_is`).
+#' @param C_sd_s Numeric vector of site-wise standard deviations used to
+#'   standardize crowding (`C_is`).
+#' @param S_s_z Numeric vector of standardized site saturation values.
+#' @param verbose Logical; if `TRUE`, emit diagnostic messages.
 #' @export
 build_invader_predictors = function(fit_r, env_df_model, traits_inv_model,
                                      sites, inv_ids,

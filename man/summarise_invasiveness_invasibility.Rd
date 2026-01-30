@@ -18,78 +18,72 @@ summarise_invasiveness_invasibility(
 )
 }
 \arguments{
-\item{lambda_is}{Matrix \eqn{S\times I} of invasion fitness (rows = sites, cols = invaders).
-If \code{NULL}, you must supply \code{p_is}. Provide row/column names.}
+\item{lambda_is}{Matrix of invasion fitness with dimensions
+sites by invaders. Row and column names are required.}
 
-\item{p_is}{Optional matrix \eqn{S\times I} of establishment probabilities
-(e.g., from \code{compute_establishment_probability()}).}
+\item{p_is}{Optional matrix of establishment probabilities with the same
+dimensions as \code{lambda_is}.}
 
-\item{use_probabilistic}{Logical. If \code{TRUE}, summaries use \code{p_is} (expected values).
-If \code{FALSE}, summaries use the hard rule \eqn{I\{\lambda>0\}}.}
+\item{use_probabilistic}{Logical. If \code{TRUE}, summaries use \code{p_is}.
+If \code{FALSE}, summaries use the hard rule \eqn{I\{\lambda > 0\}}.}
 
-\item{prob_threshold}{Numeric in (0,1). If \code{use_probabilistic=TRUE} and you still want a
-binary view for selected outputs/maps, cells with \code{p_is >= prob_threshold} count as 1.}
+\item{prob_threshold}{Numeric between 0 and 1. If probabilistic summaries are
+used and a binary view is requested, values with
+\code{p_is >= prob_threshold} are treated as 1.}
 
-\item{site_df}{Optional data frame with columns \verb{site, x, y} for mapping.
-If missing, maps are omitted but tabular summaries are still returned.}
+\item{site_df}{Optional data frame with columns \code{site}, \code{x}, and
+\code{y} for spatial mapping.}
 
-\item{traits_inv}{Optional data frame of invader traits for trait summaries;
-rownames must be invader IDs (matching \code{colnames(lambda_is)} or \code{colnames(p_is)}).
-May contain numeric and factor columns; non‐trait columns can be present.}
+\item{traits_inv}{Optional data frame of invader traits; row names must match
+invader IDs. Numeric and factor traits are supported.}
 
-\item{comm_res}{Optional site × resident matrix for relative metrics; used to compute
-per-site resident richness for extra normalization (optional).}
+\item{comm_res}{Optional site-by-resident matrix used to compute resident
+richness per site.}
 
-\item{return_long}{Logical. If \code{TRUE}, include a tidy long table for the site×invader surface.}
+\item{return_long}{Logical. If \code{TRUE}, returns a tidy long table of the
+site-by-invader surface.}
 
-\item{make_plots}{Logical. If \code{TRUE}, return ggplot objects for maps/bars/heatmaps.}
+\item{make_plots}{Logical. If \code{TRUE}, returns ggplot objects.}
 
-\item{label}{Optional character label used in plot titles and output metadata.}
+\item{label}{Optional character label added to plot titles and metadata.}
 }
 \value{
-A list with:
+A list with the following components:
 \itemize{
-\item \code{species}: data frame with species-level invasiveness metrics (probabilistic and/or hard).
-\item \code{site}: data frame with site-level invasibility metrics (probabilistic and/or hard + map coords if provided).
-\item \code{trait_effects}: data frame of trait effect sizes (|β| for continuous; ANOVA \(R^2\) for categorical).
-\item \code{establish_long}: tidy long table of the working surface (\code{val} = probability or 0/1; includes \code{lambda} if available).
-\item \code{plots}: list of ggplot objects (may be \code{NULL} if \code{make_plots=FALSE} or \code{ggplot2} not installed), including:
-\code{site_map}, \code{invader_rank}, \code{heatmap}, \code{trait_effects}.
-\item \code{meta}: list with \code{mode} ("probabilistic" or "hard"), \code{threshold}, and \code{label}.
+\item \code{species}: data frame of invader-level invasiveness metrics
+\item \code{site}: data frame of site-level invasibility metrics
+\item \code{trait_effects}: data frame of trait effect sizes
+\item \code{establish_long}: tidy long-format table of the working surface
+\item \code{plots}: list of ggplot objects (or \code{NULL})
+\item \code{meta}: list describing the summary mode and threshold
 }
 }
 \description{
-Invasion fitness \eqn{\lambda_{is}} integrates structure in \strong{trait space}
-(distances, overlaps, \strong{convex hull}, \strong{cloud centroid}) with \strong{abiotic suitability}
-(alignment to environment), \strong{niche crowding} (overlap with residents weighted by composition),
-and \strong{resident competition} (site saturation). \code{summarise_invasiveness_invasibility()} collapses the
-site × invader surface into \strong{species}, \strong{trait}, and \strong{site} summaries that are actionable
-and map-readyeither using a \strong{probabilistic} measure \(P(F>0)\) or a \strong{hard rule}
-\eqn{I\{\lambda>0\}}.
+Invasion fitness \eqn{\lambda_{is}} integrates structure in trait space
+(distances, overlaps, convex hull, cloud centroid) with abiotic suitability
+(alignment to environment), niche crowding (overlap with residents weighted by
+composition), and resident competition (site saturation).
+\code{summarise_invasiveness_invasibility()} collapses the site-by-invader surface
+into species-, trait-, and site-level summaries using either a probabilistic
+measure \eqn{P(\lambda > 0)} or a hard rule \eqn{I\{\lambda > 0\}}.
 
-\strong{Species invasiveness} (per invader) summarises breadth of establishment across sites:
-\deqn{V_i = |S|^{-1}\sum_s \mathbb{I}\{\lambda_{is}>0\}\quad \text{or}\quad
-\tilde V_i = |S|^{-1}\sum_s P(F>0\mid i,s).}
+Species invasiveness (per invader) summarises the breadth of establishment
+across sites:
+\deqn{V_i = |S|^{-1} \sum_s I\{\lambda_{is} > 0\}}
+or
+\deqn{\tilde V_i = |S|^{-1} \sum_s P(\lambda > 0 \mid i, s).}
 
-\strong{Site invasibility} (per site) quantifies openness to newcomers:
-\deqn{V_s = |I|^{-1}\sum_i \mathbb{I}\{\lambda_{is}>0\}\quad \text{or}\quad
-\tilde V_s = |I|^{-1}\sum_i P(F>0\mid i,s).}
+Site invasibility (per site) quantifies openness to newcomers:
+\deqn{V_s = |I|^{-1} \sum_i I\{\lambda_{is} > 0\}}
+or
+\deqn{\tilde V_s = |I|^{-1} \sum_i P(\lambda > 0 \mid i, s).}
 
-\strong{Trait invasiveness} scores which invader traits explain variation in \(V_i\),
-via standardized slopes for continuous traits and ANOVA \(R^2\) for categorical traits.
+Trait invasiveness scores which invader traits explain variation in invasiveness,
+using standardized slopes for continuous traits and ANOVA \eqn{R^2} for
+categorical traits.
 }
 \details{
 Summarize invasion fitness into species, trait, and site metrics (with plots)
-
-\strong{Working surface.} If \code{use_probabilistic=TRUE}, the core surface is \code{p_is}
-(expected establishments). If \code{FALSE}, it is the binary matrix \eqn{I\{\lambda>0\}}.
-If both \code{p_is} and \code{lambda_is} are supplied, both are used: the probabilistic summaries
-use \code{p_is}, the hard-rule summaries come from \code{lambda_is}.
-
-\strong{Trait effects.} For each numeric trait \eqn{T_k}, we fit a simple regression
-\deqn{\tilde V_i \sim T_{ik}}{Vtilde_i ~ T_{ik}} and report the standardized slope \eqn{|\beta_k|}{|beta_k|}.
-For each factor trait, we report ANOVA \(R^2\) from a one-way model.
-These are quick effect sizes to rank traits; more elaborate models can be layered later.
 }
 \examples{
 set.seed(42)

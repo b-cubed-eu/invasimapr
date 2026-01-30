@@ -1,7 +1,7 @@
 # Ignore build artefacts in Git
 vignettes/figures/
 man/figures/
-
+inst/doc/
 
 # History files
 .Rhistory

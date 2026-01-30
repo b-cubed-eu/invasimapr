@@ -1,4 +1,5 @@
 url: https://b-cubed-eu.github.io/invasimapr/
+
 template:
   math-rendering: mathjax   # or "katex"
   bootstrap: 5
@@ -8,6 +9,7 @@ template:
     heading_font:
       google: PT Sans
     primary: '#005856'
+
 navbar:
   bg: primary
   type: dark
@@ -40,7 +42,7 @@ reference:
 # 2. Function wrappers
   - title: "Wrapper Functions"
     contents:
-      - invasimap
+      # - invasimapr
       - prepare_inputs
       - prepare_trait_space
       - model_residents
@@ -72,11 +74,33 @@ reference:
       - summarise_invasiveness_invasibility
 
 articles:
-  - title: "All tutorials"
+  - title: "Tutorials"
     navbar: "Articles"
     contents:
-      - "1-introduction"
-      - "2-workflow"
-      - "3-clusters"
-      - "4-synthesis"
-      - "5-tutorial"
+      - introduction_1
+      - workflow_2
+      - clusters_3
+      - synthesis_4
+      - tutorial_5
+
+# articles:
+#   - title: "Getting started"
+#     contents:
+#       - introduction_1
+#
+#   - title: "Workflow"
+#     contents:
+#       - workflow_2
+#
+#   - title: "Clustering and risk scenarios"
+#     contents:
+#       - clusters_3
+#
+#   - title: "Invasion fitness synthesis"
+#     contents:
+#       - synthesis_4
+#
+#   - title: "Invasion fitness tutorial"
+#     contents:
+#       - tutorial_5
+

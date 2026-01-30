@@ -3,65 +3,58 @@
 #' @title Summaries of invasion fitness: species invasiveness, trait effects, and site invasibility
 #'
 #' @description
-#' Invasion fitness \eqn{\lambda_{is}} integrates structure in **trait space**
-#' (distances, overlaps, **convex hull**, **cloud centroid**) with **abiotic suitability**
-#' (alignment to environment), **niche crowding** (overlap with residents weighted by composition),
-#' and **resident competition** (site saturation). `summarise_invasiveness_invasibility()` collapses the
-#' site × invader surface into **species**, **trait**, and **site** summaries that are actionable
-#' and map-readyeither using a **probabilistic** measure \(P(F>0)\) or a **hard rule**
-#' \eqn{I\{\lambda>0\}}.
+#' Invasion fitness \eqn{\lambda_{is}} integrates structure in trait space
+#' (distances, overlaps, convex hull, cloud centroid) with abiotic suitability
+#' (alignment to environment), niche crowding (overlap with residents weighted by
+#' composition), and resident competition (site saturation).
+#' \code{summarise_invasiveness_invasibility()} collapses the site-by-invader surface
+#' into species-, trait-, and site-level summaries using either a probabilistic
+#' measure \eqn{P(\lambda > 0)} or a hard rule \eqn{I\{\lambda > 0\}}.
 #'
-#' \strong{Species invasiveness} (per invader) summarises breadth of establishment across sites:
-#' \deqn{V_i = |S|^{-1}\sum_s \mathbb{I}\{\lambda_{is}>0\}\quad \text{or}\quad
-#' \tilde V_i = |S|^{-1}\sum_s P(F>0\mid i,s).}
+#' Species invasiveness (per invader) summarises the breadth of establishment
+#' across sites:
+#' \deqn{V_i = |S|^{-1} \sum_s I\{\lambda_{is} > 0\}}
+#' or
+#' \deqn{\tilde V_i = |S|^{-1} \sum_s P(\lambda > 0 \mid i, s).}
 #'
-#' \strong{Site invasibility} (per site) quantifies openness to newcomers:
-#' \deqn{V_s = |I|^{-1}\sum_i \mathbb{I}\{\lambda_{is}>0\}\quad \text{or}\quad
-#' \tilde V_s = |I|^{-1}\sum_i P(F>0\mid i,s).}
+#' Site invasibility (per site) quantifies openness to newcomers:
+#' \deqn{V_s = |I|^{-1} \sum_i I\{\lambda_{is} > 0\}}
+#' or
+#' \deqn{\tilde V_s = |I|^{-1} \sum_i P(\lambda > 0 \mid i, s).}
 #'
-#' \strong{Trait invasiveness} scores which invader traits explain variation in \(V_i\),
-#' via standardized slopes for continuous traits and ANOVA \(R^2\) for categorical traits.
+#' Trait invasiveness scores which invader traits explain variation in invasiveness,
+#' using standardized slopes for continuous traits and ANOVA \eqn{R^2} for
+#' categorical traits.
 #'
-#' @param lambda_is Matrix \eqn{S\times I} of invasion fitness (rows = sites, cols = invaders).
-#'   If `NULL`, you must supply `p_is`. Provide row/column names.
-#' @param p_is Optional matrix \eqn{S\times I} of establishment probabilities
-#'   (e.g., from `compute_establishment_probability()`).
-#' @param use_probabilistic Logical. If `TRUE`, summaries use `p_is` (expected values).
-#'   If `FALSE`, summaries use the hard rule \eqn{I\{\lambda>0\}}.
-#' @param prob_threshold Numeric in (0,1). If `use_probabilistic=TRUE` and you still want a
-#'   binary view for selected outputs/maps, cells with `p_is >= prob_threshold` count as 1.
-#' @param site_df Optional data frame with columns `site, x, y` for mapping.
-#'   If missing, maps are omitted but tabular summaries are still returned.
-#' @param traits_inv Optional data frame of invader traits for trait summaries;
-#'   rownames must be invader IDs (matching `colnames(lambda_is)` or `colnames(p_is)`).
-#'   May contain numeric and factor columns; non‐trait columns can be present.
-#' @param comm_res Optional site × resident matrix for relative metrics; used to compute
-#'   per-site resident richness for extra normalization (optional).
-#' @param return_long Logical. If `TRUE`, include a tidy long table for the site×invader surface.
-#' @param make_plots Logical. If `TRUE`, return ggplot objects for maps/bars/heatmaps.
-#' @param label Optional character label used in plot titles and output metadata.
+#' @param lambda_is Matrix of invasion fitness with dimensions
+#'   sites by invaders. Row and column names are required.
+#' @param p_is Optional matrix of establishment probabilities with the same
+#'   dimensions as \code{lambda_is}.
+#' @param use_probabilistic Logical. If \code{TRUE}, summaries use \code{p_is}.
+#'   If \code{FALSE}, summaries use the hard rule \eqn{I\{\lambda > 0\}}.
+#' @param prob_threshold Numeric between 0 and 1. If probabilistic summaries are
+#'   used and a binary view is requested, values with
+#'   \code{p_is >= prob_threshold} are treated as 1.
+#' @param site_df Optional data frame with columns \code{site}, \code{x}, and
+#'   \code{y} for spatial mapping.
+#' @param traits_inv Optional data frame of invader traits; row names must match
+#'   invader IDs. Numeric and factor traits are supported.
+#' @param comm_res Optional site-by-resident matrix used to compute resident
+#'   richness per site.
+#' @param return_long Logical. If \code{TRUE}, returns a tidy long table of the
+#'   site-by-invader surface.
+#' @param make_plots Logical. If \code{TRUE}, returns ggplot objects.
+#' @param label Optional character label added to plot titles and metadata.
 #'
-#' @return A list with:
+#' @return A list with the following components:
 #' \itemize{
-#'   \item `species`: data frame with species-level invasiveness metrics (probabilistic and/or hard).
-#'   \item `site`: data frame with site-level invasibility metrics (probabilistic and/or hard + map coords if provided).
-#'   \item `trait_effects`: data frame of trait effect sizes (|β| for continuous; ANOVA \(R^2\) for categorical).
-#'   \item `establish_long`: tidy long table of the working surface (`val` = probability or 0/1; includes `lambda` if available).
-#'   \item `plots`: list of ggplot objects (may be `NULL` if `make_plots=FALSE` or `ggplot2` not installed), including:
-#'         `site_map`, `invader_rank`, `heatmap`, `trait_effects`.
-#'   \item `meta`: list with `mode` ("probabilistic" or "hard"), `threshold`, and `label`.
+#'   \item \code{species}: data frame of invader-level invasiveness metrics
+#'   \item \code{site}: data frame of site-level invasibility metrics
+#'   \item \code{trait_effects}: data frame of trait effect sizes
+#'   \item \code{establish_long}: tidy long-format table of the working surface
+#'   \item \code{plots}: list of ggplot objects (or \code{NULL})
+#'   \item \code{meta}: list describing the summary mode and threshold
 #' }
-#'
-#' @details
-#' \strong{Working surface.} If `use_probabilistic=TRUE`, the core surface is `p_is`
-#' (expected establishments). If `FALSE`, it is the binary matrix \eqn{I\{\lambda>0\}}.
-#' If both `p_is` and `lambda_is` are supplied, both are used: the probabilistic summaries
-#' use `p_is`, the hard-rule summaries come from `lambda_is`.
-#'
-#' \strong{Trait effects.} For each numeric trait \eqn{T_k}, we fit a simple regression
-#' \deqn{\tilde V_i \sim T_{ik}}{Vtilde_i ~ T_{ik}} and report the standardized slope \eqn{|\beta_k|}{|beta_k|}.
-#' For each factor trait, we report ANOVA \(R^2\) from a one-way model.
-#' These are quick effect sizes to rank traits; more elaborate models can be layered later.
 #'
 #' @examples
 #' set.seed(42)
@@ -274,7 +267,7 @@ summarise_invasiveness_invasibility = function(
         ggplot2::scale_fill_viridis_c(name = if (mode=="probabilistic") "Expected # establishing"
                                       else "# establishing") +
         ggplot2::labs(
-          title = paste0("Invasibility map — ", mode, if (!is.null(label)) paste0(" (", label, ")") else ""),
+          title = paste0("Invasibility map - ", mode, if (!is.null(label)) paste0(" (", label, ")") else ""),
           x = "Longitude", y = "Latitude"
         ) +
         ggplot2::theme_minimal()
@@ -287,12 +280,12 @@ summarise_invasiveness_invasibility = function(
       ggplot2::scale_y_continuous(labels = scales::percent_format()) +
       ggplot2::scale_fill_viridis_c(name="Mean across sites") +
       ggplot2::labs(
-        x = "Invader", y = if (mode=="probabilistic") "Mean P(establish)" else "Share of sites (λ>0)",
-        title = paste0("Invasiveness — ", mode, if (!is.null(label)) paste0(" (", label, ")") else "")
+        x = "Invader", y = if (mode=="probabilistic") "Mean P(establish)" else "Share of sites (lambda>0)",
+        title = paste0("Invasiveness - ", mode, if (!is.null(label)) paste0(" (", label, ")") else "")
       ) +
       ggplot2::theme_minimal()
 
-    # Heatmap (site × invader)
+    # Heatmap (site x invader)
     d_heat =
       if (!is.null(establish_long)) establish_long[, c("site","invader","val")]
     else tibble::tibble(
@@ -311,7 +304,7 @@ summarise_invasiveness_invasibility = function(
         ggplot2::geom_tile() +
         ggplot2::scale_fill_manual(values = c("0" = "darkgrey", "1" = "darkred"),
                                    name = "Establish (0/1)") +
-        ggplot2::labs(title = paste0("Establishment matrix — ", mode),
+        ggplot2::labs(title = paste0("Establishment matrix - ", mode),
                       x = "Invader", y = "Site") +
         ggplot2::theme_minimal() +
         ggplot2::theme(panel.grid = ggplot2::element_blank(),
@@ -321,7 +314,7 @@ summarise_invasiveness_invasibility = function(
         ggplot2::ggplot(d_heat, ggplot2::aes(.data$invader, .data$site, fill = .data$val)) +
         ggplot2::geom_tile() +
         ggplot2::scale_fill_viridis_c(name = if (mode=="probabilistic") "P(establish)" else "Establish (0/1)") +
-        ggplot2::labs(title = paste0("Establishment matrix — ", mode),
+        ggplot2::labs(title = paste0("Establishment matrix - ", mode),
                       x = "Invader", y = "Site") +
         ggplot2::theme_minimal() +
         ggplot2::theme(panel.grid = ggplot2::element_blank(),
@@ -339,7 +332,7 @@ summarise_invasiveness_invasibility = function(
                        yend = forcats::fct_reorder(.data$trait_clean, .data$plot_effect)),
           color = "grey70") +
         ggplot2::geom_point(ggplot2::aes(color = .data$type, shape = .data$signif), size = 3) +
-        ggplot2::scale_x_continuous(name = "Effect size (|β| for continuous; R² for categorical)") +
+        ggplot2::scale_x_continuous(name = "Effect size (beta for continuous; R-squared for categorical)") +
         ggplot2::scale_color_manual(values = c(continuous="#1b9e77", categorical="#d95f02"), name="Trait type") +
         ggplot2::scale_shape_manual(values = c(`TRUE`=16, `FALSE`=1), name="p < 0.05") +
         ggplot2::labs(y = "Trait", title = "Trait invasiveness effects") +

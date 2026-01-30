@@ -29,11 +29,11 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Articles</h6></li>
-    <li><a class="dropdown-item" href="../articles/1-introduction.html">Introduction</a></li>
-    <li><a class="dropdown-item" href="../articles/2-workflow.html">Step-by-step Workflow</a></li>
-    <li><a class="dropdown-item" href="../articles/3-clusters.html">Clustering and risk scenarios</a></li>
-    <li><a class="dropdown-item" href="../articles/4-synthesis.html">Invasion fitness synthesis</a></li>
-    <li><a class="dropdown-item" href="../articles/5-tutorial.html">Tutorial on computing invasion fitness</a></li>
+    <li><a class="dropdown-item" href="../articles/introduction_1.html">Introduction</a></li>
+    <li><a class="dropdown-item" href="../articles/workflow_2.html">Step-by-step Workflow</a></li>
+    <li><a class="dropdown-item" href="../articles/clusters_3.html">Clustering and risk scenarios</a></li>
+    <li><a class="dropdown-item" href="../articles/synthesis_4.html">Invasion fitness synthesis</a></li>
+    <li><a class="dropdown-item" href="../articles/tutorial_5.html">Tutorial on computing invasion fitness</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -82,22 +82,75 @@
 
 
 <dl><dt id="arg-fit-r">fit_r<a class="anchor" aria-label="anchor" href="#arg-fit-r"></a></dt>
-<dd><p>Fitted residents-only glmmTMB model.</p></dd>
+<dd><p>Fitted residents-only <code>glmmTMB</code> model.</p></dd>
 
 
 <dt id="arg-env-df-model">env_df_model<a class="anchor" aria-label="anchor" href="#arg-env-df-model"></a></dt>
-<dd><p>Data frame for environment predictors used by the model
-(rows = sites). This is either ENV_PC* (if PCA used) or env_df_z.</p></dd>
+<dd><p>Data frame of environment predictors used by the model
+(rows = sites). Either <code>ENV_PC*</code> (if PCA was used) or standardized <code>env_df_z</code>.</p></dd>
 
 
 <dt id="arg-traits-inv-model">traits_inv_model<a class="anchor" aria-label="anchor" href="#arg-traits-inv-model"></a></dt>
-<dd><p>Data frame for invader traits used by the model
-(rows = invaders). This includes TR_PC* (if PCA used) and any raw
-factor traits present in the model formula.</p></dd>
+<dd><p>Data frame of invader traits used by the model
+(rows = invaders). Includes <code>TR_PC*</code> (if PCA was used) and any raw factor
+traits present in the model formula.</p></dd>
 
 
-<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>(unchanged other args)</p></dd>
+<dt id="arg-sites">sites<a class="anchor" aria-label="anchor" href="#arg-sites"></a></dt>
+<dd><p>Character vector of site identifiers (must match row names of
+<code>env_df_model</code> and <code>W_site</code>).</p></dd>
+
+
+<dt id="arg-inv-ids">inv_ids<a class="anchor" aria-label="anchor" href="#arg-inv-ids"></a></dt>
+<dd><p>Character vector of invader identifiers (must match row names
+of <code>traits_inv_model</code>).</p></dd>
+
+
+<dt id="arg-r-mu-s">r_mu_s<a class="anchor" aria-label="anchor" href="#arg-r-mu-s"></a></dt>
+<dd><p>Numeric vector of site-wise means used to standardize abiotic
+suitability (<code>r_js</code>).</p></dd>
+
+
+<dt id="arg-r-sd-s">r_sd_s<a class="anchor" aria-label="anchor" href="#arg-r-sd-s"></a></dt>
+<dd><p>Numeric vector of site-wise standard deviations used to
+standardize abiotic suitability (<code>r_js</code>).</p></dd>
+
+
+<dt id="arg-w-site">W_site<a class="anchor" aria-label="anchor" href="#arg-w-site"></a></dt>
+<dd><p>Site × resident weighting matrix (e.g. relative abundance or
+presence–absence weights).</p></dd>
+
+
+<dt id="arg-gower-all">gower_all<a class="anchor" aria-label="anchor" href="#arg-gower-all"></a></dt>
+<dd><p>Square matrix or <code>dist</code> object of Gower distances among all
+residents and invaders.</p></dd>
+
+
+<dt id="arg-res-ids">res_ids<a class="anchor" aria-label="anchor" href="#arg-res-ids"></a></dt>
+<dd><p>Character vector of resident species identifiers.</p></dd>
+
+
+<dt id="arg-sigma-alpha">sigma_alpha<a class="anchor" aria-label="anchor" href="#arg-sigma-alpha"></a></dt>
+<dd><p>Numeric kernel bandwidth for crowding effects. If <code>NULL</code>
+or non-positive, a data-driven default is used.</p></dd>
+
+
+<dt id="arg-c-mu-s">C_mu_s<a class="anchor" aria-label="anchor" href="#arg-c-mu-s"></a></dt>
+<dd><p>Numeric vector of site-wise means used to standardize crowding
+(<code>C_is</code>).</p></dd>
+
+
+<dt id="arg-c-sd-s">C_sd_s<a class="anchor" aria-label="anchor" href="#arg-c-sd-s"></a></dt>
+<dd><p>Numeric vector of site-wise standard deviations used to
+standardize crowding (<code>C_is</code>).</p></dd>
+
+
+<dt id="arg-s-s-z">S_s_z<a class="anchor" aria-label="anchor" href="#arg-s-s-z"></a></dt>
+<dd><p>Numeric vector of standardized site saturation values.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Logical; if <code>TRUE</code>, emit diagnostic messages.</p></dd>
 
 </dl></div>
 

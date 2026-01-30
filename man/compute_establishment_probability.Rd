@@ -28,97 +28,104 @@ compute_establishment_probability(
 )
 }
 \arguments{
-\item{lambda_is}{Optional matrix \eqn{S\times I} of invasion fitness (rows = sites,
-cols = invaders). If \code{NULL}, it is computed from components (see below).}
+\item{lambda_is}{Optional matrix of invasion fitness values with dimensions
+\eqn{S} by \eqn{I} (rows are sites, columns are invaders). If \code{NULL},
+fitness is computed from the supplied components.}
 
-\item{r_is_z, C_is_z, S_is_z}{Optional matrices \eqn{S\times I} of standardized
-abiotic suitability, niche crowding, and saturation. Used only if \code{lambda_is=NULL}.}
+\item{r_is_z, C_is_z, S_is_z}{Optional matrices of standardized abiotic suitability,
+niche crowding, and saturation. Used only when \code{lambda_is = NULL}.}
 
-\item{gamma}{Optional vector (length \eqn{I}) or matrix \eqn{S\times I} for the
-abiotic slope \eqn{\gamma}; recycled to \eqn{S\times I} as needed.}
+\item{gamma}{Optional vector of length \eqn{I} or matrix of dimension
+\eqn{S} by \eqn{I} giving the abiotic slope.}
 
-\item{alpha}{Optional vector (length \eqn{I}) or matrix \eqn{S\times I} of crowding
-penalties \eqn{\alpha \ge 0} by convention); recycled if needed.}
+\item{alpha}{Optional vector or matrix of crowding penalties. By convention,
+these values are constrained to be non-negative.}
 
-\item{beta}{Optional vector (length \eqn{I}) of saturation penalties \eqn{\beta}.
-If you allow facilitation, pass signed values here.}
+\item{beta}{Optional vector of saturation penalties. Signed values allow
+facilitation.}
 
-\item{kappa}{Optional scalar calibration offset added to \eqn{\lambda}; default \code{0}.}
+\item{kappa}{Optional scalar offset added to invasion fitness (default 0).}
 
-\item{method}{Character, one of \code{c("probit","logit","hard")}.}
+\item{method}{Character string; one of \code{"probit"}, \code{"logit"},
+or \code{"hard"}.}
 
-\item{sigma}{Numeric \strong{scalar} SD for probit (ignored for other methods). If not
-given and \code{fit} is supplied, \code{sigma} defaults to \code{sigma(fit)}.}
+\item{sigma}{Numeric scalar standard deviation for the probit transform.}
 
-\item{tau}{Numeric \strong{scalar} scale for logistic (denominator inside logit); default \code{1}.}
+\item{tau}{Numeric scalar scale parameter for the logistic transform.}
 
-\item{fit}{Optional fitted model (e.g., \code{glmmTMB}), used to obtain \code{sigma(fit)} when
-\code{method="probit"} and \code{sigma} is missing.}
+\item{fit}{Optional fitted model object used to obtain a residual standard
+deviation when \code{method = "probit"}.}
 
-\item{predictive}{Logical; for \code{method="probit"}, if \code{TRUE} the function uses a
-\strong{predictive SD} matrix instead of a scalar. Provide it via \code{sigma_mat}, or set
-\code{use_vcov=TRUE} to compute it from \code{fit} (see below).}
+\item{predictive}{Logical; if \code{TRUE}, a predictive standard deviation
+matrix is used for the probit transform.}
 
-\item{sigma_mat}{Optional matrix \eqn{S\times I} of SDs (e.g., predictive SD per cell).}
+\item{sigma_mat}{Optional matrix of predictive standard deviations with the
+same dimensions as \code{lambda_is}.}
 
-\item{use_vcov}{Logical; if \code{TRUE} and \code{method="probit"} with \code{predictive=TRUE}, the
-function will attempt to compute \strong{mean-SE} from \code{vcov(fit)} and add the residual
-SD to yield a predictive SD. Requires \code{fit}, \code{Q_inv}, and the standardized matrices.}
+\item{use_vcov}{Logical; if \code{TRUE}, compute predictive standard deviations
+from the variance-covariance matrix of \code{fit}.}
 
-\item{Q_inv}{Optional data frame with invader trait-plane scores (\code{tr1},\code{tr2}),
-rownames = invader IDs. Required only if \code{use_vcov=TRUE}.}
+\item{Q_inv}{Optional data frame of invader trait scores with columns
+\code{tr1} and \code{tr2}.}
 
-\item{site_df}{Optional site table with columns \verb{site,x,y} for mapping; rownames of
-the matrices must match \code{site_df$site}.}
+\item{site_df}{Optional site metadata table with columns \code{site}, \code{x},
+and \code{y}.}
 
-\item{return_long}{Logical; if \code{TRUE}, include a tidy tibble in the output.}
+\item{return_long}{Logical; if \code{TRUE}, include a long-format table in
+the output.}
 
-\item{make_plots}{Logical; if \code{TRUE}, return ggplot objects (site mean map, invader
-ranking, and site×invader heatmap).}
+\item{make_plots}{Logical; if \code{TRUE}, return diagnostic plots.}
 
-\item{option_label}{Optional label attached to the tidy output and plot titles.}
+\item{option_label}{Optional label attached to the output.}
 }
 \value{
-A list with:
+A list with components:
 \itemize{
-\item \code{p_is}: matrix \eqn{S\times I} of probabilities (or 0/1 for \code{hard});
-\item \code{lambda_is}: the \eqn{S\times I} fitness matrix used;
-\item \code{sigma_used}: scalar or matrix actually used for probit (else \code{NULL});
-\item \code{method}, \code{option_label};
-\item \code{prob_long}: tidy tibble (if \code{return_long=TRUE});
-\item \code{plots}: list of ggplots (if \code{make_plots=TRUE}): \code{site_mean}, \code{invader_mean}, \code{heatmap}.
+\item \code{p_is}: matrix of establishment probabilities
+\item \code{lambda_is}: invasion fitness matrix
+\item \code{sigma_used}: standard deviation used by the probit transform
+\item \code{method}: transformation method
+\item \code{option_label}: label used for summaries
+\item \code{prob_long}: long-format table (optional)
+\item \code{plots}: list of plots (optional)
 }
 }
 \description{
-Invasion fitness \eqn{\lambda_{is}} integrates \strong{trait space geometry} (distances,
-overlaps, \strong{convex hull}, \strong{cloud centroid}) with \strong{abiotic suitability}
-(alignment of invader traits to local environment), \strong{niche crowding} (overlap
-with resident trait space weighted by composition), and \strong{resident competition}
-(site saturation). \code{compute_establishment_probability()} maps \eqn{\lambda_{is}}
-to \strong{probabilities of establishment} using a unified interface:
+Invasion fitness \eqn{\lambda_{is}} integrates trait-space geometry
+(distances, overlaps, convex hulls, centroids) with abiotic suitability
+(alignment of invader traits to the local environment), niche crowding
+(overlap with resident trait space weighted by composition), and resident
+competition (site saturation).
+
+\code{compute_establishment_probability()} maps \eqn{\lambda_{is}} to
+probabilities of establishment using a unified interface:
+
 \itemize{
-\item \strong{Probit}: \eqn{P = \Phi(\lambda/\sigma)} with \eqn{\sigma} as a scalar,
-the residual SD from a fitted auxiliary GLMM, or a cell-wise \strong{predictive SD}.
-\item \strong{Logistic}: \eqn{P = \mathrm{logit}^{-1}(\lambda / \tau)} with scale \eqn{\tau}.
-\item \strong{Hard rule}: \eqn{P = \mathbb{I}\{\lambda>0\}} for a binary map.
+\item \strong{Probit}: \eqn{P = \Phi(\lambda / \sigma)}, where \eqn{\sigma} is a
+scalar, the residual standard deviation from a fitted auxiliary model,
+or a cell-wise predictive standard deviation.
+\item \strong{Logistic}: \eqn{P = \mathrm{logit}^{-1}(\lambda / \tau)}, where
+\eqn{\tau} is a scale parameter.
+\item \strong{Hard rule}: \eqn{P = I(\lambda > 0)}, yielding a binary map.
 }
 
-If \code{lambda_is} is not supplied, the function will build it from standardized
-predictors via \eqn{\lambda_{is} = \gamma \, r^{(z)}_{is} - \alpha \, C^{(z)}_{is} - \beta \, S^{(z)}_{is} + \kappa}.
+If \code{lambda_is} is not supplied, the function builds it from standardized
+predictors using
+\eqn{\lambda_{is} = \gamma r^{(z)}_{is} - \alpha C^{(z)}_{is} -
+\beta S^{(z)}_{is} + \kappa}.
 }
 \details{
-Convert invasion fitness to probabilistic establishment (probit/logit/hard)
+Convert invasion fitness to probabilistic establishment (probit, logit, hard)
 
-\strong{Probit}: \eqn{P_{is}=\Phi(\lambda_{is}/\sigma)}. Use a \strong{scalar} \code{sigma} (fast),
-the residual SD from \code{fit}, or set \code{predictive=TRUE} to inject a \strong{cell-wise} SD:
-either supply \code{sigma_mat} directly or compute it with \code{use_vcov=TRUE}, which uses
-the fixed-effect covariance from \code{vcov(fit)} plus the model residual SD.
+For the probit method, probabilities are computed as
+\eqn{P_{is} = \Phi(\lambda_{is} / \sigma)}. A scalar or cell-wise standard
+deviation may be used.
 
-\strong{Logistic}: \eqn{P_{is}=\mathrm{logit}^{-1}(\lambda_{is}/\tau)}. The scale \code{tau}
-controls how sharply probabilities switch around \eqn{\lambda=0}.
+For the logistic method, probabilities are computed as
+\eqn{P_{is} = \mathrm{logit}^{-1}(\lambda_{is} / \tau)}.
 
-\strong{Hard rule}: \eqn{P_{is} = \mathbb{I}\{\lambda_{is}>0\}} yields a binary map
-useful for thresholds and counts (invasibility = \#invaders with \(P=1\) at a site).
+The hard rule returns a binary indicator equal to one when
+\eqn{\lambda_{is} > 0}.
 }
 \examples{
 ## Minimal example (toy shapes)
@@ -150,7 +157,7 @@ out_probit = compute_establishment_probability(
 # View site-mean probability map (requires ggplot2)
 if (requireNamespace("ggplot2", quietly=TRUE)) print(out_probit$plots$site_mean)
 
-# Hard rule (λ>0)
+# Hard rule (lambda>0)
 out_hard = compute_establishment_probability(
   r_is_z=r_is_z, C_is_z=C_is_z, S_is_z=S_is_z,
   gamma=gamma, alpha=alpha, beta=beta,

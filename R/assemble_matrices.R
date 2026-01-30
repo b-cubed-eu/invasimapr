@@ -1,32 +1,46 @@
 #' Assemble community matrices for invasion-fitness workflows
 #'
 #' @description
-#' `assemble_matrices()` creates the standard inputs used throughout the
-#' invasion-fitness pipeline from either a single “long” table or a set of
-#' already-formed tables. It returns aligned objects:
-#' - `site_df` (site × x,y),
-#' - `env_df` (site × environment; **numeric matrix**),
-#' - `comm_res` (site × resident abundances; numeric matrix),
-#' - `pa_res` (site × resident presence/absence; integer matrix),
-#' - `traits_res` (resident × traits; data frame, keeps mixed types).
+#' \code{assemble_matrices()} creates the standard inputs used throughout the
+#' invasion-fitness pipeline from either a single long-format table or a set of
+#' pre-assembled tables. It returns aligned objects including:
+#' \itemize{
+#'   \item \code{site_df}: site by x,y coordinates
+#'   \item \code{env_df}: site by environment numeric matrix
+#'   \item \code{comm_res}: site by resident abundance matrix
+#'   \item \code{pa_res}: site by resident presence-absence matrix
+#'   \item \code{traits_res}: resident by trait data frame (mixed types allowed)
+#' }
 #'
-#' @param long_df Optional long data frame with at least `site`, `x`, `y`,
-#'   `species`, `count`.
-#' @param site_df Optional data frame with columns `site`, `x`, `y` (used when
-#'   `long_df` is `NULL`).
-#' @param env_df Optional site × environment **numeric** data frame/matrix
-#'   (row names must be site IDs; used when `long_df` is `NULL`).
-#' @param comm_res Optional site × resident numeric matrix/data frame (wide) or
-#'   a long table with `site`, `species`, `count` (see `comm_long`).
-#' @param traits_res Optional resident × traits data frame (row names = species).
-#' @param comm_long How to interpret a separately supplied `comm_res`:
-#'   one of `c("auto","long","wide")`; `"auto"` detects a long table and pivots.
-#' @param site_col,x_col,y_col,species_col,count_col Column names to use when
-#'   building from `long_df`. Defaults: `"site"`, `"x"`, `"y"`, `"species"`, `"count"`.
-#' @param env_cols,env_prefix,trait_cols,trait_prefix,drop_empty_sites,
-#'   drop_empty_species,return_diversity,make_plots See details in original docs.
+#' @param long_df Optional long-format data frame with at least the columns
+#'   \code{site}, \code{x}, \code{y}, \code{species}, and \code{count}.
+#' @param site_df Optional data frame with columns \code{site}, \code{x}, and
+#'   \code{y}, used when \code{long_df} is \code{NULL}.
+#' @param env_df Optional site by environment numeric data frame or matrix.
+#'   Row names must correspond to site identifiers.
+#' @param comm_res Optional site by resident numeric matrix or data frame (wide),
+#'   or a long-format table with columns \code{site}, \code{species}, and
+#'   \code{count}.
+#' @param traits_res Optional resident by trait data frame with row names
+#'   corresponding to species identifiers.
+#' @param comm_long Character string indicating how to interpret a separately
+#'   supplied \code{comm_res}; one of \code{"auto"}, \code{"long"}, or
+#'   \code{"wide"}.
+#' @param site_col,x_col,y_col,species_col,count_col Column names used when
+#'   building from \code{long_df}.
+#' @param env_cols Character vector of environment column names to extract.
+#' @param env_prefix Regular expression used to select environment columns.
+#' @param trait_cols Character vector of trait column names to extract.
+#' @param trait_prefix Regular expression used to select trait columns.
+#' @param drop_empty_sites Logical. If `TRUE`, drop sites with zero total abundance.
+#' @param drop_empty_species Logical. If `TRUE`, drop resident species with
+#'   zero total abundance across all sites.
+#' @param return_diversity Logical. If `TRUE`, compute and return site-level
+#'   diversity summaries.
+#' @param make_plots Logical. If `TRUE`, generate quick diagnostic plots.
 #'
-#' @importFrom dplyr %>% distinct select arrange group_by summarise mutate left_join relocate
+#' @importFrom dplyr %>% distinct select arrange group_by summarise mutate
+#'   left_join relocate
 #' @importFrom tidyr pivot_wider
 #' @importFrom tibble rownames_to_column as_tibble
 #' @importFrom stats setNames
@@ -364,7 +378,7 @@ assemble_matrices = function(
   if (isTRUE(make_plots) && !is.null(diversity) && requireNamespace("ggplot2", quietly = TRUE)) {
     plots$richness = ggplot2::ggplot(diversity, ggplot2::aes(x, y, fill = sqrt(spp_rich))) +
       ggplot2::geom_tile() +
-      ggplot2::scale_fill_viridis_c(name = "√(Richness)") +
+      ggplot2::scale_fill_viridis_c(name = "sqrt(Richness)") +
       ggplot2::labs(title = "Site-level species richness", x = "x", y = "y") +
       ggplot2::theme_minimal()
   }

@@ -2,16 +2,11 @@
 % Please edit documentation in R/utils_internal.R
 \name{print.invasimapr_fit}
 \alias{print.invasimapr_fit}
-\title{Compact print}
+\title{Compact print method for invasimapr_fit}
 \usage{
 \method{print}{invasimapr_fit}(x, ...)
 }
 \description{
-Compact print
+Internal print method. Not part of the public API.
 }
-\keyword{#}
-\keyword{<--}
-\keyword{from}
-\keyword{hide}
-\keyword{index}
 \keyword{internal}
