@@ -64,4 +64,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/Needs/website: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
