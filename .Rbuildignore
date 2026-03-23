@@ -12,3 +12,4 @@
 ^inst/extdata/.+\.zip$
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^README\.Rmd$
