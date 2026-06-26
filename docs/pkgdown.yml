@@ -1,13 +1,14 @@
 pandoc: 3.1.1
-pkgdown: 2.1.3
+pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
-  clusters_3: clusters_3.html
-  introduction_1: introduction_1.html
-  synthesis_4: synthesis_4.html
-  tutorial_5: tutorial_5.html
-  workflow_2: workflow_2.html
-last_built: 2026-01-30T11:58Z
+  articles/clustering-and-risk-scenarios: clustering-and-risk-scenarios.html
+  articles/computing-invasion-fitness: computing-invasion-fitness.html
+  articles/introduction: introduction.html
+  invasimapr: invasimapr.html
+  articles/invasion-fitness-synthesis: invasion-fitness-synthesis.html
+  articles/step-by-step-workflow: step-by-step-workflow.html
+last_built: 2026-06-26T14:53Z
 urls:
   reference: https://b-cubed-eu.github.io/invasimapr/reference
   article: https://b-cubed-eu.github.io/invasimapr/articles

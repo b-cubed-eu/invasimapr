@@ -11,8 +11,8 @@ compute_trait_space(
   kde_n = 100,
   pad_prop = 0.1,
   main_title = "Trait space density with convex hull and centroid",
-  legend_line =
-    "Hull = realised niche; white square = centroid; black dots = residents; red dots = invaders",
+  legend_line = paste("Hull = realised niche; white square = centroid;",
+    "black dots = residents; red dots = invaders"),
   cex_main = 1,
   cex_sub = 0.72,
   cex_lab = 0.85,

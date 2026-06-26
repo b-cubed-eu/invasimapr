@@ -8,7 +8,7 @@ prepare_inputs(..., make_plots = FALSE)
 }
 \arguments{
 \item{...}{
-  Arguments passed on to \code{\link[=assemble_matrices]{assemble_matrices}}
+  Arguments passed on to \code{\link{assemble_matrices}}
   \describe{
     \item{\code{long_df}}{Optional long-format data frame with at least the columns
 \code{site}, \code{x}, \code{y}, \code{species}, and \code{count}.}

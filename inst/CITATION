@@ -1,10 +1,18 @@
 citHeader("To cite invasimapr in publications use:")
 
-citEntry(
-  entry    = "manual",
-  title    = "invasimapr: A Trait and Site Specific Framework for Invasion Fitness Mapping",
-  author   = person("Sandra", "MacFadyen"),
+bibentry(
+  bibtype  = "Manual",
+  title    = "invasimapr: Workflow to Visualise Trait Dispersion and Assess Invasibility",
+  author   = c(
+    person("Sandra", "MacFadyen"),
+    person("Mukhtar M.", "Yahaya"),
+    person("Maarten", "Trekels"),
+    person("Sabrina", "Kumschick"),
+    person("Pietro", "Landi"),
+    person("Cang", "Hui")
+  ),
   year     = "2025",
-  note     = "R package version 0.1.0",
+  note     = "R package version 0.2.0",
+  doi      = "10.5281/zenodo.20842472",
   url      = "https://github.com/b-cubed-eu/invasimapr"
 )

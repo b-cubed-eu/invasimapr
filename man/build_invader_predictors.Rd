@@ -66,7 +66,29 @@ standardize crowding (\code{C_is}).}
 
 \item{verbose}{Logical; if \code{TRUE}, emit diagnostic messages.}
 }
+\value{
+A named list with components:
+\describe{
+\item{r_is_z}{Site-by-invader standardised abiotic-suitability matrix.}
+\item{C_is_z}{Site-by-invader standardised niche-crowding matrix.}
+\item{S_is_z}{Site-by-invader standardised resident-competition matrix.}
+\item{df}{Long-format tidy data frame of the three standardised
+predictors.}
+\item{kernels}{List with the invader-resident trait kernel
+\code{K_inv_res} and distance matrix \code{D_inv_res}.}
+\item{inputs_used}{List recording \code{sites}, \code{inv_ids},
+\code{res_ids} and the kernel bandwidth \code{sigma_alpha}.}
+}
+}
 \description{
 Build standardized invader predictors r_is_z, C_is_z, S_is_z
 (expects env/traits frames already projected to model columns)
+}
+\examples{
+\dontrun{
+# Called internally by predict_invaders(); see that function for usage.
+inv <- build_invader_predictors(fit_r, env_df_model, traits_inv_model,
+                                sites, inv_ids)
+}
+
 }

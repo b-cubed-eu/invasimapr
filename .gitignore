@@ -1,6 +1,8 @@
-# Ignore build artefacts in Git
-vignettes/figures/
-man/figures/
+# Local development directory (figures, docx, case study, climate rasters) - not pushed
+dev/
+
+# README/man figures ARE tracked so images render on GitHub and pkgdown.
+# (do not ignore man/figures/ or vignettes/figures/)
 inst/doc/
 
 # History files
@@ -44,16 +46,18 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# pkgdown site
-# docs/
+# macOS
+.DS_Store
 
 # translation temp files
 po/*~
 
 # RStudio Connect folder
-rsconnect/
-.Rproj.user
+rsc
 
-# Ignore all files and directories whose names start with _
-# _*
-# x_*
+# Generated README HTML (GitHub renders README.md, not .html)
+/README.html
+
+# Vignette data cache is regenerable; keep only the canonical prebuilt inputs
+vignettes/_data/*
+!vignettes/_data/invasimapr_vignettes.rds

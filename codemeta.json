@@ -1,0 +1,99 @@
+{
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "identifier": "invasimapr",
+  "description": "invasimapr is an R package to assess species and trait invasiveness and site invasibility by visualising trait dispersion and computing invasion fitness. It implements a network invasibility framework that decomposes invasion fitness into abiotic suitability, niche crowding and resident competition components, enabling spatially explicit predictions of establishment probability for potential invaders.",
+  "name": "invasimapr: Workflow to Visualise Trait Dispersion and Assess Invasibility",
+  "relatedLink": [
+    "https://b-cubed-eu.github.io/invasimapr/",
+    "https://docs.b-cubed.eu/",
+    "https://docs.b-cubed.eu/guides/b3verse/"
+  ],
+  "codeRepository": "https://github.com/b-cubed-eu/invasimapr",
+  "issueTracker": "https://github.com/b-cubed-eu/invasimapr/issues",
+  "license": "https://spdx.org/licenses/MIT",
+  "version": "0.2.0",
+  "programmingLanguage": {
+    "@type": "ComputerLanguage",
+    "name": "R",
+    "url": "https://r-project.org"
+  },
+  "runtimePlatform": "R",
+  "provider": {
+    "@id": "https://www.r-project.org",
+    "@type": "Organization",
+    "name": "Comprehensive R Archive Network (CRAN)",
+    "url": "https://cran.r-project.org"
+  },
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Sandra",
+      "familyName": "MacFadyen",
+      "email": "macfadyen@sun.ac.za",
+      "@id": "https://orcid.org/0000-0002-5316-440X"
+    }
+  ],
+  "copyrightHolder": [
+    {
+      "@type": "Organization",
+      "name": "Stellenbosch University"
+    }
+  ],
+  "funder": {
+    "@type": "Organization",
+    "name": "European Union's Horizon Europe Research and Innovation Programme",
+    "identifier": "https://doi.org/10.3030/101059592"
+  },
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "Sandra",
+      "familyName": "MacFadyen",
+      "email": "macfadyen@sun.ac.za",
+      "@id": "https://orcid.org/0000-0002-5316-440X"
+    }
+  ],
+  "identifier": "https://doi.org/10.5281/zenodo.20842472",
+  "keywords": [
+    "r",
+    "rstats",
+    "r-package",
+    "invasive-species",
+    "invasibility",
+    "invasiveness",
+    "invasion-fitness",
+    "functional-traits",
+    "trait-dispersion",
+    "biodiversity",
+    "b-cubed"
+  ],
+  "softwareRequirements": [
+    "R (>= 4.1.0)",
+    "cluster", "data.table", "dplyr", "factoextra", "forcats", "fuzzyjoin",
+    "ggplot2", "glmmTMB", "graphics", "httr", "jsonlite", "magick",
+    "magrittr", "MASS", "Matrix", "matrixStats", "purrr", "rlang", "rvest",
+    "stats", "tibble", "tidyr", "vegan", "viridisLite"
+  ],
+  "citation": [
+    {
+      "@type": "SoftwareSourceCode",
+      "datePublished": "2026",
+      "author": [
+        { "@type": "Person", "givenName": "Sandra", "familyName": "MacFadyen" }
+      ],
+      "name": "invasimapr: Workflow to Visualise Trait Dispersion and Assess Invasibility",
+      "identifier": "https://doi.org/10.5281/zenodo.20842472",
+      "url": "https://github.com/b-cubed-eu/invasimapr",
+      "description": "R package version 0.2.0"
+    }
+  ],
+  "releaseNotes": "https://github.com/b-cubed-eu/invasimapr/blob/main/NEWS.md",
+  "readme": "https://github.com/b-cubed-eu/invasimapr/blob/main/README.md",
+  "contIntegration": [
+    "https://github.com/b-cubed-eu/invasimapr/actions/workflows/R-CMD-check.yaml",
+    "https://app.codecov.io/gh/b-cubed-eu/invasimapr"
+  ],
+  "developmentStatus": "https://www.repostatus.org/#wip",
+  "isPartOf": "https://docs.b-cubed.eu/"
+}

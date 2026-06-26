@@ -103,7 +103,7 @@ predict_establishment = function(
 
   # --- Select site-/trait-varying sensitivities as required by `option` --------
   GI = switch(
-    as.character(option),
+    EXPR = as.character(option),
     "A" = NULL,
     "B" = NULL,
     "C" = fit$sensitivities$theta_i,
@@ -114,7 +114,7 @@ predict_establishment = function(
   )
 
   AI = switch(
-    as.character(option),
+    EXPR = as.character(option),
                D = if (!is.null(fit$sensitivities$site_alpha)) fit$sensitivities$site_alpha$alpha_is else NULL,
                NULL)
 

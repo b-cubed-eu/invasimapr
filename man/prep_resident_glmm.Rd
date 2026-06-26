@@ -41,3 +41,9 @@ standardized environment and resident traits, then fits a GLMM for residents.
 Also returns fixed-effect predictions on the link scale as a site×resident
 matrix (r_js) and the response-scale mean (mu_js).
 }
+\examples{
+\dontrun{
+# Called inside model_residents(); see that wrapper for the typical path.
+res <- prep_resident_glmm(comm_res, env_df_z, traits_res_glmm, fml)
+}
+}

@@ -24,14 +24,16 @@ invasimapr(
 \item{...}{arguments passed to \code{assemble_matrices()} in the very first stage.}
 }
 \value{
-\code{invasimapr_fit}
+An object of class \code{invasimapr_fit} containing the results of
+the full pipeline (inputs, trait space, resident model, sensitivities,
+invader predictions, invasion fitness and summaries).
 }
 \description{
 Convenience wrapper that chains the stages with sensible defaults.
 }
-\keyword{#}
-\keyword{<--}
-\keyword{from}
-\keyword{hide}
-\keyword{index}
+\examples{
+\dontrun{
+fit <- invasimapr(traits_inv = my_invader_traits, long_df = my_long_table)
+}
+}
 \keyword{internal}

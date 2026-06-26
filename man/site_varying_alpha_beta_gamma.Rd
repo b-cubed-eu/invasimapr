@@ -57,3 +57,9 @@ Saturation effects \eqn{\beta_i} are trait-varying only; no site-varying
 The function also exposes signed slopes and clamping diagnostics returned by
 \code{derive_sensitivities()}.
 }
+\examples{
+\dontrun{
+# Called inside learn_sensitivities() when site-varying effects are requested.
+svg <- site_varying_alpha_beta_gamma(fit_coeffs, Q_inv, sites, inv_ids)
+}
+}

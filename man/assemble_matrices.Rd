@@ -68,6 +68,23 @@ diversity summaries.}
 
 \item{make_plots}{Logical. If \code{TRUE}, generate quick diagnostic plots.}
 }
+\value{
+A named list of aligned community objects with components:
+\describe{
+\item{site_df}{Site-by-coordinate data frame (rows = sites).}
+\item{env_df}{Site-by-environment numeric data frame.}
+\item{comm_res}{Site-by-resident abundance matrix.}
+\item{pa_res}{Site-by-resident presence-absence matrix.}
+\item{traits_res}{Resident-by-trait data frame (mixed types allowed).}
+\item{diversity}{Optional site-level diversity summaries (present when
+\code{return_diversity = TRUE}).}
+\item{sites, residents}{Character vectors of aligned site and resident
+identifiers.}
+\item{n_sites, n_env, n_residents, n_traits}{Integer dimension counts.}
+\item{plots}{List of diagnostic plots (empty unless
+\code{make_plots = TRUE}).}
+}
+}
 \description{
 \code{assemble_matrices()} creates the standard inputs used throughout the
 invasion-fitness pipeline from either a single long-format table or a set of
@@ -79,4 +96,15 @@ pre-assembled tables. It returns aligned objects including:
 \item \code{pa_res}: site by resident presence-absence matrix
 \item \code{traits_res}: resident by trait data frame (mixed types allowed)
 }
+}
+\examples{
+\dontrun{
+site_env_spp <- read.csv(
+  system.file("extdata", "site_env_spp_simulated.csv.gz", package = "invasimapr")
+)
+names(site_env_spp)[names(site_env_spp) == "site_id"] <- "site"
+core <- assemble_matrices(long_df = site_env_spp)
+str(core, 1)
+}
+
 }

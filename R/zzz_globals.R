@@ -2,7 +2,6 @@
 "_PACKAGE"
 
 ## Imports used without explicit namespace in several functions
-#' @importFrom magrittr %>%
 #' @importFrom graphics axis contour filled.contour points title
 #' @importFrom stats kmeans predict
 #' @importFrom utils URLencode tail

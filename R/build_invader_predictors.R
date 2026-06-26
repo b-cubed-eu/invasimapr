@@ -28,6 +28,27 @@
 #'   standardize crowding (`C_is`).
 #' @param S_s_z Numeric vector of standardized site saturation values.
 #' @param verbose Logical; if `TRUE`, emit diagnostic messages.
+#'
+#' @return A named list with components:
+#'   \describe{
+#'     \item{r_is_z}{Site-by-invader standardised abiotic-suitability matrix.}
+#'     \item{C_is_z}{Site-by-invader standardised niche-crowding matrix.}
+#'     \item{S_is_z}{Site-by-invader standardised resident-competition matrix.}
+#'     \item{df}{Long-format tidy data frame of the three standardised
+#'       predictors.}
+#'     \item{kernels}{List with the invader-resident trait kernel
+#'       \code{K_inv_res} and distance matrix \code{D_inv_res}.}
+#'     \item{inputs_used}{List recording \code{sites}, \code{inv_ids},
+#'       \code{res_ids} and the kernel bandwidth \code{sigma_alpha}.}
+#'   }
+#'
+#' @examples
+#' \dontrun{
+#' # Called internally by predict_invaders(); see that function for usage.
+#' inv <- build_invader_predictors(fit_r, env_df_model, traits_inv_model,
+#'                                 sites, inv_ids)
+#' }
+#'
 #' @export
 build_invader_predictors = function(fit_r, env_df_model, traits_inv_model,
                                      sites, inv_ids,

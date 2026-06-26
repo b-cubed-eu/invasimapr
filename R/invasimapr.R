@@ -9,9 +9,15 @@
 #' @param prob_method NULL or "probit"/"logit"/"hard".
 #' @param prob_args list forwarded to \code{compute_establishment_probability()}.
 #' @param ... arguments passed to \code{assemble_matrices()} in the very first stage.
-#' @return \code{invasimapr_fit}
+#' @return An object of class \code{invasimapr_fit} containing the results of
+#'   the full pipeline (inputs, trait space, resident model, sensitivities,
+#'   invader predictions, invasion fitness and summaries).
+#' @examples
+#' \dontrun{
+#' fit <- invasimapr(traits_inv = my_invader_traits, long_df = my_long_table)
+#' }
 #' @export
-#' @keywords internal   # <-- hide from index
+#' @keywords internal
 invasimapr = function(traits_inv,
                       option = "D",
                       prob_method = "probit",

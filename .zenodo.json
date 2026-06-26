@@ -1,0 +1,56 @@
+{
+  "upload_type": "software",
+  "title": "invasimapr: Workflow to Visualise Trait Dispersion and Assess Invasibility",
+  "description": "invasimapr is an R package to assess species and trait invasiveness and site invasibility by visualising trait dispersion and computing invasion fitness. It decomposes invasion fitness into abiotic suitability, niche crowding and resident competition, and returns species invasiveness, site invasibility and trait-effect indicators with supporting maps and plots.",
+  "access_right": "open",
+  "license": "MIT",
+  "creators": [
+    {
+      "name": "MacFadyen, Sandra",
+      "affiliation": "Stellenbosch University",
+      "orcid": "0000-0002-5316-440X"
+    }
+  ],
+  "keywords": [
+    "invasive-species",
+    "invasibility",
+    "invasion-fitness",
+    "functional-traits",
+    "trait-dispersion",
+    "biodiversity",
+    "b-cubed",
+    "R"
+  ],
+  "communities": [
+    {
+      "identifier": "b3"
+    }
+  ],
+  "grants": [
+    {
+      "id": "101059592"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/b-cubed-eu/invasimapr",
+      "relation": "isSupplementTo",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://b-cubed-eu.github.io/invasimapr/",
+      "relation": "isDocumentedBy",
+      "resource_type": "publication-softwaredocumentation"
+    },
+    {
+      "identifier": "10.5281/zenodo.20842434",
+      "relation": "references",
+      "resource_type": "software"
+    },
+    {
+      "identifier": "https://docs.b-cubed.eu/",
+      "relation": "isPartOf",
+      "resource_type": "publication-softwaredocumentation"
+    }
+  ]
+}

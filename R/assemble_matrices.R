@@ -39,8 +39,34 @@
 #'   diversity summaries.
 #' @param make_plots Logical. If `TRUE`, generate quick diagnostic plots.
 #'
+#' @return A named list of aligned community objects with components:
+#'   \describe{
+#'     \item{site_df}{Site-by-coordinate data frame (rows = sites).}
+#'     \item{env_df}{Site-by-environment numeric data frame.}
+#'     \item{comm_res}{Site-by-resident abundance matrix.}
+#'     \item{pa_res}{Site-by-resident presence-absence matrix.}
+#'     \item{traits_res}{Resident-by-trait data frame (mixed types allowed).}
+#'     \item{diversity}{Optional site-level diversity summaries (present when
+#'       \code{return_diversity = TRUE}).}
+#'     \item{sites, residents}{Character vectors of aligned site and resident
+#'       identifiers.}
+#'     \item{n_sites, n_env, n_residents, n_traits}{Integer dimension counts.}
+#'     \item{plots}{List of diagnostic plots (empty unless
+#'       \code{make_plots = TRUE}).}
+#'   }
+#'
+#' @examples
+#' \dontrun{
+#' site_env_spp <- read.csv(
+#'   system.file("extdata", "site_env_spp_simulated.csv.gz", package = "invasimapr")
+#' )
+#' names(site_env_spp)[names(site_env_spp) == "site_id"] <- "site"
+#' core <- assemble_matrices(long_df = site_env_spp)
+#' str(core, 1)
+#' }
+#'
 #' @importFrom dplyr %>% distinct select arrange group_by summarise mutate
-#'   left_join relocate
+#' @importFrom dplyr left_join relocate
 #' @importFrom tidyr pivot_wider
 #' @importFrom tibble rownames_to_column as_tibble
 #' @importFrom stats setNames
