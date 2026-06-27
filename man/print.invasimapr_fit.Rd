@@ -6,6 +6,15 @@
 \usage{
 \method{print}{invasimapr_fit}(x, ...)
 }
+\arguments{
+\item{x}{An object of class \code{invasimapr_fit}.}
+
+\item{...}{Unused; included for compatibility with the \code{print} generic.}
+}
+\value{
+Invisibly returns \code{x}, the \code{invasimapr_fit} object. Called for its
+side effect of printing a compact summary to the console.
+}
 \description{
 Internal print method. Not part of the public API.
 }

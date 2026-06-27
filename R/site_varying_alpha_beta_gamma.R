@@ -37,6 +37,12 @@
 #'   \item \code{df}: tidy long-format data frame
 #' }
 #'
+#' @examples
+#' \dontrun{
+#' # Called inside learn_sensitivities() when site-varying effects are requested.
+#' svg <- site_varying_alpha_beta_gamma(fit_coeffs, Q_inv, sites, inv_ids)
+#' }
+#' @importFrom glmmTMB ranef
 #' @export
 site_varying_alpha_beta_gamma = function(fit_coeffs, Q_inv, sites, inv_ids,
                                           lrt = TRUE, quiet = FALSE) {

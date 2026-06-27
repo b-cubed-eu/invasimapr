@@ -75,6 +75,12 @@ If the chosen test is significant at \eqn{\alpha = 0.05}, the function
 uses the trait-varying \code{theta_i}; otherwise a constant \code{theta0} is used
 for \code{gamma_i}.
 }
+\examples{
+\dontrun{
+# Called inside learn_sensitivities(); see that wrapper for the typical path.
+sens <- derive_sensitivities(fit_coeffs, Q_inv, inv_ids, lrt = TRUE)
+}
+}
 \seealso{
 \code{\link[glmmTMB:glmmTMB]{glmmTMB::glmmTMB()}}, \code{\link[stats:anova]{stats::anova()}}
 }

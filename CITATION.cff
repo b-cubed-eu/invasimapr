@@ -1,32 +1,89 @@
-cff-version: 0.1.0
+cff-version: 1.2.0
 message: "If you use this software, please cite it using these metadata."
-title: "invasimapr: A Novel Framework to visualise trait dispersion and ability to assess invasibility"
-version: 0.1.0
+title: "invasimapr: Workflow to Visualise Trait Dispersion and Assess Invasibility"
+version: 0.2.0
+type: software
+abstract: >-
+  invasimapr is an R package for quantifying and mapping community-level
+  invasion fitness and site-specific invasibility. It links species
+  occurrences, functional traits and environmental data to build a shared
+  trait-environment space, fit resident community models, and decompose
+  invasion fitness into abiotic suitability, niche crowding and resident
+  competition. The package returns species invasiveness, site invasibility
+  and trait-effect indicators, together with maps and plots that support
+  evidence-based biodiversity management and policy planning.
 authors:
   - given-names: Sandra
     family-names: MacFadyen
+    email: macfadyen@sun.ac.za
     affiliation: Stellenbosch University
-    # orcid: 0000-0002-5316-440X
-keywords:
-  - functional dissimilarity
-  - invasion fitness
-  - invasive traits
-  - invasibility
-  - invasiveness
-  - B-Cubed
-  - R
+    orcid: "https://orcid.org/0000-0002-5316-440X"
 contact:
   - given-names: Sandra
     family-names: MacFadyen
+    email: macfadyen@sun.ac.za
     affiliation: Stellenbosch University
-    # orcid: 0000-0002-5316-440X
+    orcid: "https://orcid.org/0000-0002-5316-440X"
 license: MIT
-repository-code: https://github.com/b-cubed-eu/invasimapr/
-type: software
-abstract: >
-  `invasimapr` is an R package in development for quantifying and mapping community-level invasion fitness and site-specific invasibility.  It links three data streams—species occurrences, functional traits, and (in a later module) curated invasive-alien-species lists—to generate spatial grids, extract and harmonise environmental and trait information, visualise community trait profiles, and compute invasion metrics such as interaction-strength matrices, invasion hotspots, and maximum-invasiveness traits (MITs).  By explicitly modelling how trait-environment-competition relationships shape establishment success, `invasimapr` delivers biologically informed predictions that support evidence-based biodiversity management and policy planning.
+repository-code: "https://github.com/b-cubed-eu/invasimapr"
+url: "https://b-cubed-eu.github.io/invasimapr/"
+keywords:
+  - r
+  - rstats
+  - r-package
+  - invasive-species
+  - invasibility
+  - invasiveness
+  - invasion-fitness
+  - functional-traits
+  - trait-dispersion
+  - biodiversity
+  - b-cubed
 identifiers:
   - type: doi
     value: 10.5281/zenodo.20842472
+    description: Concept DOI for all versions (Zenodo)
   - type: url
-    value: https://github.com/b-cubed-eu/invasimapr/
+    value: "https://github.com/b-cubed-eu/invasimapr"
+    description: Development repository
+references:
+  - type: software
+    title: "b3verse: A collection of R packages to work with biodiversity data cubes"
+    authors:
+      - family-names: Langeraert
+        given-names: Ward
+    url: "https://docs.b-cubed.eu/guides/b3verse/"
+  - type: software
+    title: "dissmapr: Workflow for Compositional Dissimilarity and Biodiversity Turnover Analysis"
+    authors:
+      - family-names: MacFadyen
+        given-names: Sandra
+    url: "https://github.com/b-cubed-eu/dissmapr"
+    identifiers:
+      - type: doi
+        value: 10.5281/zenodo.20842434
+  - type: generic
+    title: "B-Cubed project documentation"
+    authors:
+      - name: "B-Cubed - Biodiversity Building Blocks for policy"
+    url: "https://docs.b-cubed.eu/"
+  - type: article
+    title: "Defining invasiveness and invasibility in ecological networks"
+    authors:
+      - family-names: Hui
+        given-names: Cang
+      - family-names: Richardson
+        given-names: David M.
+      - family-names: Landi
+        given-names: Pietro
+      - family-names: Minoarivelo
+        given-names: Henintsoa O.
+      - family-names: Garnas
+        given-names: Jeff
+      - family-names: Roy
+        given-names: Helen E.
+    journal: "Biological Invasions"
+    year: 2016
+    volume: 18
+    start: 971
+    end: 983

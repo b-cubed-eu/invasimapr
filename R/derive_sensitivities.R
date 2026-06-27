@@ -59,6 +59,11 @@
 #' }
 #'
 #' @seealso [glmmTMB::glmmTMB()], [stats::anova()]
+#' @examples
+#' \dontrun{
+#' # Called inside learn_sensitivities(); see that wrapper for the typical path.
+#' sens <- derive_sensitivities(fit_coeffs, Q_inv, inv_ids, lrt = TRUE)
+#' }
 #' @export
 derive_sensitivities = function(fit_coeffs, Q_inv, inv_ids, lrt = TRUE) {
   # ---- Robust input checks ----------------------------------------------------

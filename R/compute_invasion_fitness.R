@@ -58,6 +58,12 @@
 #'   and \code{y}.
 #' @param return_long Logical; if \code{TRUE}, return a tidy long-format table.
 #' @param label Optional character label attached to the output.
+#' @param standardise_inputs Logical; if \code{TRUE}, re-standardise
+#'   \code{r_is_z}, \code{C_is_z} and \code{S_is_z} onto a common global
+#'   z-scale before computing fitness, so that no single term dominates. This
+#'   is off by default because the \code{_z} arguments are expected to already
+#'   be standardised; enable it only when passing raw (unstandardised)
+#'   predictors. Errors if a predictor has zero or non-finite variance.
 #'
 #' @details
 #' The invasion fitness is computed as:
@@ -257,7 +263,8 @@ compute_invasion_fitness = function(
     calibrate_kappa = FALSE,
     r_js_z = NULL, C_js_z = NULL, S_js_z = NULL,
     Q_res = NULL, a0 = NULL, a1 = NULL, a2 = NULL, b0 = NULL, b1 = NULL, b2 = NULL,
-    site_df = NULL, return_long = TRUE, label = NULL
+    site_df = NULL, return_long = TRUE, label = NULL,
+    standardise_inputs = FALSE
 ){
   option = match.arg(option)
 
@@ -267,6 +274,27 @@ compute_invasion_fitness = function(
   S_is_z = if (is.matrix(S_is_z)) S_is_z else as.matrix(S_is_z)
 
   stopifnot(identical(dim(r_is_z), dim(C_is_z)), identical(dim(r_is_z), dim(S_is_z)))
+
+  # Optional re-standardisation of inputs onto a comparable global z-scale.
+  # Off by default: the `_z` arguments are expected to be pre-standardised.
+  if (isTRUE(standardise_inputs)) {
+    .zmat = function(m) {
+      dn  = dimnames(m)
+      v   = as.numeric(m)
+      mu  = mean(v, na.rm = TRUE)
+      sig = stats::sd(v, na.rm = TRUE)
+      if (!is.finite(sig) || sig == 0)
+        stop("standardise_inputs = TRUE: cannot standardise a predictor with ",
+             "zero or non-finite variance.")
+      out = (m - mu) / sig
+      dimnames(out) = dn
+      out
+    }
+    r_is_z = .zmat(r_is_z)
+    C_is_z = .zmat(C_is_z)
+    S_is_z = .zmat(S_is_z)
+  }
+
   stopifnot(!is.null(rownames(r_is_z)), !is.null(colnames(r_is_z)))
   sites   = rownames(r_is_z)
   inv_ids = colnames(r_is_z)

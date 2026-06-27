@@ -1,67 +1,78 @@
 Type: Package
 Package: invasimapr
-Title: Workflow to visualise trait dispersion and assess invasibility
-Version: 0.1.0
-Authors@R: 
-  person("Sandra", "MacFadyen", email = "macfadyen@sun.ac.za", role = c("aut", "cre"))
-Description: Utilities for assembling invader–resident interaction tensors, 
-    computing trait-based competition kernels from distance matrices, 
-    deriving environmental suitability kernels, calculating invasion fitness, 
-    and summarising trait dispersion metrics. Includes helpers to predict 
-    site × species responses for residents and simulated invaders.
+Title: Workflow to Visualise Trait Dispersion and Assess Invasibility
+Version: 0.2.0
+Authors@R: c(
+    person("Sandra", "MacFadyen", , "macfadyen@sun.ac.za", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-5316-440X")),
+    person("Stellenbosch University", role = "cph")
+    )
+Description: Utilities for assembling invader-resident interaction tensors,
+    computing trait-based competition kernels from distance matrices,
+    deriving environmental suitability kernels, calculating invasion fitness,
+    and summarising trait dispersion metrics. Includes helpers to predict
+    site-by-species responses for residents and simulated invaders, and to
+    derive species invasiveness, site invasibility and trait-effect
+    indicators. The package implements a network invasibility framework that
+    decomposes invasion fitness into abiotic suitability, niche crowding and
+    resident competition components, following the ecological-network theory
+    of Hui and colleagues.
 License: MIT + file LICENSE
-URL: https://github.com/b-cubed-eu/invasimapr, https://b-cubed-eu.github.io/invasimapr/
+URL: https://github.com/b-cubed-eu/invasimapr,
+    https://b-cubed-eu.github.io/invasimapr/
 BugReports: https://github.com/b-cubed-eu/invasimapr/issues
-Encoding: UTF-8
-LazyData: false
 Depends:
-    R (>= 4.5)
+    R (>= 4.1.0)
 Imports:
-    stats,
-    graphics,
     cluster,
-    MASS,
-    viridisLite,
-    ggplot2,
-    factoextra,
+    data.table (>= 1.15.0),
     dplyr,
-    tidyr,
-    tibble,
-    purrr,
-    magrittr,
-    glmmTMB,
-    rlang,
-    matrixStats,
-    vegan,
-    fuzzyjoin,
+    factoextra,
     forcats,
-    Matrix,
+    fuzzyjoin,
+    ggplot2,
+    glmmTMB,
+    graphics,
     httr,
     jsonlite,
     magick,
+    MASS,
+    Matrix,
+    matrixStats,
+    purrr,
+    rlang,
     rvest,
-    data.table (>= 1.15.0)
+    scales,
+    stats,
+    stringr,
+    tibble,
+    tidyr,
+    vegan,
+    viridisLite
 Suggests:
-    dissmapr,
-    pheatmap,
-    scico,
-    sf,
-    terra,
     ClustGeo,
     devtools,
-    remotes,
-    scales,
-    viridis,
-    stringr,
+    dissmapr,
     fastDummies,
-    performance,
-    lattice,
-    RColorBrewer,
     knitr,
+    lattice,
+    performance,
+    pheatmap,
+    RColorBrewer,
+    remotes,
     rmarkdown,
-    testthat (>= 3.0.0)
+    scico,
+    sf,
+    sp,
+    terra,
+    testthat (>= 3.0.0),
+    viridis
+Remotes:
+    b-cubed-eu/dissmapr
 VignetteBuilder: knitr
 Config/testthat/edition: 3
-Config/Needs/website: false
+Encoding: UTF-8
+Language: en-GB
+LazyData: false
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+Config/roxygen2/version: 8.0.0

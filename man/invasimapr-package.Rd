@@ -3,11 +3,11 @@
 \docType{package}
 \name{invasimapr-package}
 \alias{invasimapr-package}
-\title{invasimapr: Workflow to visualise trait dispersion and assess invasibility}
+\title{invasimapr: Workflow to Visualise Trait Dispersion and Assess Invasibility}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Utilities for assembling invader–resident interaction tensors, computing trait-based competition kernels from distance matrices, deriving environmental suitability kernels, calculating invasion fitness, and summarising trait dispersion metrics. Includes helpers to predict site × species responses for residents and simulated invaders.
+Utilities for assembling invader-resident interaction tensors, computing trait-based competition kernels from distance matrices, deriving environmental suitability kernels, calculating invasion fitness, and summarising trait dispersion metrics. Includes helpers to predict site-by-species responses for residents and simulated invaders, and to derive species invasiveness, site invasibility and trait-effect indicators. The package implements a network invasibility framework that decomposes invasion fitness into abiotic suitability, niche crowding and resident competition components, following the ecological-network theory of Hui and colleagues.
 }
 \seealso{
 Useful links:
@@ -19,7 +19,17 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Sandra MacFadyen \email{macfadyen@sun.ac.za}
+\strong{Maintainer}: Sandra MacFadyen \email{macfadyen@sun.ac.za} (\href{https://orcid.org/0000-0002-5316-440X}{ORCID})
+
+Authors:
+\itemize{
+  \item Sandra MacFadyen \email{macfadyen@sun.ac.za} (\href{https://orcid.org/0000-0002-5316-440X}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Stellenbosch University [copyright holder]
+}
 
 }
 \keyword{internal}

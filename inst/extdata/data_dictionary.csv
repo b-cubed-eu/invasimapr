@@ -1,0 +1,37 @@
+field,description,data_type,role,darwin_core_term,dwc_term_uri
+site_id,Unique identifier of the site / grid cell,integer,identifier,locationID,http://rs.tdwg.org/dwc/terms/locationID
+x,"Longitude of the site centroid (decimal degrees, WGS84)",numeric,coordinate,decimalLongitude,http://rs.tdwg.org/dwc/terms/decimalLongitude
+y,"Latitude of the site centroid (decimal degrees, WGS84)",numeric,coordinate,decimalLatitude,http://rs.tdwg.org/dwc/terms/decimalLatitude
+species,Resident or candidate-invader taxon name,character,taxon,scientificName,http://rs.tdwg.org/dwc/terms/scientificName
+count,Abundance / occurrence count of the species at the site,integer,measurement,individualCount,http://rs.tdwg.org/dwc/terms/individualCount
+trait_cont1,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont2,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont3,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont4,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont5,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont6,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont7,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont8,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont9,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cont10,Continuous functional trait (standardised numeric),numeric,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cat11,Categorical (nominal) functional trait,factor,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cat12,Categorical (nominal) functional trait,factor,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cat13,Categorical (nominal) functional trait,factor,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cat14,Categorical (nominal) functional trait,factor,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_cat15,Categorical (nominal) functional trait,factor,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_ord16,Ordinal functional trait (ordered factor),ordered,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_ord17,Ordinal functional trait (ordered factor),ordered,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_ord20,Ordinal functional trait (ordered factor),ordered,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_bin18,Binary functional trait (attribute present/absent),binary,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+trait_bin19,Binary functional trait (attribute present/absent),binary,trait,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env1,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env2,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env3,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env4,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env5,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env6,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env7,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env8,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env9,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+env10,Site-level environmental covariate (climate/soil/topography),numeric,environment,measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue
+cat11_num,Numeric encoding of categorical trait trait_cat11,numeric,trait (derived),measurementValue,http://rs.tdwg.org/dwc/terms/measurementValue

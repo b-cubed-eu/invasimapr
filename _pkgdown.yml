@@ -1,7 +1,7 @@
 url: https://b-cubed-eu.github.io/invasimapr/
 
 template:
-  math-rendering: mathjax   # or "katex"
+  math-rendering: mathjax
   bootstrap: 5
   bslib:
     bg: '#ffffff'
@@ -17,8 +17,8 @@ navbar:
     left:
     - intro
     - reference
-    - news
     - articles
+    - news
     right:
     - search
     - mainsite
@@ -29,20 +29,32 @@ navbar:
       href: https://b-cubed.eu/
       aria-label: B-Cubed website
 
+articles:
+  - title: "Getting started"
+    navbar: ~
+    contents:
+      - invasimapr
+  - title: "Tutorials"
+    navbar: "Tutorials"
+    contents:
+      - articles/introduction
+      - articles/step-by-step-workflow
+      - articles/clustering-and-risk-scenarios
+      - articles/invasion-fitness-synthesis
+      - articles/computing-invasion-fitness
+
 reference:
-# 1. Overview block
   - title: "Overview of invasimapr functions"
     desc: |
       Quantifies and visualises invasion fitness from occurrence and trait data.
       Computes trait centrality, maps trait dispersion, and estimates interaction strength.
       Assesses site-level invasibility and community openness to new invasions.
       Produces interaction matrices and trait-specific invasion risk indicators.
-      Aligns with Hui et al. (2023): integrates traits, propagule pressure, and environment.
+      Aligns with Hui et al. (2016): integrates traits, propagule pressure, and environment.
 
-# 2. Function wrappers
-  - title: "Wrapper Functions"
+  - title: "Wrapper functions"
+    desc: Main pipeline functions, called in sequence.
     contents:
-      # - invasimapr
       - prepare_inputs
       - prepare_trait_space
       - model_residents
@@ -51,8 +63,8 @@ reference:
       - predict_establishment
       - summarise_results
 
-# 3. First five functions, in order
-  - title: "Core Functions"
+  - title: "Core functions"
+    desc: Building blocks used by the wrappers.
     contents:
       - get_trait_data
       - assemble_matrices
@@ -73,34 +85,11 @@ reference:
       - compute_establishment_probability
       - summarise_invasiveness_invasibility
 
-articles:
-  - title: "Tutorials"
-    navbar: "Articles"
-    contents:
-      - introduction_1
-      - workflow_2
-      - clusters_3
-      - synthesis_4
-      - tutorial_5
-
-# articles:
-#   - title: "Getting started"
-#     contents:
-#       - introduction_1
-#
-#   - title: "Workflow"
-#     contents:
-#       - workflow_2
-#
-#   - title: "Clustering and risk scenarios"
-#     contents:
-#       - clusters_3
-#
-#   - title: "Invasion fitness synthesis"
-#     contents:
-#       - synthesis_4
-#
-#   - title: "Invasion fitness tutorial"
-#     contents:
-#       - tutorial_5
-
+authors:
+  Sandra MacFadyen:
+    href: "https://orcid.org/0000-0002-5316-440X"
+  European Union (grant 101059592):
+    href: "https://doi.org/10.3030/101059592"
+    html: "<img src='https://docs.b-cubed.eu/eu-flag.jpg' height=35 alt='Funded by the European Union'>"
+  Stellenbosch University:
+    href: "https://www.sun.ac.za/"

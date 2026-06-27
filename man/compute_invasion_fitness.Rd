@@ -29,7 +29,8 @@ compute_invasion_fitness(
   b2 = NULL,
   site_df = NULL,
   return_long = TRUE,
-  label = NULL
+  label = NULL,
+  standardise_inputs = FALSE
 )
 }
 \arguments{
@@ -79,6 +80,13 @@ and \code{y}.}
 \item{return_long}{Logical; if \code{TRUE}, return a tidy long-format table.}
 
 \item{label}{Optional character label attached to the output.}
+
+\item{standardise_inputs}{Logical; if \code{TRUE}, re-standardise
+\code{r_is_z}, \code{C_is_z} and \code{S_is_z} onto a common global
+z-scale before computing fitness, so that no single term dominates. This
+is off by default because the \code{_z} arguments are expected to already
+be standardised; enable it only when passing raw (unstandardised)
+predictors. Errors if a predictor has zero or non-finite variance.}
 }
 \value{
 A list containing:

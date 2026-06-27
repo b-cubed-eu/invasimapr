@@ -24,6 +24,11 @@
 #' @return list(dat_r, fit_r, grid_res, r_js, mu_js, sites, res_ids)
 #' @import data.table
 #' @importFrom glmmTMB glmmTMB tweedie
+#' @examples
+#' \dontrun{
+#' # Called inside model_residents(); see that wrapper for the typical path.
+#' res <- prep_resident_glmm(comm_res, env_df_z, traits_res_glmm, fml)
+#' }
 #' @export
 prep_resident_glmm = function(comm_res,
                                env_df_z,

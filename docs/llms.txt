@@ -1,0 +1,330 @@
+# invasimapr
+
+**invasimapr** is an open-source R package that quantifies and maps
+community-level **invasion fitness** and site-specific **invasibility**.
+Biological invasions are a leading driver of biodiversity loss, yet
+invasion outcomes depend jointly on three things: the **functional
+traits** of candidate invaders, the **abiotic suitability** of local
+environments, and the **biotic resistance** of resident communities.
+Most risk-assessment tools address only one or two of these axes at a
+time. invasimapr integrates all three into a single, reproducible
+workflow that resolves invasion fitness at the scale of individual
+species and sites, and turns it into decision-ready indicators of
+*which* invaders are most likely to establish, *where* invasions are
+most likely to occur, and *which* ecological mechanisms drive that risk.
+
+invasimapr is part of the [B-Cubed](https://b-cubed.eu/)
+([b3verse](https://docs.b-cubed.eu/guides/b3verse/)) toolbox and
+integrates tightly with
+[dissmapr](https://github.com/b-cubed-eu/dissmapr) for biodiversity data
+acquisition and spatial gridding.
+
+## How it works
+
+invasimapr is built on the **Invasibility Cube**: a unified species x
+environment x trait structure that predicts invasion outcomes across
+every combination of candidate invader and site. Trait combinations are
+projected into a principal-component trait space, where the convex hull
+of the resident community defines the competitive arena an invader must
+enter.
+
+![Trait-space modelling framework: a three-dimensional species x
+environment x trait cube is projected into principal-component trait
+space, where the convex hull defines the resident
+community.](reference/figures/fig1.png)
+
+At its core, invasimapr estimates **invasion fitness**: the per-capita
+growth rate of a rare invader introduced into a resident community at
+ecological equilibrium. When this is positive the invader can increase
+from low density and is predicted to establish; when negative it is
+expected to fail. Invasion fitness is decomposed into three mechanistic
+components:
+
+- **Abiotic suitability** – how well the invader’s traits match local
+  environmental conditions.
+- **Niche crowding** – how strongly the invader’s traits overlap with
+  the resident community in a shared trait–environment space.
+- **Resident competition** – how saturated the site already is with
+  abundant residents.
+
+When abiotic benefits outweigh competitive penalties, a species attains
+positive invasion fitness and a higher probability of establishment.
+Geometrically, invaders near the centroid of the resident trait cloud
+face strong competition from look-alike residents, while those toward
+the margins (or outside the hull) find less crowded niche space and
+weaker biotic resistance.
+
+![Trait-space density heatmap showing where competitive pressure
+concentrates across the shared trait-environment space, with marginal
+diagnostics for individual trait axes. Warm colours mark trait
+combinations shared by many residents; cool regions are underexploited
+niche space.](reference/figures/fig2.png)
+
+## Installation
+
+You can install the development version of invasimapr from
+[GitHub](https://github.com/b-cubed-eu/invasimapr) with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("b-cubed-eu/invasimapr")
+```
+
+## The workflow
+
+invasimapr is modular, transparent and fully reproducible, progressing
+in three phases: **inputs and setup**, **from data to invasion
+fitness**, and **prediction and indicators**. It is built around eight
+wrapper functions that run end-to-end with minimal intervention, each
+returning an updated `invasimapr_fit` container:
+
+![The invasimapr workflow, from data acquisition through
+invasion-fitness computation to derived indicators, organised into
+inputs, modelling and prediction
+phases.](reference/figures/invasimapr_workflow.png)
+
+1.  **[`prepare_inputs()`](https://b-cubed-eu.github.io/invasimapr/reference/prepare_inputs.md)**
+    – assemble and align community, trait and environmental matrices.
+2.  **[`simulate_invaders()`](https://b-cubed-eu.github.io/invasimapr/reference/simulate_invaders.md)**
+    – generate hypothetical invader trait profiles from the resident
+    pool (or import your own).
+3.  **[`prepare_trait_space()`](https://b-cubed-eu.github.io/invasimapr/reference/prepare_trait_space.md)**
+    – build the shared Gower/PCoA trait space, convex hull and
+    niche-crowding indices.
+4.  **[`model_residents()`](https://b-cubed-eu.github.io/invasimapr/reference/model_residents.md)**
+    – fit GLMMs to resident abundance and derive standardised
+    predictors.
+5.  **[`learn_sensitivities()`](https://b-cubed-eu.github.io/invasimapr/reference/learn_sensitivities.md)**
+    – estimate trait-dependent (and optionally site-varying) slopes for
+    suitability, crowding and competition.
+6.  **[`predict_invaders()`](https://b-cubed-eu.github.io/invasimapr/reference/predict_invaders.md)**
+    – project invaders into the resident model space.
+7.  **[`predict_establishment()`](https://b-cubed-eu.github.io/invasimapr/reference/predict_establishment.md)**
+    – compute per-invader, per-site invasion fitness and map it to
+    establishment probability.
+8.  **[`summarise_results()`](https://b-cubed-eu.github.io/invasimapr/reference/summarise_results.md)**
+    – derive species invasiveness, site invasibility and trait-effect
+    indicators with maps and plots.
+
+## Example
+
+A minimal, reproducible example using the demo data shipped with the
+package (415 sites, 27 resident species, 20 traits and 10 environmental
+layers):
+
+``` r
+library(invasimapr)
+
+# Demo data: one long table with sites, coordinates, species counts,
+# environment (env*) and trait (trait_*) columns.
+csv <- system.file("extdata", "site_env_spp_simulated.csv.gz", package = "invasimapr")
+if (!nzchar(csv)) csv <- "inst/extdata/site_env_spp_simulated.csv.gz"  # source fallback (pre-reinstall)
+site_env_spp <- read.csv(csv)
+
+# invasimapr expects a `site` key; coerce character columns to factors.
+long_df <- site_env_spp
+names(long_df)[names(long_df) == "site_id"] <- "site"
+chr <- vapply(long_df, is.character, logical(1))
+long_df[chr] <- lapply(long_df[chr], as.factor)
+
+# Step 1: assemble and align the core matrices in one call
+fit <- prepare_inputs(
+  long_df      = long_df,
+  site_col     = "site",
+  env_prefix   = "^env",
+  trait_prefix = "^trait",
+  make_plots   = FALSE
+)
+
+fit
+#> <invasimapr_fit>
+#>  stages: inputs 
+#>  sites: 415 | residents: 27 | invaders: NA
+```
+
+The remaining steps extend the same `fit` object. They involve model
+fitting and are shown here without evaluation for brevity:
+
+``` r
+# Step 2: simulate hypothetical invaders from the resident trait pool
+traits_inv <- simulate_invaders(
+  resident_traits = fit$inputs$traits_res,
+  n_inv = 10, mode = "columnwise"
+)
+
+# Steps 3-8: trait space -> resident model -> sensitivities ->
+#            invader prediction -> invasion fitness -> indicators
+fit <- prepare_trait_space(fit, traits_inv = traits_inv)
+fit <- model_residents(fit)
+fit <- learn_sensitivities(fit)
+fit <- predict_invaders(fit, traits_inv = traits_inv)
+fit <- predict_establishment(fit, option = "C", prob_method = "probit")
+fit <- summarise_results(fit)
+```
+
+See the [Get
+started](https://b-cubed-eu.github.io/invasimapr/articles/invasimapr.html)
+vignette and the [tutorial
+articles](https://b-cubed-eu.github.io/invasimapr/articles/) for the
+full step-by-step workflow with real data.
+
+## Outputs and indicators
+
+By marginalising the species × site fitness surface across species,
+sites or traits, invasimapr produces three complementary families of
+indicators:
+
+- **Species invasiveness** – how broadly a species can establish across
+  sites (supports watchlists and early detection).
+- **Site invasibility** – how open a community is to newcomers
+  (identifies invasion hotspots for surveillance and conservation
+  planning).
+- **Trait invasiveness** – which functional attributes most strongly
+  drive establishment (reveals the mechanistic basis of risk).
+
+![Invasibility map: spatial variation in community openness to
+invasion.](reference/figures/invasibility-map.png)
+
+Applied to South African butterflies, for example, invasimapr maps
+binary establishment for each candidate invader on a common grid, making
+spatial patterns directly comparable across species:
+
+![Per-invader maps of binary establishment across South Africa. Each
+panel is one invader; red cells indicate predicted establishment and
+dark grey non-establishment, on a common grid and coastline for direct
+comparison.](reference/figures/fig4.png)
+
+## Documentation
+
+- Package website: <https://b-cubed-eu.github.io/invasimapr/>
+- Source code: <https://github.com/b-cubed-eu/invasimapr>
+- B-Cubed project documentation: <https://docs.b-cubed.eu/>
+
+## Citation
+
+To cite invasimapr, run `citation("invasimapr")` in R, or use:
+
+> MacFadyen, S., Yahaya, M.M., Trekels, M., Kumschick, S., Landi, P. &
+> Hui, C. (2025). *invasimapr: Workflow to Visualise Trait Dispersion
+> and Assess Invasibility.* R package version 0.2.0.
+> <https://doi.org/10.5281/zenodo.20842472>
+
+## Meta
+
+- We welcome
+  [contributions](https://b-cubed-eu.github.io/invasimapr/CONTRIBUTING.md),
+  including bug reports, via the [issue
+  tracker](https://github.com/b-cubed-eu/invasimapr/issues).
+- License: MIT.
+- Please note that this project is released with a [Contributor Code of
+  Conduct](https://b-cubed-eu.github.io/invasimapr/CODE_OF_CONDUCT.md).
+  By participating you agree to abide by its terms.
+
+## Acknowledgments
+
+This software was developed with funding from the European Union’s
+Horizon Europe Research and Innovation Programme under grant agreement
+ID No [101059592](https://doi.org/10.3030/101059592).
+
+# Package index
+
+## Overview of invasimapr functions
+
+Quantifies and visualises invasion fitness from occurrence and trait
+data. Computes trait centrality, maps trait dispersion, and estimates
+interaction strength. Assesses site-level invasibility and community
+openness to new invasions. Produces interaction matrices and
+trait-specific invasion risk indicators. Aligns with Hui et al. (2016):
+integrates traits, propagule pressure, and environment.
+
+## Wrapper functions
+
+Main pipeline functions, called in sequence.
+
+- [`prepare_inputs()`](https://b-cubed-eu.github.io/invasimapr/reference/prepare_inputs.md)
+  : Prepare inputs (assemble and align core tables)
+- [`prepare_trait_space()`](https://b-cubed-eu.github.io/invasimapr/reference/prepare_trait_space.md)
+  : Prepare trait space and resident crowding (no site-z)
+- [`model_residents()`](https://b-cubed-eu.github.io/invasimapr/reference/model_residents.md)
+  : Resident GLMM and construction of standardized predictors
+- [`learn_sensitivities()`](https://b-cubed-eu.github.io/invasimapr/reference/learn_sensitivities.md)
+  : Learn sensitivities (alpha_i, beta_i, theta_i/gamma_i) and optional
+  site-varying alpha_is, Gamma_is
+- [`predict_invaders()`](https://b-cubed-eu.github.io/invasimapr/reference/predict_invaders.md)
+  : Build standardized invader predictors (r_is_z, C_is_z, S_is_z)
+- [`predict_establishment()`](https://b-cubed-eu.github.io/invasimapr/reference/predict_establishment.md)
+  : Compute invasion fitness (\\\lambda\\) and optional establishment
+  probability (\\P\\)
+- [`summarise_results()`](https://b-cubed-eu.github.io/invasimapr/reference/summarise_results.md)
+  : Summarise invasiveness and invasibility (tables, maps, rankings)
+
+## Core functions
+
+Building blocks used by the wrappers.
+
+- [`get_trait_data()`](https://b-cubed-eu.github.io/invasimapr/reference/get_trait_data.md)
+  : Scrape and Analyze Wikipedia & Trait Data for a Species
+- [`assemble_matrices()`](https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.md)
+  : Assemble community matrices for invasion-fitness workflows
+- [`simulate_invaders()`](https://b-cubed-eu.github.io/invasimapr/reference/simulate_invaders.md)
+  : Simulate hypothetical invader trait profiles from a resident trait
+  pool
+- [`standardise_model_inputs()`](https://b-cubed-eu.github.io/invasimapr/reference/standardise_model_inputs.md)
+  : Standardise model inputs (no leakage) for residents and invaders
+- [`compute_trait_space()`](https://b-cubed-eu.github.io/invasimapr/reference/compute_trait_space.md)
+  : Shared trait-space construction (Gower + PCoA), resident hull,
+  centroid, and density plot
+- [`compute_centrality_hull()`](https://b-cubed-eu.github.io/invasimapr/reference/compute_centrality_hull.md)
+  : Compute trait-space centrality (robust Mahalanobis) and hull status,
+  with visuals
+- [`compute_resident_crowding()`](https://b-cubed-eu.github.io/invasimapr/reference/compute_resident_crowding.md)
+  : Resident crowding \\C\_{js}\\ via Hellinger composition and
+  Gower–Gaussian trait kernel
+- [`build_model_formula()`](https://b-cubed-eu.github.io/invasimapr/reference/build_model_formula.md)
+  : Flexible formula constructor for residents-only trait–environment
+  models
+- [`prep_resident_glmm()`](https://b-cubed-eu.github.io/invasimapr/reference/prep_resident_glmm.md)
+  : Build residents-by-sites long table and fit the residents-only GLMM
+- [`standardise_by_site()`](https://b-cubed-eu.github.io/invasimapr/reference/standardise_by_site.md)
+  : Standardize a site-by-species matrix by site (row-wise z) with
+  optional robust SD
+- [`compute_site_saturation()`](https://b-cubed-eu.github.io/invasimapr/reference/compute_site_saturation.md)
+  : Compute site-only saturation \\S\_{s}\\ and global z-score
+  \\S\_{s}^{(z)}\\
+- [`fit_auxiliary_residents_glmm()`](https://b-cubed-eu.github.io/invasimapr/reference/fit_auxiliary_residents_glmm.md)
+  : Auxiliary GLMM for trait-varying and site-varying slopes
+- [`derive_sensitivities()`](https://b-cubed-eu.github.io/invasimapr/reference/derive_sensitivities.md)
+  : Derive trait-varying sensitivities (αᵢ, βᵢ) and abiotic slope (θ,
+  Γᵢ)
+- [`site_varying_alpha_beta_gamma()`](https://b-cubed-eu.github.io/invasimapr/reference/site_varying_alpha_beta_gamma.md)
+  : Site-varying alpha and gamma with trait-dependent beta
+- [`build_invader_predictors()`](https://b-cubed-eu.github.io/invasimapr/reference/build_invader_predictors.md)
+  : Build standardized invader predictors r_is_z, C_is_z, S_is_z
+  (expects env/traits frames already projected to model columns)
+- [`compute_invasion_fitness()`](https://b-cubed-eu.github.io/invasimapr/reference/compute_invasion_fitness.md)
+  : Compute invasion fitness \\\lambda\_{is}\\ for multiple model
+  options
+- [`compute_establishment_probability()`](https://b-cubed-eu.github.io/invasimapr/reference/compute_establishment_probability.md)
+  : Probabilistic establishment from invasion fitness
+- [`summarise_invasiveness_invasibility()`](https://b-cubed-eu.github.io/invasimapr/reference/summarise_invasiveness_invasibility.md)
+  : Summaries of invasion fitness: species invasiveness, trait effects,
+  and site invasibility
+
+# Articles
+
+### Getting started
+
+- [Getting started with
+  invasimapr](https://b-cubed-eu.github.io/invasimapr/articles/invasimapr.md):
+
+### Tutorials
+
+- [Introduction](https://b-cubed-eu.github.io/invasimapr/articles/introduction.md):
+- [Step-by-step
+  Workflow](https://b-cubed-eu.github.io/invasimapr/articles/step-by-step-workflow.md):
+- [Clustering and risk
+  scenarios](https://b-cubed-eu.github.io/invasimapr/articles/clustering-and-risk-scenarios.md):
+- [Invasion fitness
+  synthesis](https://b-cubed-eu.github.io/invasimapr/articles/invasion-fitness-synthesis.md):
+- [Tutorial on computing invasion
+  fitness](https://b-cubed-eu.github.io/invasimapr/articles/computing-invasion-fitness.md):
