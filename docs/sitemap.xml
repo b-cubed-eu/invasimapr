@@ -1,18 +1,17 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/404.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/CODE_OF_CONDUCT.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/CONTRIBUTING.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/LICENSE-text.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/LICENSE.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/clustering-and-risk-scenarios.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/computing-invasion-fitness.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/index.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/articles/introduction.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/invasimapr.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/invasion-fitness-synthesis.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/articles/step-by-step-workflow.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/authors.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/CODE_OF_CONDUCT.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/CONTRIBUTING.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/index.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/LICENSE-text.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/LICENSE.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/news/index.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/assemble_matrices.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/build_invader_predictors.html</loc></url>
@@ -34,9 +33,9 @@
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/model_residents.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/predict_establishment.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/predict_invaders.html</loc></url>
+<url><loc>https://b-cubed-eu.github.io/invasimapr/reference/prep_resident_glmm.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/prepare_inputs.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/prepare_trait_space.html</loc></url>
-<url><loc>https://b-cubed-eu.github.io/invasimapr/reference/prep_resident_glmm.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/print.invasimapr_fit.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/simulate_invaders.html</loc></url>
 <url><loc>https://b-cubed-eu.github.io/invasimapr/reference/site_varying_alpha_beta_gamma.html</loc></url>

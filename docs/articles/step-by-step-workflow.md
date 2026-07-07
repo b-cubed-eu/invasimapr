@@ -772,7 +772,7 @@ alpha diversity and sampling intensity before modelling.
 spp_rich_obs = fit$inputs$diversity 
 rsa = sf::st_read(system.file("extdata", "rsa.shp", package = "invasimapr"))
 #> Reading layer `rsa' from data source 
-#>   `C:\Users\macfadyen\AppData\Local\Temp\RtmpGmxhos\temp_libpath3bcc23b6f2f\invasimapr\extdata\rsa.shp' 
+#>   `C:\Users\macfadyen\AppData\Local\Temp\Rtmp23f6Iu\temp_libpatha16c5e88147a\invasimapr\extdata\rsa.shp' 
 #>   using driver `ESRI Shapefile'
 #> Simple feature collection with 11 features and 8 fields
 #> Geometry type: MULTIPOLYGON
@@ -1607,7 +1607,7 @@ str(fit$residents, 1)
 #>  $ dat_r   :'data.frame':    11205 obs. of  33 variables:
 #>  $ grid_res:'data.frame':    11205 obs. of  33 variables:
 #>  $ fml     :Class 'formula'  language abundance ~ env1 + env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 +      env10 + trait_cont1 + trait_cont2| __truncated__ ...
-#>   .. ..- attr(*, ".Environment")=<environment: 0x000002550e8a2120> 
+#>   .. ..- attr(*, ".Environment")=<environment: 0x000001e6fbf8da80> 
 #>  $ r_js    : num [1:415, 1:27] 1.061 0.957 1.218 1.247 1.415 ...
 #>   ..- attr(*, "dimnames")=List of 2
 #>  $ mu_js   : num [1:415, 1:27] 2.89 2.6 3.38 3.48 4.12 ...
@@ -1797,7 +1797,7 @@ str(fit$sensitivities, 1)
 #>   ..- attr(*, "class")= chr "glmmTMB"
 #>  $ data_used            : tibble [11,205 × 8] (S3: tbl_df/tbl/data.frame)
 #>  $ formula              :Class 'formula'  language log1p(abundance) ~ (r_z + C_z + S_z) * (tr1 + tr2) + (1 | species) + (1 |      site) + (0 + r_z || site) + (0 + C_z || site)
-#>   .. ..- attr(*, ".Environment")=<environment: 0x00000254dd486a88> 
+#>   .. ..- attr(*, ".Environment")=<environment: 0x000001e6da3aeb30> 
 #>  $ alpha_i              : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...
 #>   ..- attr(*, "names")= chr [1:10] "inv1" "inv2" "inv3" "inv4" ...
 #>  $ alpha_signed_i       : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...

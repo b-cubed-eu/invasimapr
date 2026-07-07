@@ -37,7 +37,6 @@ articles:
   - title: "Tutorials"
     navbar: "Tutorials"
     contents:
-      - articles/introduction
       - articles/step-by-step-workflow
       - articles/clustering-and-risk-scenarios
       - articles/invasion-fitness-synthesis
