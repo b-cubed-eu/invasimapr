@@ -2,12 +2,10 @@
 
 ### Getting started
 
-- [Getting started with
-  invasimapr](https://b-cubed-eu.github.io/invasimapr/articles/invasimapr.md):
+- [Introduction](https://b-cubed-eu.github.io/invasimapr/articles/invasimapr.md):
 
 ### Tutorials
 
-- [Introduction](https://b-cubed-eu.github.io/invasimapr/articles/introduction.md):
 - [Step-by-step
   Workflow](https://b-cubed-eu.github.io/invasimapr/articles/step-by-step-workflow.md):
 - [Clustering and risk

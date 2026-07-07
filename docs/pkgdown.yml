@@ -4,11 +4,10 @@ pkgdown_sha: ~
 articles:
   articles/clustering-and-risk-scenarios: clustering-and-risk-scenarios.html
   articles/computing-invasion-fitness: computing-invasion-fitness.html
-  articles/introduction: introduction.html
   invasimapr: invasimapr.html
   articles/invasion-fitness-synthesis: invasion-fitness-synthesis.html
   articles/step-by-step-workflow: step-by-step-workflow.html
-last_built: 2026-06-26T14:53Z
+last_built: 2026-07-07T11:37Z
 urls:
   reference: https://b-cubed-eu.github.io/invasimapr/reference
   article: https://b-cubed-eu.github.io/invasimapr/articles

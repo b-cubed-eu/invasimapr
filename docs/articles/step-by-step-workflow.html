@@ -48,7 +48,6 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Tutorials</h6></li>
-    <li><a class="dropdown-item" href="../articles/introduction.html">Introduction</a></li>
     <li><a class="dropdown-item" href="../articles/step-by-step-workflow.html">Step-by-step Workflow</a></li>
     <li><a class="dropdown-item" href="../articles/clustering-and-risk-scenarios.html">Clustering and risk scenarios</a></li>
     <li><a class="dropdown-item" href="../articles/invasion-fitness-synthesis.html">Invasion fitness synthesis</a></li>
@@ -826,7 +825,7 @@ modelling.</p>
 <code class="sourceCode R"><span><span class="va">spp_rich_obs</span> <span class="op">=</span> <span class="va">fit</span><span class="op">$</span><span class="va">inputs</span><span class="op">$</span><span class="va">diversity</span> </span>
 <span><span class="va">rsa</span> <span class="op">=</span> <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html" class="external-link">st_read</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"rsa.shp"</span>, package <span class="op">=</span> <span class="st">"invasimapr"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Reading layer `rsa' from data source </span></span>
-<span><span class="co">#&gt;   `C:\Users\macfadyen\AppData\Local\Temp\RtmpGmxhos\temp_libpath3bcc23b6f2f\invasimapr\extdata\rsa.shp' </span></span>
+<span><span class="co">#&gt;   `C:\Users\macfadyen\AppData\Local\Temp\Rtmp23f6Iu\temp_libpatha16c5e88147a\invasimapr\extdata\rsa.shp' </span></span>
 <span><span class="co">#&gt;   using driver `ESRI Shapefile'</span></span>
 <span><span class="co">#&gt; Simple feature collection with 11 features and 8 fields</span></span>
 <span><span class="co">#&gt; Geometry type: MULTIPOLYGON</span></span>
@@ -1633,7 +1632,7 @@ objects</strong> used for invader predictions.</p>
 <span><span class="co">#&gt;  $ dat_r   :'data.frame':    11205 obs. of  33 variables:</span></span>
 <span><span class="co">#&gt;  $ grid_res:'data.frame':    11205 obs. of  33 variables:</span></span>
 <span><span class="co">#&gt;  $ fml     :Class 'formula'  language abundance ~ env1 + env2 + env3 + env4 + env5 + env6 + env7 + env8 + env9 +      env10 + trait_cont1 + trait_cont2| __truncated__ ...</span></span>
-<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000002550e8a2120&gt; </span></span>
+<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000001e6fbf8da80&gt; </span></span>
 <span><span class="co">#&gt;  $ r_js    : num [1:415, 1:27] 1.061 0.957 1.218 1.247 1.415 ...</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "dimnames")=List of 2</span></span>
 <span><span class="co">#&gt;  $ mu_js   : num [1:415, 1:27] 2.89 2.6 3.38 3.48 4.12 ...</span></span>
@@ -1817,7 +1816,7 @@ attach them to <code>fit$sensitivities</code>.</p>
 <span><span class="co">#&gt;   ..- attr(*, "class")= chr "glmmTMB"</span></span>
 <span><span class="co">#&gt;  $ data_used            : tibble [11,205 × 8] (S3: tbl_df/tbl/data.frame)</span></span>
 <span><span class="co">#&gt;  $ formula              :Class 'formula'  language log1p(abundance) ~ (r_z + C_z + S_z) * (tr1 + tr2) + (1 | species) + (1 |      site) + (0 + r_z || site) + (0 + C_z || site)</span></span>
-<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x00000254dd486a88&gt; </span></span>
+<span><span class="co">#&gt;   .. ..- attr(*, ".Environment")=&lt;environment: 0x000001e6da3aeb30&gt; </span></span>
 <span><span class="co">#&gt;  $ alpha_i              : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...</span></span>
 <span><span class="co">#&gt;   ..- attr(*, "names")= chr [1:10] "inv1" "inv2" "inv3" "inv4" ...</span></span>
 <span><span class="co">#&gt;  $ alpha_signed_i       : Named num [1:10] 0.982 0.964 0.973 0.981 0.937 ...</span></span>
