@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# invasimapr <img src="man/figures/logo.png" align="right" height="139" alt="invasimapr logo" />
+# invasimapr <a href="https://b-cubed-eu.github.io/invasimapr/"><img src="man/figures/logo.png" align="right" height="139" alt="invasimapr website" /></a>
 
 <!-- badges: start -->
 
