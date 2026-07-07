@@ -1,12 +1,6 @@
-# Introduction
+# Introduction to invasimapr
 
-## `invasimapr`
-
-### A novel framework to visualise trait dispersion and assess species invasiveness and site invasibility
-
-------------------------------------------------------------------------
-
-### Introduction
+## Introduction
 
 Biological invasions are a major driver of biodiversity loss. Invasive
 alien species (IAS) can spread quickly, alter ecosystem processes, and
@@ -43,7 +37,7 @@ fitness across sites, species, and traits.
 
 ------------------------------------------------------------------------
 
-### Network Invasibility Cube
+## Network Invasibility Cube
 
 The network invasibility cube unifies **functional traits**,
 **environmental suitability**, and **community competition** into a
@@ -80,7 +74,7 @@ Invasibility Cube data structure
 
 ------------------------------------------------------------------------
 
-### Shared Trait-Environment Space
+## Shared Trait-Environment Space
 
 Integrating traits, environment, community composition and abundance (or
 presence-absence) into a unified framework, the **multidimensional
@@ -120,7 +114,7 @@ components (Figure 2):
 
 ------------------------------------------------------------------------
 
-### Invasion Fitness
+## Invasion Fitness
 
 **Invasion fitness** \\(\lambda\_{is})\\ is a central concept in
 adaptive dynamics and eco-evolutionary theory, providing a predictor of
@@ -163,7 +157,7 @@ Invasion fitness formula
 
 ------------------------------------------------------------------------
 
-#### Invasiveness and Invasibility
+### Invasiveness and Invasibility
 
 The invasion fitness output can be aggregated to site and species level
 summaries of **invasiveness** \\V_i\\ & \\T\_{ik}\\ and **invasibility**
@@ -211,7 +205,7 @@ summaries of **invasiveness** \\V_i\\ & \\T\_{ik}\\ and **invasibility**
 
 ------------------------------------------------------------------------
 
-### Overview of `invasimapr` workflow
+## Overview of `invasimapr` workflow
 
 The **`invasimapr`** workflow links raw ecological inputs (Figure 1) to
 decision-ready outputs, progressing from resident community data, traits
@@ -361,7 +355,7 @@ to policy**.  
 
 ------------------------------------------------------------------------
 
-### Discussion and conclusion
+## Discussion and conclusion
 
 We presented a reproducible workflow, implemented in `invasimapr`, that
 links **traits**, **environment**, and **community composition** to
@@ -437,7 +431,7 @@ with new data.
 
 ------------------------------------------------------------------------
 
-### References
+## References
 
 - **Hui, C.** (2016) *Defining invasiveness and invasibility in
   ecological networks:* invasion fitness = per-capita growth rate at
@@ -465,9 +459,9 @@ with new data.
 
 ------------------------------------------------------------------------
 
-### Appendices
+## Appendices
 
-#### Expanded formula and links to model components
+### Expanded formula and links to model components
 
 We summarize how each component of the invasion fitness function is
 computed, linking back to the ecological quantities and trait
@@ -488,7 +482,7 @@ data but conditioned on invader traits \\t_i\\.
 
 ------------------------------------------------------------------------
 
-##### Trait-conditioned environmental suitability \\r^{(z)}\_{is}\\
+#### Trait-conditioned environmental suitability \\r^{(z)}\_{is}\\
 
 - **Resident** \\E \times T\\ model: Fit on residents \\j\\,
 
@@ -510,7 +504,7 @@ data but conditioned on invader traits \\t_i\\.
 
 ------------------------------------------------------------------------
 
-##### Trait-space crowding \\C^{(z)}\_{is}\\
+#### Trait-space crowding \\C^{(z)}\_{is}\\
 
 - **Kernel overlap in trait space:**
 
@@ -531,7 +525,7 @@ data but conditioned on invader traits \\t_i\\.
 
 ------------------------------------------------------------------------
 
-##### Performance-weighted resident filtering \\S^{(z)}\_{is}\\
+#### Performance-weighted resident filtering \\S^{(z)}\_{is}\\
 
 - **Neighbor performance signal:** Residents’ site-specific suitability
   \\r\_{js}\\.
@@ -550,7 +544,7 @@ data but conditioned on invader traits \\t_i\\.
 
 ------------------------------------------------------------------------
 
-##### Trait-dependent slopes \\\gamma_i, \alpha_i, \beta_i\\
+#### Trait-dependent slopes \\\gamma_i, \alpha_i, \beta_i\\
 
 - **Auxiliary regression on residents:**
 
@@ -569,7 +563,7 @@ data but conditioned on invader traits \\t_i\\.
 
 ------------------------------------------------------------------------
 
-##### Predictive distribution
+#### Predictive distribution
 
 - **Mean invasion fitness:** \\\mu\_{is} = \lambda\_{is}.\\
 
@@ -583,24 +577,24 @@ data but conditioned on invader traits \\t_i\\.
 
 ------------------------------------------------------------------------
 
-#### Glossary (objects and equation components)
+### Glossary (objects and equation components)
 
-| Symbol / Term                 | R Object(s)                                 | Definition                                                                     | Relevance                                                                             |
-|-------------------------------|---------------------------------------------|--------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| \\r\_{js}\\                   | `r_js`                                      | Resident FE-only predictor (link scale) from E×T GLMM                          | Baseline suitability per resident & site                                              |
-| \\r\_{is}\\                   | `r_is`                                      | Invader FE-only predictor (projected)                                          | Invader suitability before scaling; becomes \\r^{(\tilde{t})}\_{is}\\ after z-scoring |
-| Resident scaling moments      | `r_mu`,`r_sd`; `C_mu`,`C_sd`; `S_mu`,`S_sd` | Means/SDs computed on residents only                                           | Used to standardise invader predictors, preventing leakage                            |
-| \\r^{(\tilde{t})}\_{is}\\     | `r_is_z`                                    | standardised invader suitability                                               | Feeds \\\gamma_i r^{(\tilde{t})}\_{is}\\                                              |
-| \\C\_{is}\\                   | `C_is`                                      | Trait-kernel exposure \\W\_{\text{site}} K\_{ri}^\top\\                        | Crowding/overlap pressure                                                             |
-| \\C^{(\tilde{t})}\_{is}\\     | `C_is_z`                                    | standardised crowding                                                          | Feeds \\\alpha_i C^{(\tilde{t})}\_{is}\\                                              |
-| \\S\_{js}\\                   | `S_js`                                      | Resident convolution \\K\_{\text{res}}\cdot (r\_{js}\odot W\_{\text{site}})\\  | Neighbor success signal by resident & site                                            |
-| \\S\_{is}\\                   | `S_is`                                      | Invader-resident interaction sum \\\sum_j K\_{ij}\\r\_{is}\\r\_{js}\\W\_{sj}\\ | Site × invader filtering pressure                                                     |
-| \\S^{(\tilde{t})}\_{is}\\     | `S_is_z`                                    | standardised filtering                                                         | Feeds \\\beta_i S^{(\tilde{t})}\_{is}\\                                               |
-| \\\gamma_i,\alpha_i,\beta_i\\ | `gamma_i`,`alpha_i`,`beta_i`                | Trait-varying slopes (linear in `tr1/2`)                                       | Transfer strength of each standardised component to fitness                           |
-| \\\mu\_{is}\\                 | `MU` / `pe$mu`                              | Mean fitness on standardised scale                                             | Center for Normal approximation                                                       |
-| \\\sigma\\                    | `pe$sigma`                                  | Predictive SD from auxiliary model                                             | Scale for \\P(F\>0)=\Phi(\mu/\sigma)\\                                                |
-| \\P(F\>0)\\                   | `pe$p_establish`                            | Probabilistic establishment matrix (site × invader)                            | Used for mapping, ranking, calibration                                                |
-| \\D_s\\                       | `D_s`                                       | Site density/productivity proxy (row sums)                                     | Confounder separated from `C_is` upstream                                             |
-| \\Q_s\\                       | `Q_s`                                       | Abiotic propensity (mean `r_js` per site)                                      | Confounder separated from `C_is` upstream; optional residualization                   |
-| \\\tau\\                      | `tau_hat`, `tau_grid`                       | Kernel bandwidth estimated from resident distance-overlap                      | Sets the scale of trait-based crowding and filtering                                  |
-| LOSO outputs                  | `loso_fast`, `loso_cal`                     | Per-site probabilities and calibration table                                   | Backtesting transferability and reliability                                           |
+| Symbol / Term | R Object(s) | Definition | Relevance |
+|----|----|----|----|
+| \\r\_{js}\\ | `r_js` | Resident FE-only predictor (link scale) from E×T GLMM | Baseline suitability per resident & site |
+| \\r\_{is}\\ | `r_is` | Invader FE-only predictor (projected) | Invader suitability before scaling; becomes \\r^{(\tilde{t})}\_{is}\\ after z-scoring |
+| Resident scaling moments | `r_mu`,`r_sd`; `C_mu`,`C_sd`; `S_mu`,`S_sd` | Means/SDs computed on residents only | Used to standardise invader predictors, preventing leakage |
+| \\r^{(\tilde{t})}\_{is}\\ | `r_is_z` | standardised invader suitability | Feeds \\\gamma_i r^{(\tilde{t})}\_{is}\\ |
+| \\C\_{is}\\ | `C_is` | Trait-kernel exposure \\W\_{\text{site}} K\_{ri}^\top\\ | Crowding/overlap pressure |
+| \\C^{(\tilde{t})}\_{is}\\ | `C_is_z` | standardised crowding | Feeds \\\alpha_i C^{(\tilde{t})}\_{is}\\ |
+| \\S\_{js}\\ | `S_js` | Resident convolution \\K\_{\text{res}}\cdot (r\_{js}\odot W\_{\text{site}})\\ | Neighbor success signal by resident & site |
+| \\S\_{is}\\ | `S_is` | Invader-resident interaction sum \\\sum_j K\_{ij}\\r\_{is}\\r\_{js}\\W\_{sj}\\ | Site × invader filtering pressure |
+| \\S^{(\tilde{t})}\_{is}\\ | `S_is_z` | standardised filtering | Feeds \\\beta_i S^{(\tilde{t})}\_{is}\\ |
+| \\\gamma_i,\alpha_i,\beta_i\\ | `gamma_i`,`alpha_i`,`beta_i` | Trait-varying slopes (linear in `tr1/2`) | Transfer strength of each standardised component to fitness |
+| \\\mu\_{is}\\ | `MU` / `pe$mu` | Mean fitness on standardised scale | Center for Normal approximation |
+| \\\sigma\\ | `pe$sigma` | Predictive SD from auxiliary model | Scale for \\P(F\>0)=\Phi(\mu/\sigma)\\ |
+| \\P(F\>0)\\ | `pe$p_establish` | Probabilistic establishment matrix (site × invader) | Used for mapping, ranking, calibration |
+| \\D_s\\ | `D_s` | Site density/productivity proxy (row sums) | Confounder separated from `C_is` upstream |
+| \\Q_s\\ | `Q_s` | Abiotic propensity (mean `r_js` per site) | Confounder separated from `C_is` upstream; optional residualization |
+| \\\tau\\ | `tau_hat`, `tau_grid` | Kernel bandwidth estimated from resident distance-overlap | Sets the scale of trait-based crowding and filtering |
+| LOSO outputs | `loso_fast`, `loso_cal` | Per-site probabilities and calibration table | Backtesting transferability and reliability |

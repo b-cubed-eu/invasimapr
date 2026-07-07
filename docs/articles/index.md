@@ -2,7 +2,8 @@
 
 ### Getting started
 
-- [Introduction](https://b-cubed-eu.github.io/invasimapr/articles/invasimapr.md):
+- [Introduction to
+  invasimapr](https://b-cubed-eu.github.io/invasimapr/articles/invasimapr.md):
 
 ### Tutorials
 
