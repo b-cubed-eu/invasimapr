@@ -18,12 +18,6 @@ knitr::opts_chunk$set(
 )
 ```
 
-# `invasimapr`
-
-## A novel framework to visualise trait dispersion and assess species invasiveness and site invasibility
-
----
-
 ## Introduction
 
 Biological invasions are a major driver of biodiversity loss. Invasive alien species (IAS) can spread quickly, alter ecosystem processes, and displace native taxa. Because invasion outcomes depend jointly on functional traits, resident communities, and local environments, ad-hoc analyses are not enough. We need a transparent, reproducible way to quantify establishment potential at specific sites and to compare that potential across species and landscapes. **`invasimapr`** fills this gap. It is a trait-based, site-specific R package that estimates **invasion fitness** for candidate invaders, assembles the resident community context that constrains establishment, and turns these quantities into mappable indicators for decision making. The workflow links three pillars:
